@@ -39,12 +39,12 @@ Please, if any use or scientific research is done through this application, cite
 
 ## Documentation
 
-Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/albertoSoto/lince-plus/wiki)
+Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
 
 
 ### Bugs or problems? No problem
 
-Use our bug system to report any problem at [bug reporting](https://github.com/albertoSoto/lince-plus/issues)
+Use our bug system to report any problem at [bug reporting](https://github.com/observesport/lince-plus/issues)
 
 Current open threads:
 
