@@ -65,7 +65,9 @@ Current open threads:
     - Unit testing included
     - Valid i18n
     - Exporting register to theme
-    - Support for CSV and tab files native on lince plus 
+    - Support for CSV and tab files native on lince plus
+    - GA
+    - Desktop app new Design with interactive stats 
 
 - Version 1.0.0 RELEASE, 10/06/2019
 
