@@ -30,11 +30,18 @@ Please, if any use or scientific research is done through this application, cite
 
 ## Download 
 
-### Current version 1.0.0 RELEASE
+### Current version 1.0.1 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1-RELEASE-win.msi)
 
-- [Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-mac.zip)
+- [Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1-RELEASE-mac.zip)
+
+
+### Previous versions
+
+- [1.0.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
+
+- [1.0.0 - Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-mac.zip)
 
 
 ## Documentation
@@ -54,6 +61,11 @@ Current open threads:
 
 ## Release notes
 
+- Version 1.0.1 RELEASE, 12/06/2019
+    - Unit testing included
+    - Valid i18n
+    - Exporting register to theme
+    - Support for CSV and tab files native on lince plus 
 
 - Version 1.0.0 RELEASE, 10/06/2019
 
