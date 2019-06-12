@@ -32,9 +32,10 @@ Please, if any use or scientific research is done through this application, cite
 
 ### Current version 1.0.1 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE-win.msi)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)
+					  
 
-- [Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE-mac.zip)
+- [Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.zip)
 
 
 ### Previous versions
