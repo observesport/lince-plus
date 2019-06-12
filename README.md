@@ -17,7 +17,7 @@ Analysis. Apunts. Educación Física y Deportes, 137, 149-153. doi:10.5672/apunt
 
 ## Public link
 
-https://albertosoto.github.io/lince-plus/
+https://observesport.github.io/lince-plus/
 
 ## LFS
 
