@@ -47,7 +47,9 @@ Please, if any use or scientific research is done through this application, cite
 
 ## Documentation
 
-Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
+
+- Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
+- Check our workshop material at [workshop](http://learning.albertosoto.es/Lince-plus-workshop1.html)
 
 
 ### Bugs or problems? No problem
