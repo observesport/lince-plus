@@ -72,6 +72,15 @@ Current open threads:
 
 ## Release notes
 
+- Version 1.0.2 RELEASE, 01/07/2019
+	- File issues on MACos are solved. This includes, importing and exporting files, browser opening and video selection
+	- Native swing adapter for javafx
+	- Solved multitier file saving (javafx can't open file dialog on old swing operating)
+	- Added testing operations
+	- This is an stable version
+	- Installer contains java jre check on windows
+	- MacOs must have user interaction for java setup
+
 - Version 1.0.1 RELEASE, 12/06/2019
     - Unit testing included
     - Valid i18n
