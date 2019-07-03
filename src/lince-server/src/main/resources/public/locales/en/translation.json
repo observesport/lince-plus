@@ -1,0 +1,27 @@
+{
+  "title": "Welcome to react using react-i18next",
+  "video": {
+    "headerTool": "Criteria & categories",
+    "synchronizedActions": "Synchronized actions"
+  },
+  "scene": "Scene",
+  "scenes": "Scenes",
+  "save": "Save",
+  "action": "Action",
+  "date": "Date",
+  "calculateResults": "Calculate results",
+  "observationsDone": "Observations",
+  "back": "Back",
+  "sidePanel":{
+    "researcher":"Researcher",
+    "markActive":"Set as current research",
+    "nonObservations":"Without observations done"
+  },
+  "results": {
+    "scenesWithoutMarks": "Scenes without marked records",
+    "observationFrom": "Observation from",
+    "selectRegister": "Click a register to see observations",
+    "kappaResult": "Kappa index results",
+    "pressExecute": "Click on 'execute' to see results"
+  }
+}

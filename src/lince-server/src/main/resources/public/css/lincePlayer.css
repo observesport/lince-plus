@@ -1,0 +1,222 @@
+/*@font-face {
+    font-family: myFont;
+    src: url("../fonts/Muli.ttf");
+}
+
+html {
+    height: 100%; /!*Very important!!!! Without this the footer doesn't stay at the bottom*!/
+}
+
+body {
+    position: relative;
+    padding-bottom: 70px; /!*padding between main y foot*!/
+    min-height: 100%;
+    background-color: #E8EAF6;
+    font-family: myFont, sans-serif;
+}
+
+.bodyForms {
+
+    background: url("../img/back5.jpg") center no-repeat fixed;
+    background-size: cover;
+}
+
+hr {
+    border-color: #C5CAE9;
+}
+
+.btn-plain {
+    border-radius: 0;
+}
+
+/!*!///////////CONTAINER STYLES/////////////!*!/
+.containerMenu {
+    min-height: 40px;
+}
+
+.containerBody {
+
+    padding: 20px 0;
+}
+
+.containerFooter {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: #E8EAF6;
+    background-color: #2F73AE;
+}
+
+/!*!///////////END CONTAINER STYLES/////////////!*!/
+
+/!*!///////////NAVBAR STYLES/////////////!*!/
+.main-menu {
+    background-color: #2f73ae;
+}
+
+.option-menu > a:hover {
+    color: #E8EAF6;
+    background-color: #2F73AE !important;
+}
+
+.option-menu > a:visited {
+    color: #E8EAF6;
+    background-color: #2F73AE !important;
+}
+
+.option-menu > a {
+    color: #E8EAF6;
+}
+
+.title-color {
+    color: #C5CAE9;
+}
+
+.title-color:hover {
+    color: #E8EAF6;
+}
+
+.collapsed-button {
+    background-color: #283593;
+}
+
+/!*!///////////END NAVBAR STYLES/////////////!*!/
+
+/!*!///////////FORM BOX STYLES/////////////!*!/
+.box {
+    box-shadow: 1px 1px 5px #888888;
+    padding: 2%;
+    background-color: whitesmoke;
+    margin-bottom: 4%;
+    margin-top: 10%;
+}
+
+.box-header {
+    color: #3289C8;
+}
+
+.box-content {
+    color: #3289C8;
+}
+
+.box-footer > a {
+    color: #3289C8;
+}*/
+
+/*///////////END FORM BOX STYLES/////////////*/
+
+/*///////////AUXILIAR STYLES/////////////*/
+.no-resizable {
+    resize: none;
+}
+
+.redText {
+    color: darkred;
+}
+
+/*///////////END AUXILIAR STYLES/////////////*/
+/*///////////VIDEO STYLES/////////////*/
+video {
+    height: auto;
+    width: 100%;
+}
+
+.videoBox {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    padding: 0;
+    text-align: center;
+    border: 1px solid dodgerblue;
+    box-shadow: 1px 1px 5px #888888;
+    background: url("../img/poster.png");
+    background-size: contain;
+}
+
+.btn-square {
+    border-radius: 0 !important;
+    border: 2px solid;
+    color: #2f73ae;
+    background-color: gainsboro;
+}
+
+
+.progressBarStyle {
+    margin-bottom: 0.25%;
+    background:gainsboro;
+    margin-top: 0.25%;
+    height: 10px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/*///////////END VIDEO STYLES/////////////*/
+
+
+
+.controlsBox{
+    background-color: #2f73ae;
+    box-shadow: 1px 1px 5px #888888;
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-bottom:2px;
+}
+
+.controlsBox > li{
+    display: inline-block;
+}
+
+.progressChange{
+    width: 0;
+    background: #B3B3B3;
+}
+
+.btn-slim {
+    top:1px;
+    border-left:1px;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+.dropup:hover .dropdown-menu {
+    display: block;
+}
+
+.dropUpList{
+    min-width:45px !important;
+    background:#2f73ae
+}
+
+.volumeBar{
+    -ms-writing-mode:bt-lr;
+    -webkit-appearance: slider-vertical;
+    width:45px
+}
+
+.infoTime, .infoSpeed{
+    color:gainsboro;
+    font-size: smaller;
+}
+
+:-moz-focusring{outline: none; border: 0} /*avoids the dots line of firefox*/
+
+.trackList{
+    overflow: visible;
+    position: relative;
+    background: rgba(220,220,220,0.5);
+    overflow-y: auto;
+    display:none;
+    z-index: 10;
+    margin-bottom:0;
+}
+
+.trackList > li{
+    list-style: none;
+    background:rgba(47,115,174,0.7);
+    margin: 10px 0;
+    color: whitesmoke;
+}
+
+.trackList > li:hover{
+    background: rgba(220,220,220,0.7);
+    color: dodgerblue;
+}

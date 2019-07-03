@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane prefHeight="600.0" prefWidth="950.0" stylesheets="@example/DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.deicos.lince.app.javafx.view.RootLayoutController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Proyecto">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleNew" text="Nuevo">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleOpen" text="Abrir...">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Guardar">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleSaveAs" text="Guardar como..." />
+                  <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Salir" />
+               </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Video">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleSelectVideo" text="Seleccionar video..">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleClearVideos" text="No seleccionar ningun video">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Visualizar">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleOpenBrowser" text="Abrir navegador" />
+               </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Estadisticas" visible="false">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#handleShowBirthdayStatistics" text="Ver estadisticas" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Datos">
+               <items>
+                  <Menu mnemonicParsing="false" text="Importar">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleImportHoisan" text="Hoisan" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Exportar">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportTheme6" text="Theme 6" />
+                      <!--  <MenuItem mnemonicParsing="false" onAction="#handleExportTheme6Register" text="Theme 6 - Registro" />-->
+                      <MenuItem mnemonicParsing="false" onAction="#handleExportTheme5" text="Theme 5" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportSAS" text="SAS" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportExcel" text="Excel" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportHoisan" text="Hoisan" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportSDISGSEQEstado" text="SDIS-GSEQ Estado" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportSDISGSEQTimeEvent" text="SDIS-GSEQ Evento con tiempo" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportSDISGSEQEvent" text="SDIS-GSEQ Evento" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportSDISGSEQInterval" text="SDIS-GSEQ Intérvalo" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportSDISGSEQMultiEvent" text="SDIS-GSEQ Multi-evento" />
+                    </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Lince V1">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleImportToolLince1" text="Importar instrumentos de observacion" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleImportRegisterLince1" text="Importar registros observados" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportToolLince1" text="Exportar instrumento actual" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportRegisterLince1" text="Exportar registros registros actuales" />
+                    </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Lince PLUS">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleImportLincePlusProject" text="Importar proyecto externo sin videos" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleImportLincePlusObserver" text="Añadir registro observacional externo" />
+                     </items>
+                  </Menu>
+               </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Ayuda">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="Sobre Lince" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <bottom>
+      <TabPane prefHeight="146.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Log">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView fx:id="logArea" prefHeight="117.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Videos Seleccionados">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView fx:id="videoPlaylistView" prefHeight="117.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </bottom>
+   <center>
+       <StackPane fx:id="pane" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" ></StackPane>
+   </center>
+</BorderPane>

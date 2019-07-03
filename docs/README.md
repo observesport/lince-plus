@@ -64,10 +64,6 @@ Please, if any use or scientific research is done through this application, cite
 
 Use our bug system to report any problem at [bug reporting](https://github.com/observesport/lince-plus/issues)
 
-Current open threads:
-
-- Mac Version can't open browser directly, needs user interaction
-
 ## Support
 
 ![Install4J](install4j_medium.png)

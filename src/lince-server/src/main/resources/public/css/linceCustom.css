@@ -1,0 +1,55 @@
+.well {
+    border: 0;
+    padding: 10px !important;
+}
+
+.page-content-wrapper .page-content {
+    padding: 0px 0px 0px!important;
+}
+
+.page-bar {
+    margin-bottom: 5px;
+}
+
+.portlet {
+    margin-bottom: 0px;
+}
+
+.page-title {
+    margin-bottom: 0px;
+    background: #ffffff;
+}
+
+.icon-btn {
+    min-width: 25px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    height: auto !important;
+    margin: 0 0 0 0 !important;
+    padding: 5px 0 0 0 !important;
+}
+.icon-btn > div {
+    margin-top: 7px;
+    margin-bottom: 7px;
+    font-size: 10px;
+    font-weight: 300;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+/*
+.page-container-bg-solid .page-content {
+    //background: #ffffff;
+}*/
+
+.vjs-break-overlay {
+    z-index: 1000 !important;
+}
+
+.modal-dialog, .videoPlayerButtons ,.dropdown-menu {
+    z-index: 100001 !important;
+}
+
+.videoPlayerButtons {
+    width: 100%;
+
+}

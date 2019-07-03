@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>lince-scientific-base</artifactId>
+        <groupId>com.deicos.lince</groupId>
+        <version>1.0.2-RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>lince-math</artifactId>
+    <dependencies>
+        <!-- base de spring boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- spring mvc -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <!-- inner data-->
+        <dependency>
+            <groupId>com.deicos.lince</groupId>
+            <artifactId>lince-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.deicos.lince</groupId>
+            <artifactId>lince-ai</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+        <!-- <dependency>
+             <groupId>org.apache.commons</groupId>
+             <artifactId>commons-math3</artifactId>
+             <version>3.6.1</version>
+         </dependency>-->
+
+        <!--
+        jython: python en java
+        -->
+        <!--dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython</artifactId>
+            <version>2.7.0</version>
+        </dependency-->
+        <!--
+        Renjin R Engine
+        -->
+        <dependency>
+            <groupId>org.renjin</groupId>
+            <artifactId>renjin-script-engine</artifactId>
+            <version>RELEASE</version>
+            <!--classifier>jar-with-dependencies</classifier-->
+        </dependency>
+        <!-- Valid plugins -->
+        <dependency>
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>jsonlite</artifactId>
+            <version>1.5-b2</version>
+        </dependency>
+        <dependency>
+            <!--
+            Functions for downloading flight data from http://www.munich-airport.de and for analyzing flight patterns.
+            > data("airports", package = "MUCflights")
+            > head(airports)
+            > flight.info <- flights(from = "2011-01-07", to = "2011-01-08")
+            > head(flight.info)
+            -->
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>MUCflights</artifactId>
+            <version>0.0-3-b38</version>
+        </dependency>
+        <!-- Lab Plugins -->
+        <!--<dependency>
+            &lt;!&ndash;
+            http://packages.renjin.org/package/org.renjin.cran/reticulate/1.4
+            INTERPRETE VALIDO DE PYTHON EN R
+            library('org.renjin.cran:reticulate')
+            &ndash;&gt;
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>reticulate</artifactId>
+            <version>1.4-b4</version>
+        </dependency>-->
+        <dependency>
+            <!--
+            http://packages.renjin.org/package/org.renjin.cran/e1071
+            http://docs.renjin.org/en/latest/library/capture.html
+            -->
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>e1071</artifactId>
+            <version>1.6-8-b34</version>
+        </dependency>
+        <dependency>
+            <!--
+            Indice Kappa
+            http://packages.renjin.org/package/org.renjin.cran/KappaGUI
+            http://packages.renjin.org/package/org.renjin.cran/KappaGUI/2.0.2/build/1#test-kappaCohen-examples
+            -->
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>KappaGUI</artifactId>
+            <version>2.0.2-b1</version>
+        </dependency>
+        <dependency>
+            <!--
+            Indice Correlacion n dimensiones de Krippendorff
+            -->
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>irr</artifactId>
+            <version>0.84-b243</version>
+        </dependency>
+        <!--http://packages.renjin.org/package/org.renjin.cran/gplots
+        FUNCIONA PARA PLOTTING PERO BLOQUEA LA VENTANA AWT
+        -->
+        <!--
+        <dependency>
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>gplots</artifactId>
+            <version>3.0.1.1-b1</version>
+        </dependency>
+        -->
+
+
+        <!-- Plotly no test pass
+        <dependency>
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>plotly</artifactId>
+            <version>4.7.1-b49</version>
+        </dependency-->
+        <!-- fallo de dependencias con trelliscope
+        <dependency>
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>trelliscope</artifactId>
+            <version>0.9.8-b9</version>
+        </dependency-->
+        <!-- TKR plot not tested yet-->
+        <!--dependency>
+            <groupId>org.renjin.cran</groupId>
+            <artifactId>tkrplot</artifactId>
+            <version>0.0-23-b314</version>
+        </dependency-->
+    </dependencies>
+</project>

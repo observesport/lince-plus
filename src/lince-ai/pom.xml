@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>lince-scientific-base</artifactId>
+        <groupId>com.deicos.lince</groupId>
+        <version>1.0.2-RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>lince-ai</artifactId>
+    <dependencies>
+        <!-- inner data-->
+        <dependency>
+            <groupId>com.deicos.lince</groupId>
+            <artifactId>lince-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+
+        <!-- stats ready module -->
+        <dependency>
+            <groupId>org.dkpro.statistics</groupId>
+            <artifactId>dkpro-statistics-agreement</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <!--
+        Complete package is the following: https://search.maven.org/search?q=g:org.dkpro.statistics
+        Allows correlation and significance
+        -->
+        <!--<dependency>
+            <groupId>org.dkpro.statistics</groupId>
+            <artifactId>dkpro-statistics</artifactId>
+            <version>2.1.0</version>
+            <type>pom</type>
+        </dependency>-->
+    </dependencies>
+</project>
