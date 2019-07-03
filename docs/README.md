@@ -58,7 +58,7 @@ Please, if any use or scientific research is done through this application, cite
 
 - Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
 - Check our workshop material at [workshop](http://learning.albertosoto.es/Lince-plus-workshop1.html)
-
+- Check our [on-line guide](http://learning.albertosoto.es/lince-plus-guide.html)
 
 ### Bugs or problems? No problem
 
@@ -68,7 +68,12 @@ Current open threads:
 
 - Mac Version can't open browser directly, needs user interaction
 
+## Support
 
+![Install4J](install4j_medium.png)
+
+
+Lince Plus installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
 
