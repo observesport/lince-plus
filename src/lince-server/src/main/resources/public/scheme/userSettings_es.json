@@ -1,0 +1,29 @@
+{
+  "title": "Parámetros de usuario",
+  "type": "object",
+  "id": "person",
+  "properties": {
+    "key": {
+      "title": "Id",
+      "type": "string",
+      "description": "ID",
+      "options": {
+        "hidden": true
+      }
+    },
+    "fps": {
+      "title": "FPS: Frames de muestreo en videos",
+      "type": "integer",
+      "description": "Video fps",
+      "enum": ["21","25"]
+    },
+    "numVideos": {
+      "title": "Numero de videos simultaneos por defecto",
+      "type": "integer",
+      "description": "Videos",
+      "default": 2,
+      "minimum": 1,
+      "maximum": 3
+    }
+  }
+}

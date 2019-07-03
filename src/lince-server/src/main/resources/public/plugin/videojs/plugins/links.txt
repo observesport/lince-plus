@@ -1,0 +1,29 @@
+List of plugins
+https://github.com/videojs/video.js/wiki/Plugins
+
+Taken:
+
+
+primera fase:
+https://github.com/ctd1500/videojs-hotkeys
+https://github.com/spchuang/videojs-markers				espectacular
+https://github.com/jgallen23/videojs-playLists
+
+https://github.com/brightcove/videojs-playlist-ui
+
+fase 1.1
+FPS
+https://github.com/erasche/videojs-framebyframe
+http://answers.opencv.org/question/71225/how-to-get-fps-from-video-in-java/
+
+
+segunda fase:
+- Grabacion de webcam				https://github.com/collab-project/videojs-record
+
+
+==================================================
+Canvas y diagramas!
+http://gojs.net/latest/learn/index.html
+http://fabricjs.com/demos/
+
+http://www.pixijs.com/ (parece la mas activa)

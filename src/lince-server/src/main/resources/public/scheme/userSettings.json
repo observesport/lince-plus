@@ -1,0 +1,29 @@
+{
+  "title": "User settings",
+  "type": "object",
+  "id": "person",
+  "properties": {
+    "key": {
+      "title": "Id",
+      "type": "string",
+      "description": "ID",
+      "options": {
+        "hidden": true
+      }
+    },
+    "fps": {
+      "title": "FPS",
+      "type": "integer",
+      "description": "Video fps",
+      "enum": ["21","25"]
+    },
+    "numVideos": {
+      "title": "Default video grid size",
+      "type": "integer",
+      "description": "Videos",
+      "default": 2,
+      "minimum": 1,
+      "maximum": 3
+    }
+  }
+}

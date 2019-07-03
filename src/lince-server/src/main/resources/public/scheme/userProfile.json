@@ -1,0 +1,91 @@
+{
+  "title": "User profile",
+  "type": "object",
+  "id": "person",
+  "properties": {
+    "key": {
+      "title": "Id",
+      "type": "string",
+      "description": "ID",
+      "options": {
+        "hidden": true
+      }
+    },
+    "researchGroup": {
+      "title": "Research team name",
+      "type": "string",
+      "description": "Research group name"
+    },
+    "researchGroupCode": {
+      "title": "Research group code",
+      "type": "string",
+      "description": "Research group code"
+    },
+    "researchName": {
+      "title": "Research name",
+      "type": "string",
+      "description": "Research name"
+    },
+    "researchNameCode": {
+      "title": "Research code",
+      "type": "string",
+      "description": "Research name code"
+    },
+    "userProfiles": {
+      "title": "Scientists",
+      "type": "array",
+      "format": "table",
+      "items": {
+        "title": "Perfil",
+        "type": "object",
+        "id": "profile",
+        "properties": {
+          "key": {
+            "title": "Id",
+            "type": "string",
+            "description": "ID",
+            "options": {
+              "hidden": true
+            }
+          },
+          "registerCode": {
+            "title": "Code",
+            "type": "string",
+            "description": "Código para el registro observacional",
+            "options": {
+              "hidden": true
+            }
+          },
+          "userName": {
+            "title": "Full name",
+            "type": "string",
+            "description": "User name"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string",
+            "description": "Email",
+            "format": "email"
+          },
+          "registerAmount": {
+            "title": "Comments",
+            "type": "integer",
+            "default": 0,
+            "options": {
+              "inputAttributes": {
+                "class": "disabled"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultProperties": [
+    "researchGroup",
+    "researchGroupCode",
+    "researchName",
+    "researchNameCode",
+    "innerRegisters"
+  ]
+}
