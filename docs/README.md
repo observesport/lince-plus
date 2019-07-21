@@ -27,10 +27,6 @@ Please, if any use or scientific research is done through this application, cite
 - Lince works in any computer (x64) and has been tested with Win10 and MacOS
 - Any version needs, at least, java 1.8 preconfigured on your system
 
-## Drive
-
-[Drive](https://drive.google.com/open?id=1VFELPoLixBgQWoS42WQt2daFPKq4hxLy)
-
 ## Download 
 
 ### Current version 1.0.2 RELEASE
@@ -56,9 +52,9 @@ Please, if any use or scientific research is done through this application, cite
 ## Documentation
 
 
-- Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
+- Check our on-line guide in [spanish](http://learning.albertosoto.es/lince-plus-guide.html) or in [english](http://learning.albertosoto.es/lince-plus-guide_en.html)
 - Check our workshop material at [workshop](http://learning.albertosoto.es/Lince-plus-workshop1.html)
-- Check our [on-line guide](http://learning.albertosoto.es/lince-plus-guide.html)
+- Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
 
 ### Bugs or problems? No problem
 
