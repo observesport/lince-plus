@@ -23,6 +23,9 @@ import java.util.UUID;
  * Description:
  * <p>
  * Mantains project profile info
+ *
+ * TODO 2019: se debe revisar para consolidar los usuarios
+ *
  */
 @Service
 public class ProfileService {
@@ -37,7 +40,7 @@ public class ProfileService {
     }
 
     public List<ResearchProfile> getAllResearchInfo() {
-        reloadResearchProfileDataFromRegister();
+        dataHubService.reloadResearchProfileDataFromRegister();
         return dataHubService.getUserData();
     }
 
@@ -180,28 +183,6 @@ public class ProfileService {
         log.info("checkpoint");
     }
 
-    /**
-     * Gets research info, adding on top register users
-     *
-     * @return Fake researchProfile
-     */
-    private ResearchProfile reloadResearchProfileDataFromRegister() {
-        ResearchProfile profile = null;
-        try {
-            if (dataHubService.getUserData().isEmpty()) {
-                dataHubService.getUserData().add(new ResearchProfile());
-            }
-            profile = dataHubService.getUserData().get(0);
-            //check registers and create research info asociate to it
-            profile.getUserProfiles().clear();
-            for (LinceRegisterWrapper item : dataHubService.getDataRegister()) {
-                item.getUserProfile().setRegisterAmount(item.getRegisterData().size());
-                profile.getUserProfiles().add(item.getUserProfile());
-            }
-        } catch (Exception e) {
-            log.error("err current research", e);
-        }
-        return profile;
-    }
+
 
 }

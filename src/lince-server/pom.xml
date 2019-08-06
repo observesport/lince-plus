@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lince-scientific-base</artifactId>
         <groupId>com.deicos.lince</groupId>
-        <version>1.0.2-RELEASE</version>
+        <version>1.0.3-RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>lince-server</artifactId>
@@ -17,6 +17,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.deicos.lince.app.LinceApp</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
             <!-- este plugin se ejecuta directamente
             cuando hacemos packaging segun se comenta en

@@ -3,6 +3,7 @@ package com.deicos.lince.data.base;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.data.bean.user.ResearchProfile;
+import com.deicos.lince.data.bean.user.UserProfile;
 import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,12 +40,75 @@ public class DataHubServiceBase {
         return dataRegister;
     }
 
+    /**
+     * Adds new observations checking it does not exists in the previous register
+     * TODO 2019 check
+     * @param newItems
+     */
+    public void addDataRegister(List<LinceRegisterWrapper> newItems) {
+        List<LinceRegisterWrapper> baseItems = getDataRegister();
+        //for (LinceRegisterWrapper oldReg:baseItems) {
+        for (LinceRegisterWrapper newReg : newItems) {
+            //if(oldRegs.getId().equals(newReg.getId())){
+            newReg.setId(UUID.randomUUID());
+            newReg.getUserProfile().setKey(UUID.randomUUID());
+            newReg.getUserProfile().setRegisterCode(newReg.getId());
+            addObserver(newReg.getUserProfile());
+            //}
+        }
+        //}
+        baseItems.addAll(newItems);
+    }
+
+    /**
+     * Checks if all data register have it's demanding user profile in the register
+     * TODO 2019 check
+     */
+    public void addObserver(UserProfile profile) {
+        boolean hasAdd = false;
+        for (ResearchProfile project : getUserData()) {
+            //boolean isFound = false;
+            for (UserProfile user : project.getUserProfiles()) {
+                if (user.getKey().equals(profile.getKey())) {
+                    //isFound = true;
+                    profile.setKey(UUID.randomUUID());
+                }
+            }
+            if (!hasAdd) {
+                project.getUserProfiles().add(profile);
+                hasAdd = true;
+            }
+        }
+    }
+
     public ObservableList<Criteria> getCriteria() {
         return criteria;
     }
 
     public ObservableList<ResearchProfile> getUserData() {
         return userData;
+    }
+
+    /**
+     * Returns the first researchProfile making a valid safe init
+     *
+     * @return Current researchProfile
+     */
+    public ResearchProfile getResearchProfile(){
+        ResearchProfile profile = null;
+        try{
+            if (getUserData().isEmpty()) {
+                getUserData().add(new ResearchProfile());
+            }
+            profile = getUserData().get(0);
+            //check registers and create research info asociate to it
+            if(profile.getUserProfiles()==null){
+                profile.setUserProfiles(new ArrayList<>());
+            }
+        }catch (Exception e){
+            log.error("getting researchProfile",e);
+        }
+        return profile;
     }
 
     public ObservableList<File> getVideoPlayList() {
@@ -112,5 +177,25 @@ public class DataHubServiceBase {
         criteria.clear();
         videoPlayList.clear();
         userData.clear();
+    }
+
+
+    /**
+     * Gets research info, adding on top register users
+     *
+     * @return researchProfile built with registers from the system
+     */
+    public void reloadResearchProfileDataFromRegister() {
+        ResearchProfile profile;
+        try {
+            profile = getResearchProfile();
+            profile.getUserProfiles().clear();
+            for (LinceRegisterWrapper item : getDataRegister()) {
+                item.getUserProfile().setRegisterAmount(item.getRegisterData().size());
+                profile.getUserProfiles().add(item.getUserProfile());
+            }
+        } catch (Exception e) {
+            log.error("err current research", e);
+        }
     }
 }

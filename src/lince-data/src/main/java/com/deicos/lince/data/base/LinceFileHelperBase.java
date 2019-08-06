@@ -4,9 +4,12 @@ import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.data.bean.wrapper.LinceFileProjectWrapper;
+import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import com.deicos.lince.data.util.JavaFXLogHelper;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,12 +18,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
 /**
  * lince-scientific-base
  * com.deicos.lince
+ *
  * @author berto (alberto.soto@gmail.com)in 24/02/2017.
  * Description:
  * <p>
@@ -29,18 +34,28 @@ import java.util.prefs.Preferences;
 public class LinceFileHelperBase {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private Preferences getPreferences() {
+        return Preferences.userNodeForPackage(ILinceApp.class);
+    }
+
     /**
      * gets filepath from user preferences
+     * Returns system user file path by default
      *
-     * @return lastSavedFile
+     * @return lastSavedFile, user path or temp path
      */
-    public File getLinceProjectFilePath(Class baseClass) {
-        Preferences prefs = Preferences.userNodeForPackage(baseClass.getClass());
-        String filePath = prefs.get(LinceDataConstants.PREFERENCES_FILE_PATH, null);
-        if (filePath != null) {
-            return new File(filePath);
-        } else {
-            return null;
+    public File getLinceProjectFilePath() {
+        try {
+            Preferences prefs = getPreferences();
+            String filePath = prefs.get(LinceDataConstants.PREFERENCES_FILE_PATH, null);
+            if (filePath != null) {
+                return new File(filePath);
+            } else {
+                return FileUtils.getUserDirectory();
+            }
+        } catch (Exception e) {
+            log.error("file not found", e);
+            return FileUtils.getTempDirectory();
         }
     }
 
@@ -51,17 +66,17 @@ public class LinceFileHelperBase {
      * @param file the file or null to remove the path
      */
     public <T extends ILinceApp> void setLinceProjectPath(File file, T myLinceApp) {
-        Preferences prefs = Preferences.userNodeForPackage(myLinceApp.getClass());
+        Preferences prefs = getPreferences();
         Stage primaryStage = myLinceApp.getPrimaryStage();
-        if (file != null) {
+        String titleAddon = StringUtils.EMPTY;
+        if (file != null && file.exists()) {
             prefs.put(LinceDataConstants.PREFERENCES_FILE_PATH, file.getPath());
-            // Update the stage title.
-            primaryStage.setTitle(myLinceApp.getWindowTitle() + " - " + file.getName());
+            titleAddon = " - " + file.getName();
         } else {
             prefs.remove(LinceDataConstants.PREFERENCES_FILE_PATH);
-            // Update the stage title.
-            primaryStage.setTitle(myLinceApp.getWindowTitle());
         }
+        // Update the stage title.
+        primaryStage.setTitle(myLinceApp.getWindowTitle() + titleAddon);
     }
 
 
@@ -69,6 +84,7 @@ public class LinceFileHelperBase {
         //LinceFileProjectWrapper.class, Criteria.class, Category.class, ResearchProfile.class
         return JAXBContext.newInstance(LinceFileProjectWrapper.class, Criteria.class, Category.class);
     }
+
     /**
      * 2019 - Functional function - DARK ZONE
      * Unmarshalls file, and executes desired code with it
@@ -82,7 +98,10 @@ public class LinceFileHelperBase {
             JAXBContext context = getXMLContext();
             Unmarshaller um = context.createUnmarshaller();
             // Reading XML from the file and unmarshalling.
-            LinceFileProjectWrapper data = (LinceFileProjectWrapper) um.unmarshal(file);
+            LinceFileProjectWrapper data = new LinceFileProjectWrapper();
+            if (file.exists()) {
+                data = (LinceFileProjectWrapper) um.unmarshal(file);
+            }
             f.accept(data);
             return data;
         } catch (Exception e) { // catches ANY exception
@@ -92,6 +111,7 @@ public class LinceFileHelperBase {
             return null;
         }
     }
+
     /**
      * Loads current file and sets it in datahubService
      *
@@ -108,7 +128,7 @@ public class LinceFileHelperBase {
                 myLinceApp.getDataHubService().getDataRegister().setAll(linceFileProjectWrapper.getRegister());
             });
             boolean isEmptyApp = myLinceApp instanceof EmptyLinceApp;
-            if (!isEmptyApp){
+            if (!isEmptyApp) {
                 // Save the file path to the registry.
                 setLinceProjectPath(file, myLinceApp);
                 JavaFXLogHelper.addLogInfo("Cargado fichero " + file.getName());
@@ -151,12 +171,12 @@ public class LinceFileHelperBase {
     }
 
 
-
-
     public void addObservations(File file, ILinceApp myLinceApp) {
         try {
             readProjectFile(file, projectWrapper -> {
-                myLinceApp.getDataHubService().getDataRegister().addAll(projectWrapper.getRegister());
+                List<LinceRegisterWrapper> newItems = projectWrapper.getRegister();
+                myLinceApp.getDataHubService().addDataRegister(newItems);
+                //myLinceApp.getDataHubService().getDataRegister().addAll(newItems);
             });
         } catch (Exception e) {
             JavaFXLogHelper.showMessage(Alert.AlertType.ERROR

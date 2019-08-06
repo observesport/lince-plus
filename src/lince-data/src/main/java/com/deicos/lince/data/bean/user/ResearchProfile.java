@@ -1,5 +1,8 @@
 package com.deicos.lince.data.bean.user;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,19 +16,19 @@ public class ResearchProfile {
 
     private UUID key;
 
-    private String researchGroup;
+    private String researchGroup= StringUtils.EMPTY;
 
-    private String researchName;
+    private String researchName= StringUtils.EMPTY;
 
-    private String researchGroupCode;
+    private String researchGroupCode= StringUtils.EMPTY;
 
-    private String researchNameCode;
+    private String researchNameCode= StringUtils.EMPTY;
 
     private Integer fps;
 
     private Integer numVideos;
 
-    private List<UserProfile> userProfiles;
+    private List<UserProfile> userProfiles = new ArrayList<>();
 
     public ResearchProfile() {
         setKey(UUID.randomUUID());

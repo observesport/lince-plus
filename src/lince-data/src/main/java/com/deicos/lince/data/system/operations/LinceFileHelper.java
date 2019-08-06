@@ -1,12 +1,10 @@
 package com.deicos.lince.data.system.operations;
 
-import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.base.EmptyLinceApp;
 import com.deicos.lince.data.base.ILinceApp;
 import com.deicos.lince.data.base.LinceFileHelperBase;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -15,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * lince-scientific-base
@@ -40,48 +37,16 @@ public class LinceFileHelper extends LinceFileHelperBase {
         FileChooser fileChooser = new FileChooser();
         try {
             File path = getLinceProjectFilePath();
-            if (path != null) {
-                fileChooser.setInitialDirectory(path.getParentFile());
+            if (path != null && path.exists()) {
+                path = path.getParentFile();
+            }else{
+                path = FileUtils.getUserDirectory();
             }
+            fileChooser.setInitialDirectory(path);
         } catch (Exception e) {
             log.error("on file chooser", e);
         }
         return fileChooser;
-    }
-
-    /**
-     * gets filepath from user preferences
-     *
-     * @return lastSavedFile
-     */
-    public File getLinceProjectFilePath() {
-        Preferences prefs = Preferences.userNodeForPackage(ILinceApp.class);
-        String filePath = prefs.get(LinceDataConstants.PREFERENCES_FILE_PATH, null);
-        if (filePath != null) {
-            return new File(filePath);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Sets the file path of the currently loaded file. The path is persisted in
-     * the OS specific registry.
-     *
-     * @param file the file or null to remove the path
-     */
-    public void setLinceProjectPath(File file, ILinceApp myLinceApp) {
-        Preferences prefs = Preferences.userNodeForPackage(myLinceApp.getClass());
-        Stage primaryStage = myLinceApp.getPrimaryStage();
-        if (file != null) {
-            prefs.put(LinceDataConstants.PREFERENCES_FILE_PATH, file.getPath());
-            // Update the stage title.
-            primaryStage.setTitle(myLinceApp.getWindowTitle() + " - " + file.getName());
-        } else {
-            prefs.remove(LinceDataConstants.PREFERENCES_FILE_PATH);
-            // Update the stage title.
-            primaryStage.setTitle(myLinceApp.getWindowTitle());
-        }
     }
 
     /**

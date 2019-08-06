@@ -29,7 +29,7 @@ Please, if any use or scientific research is done through this application, cite
 
 ## Download 
 
-### Current version 1.0.2 RELEASE
+### Current version 1.0.3 RELEASE
 
 - [Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)
 					  
@@ -38,6 +38,12 @@ Please, if any use or scientific research is done through this application, cite
 
 
 ### Previous versions
+
+
+- [1.0.2 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)
+					  
+
+- [1.0.2 - Mac](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.zip)
 
 - [1.0.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)
 					  
@@ -68,6 +74,13 @@ Use our bug system to report any problem at [bug reporting](https://github.com/o
 Lince Plus installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+- Version 1.0.3 RELEASE, 06/08/2019
+    - Multi-observer file import issues
+    - Non-existing file check on autoload
+    - MacOS installer with embedded JRE
+    - Win10 installer with embedded JRE
+    - Valid CSV export with ; or ,
+    - MacOS can open browser and files properly
 
 - Version 1.0.2 RELEASE, 01/07/2019
 	- File issues on MACos are solved. This includes, importing and exporting files, browser opening and video selection

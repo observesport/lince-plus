@@ -133,6 +133,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         mainLinceApp.getCategoryService().clearAll();
         LinceFileHelper fileHelper = new LinceFileHelper();
         fileHelper.setLinceProjectPath(null, mainLinceApp);
+        JavaFXLogHelper.addLogInfo("Nuevo proyecto");
     }
 
     /**
@@ -172,13 +173,15 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     /**
      * Opens a FileChooser to let the user select a project file
-     * Imports only instrument and observation
+     * Imports instrument, observation and profiles.
+     * Does not import video
      */
     @FXML
     private void handleImportLincePlusProject() {
         doOpenLincePlusProject(file -> {
                     LinceFileHelper fileHelper = new LinceFileHelper();
                     fileHelper.addBaseProjectInfo(file, mainLinceApp);
+                    dataHubService.reloadResearchProfileDataFromRegister();
                     JavaFXLogHelper.addLogInfo("Se ha cargado el instrumento y la observación del proyecto seleccionado");
                 }
         );
