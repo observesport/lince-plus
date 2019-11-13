@@ -23,6 +23,7 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.legacy.commands.exportar.ExportarRegistroCsv;
 import lince.modelo.InstrumentoObservacional.InstrumentoObservacional;
 import com.deicos.lince.data.legacy.utiles.SeleccionPanel;
@@ -41,7 +42,8 @@ public class ExportarCsvPanel extends JPanel {
         setLayout(new BorderLayout());
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         Object criterios[] = InstrumentoObservacional.getInstance().getCriterios();
-        String otros[] = {"TFrames", "DuraciónFr", "TSegundos", "DuraciónSeg", "TMilisegundos", "DuraciónMiliseg"};
+        String otros[] = {LinceDataConstants.COL_TFRAMES, LinceDataConstants.COL_DURACION_FR, LinceDataConstants.COL_TSEGUNDOS, LinceDataConstants.COL_DURACION_SEC, LinceDataConstants.COL_TMILISEGUNDOS, LinceDataConstants.COL_DURACION_MS};
+        //String otros[] = {"TFrames", "DuracionFr", "TSegundos", "DuracionSeg", "TMilisegundos", "DuracionMiliseg"};
         Object datosMixtos[] = InstrumentoObservacional.getInstance().getDatosMixtos();
         Object datosFijos[] = InstrumentoObservacional.getInstance().getDatosFijos();
         Object lista[] = new Object[criterios.length + otros.length + datosMixtos.length + datosFijos.length];

@@ -1,8 +1,10 @@
 package com.deicos.lince.math.service;
 
+import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.CategoryData;
+import com.deicos.lince.data.bean.categories.CategoryInformation;
 import com.deicos.lince.data.bean.categories.Criteria;
 import lince.modelo.FilaRegistro;
 import lince.modelo.InstrumentoObservacional.Categoria;
@@ -234,18 +236,24 @@ public class LegacyConverterService {
                 Criterio[] cs = i.getCriterios();
                 Criterio criterio = cs[cs.length - 1];
                 criterio.setDescripcion(criteriaDescription);
-                //TODO asf summer'17: importante set de persistencia(bool) (no está preparado aun?)
-                //criterio.setPersistente();
+                criterio.setPersistente(criteria.isPersistence());
+               
                 //insert internal Categories
                 for (Category cat : criteria.getInnerCategories()) {
                     InstrumentoObservacional.getInstance().addHijo(criterio, cat.getName());
                     Categoria categoria = (Categoria) criterio.getChildAt(criterio.getChildCount() - 1);
-                    categoria.setCodigo(cat.getCode());
+                    String code = cat.getCode();
+                    if (criteria.isInformationNode()){
+                        code+=cat.getId();
+                    }
+                    categoria.setCodigo(code);
                     categoria.setDescripcion(cat.getDescription());
                     //categoria.setNombre(cat.getName());
                     categoria.setParent(criterio);
                 }
+
             }
+            
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
         }
@@ -257,7 +265,7 @@ public class LegacyConverterService {
             Criterio rtn = new Criterio();
             rtn.setDescripcion(c.getDescription());
             rtn.setNombre(c.getName());
-            //rtn.setPersistente(); TODO asf summer'17 verify
+            rtn.setPersistente(c.isPersistence());
             return rtn;
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
@@ -270,10 +278,15 @@ public class LegacyConverterService {
             Categoria cat = new Categoria();
             cat.setNombre(c.getName());
             cat.setDescripcion(c.getDescription());
-            cat.setCodigo(c.getCode());
+            String code = c.getCode();
             //Criteria parent = (Criteria) categoryService.findCategoryById(c.getParent());
             Criteria parent = categoryService.findDataById(c.getParent(), null, null).getKey();
             cat.setParent(getLegacyCriteria(parent));
+            if (parent.isInformationNode()){
+                code += LinceDataConstants.CATEGORY_INFO_SUFIX;
+                cat.setDescripcion(c.getNodeInformation());
+            }
+            cat.setCodigo(code);
             return cat;
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);

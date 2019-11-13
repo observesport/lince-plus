@@ -51,31 +51,30 @@
     <!-- BEGIN CONTENT -->
     <div class="page-content-wrapper">
         <!-- BEGIN CONTENT BODY -->
-        <div class="page-content" style="min-height: 400px;">
-            <div class="blog-page blog-content-1">
+        <div class="page-content" style="min-height: 380px;padding-top: 10px!important;">
+            <div class="blog-page blog-content-1" style="margin-top: 0!important;">
                 <div class="row">
-
                     <div class="col-sm-6">
-                        <div class="blog-quote bordered blog-container">
+                        <div class="blog-quote bordered blog-container" style="margin-bottom: 0!important;">
                             <div class="blog-quote-label bg-green-jungle">
                                 <i class="fa fa-quote-left"></i>
                                 Open source software made for your studies. Please, refer us to be able to keep
                                 growing.
                             </div>
-                            <div class="blog-quote-avatar" style="margin-bottom: 0px!important;">
+                            <div class="blog-quote-avatar" style="margin-bottom: 0!important;">
                                 <a href="javascript:;">
                                     <img src="/img/lince-icon.jpg">
                                 </a>
                             </div>
-                            <div class="blog-post-content">
-                                <h3 class="blog-title blog-quote-title">
-                                    <a href="javascript:;">Article citation</a>
+                            <div class="blog-post-content" style="margin-top: 0!important;margin-bottom: 0!important;">
+                                <h3 class="blog-title blog-quote-title" style="margin-top: 0!important;margin-bottom: 0!important;">
+                                    Article citation
                                 </h3>
-                                <p class="blog-post-desc">Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., &
+                                <span >Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., &
                                     Castañer, M.(2019). LINCE PLUS: Research Software for Behaviour Video Analysis.
                                     <span
                                             style="font-style: italic!important;"> Apunts. Educación Física y Deportes</span>,137,
-                                    149-153. doi:10.5672/apunts. 2014-0983.es.(2019/3).137.11</p>
+                                    149-153. doi:10.5672/apunts. 2014-0983.es.(2019/3).137.11</span>
                             </div>
                         </div>
                     </div>
@@ -106,45 +105,48 @@
                         </div>
                     </div>-->
                     <div class="col-sm-6">
-                        <div class="blog-post-lg bordered blog-container">
-                            <div class="blog-post-content">
+                        <div class="blog-post-sm bordered">
+                            <div class="blog-post-content ">
                                 <h2 class="blog-title blog-post-title">
-                                    <a href="javascript:;">Lince plus</a>
+                                    Lince plus
                                 </h2>
-                                <p class="blog-post-desc">Bienvenido a Lince plus. Ya puedes generar tus estudios con la
-                                    última tecnología.
-                                    Te recordamos que esta versión de Lince integra R, que funciona por web, y que
-                                    necesitarás acceder a través de la opción abrir navegador del botón superior.
-                                </p>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="blog-post-desc">
+                                            <p> Escaneando este código QR puedes conectar con la aplicación de Lince
+                                                desde otros tablets o dispositivos</p>
+                                            <img src="/component/getQRCode" width="180" height="180"/>
 
-                            </div>
-                            <br/>
-                            <div class="blog-post-content hidden" id="projectInfo">
-                                <h2 class="blog-title blog-post-title">
-                                    <a href="javascript:;">Project info</a>
-                                </h2>
-                                <div class="blog-post-desc">
-                                    <ul class="list-group">
-                                        <li class="list-group-item">
-                                            Scenes detected
-                                            <span class="badge badge-success" id="statScene"></span>
-                                        </li>
-                                        <li class="list-group-item">
-                                            Selected videos
-                                            <span class="badge badge-success" id="statVideo"></span>
-                                        </li>
-                                        <li class="list-group-item">
-                                            Observers on the project
-                                            <span class="badge badge-success" id="statObserver"></span>
-                                        </li>
-                                    </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 hidden" id="projectInfo">
+                                        <div class="blog-post-desc">
+                                            <p>
+                                                Bienvenido a Lince plus. Ya puedes generar tus estudios con la
+                                                última tecnología.Te recordamos que esta versión de Lince integra R, que
+                                                funciona
+                                                por web, y que
+                                                necesitarás acceder a través de la opción abrir navegador del botón
+                                                superior.
+                                            </p>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    Scenes detected
+                                                    <span class="badge badge-success" id="statScene"></span>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    Selected videos
+                                                    <span class="badge badge-success" id="statVideo"></span>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    Observers on the project
+                                                    <span class="badge badge-success" id="statObserver"></span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <!--<div class="blog-img-thumb">
-                                <a href="javascript:;">
-                                    <img src="/img/web-lince-1.png">
-                                </a>
-                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -197,7 +199,11 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-78568633-3"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
     gtag('js', new Date());
 
     gtag('config', 'UA-78568633-3');

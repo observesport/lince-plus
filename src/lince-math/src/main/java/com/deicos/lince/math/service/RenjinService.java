@@ -176,7 +176,11 @@ public class RenjinService {
                             for (int i = 0; i < colNames.size(); i++) {
                                 if (StringUtils.contains(colNames.get(i), relatedData.getKey().getCode())) {
                                     //es el indice correcto añadimos el valor
-                                    data.setValue(currentRow, i, cat.getCode());
+                                    if (relatedData.getKey().isInformationNode()){
+                                        data.setValue(currentRow, i, cat.getNodeInformation());
+                                    }else{
+                                        data.setValue(currentRow, i, cat.getCode());
+                                    }
                                 }
                             }
                         }

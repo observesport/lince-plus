@@ -4,6 +4,7 @@ import com.deicos.lince.ai.agreement.AgreementResult;
 import com.deicos.lince.data.bean.KeyValue;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.Category;
+import com.deicos.lince.data.bean.categories.CategoryInformation;
 import com.deicos.lince.data.bean.wrapper.SceneWrapper;
 import com.deicos.lince.math.highcharts.HighChartsSerie;
 import com.deicos.lince.math.highcharts.HighChartsWrapper;
@@ -102,7 +103,7 @@ public class AnalysisController {
             return getData();
         } catch (Exception e) {
             log.error("register:push", e);
-            return new ResponseEntity<>(new ArrayList(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -134,7 +135,7 @@ public class AnalysisController {
             return getData();
         } catch (Exception e) {
             log.error("register:save", e);
-            return new ResponseEntity<>(new ArrayList(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -144,22 +145,33 @@ public class AnalysisController {
             if (items.getMoment() == null) {
                 throw new NullPointerException();
             }
-            RegisterItem item = new RegisterItem();
-            item.setVideoTime(items.getMoment());
-            item.setRegister(item.getRegister());//=>no tiene sentido
+            RegisterItem scene = new RegisterItem();
+            scene.setVideoTime(items.getMoment());
+            scene.setRegister(scene.getRegister());//=>no tiene sentido
+            // TODO 2020 ASF: This logic should be in another layer
             if (CollectionUtils.isNotEmpty(items.getCategories())) {
                 List<Category> dataValues = new ArrayList<>();
-                for (Category cat : items.getCategories()) {
-                    Category fullCat = (Category) categoryService.findCategoryByCode(cat.getCode());
-                    dataValues.add(fullCat);
+                for (Category userCategory : items.getCategories()) {
+                    boolean doAdd = true;
+                    Category fullCat = (Category) categoryService.findCategoryByCode(userCategory.getCode());
+                    if (CategoryInformation.class.isAssignableFrom(fullCat.getClass())){
+                        if (StringUtils.isEmpty(userCategory.getNodeInformation())){
+                            doAdd = false;
+                        }else{
+                            fullCat.setNodeInformation(userCategory.getNodeInformation());
+                        }
+                    }
+                    if (doAdd){
+                        dataValues.add(fullCat);
+                    }
                 }
-                item.setRegister(dataValues);
+                scene.setRegister(dataValues);
             }
-            analysisService.pushRegister(item); //data.toArray(new Category[data.size()])
+            analysisService.pushRegister(scene);
             return getData();
         } catch (Exception e) {
             log.error("register:save", e);
-            return new ResponseEntity<>(new ArrayList(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

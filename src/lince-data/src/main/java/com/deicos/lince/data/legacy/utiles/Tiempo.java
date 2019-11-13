@@ -79,6 +79,7 @@ public class Tiempo {
         milis /= 60;
         long minutes = milis % 60;
         long hours = milis / 60;
-        return hours + ":" + minutes + ":" + seconds + "," + sMilisec;
+        //TODO 2020: WTF!!! Antes pasaba una coma y eso hace que rompa la generación del CSV!
+        return hours + ":" + minutes + ":" + seconds + "." + sMilisec;
     }
 }

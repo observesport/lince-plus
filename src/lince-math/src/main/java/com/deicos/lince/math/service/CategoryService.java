@@ -1,11 +1,14 @@
 package com.deicos.lince.math.service;
 
+import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.CategoryData;
+import com.deicos.lince.data.bean.categories.CategoryInformation;
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import java.util.*;
 /**
  * lince-scientific-desktop
  * com.deicos.lince.app.service
+ *
  * @author berto (alberto.soto@gmail.com)in 29/02/2016.
  * Description:
  */
@@ -62,8 +66,24 @@ public class CategoryService {
         return findDataById(id, null, null).getValue();
     }
 
+    /**
+     * Return category by code or category info is needed
+     * @param code valid code
+     * @return proper category data or similar with non valid info
+     */
     public CategoryData findCategoryByCode(String code) {
-        return findDataById(null, code, null).getValue();
+        Pair<Criteria,Category> data = findDataById(null, code, null);
+        if (data.getValue()!=null){
+            return data.getValue();
+        }else{
+            if(data.getKey().isInformationNode()){
+                return new CategoryInformation(data.getKey(),StringUtils.EMPTY);
+            }else{
+                log.error("Invalid concept");
+                throw new NullPointerException();
+            }
+        }
+        
     }
 
     public CategoryData findCategoryByName(String name) {
@@ -92,6 +112,7 @@ public class CategoryService {
     /**
      * Recorre toda la herramienta y borra los elementos que no aparece en la nueva seleccion
      * Utiliza el método equals sobreescrito, para no tener que tener en cuenta el id.
+     *
      * @param newData nueva herramienta de visualización
      */
     private void checkToolIntegrity(List<Criteria> newData) {
@@ -107,25 +128,25 @@ public class CategoryService {
         for (Criteria cri : newData) {
             countTable.forEach((k, v) -> {
                 if (k.equals(cri)) {
-                    countTable.replace(k,v+1);
+                    countTable.replace(k, v + 1);
                 }
             });
             for (Category cat : cri.getInnerCategories()) {
                 countTable.forEach((k, v) -> {
                     if (k.equals(cat)) {
-                        countTable.replace(k,v+1);
+                        countTable.replace(k, v + 1);
                     }
                 });
             }
         }
         //Borramos los registros que tengan contador 0 para criterio o categoría
         for (LinceRegisterWrapper row : dataHubService.getDataRegister()) {
-            for(RegisterItem reg: row.getRegisterData()){
+            for (RegisterItem reg : row.getRegisterData()) {
                 //para borrar se debe hacer con iterator
-                for (Iterator it = reg.getRegister().iterator(); it.hasNext();) {
-                    Category cat= (Category) it.next();
+                for (Iterator it = reg.getRegister().iterator(); it.hasNext(); ) {
+                    Category cat = (Category) it.next();
                     countTable.forEach((k, v) -> {
-                        if (k.equals(cat) && v==0) {
+                        if (k.equals(cat) && v == 0) {
                             it.remove();
                         }
                     });

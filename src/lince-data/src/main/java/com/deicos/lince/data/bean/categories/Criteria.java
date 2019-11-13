@@ -11,8 +11,9 @@ import java.util.LinkedList;
  * @author berto (alberto.soto@gmail.com)in 02/03/2016.
  * Description:
  */
-public class Criteria extends CategoryData {
+public class Criteria extends CategoryData implements INodeInfo{
     private boolean persistence;
+    private boolean informationNode=false;
     LinkedList<Category> innerCategories = new LinkedList<>();
 
     public Criteria(Integer id, String name) {
@@ -50,4 +51,14 @@ public class Criteria extends CategoryData {
         this.persistence = persistence;
     }
 
+
+    @Override
+    public boolean isInformationNode() {
+        return informationNode;
+    }
+
+    @Override
+    public void setInformationNode(boolean informationNode) {
+        this.informationNode = informationNode;
+    }
 }

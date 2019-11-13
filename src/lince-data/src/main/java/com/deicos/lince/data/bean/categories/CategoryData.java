@@ -1,5 +1,6 @@
 package com.deicos.lince.data.bean.categories;
 
+import com.deicos.lince.data.LinceDataConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ public abstract class CategoryData implements Serializable {
     protected String code; // old version support
     protected String name;
     protected Integer value;
+    protected String nodeInformation;
     protected String description;
     protected Integer level;
     protected String type;
@@ -145,6 +147,14 @@ public abstract class CategoryData implements Serializable {
         this.description = description;
     }
 
+    public String getNodeInformation() {
+        return nodeInformation;
+    }
+
+    public void setNodeInformation(String nodeInformation) {
+        this.nodeInformation = nodeInformation;
+    }
+
     @Override
     public boolean equals(Object obj) {
         boolean eq = super.equals(obj);
@@ -163,5 +173,13 @@ public abstract class CategoryData implements Serializable {
     @Override
     public String toString() {
         return code + '-' + name;
+    }
+
+    public static boolean isInformationNode(String code) {
+        return StringUtils.endsWith(code, LinceDataConstants.CATEGORY_INFO_SUFIX);
+    }
+
+    public static String getInformationNodeCode(String code){
+        return StringUtils.substringBefore(code, LinceDataConstants.CATEGORY_INFO_SUFIX);
     }
 }

@@ -24,6 +24,7 @@ import lince.modelo.InstrumentoObservacional.Categoria;
 import lince.modelo.InstrumentoObservacional.Criterio;
 import lince.modelo.InstrumentoObservacional.InstrumentoObservacional;
 import lince.modelo.InstrumentoObservacional.NodoInformacion;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
@@ -517,7 +518,6 @@ public class Registro extends ModeloDeTablaLince implements Observer {
 
     public String exportToCsv(List<Object> columnas, boolean isComma) {
         String contenido = cabeceraCsv(columnas, isComma);
-
         int numColumnas = columnas.size();
         List<String[]> tabla = new ArrayList<String[]>(datosVariables.size());
         FilaRegistro frAnterior = null;
@@ -527,21 +527,21 @@ public class Registro extends ModeloDeTablaLince implements Observer {
             for (Object columna : columnas) {
                 //"TFrames", "DuraciónFr", "TSegundos", "DuraciónSeg", "TMilisegundos", "DuraciónMiliseg"
                 if (columna instanceof String) {
-                    if (columna.equals("TFrames")) {
+                    if (StringUtils.equals(LinceDataConstants.COL_TFRAMES,columna.toString())) {
                         f[i] = (frActual.getMilis() / 40) + "";
-                    } else if (columna.equals("TSegundos")) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_TSEGUNDOS,columna.toString())) {
                         f[i] = Tiempo.formatCompletMiliseconds(frActual.getMilis());
-                    } else if (columna.equals("TMilisegundos")) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_TMILISEGUNDOS,columna.toString())) {
                         f[i] = frActual.getMilis() + "";
-                    } else if (columna.equals("DuraciónFr") && frAnterior != null) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_FR,columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
                         fila[i] = ((frActual.getMilis() - frAnterior.getMilis()) / 40) + "";
                         f[i] = "";
-                    } else if (columna.equals("DuraciónSeg") && frAnterior != null) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_SEC,columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
                         fila[i] = Tiempo.formatCompletMiliseconds(frActual.getMilis() - frAnterior.getMilis());
                         f[i] = "";
-                    } else if (columna.equals("DuraciónMiliseg") && frAnterior != null) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_MS,columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
                         fila[i] = (frActual.getMilis() - frAnterior.getMilis()) + "";
                         f[i] = "";
@@ -549,7 +549,12 @@ public class Registro extends ModeloDeTablaLince implements Observer {
                 } else if (columna instanceof Criterio) {
                     Categoria categoria = frActual.getCategoria((Criterio) columna);
                     if (categoria != null) {
-                        f[i] = categoria.getCodigo();
+                        //Support for static information nodes
+                        if (!StringUtils.endsWith(categoria.getCodigo(),LinceDataConstants.CATEGORY_INFO_SUFIX)){
+                            f[i] = categoria.getCodigo();
+                        }else{
+                            f[i] = categoria.getDescripcion();
+                        }
                     } else {
                         f[i] = "";
                     }

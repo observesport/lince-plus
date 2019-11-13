@@ -17,13 +17,16 @@ package com.deicos.lince.app;
 
 
 import com.deicos.lince.app.base.AbstractJavaFxApplicationSupport;
+import com.deicos.lince.app.base.PropertyLoader;
 import com.deicos.lince.app.javafx.JavaFXLoader;
 import com.deicos.lince.app.javafx.view.example.BirthdayStatisticsController;
 import com.deicos.lince.app.javafx.view.example.PersonEditDialogController;
 import com.deicos.lince.app.service.VideoService;
+import com.deicos.lince.data.barcode.QRCodeGenerator;
 import com.deicos.lince.data.bean.example.Person;
 import com.deicos.lince.data.system.operations.LinceFileHelper;
 import com.deicos.lince.data.util.JavaFXLogHelper;
+import com.deicos.lince.data.util.SystemNetworkHelper;
 import com.deicos.lince.math.service.*;
 import javafx.application.Preloader;
 import javafx.scene.layout.BorderPane;
@@ -36,7 +39,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 
 /**
@@ -48,8 +53,8 @@ import java.io.File;
 
 @SpringBootApplication
 @Configuration
-@EnableAutoConfiguration
 @ComponentScan(basePackages = "com.deicos.lince")
+@EnableScheduling
 public class LinceApp extends AbstractJavaFxApplicationSupport {
 
     /**
@@ -103,6 +108,7 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
         return dataHubService;
     }
 
+    File codeQR = null;
 
     @Override
     public void initRootLayout() {
@@ -110,11 +116,33 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
         loader.loadFXMLStage();
         rootLayout = (BorderPane) loader.getPane();
         // Try to load last opened person file.
-        // LinceFileHelper fileHelper = new LinceFileHelper(categoryService.getCriteria(), analysisService.getCurrentDataRegister());
         LinceFileHelper fileHelper = new LinceFileHelper();
         File file = fileHelper.getLinceProjectFilePath();
         if (file != null) {
             fileHelper.loadLinceProjectFromFile(file, this);
+        }
+        generateQRCode();
+    }
+
+    private void generateQRCode() {
+        try {
+            String port = environment.getProperty("local.server.port");
+            String url = String.format("http://%s:%s", SystemNetworkHelper.getAccessibleIp(), port);
+            //getServerURL()
+            codeQR = QRCodeGenerator.generateQR(url, "codeQR.png");
+            log.info("QR Code to " + url);
+        } catch (Exception e) {
+            log.error("Generating QR Code");
+        }
+    }
+
+
+    private String getRunVersion(){
+        try{
+            PropertyLoader propertyLoader = PropertyLoader.getInstance();
+            return propertyLoader.getVersionNumber();
+        }catch (Exception e){
+            return StringUtils.EMPTY;
         }
     }
 
@@ -133,14 +161,23 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
         //cerramos el preloader
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         String url = getServerURL();
+        String version = getRunVersion();
+        if (StringUtils.isNotEmpty(version)){
+            JavaFXLogHelper.addLogInfo("Running Lince PLUS version " + version);
+        }
         log.info("==============================================================================");
         log.info("   Remote uri     :" + url);
         log.info("==============================================================================");
-        JavaFXLogHelper.addLogInfo("Arrancado lince server en la URL " + url);
+        String ip = SystemNetworkHelper.getAccessibleIp();
+        if (StringUtils.isNotEmpty(ip)){
+
+            JavaFXLogHelper.addLogInfo("Tu IP accesible es " + ip);
+        }
         String port = environment.getProperty("local.server.port");
         if (StringUtils.isNotEmpty(port)) {
-            JavaFXLogHelper.addLogInfo("Puerto:" + port);
+            JavaFXLogHelper.addLogInfo("Puerto: " + port);
         }
+        JavaFXLogHelper.addLogInfo("Arrancado lince server en la URL " + url);
     }
 
     /**

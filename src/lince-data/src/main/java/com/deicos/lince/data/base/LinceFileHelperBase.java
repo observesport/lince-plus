@@ -3,9 +3,11 @@ package com.deicos.lince.data.base;
 import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.Criteria;
+import com.deicos.lince.data.bean.user.ResearchProfile;
 import com.deicos.lince.data.bean.wrapper.LinceFileProjectWrapper;
 import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import com.deicos.lince.data.util.JavaFXLogHelper;
+import com.deicos.lince.data.util.SystemNetworkHelper;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -18,6 +20,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
@@ -60,6 +67,45 @@ public class LinceFileHelperBase {
     }
 
     /**
+     * Gets temporary file in same path that project file with a "_TMP" sufix
+     *
+     * @return Temp file
+     */
+    public File getLinceTmpProjectFile() {
+        try {
+            File file = getLinceProjectFilePath();
+            if (!file.isDirectory()) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String date = dateFormat.format(System.currentTimeMillis());
+                File tmpFile = new File(file.getParentFile(), StringUtils.replace(file.getName(), ".xml", "_" + date + "_AUTOSAVE.xml"));
+                tmpFile.createNewFile();
+                return tmpFile;
+            }
+        } catch (Exception e) {
+            log.error("tmp file not found", e);
+        }
+        return null;
+    }
+
+    /**
+     * Checks modification date on file
+     * Null if it does not exist
+     *
+     * @param file current file
+     * @return Modification date
+     */
+    public Date getLastModifiedDate(File file) {
+        try {
+            if (file != null) {
+                return new Date(Files.readAttributes(file.toPath(), BasicFileAttributes.class).lastModifiedTime().toMillis());
+            }
+        } catch (IOException e) {
+            log.error("opening file ", e);
+        }
+        return null;
+    }
+
+    /**
      * Sets the file path of the currently loaded file. The path is persisted in
      * the OS specific registry.
      *
@@ -99,7 +145,8 @@ public class LinceFileHelperBase {
             Unmarshaller um = context.createUnmarshaller();
             // Reading XML from the file and unmarshalling.
             LinceFileProjectWrapper data = new LinceFileProjectWrapper();
-            if (file.exists()) {
+            if (file.exists() && !file.isDirectory()) {
+                //Por defecto va a la carpeta de usuarios
                 data = (LinceFileProjectWrapper) um.unmarshal(file);
             }
             f.accept(data);
@@ -128,16 +175,50 @@ public class LinceFileHelperBase {
                 myLinceApp.getDataHubService().getDataRegister().setAll(linceFileProjectWrapper.getRegister());
             });
             boolean isEmptyApp = myLinceApp instanceof EmptyLinceApp;
-            if (!isEmptyApp) {
+            if (!isEmptyApp && !file.isDirectory()) {
                 // Save the file path to the registry.
                 setLinceProjectPath(file, myLinceApp);
                 JavaFXLogHelper.addLogInfo("Cargado fichero " + file.getName());
+            } else {
+                JavaFXLogHelper.addLogInfo("No se ha cargado ningun fichero");
             }
         } catch (Exception e) {
             JavaFXLogHelper.showMessage(Alert.AlertType.ERROR
                     , "Could not load data"
                     , "loadLinceProjectFromFile - Could not load data from file:\n" + file.getPath());
         }
+    }
+
+    /**
+     * Save info data as XML
+     *
+     * @param file             file
+     * @param researchProfiles list profiles
+     * @param criteria         criteria data
+     * @param videos           videos
+     * @param register         register
+     * @return same file with data on it
+     */
+    public File saveFile(File file
+            , List<ResearchProfile> researchProfiles
+            , List<Criteria> criteria
+            , List<File> videos
+            , List<LinceRegisterWrapper> register) {
+        try {
+            JAXBContext context = getXMLContext();
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            LinceFileProjectWrapper wrapper = new LinceFileProjectWrapper();
+            wrapper.setProfiles(researchProfiles);
+            wrapper.setCriteriaData(criteria);
+            wrapper.setVideoPlayList(videos);
+            wrapper.setRegister(register);
+            // Marshalling and saving XML to the file.
+            m.marshal(wrapper, file);
+        } catch (Exception e) {
+            log.error("Error saving file", e);
+        }
+        return file;
     }
 
     /**
@@ -148,17 +229,13 @@ public class LinceFileHelperBase {
      */
     public void saveLinceProjectToFile(File file, ILinceApp myLinceApp) {
         try {
-            JAXBContext context = getXMLContext();
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            // Wrapping our person data.
-            LinceFileProjectWrapper wrapper = new LinceFileProjectWrapper();
-            wrapper.setProfiles(myLinceApp.getDataHubService().getUserData());
-            wrapper.setCriteriaData(myLinceApp.getDataHubService().getCriteria());
-            wrapper.setVideoPlayList(myLinceApp.getDataHubService().getVideoPlayList());
-            wrapper.setRegister(myLinceApp.getDataHubService().getDataRegister());
-            // Marshalling and saving XML to the file.
-            m.marshal(wrapper, file);
+            Date now = new Date(System.currentTimeMillis());
+            myLinceApp.getDataHubService().getUserData().forEach(researchProfile -> researchProfile.setSaveDate(now));
+            file = saveFile(file
+                    , myLinceApp.getDataHubService().getUserData()
+                    , myLinceApp.getDataHubService().getCriteria()
+                    , myLinceApp.getDataHubService().getVideoPlayList()
+                    , myLinceApp.getDataHubService().getDataRegister());
             // Save the file path to the registry.
             setLinceProjectPath(file, myLinceApp);
             JavaFXLogHelper.addLogInfo("Guardado fichero " + file.getName());

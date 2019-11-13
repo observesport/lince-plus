@@ -3,6 +3,7 @@ package com.deicos.lince.data.bean.user;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +28,8 @@ public class ResearchProfile {
     private Integer fps;
 
     private Integer numVideos;
+
+    private Date saveDate;
 
     private List<UserProfile> userProfiles = new ArrayList<>();
 
@@ -99,5 +102,13 @@ public class ResearchProfile {
 
     public void setResearchNameCode(String researchNameCode) {
         this.researchNameCode = researchNameCode;
+    }
+
+    public Date getSaveDate() {
+        return saveDate;
+    }
+
+    public void setSaveDate(Date saveDate) {
+        this.saveDate = saveDate;
     }
 }

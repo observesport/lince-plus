@@ -3,7 +3,9 @@ package com.deicos.lince.math.service;
 import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.CategoryData;
 import com.deicos.lince.data.bean.categories.Criteria;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
@@ -14,15 +16,17 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
  * lince-scientific-desktop
  * com.deicos.lince.app.service
+ *
  * @author berto (alberto.soto@gmail.com)in 29/02/2016.
  * Description:
- *
+ * <p>
  * Old way service for tool settings.
  * Everything should be move to CategoryService
  */
@@ -50,14 +54,21 @@ public class CategoryServiceOld {
      * @return next id in collection
      */
     public Integer generateID() {
+        List<Integer> criteriaIds = new ArrayList<>();
         //analizamos todos los ids y devolvemos el maximo
         try {
             for (Criteria value : criteria) {
                 Integer currentGroupID = value.getId() == null ? -1 : value.getId();
-                if (value.getId() == null) {
+                boolean existsPreviousId =false;
+                for(Integer i:criteriaIds){
+                    if (currentGroupID.equals(i)){
+                        existsPreviousId = true;
+                    }
+                }
+                if (value.getId() == null || existsPreviousId) {
                     value.setId(idGenerator.incrementAndGet()); //corregimos posible error de ids al recorrer
                     generateID();
-                }else{
+                } else {
                     if (currentGroupID > idGenerator.get()) {
                         idGenerator.set(currentGroupID);
                     }
@@ -65,7 +76,7 @@ public class CategoryServiceOld {
                 for (Category cat : value.getInnerCategories()) {
                     if (cat.getId() == null) {
                         cat.setId(idGenerator.incrementAndGet());
-                    }else{
+                    } else {
                         if (cat.getId() > idGenerator.get()) {
                             idGenerator.set(cat.getId());
                         }
@@ -74,6 +85,7 @@ public class CategoryServiceOld {
                         cat.setParent(value.getId());
                     }
                 }
+                criteriaIds.add(value.getId());
             }
         } catch (Exception e) {
             log.error("generateId", e);
@@ -88,14 +100,14 @@ public class CategoryServiceOld {
         try {
             Integer reductionValue = 0;
             for (Criteria criteriaItem : criteria) {
-                criteriaItem.setValue(reductionValue*10);
-                Integer categoryValue = criteriaItem.getValue()+1;
+                criteriaItem.setValue(reductionValue * 10);
+                Integer categoryValue = criteriaItem.getValue() + 1;
                 for (Category categoryItem : criteriaItem.getInnerCategories()) {
                     categoryItem.setValue(categoryValue);
                     categoryValue++;
                 }
-                if(criteriaItem.getInnerCategories().size()>9){
-                    reductionValue=Math.round(criteriaItem.getInnerCategories().size()/10);
+                if (criteriaItem.getInnerCategories().size() > 9) {
+                    reductionValue = Math.round(criteriaItem.getInnerCategories().size() / 10);
                 }
                 reductionValue++;
             }
@@ -104,22 +116,54 @@ public class CategoryServiceOld {
         }
     }
 
-    public void generateCodesFromReductionData(){
+    /**
+     * Double check for code generation, adding 0s at the end
+     *
+     * @param askingCode base code
+     * @return valid code
+     */
+    private String checkCode(String askingCode) {
+        try {
+            AtomicBoolean doesExists = new AtomicBoolean();
+            for (Criteria item : criteria) {
+                if (StringUtils.equals(item.getCode(), askingCode)) {
+                    doesExists.set(true);
+                }
+                item.getInnerCategories().forEach(x -> {
+                    if (StringUtils.equals(askingCode, x.getCode())) {
+                        doesExists.set(true);
+                    }
+                });
+            }
+            if (doesExists.get()) {
+                return checkCode(askingCode + "0");
+            }
+            return askingCode;
+        } catch (Exception e) {
+            return askingCode;
+        }
+    }
+
+    /**
+     * Reviews the whole tool associating code
+     */
+    public void generateCodesFromReductionData() {
         try {
             Consumer<CategoryData> setCodes = (cat) -> {
-                if (cat.getValue()!=null){
-                    String parent=StringUtils.EMPTY;
-                    if(cat.isCategory()){
-                        parent=findById(criteria,((Category)cat).getParent()).getValue()+"-";
+                if (cat.getValue() != null) {
+                    String parent = StringUtils.EMPTY;
+                    if (cat.isCategory()) {
+                        parent = findById(criteria, cat.getParent()).getValue() + "-";
                     }
-                    String currentCode =String.format("%s%s%s"
-                            ,cat.getCategoryDataPrefix()
-                            ,parent
-                            ,cat.getValue());
-                    if (StringUtils.isEmpty(cat.getCode())){
+                    String currentCode = String.format("%s%s%s"
+                            , cat.getCategoryDataPrefix()
+                            , parent
+                            , cat.getValue());
+                    currentCode = checkCode(currentCode.toUpperCase());
+                    if (StringUtils.isEmpty(cat.getCode())) {
                         cat.setCode(currentCode.toUpperCase());
                     }
-                    if (StringUtils.isEmpty(cat.getName())){
+                    if (StringUtils.isEmpty(cat.getName())) {
                         cat.setName(currentCode.toLowerCase());
                     }
                 }
@@ -218,17 +262,25 @@ public class CategoryServiceOld {
     }
 
     public boolean isSameEntry(CategoryData elem, Integer id, String code, String name) {
+        String realCode = code;
+        if (StringUtils.isNotEmpty(realCode) && CategoryData.isInformationNode(code)) {
+            //category element associates to criteria
+            realCode = CategoryData.getInformationNodeCode(code);
+        }
         if (id != null && elem.getId() == id) {
             return true;
-        } else if (StringUtils.isNotEmpty(code) && StringUtils.equals(code, elem.getCode())) {
+        } else if (StringUtils.isNotEmpty(code) && StringUtils.equals(realCode, elem.getCode())) {
             return true;
         }
+
         //last case by exact name
         return (StringUtils.isNotEmpty(name) && StringUtils.equals(name, elem.getName()));
     }
 
+
     /**
      * Returns category or category + criteria searching element by id
+     * TODO 2020: Black point
      *
      * @param id node ID
      * @return element estructure
@@ -239,14 +291,13 @@ public class CategoryServiceOld {
             for (Criteria value : criteria) {
                 Integer currentGroupID = value.getId();
                 if (isSameEntry(value, id, code, name)) {
-                    //if (currentGroupID == id || (code != null && StringUtils.equals(code, value.getCode()))) {
                     elem = new Pair<>(value, null);
+                    return elem;
                 }
-                //idGenerator.set(cat.getId());
                 for (Category entry : value.getInnerCategories()) {
                     if (isSameEntry(entry, id, code, name)) {
-                        //if (entry.getId() == id || (code != null && StringUtils.equals(code, entry.getCode()))) {
                         elem = new Pair<>(value, entry);
+                        return elem;
                     }
                 }
             /* TODO: revisar functional en 1.8!!!
@@ -423,47 +474,4 @@ public class CategoryServiceOld {
 
     }
 
-    //return IteratorUtils.toList();
-    //get
-/*
-r:site/nodeChildren
-id:0
-        {"nodes":[{"id":7228,"name":"Jesus love you!","level":0,"type":"default"}]}
- */
-/*
-get por id:
-r:site/nodeChildren
-id:7228
-        {"nodes":[{"id":7271,"name":"ana are mere","level":1,"type":"default"},{"id":7273,"name":"11","level":1,"type":"default"},{"id":7278,"name":"teste","level":1,"type":"default"},{"id":7274,"name":"aaa","level":1,"type":"default"}]}
-*/
-/*
-save:       r:site/nodeCreate
-POST
-parent:0
-name:asd
-position:before // position:after //
-related:7228
-        result:
-            {"id":7287,"name":"asd","level":0,"type":"default"}
- */
-/*
-children    r:site/nodeChildren
-id:7288
-        {"nodes":[]}
- */
-/*
-firstchildren
-parent:7288
-name:asd
-position:firstChild
-related:7288
-        response: {"id":7289,"name":"asd","level":1,"type":"default"}
- */
-/*
-r:site/nodeMove
-id:7289
-related:7288
-position:lastChild
-        {"id":7289,"name":"asd","level":1,"type":"default"}
- */
 }

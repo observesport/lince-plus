@@ -5,7 +5,7 @@
   "items": {
     "title": "Criterios",
     "type": "object",
-    "id": "categories",
+    "id": "criteriaList",
     "properties": {
       "id": {
         "type": "string",
@@ -43,6 +43,11 @@
       },
       "persistence": {
         "title": "Persist.",
+        "type": "boolean",
+        "format": "checkbox"
+      },
+      "informationNode": {
+        "title": "Contenido fijo",
         "type": "boolean",
         "format": "checkbox"
       },

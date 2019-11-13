@@ -5,6 +5,7 @@ import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.app.helper.ServerValuesHelper;
 import com.deicos.lince.data.bean.VideoPlayerData;
 import com.deicos.lince.math.service.DataHubService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import java.util.Map;
 /**
  * lince-scientific-desktop
  * com.deicos.lince.app.service
+ *
  * @author berto (alberto.soto@gmail.com)in 22/06/2016.
  * Description:
  */
@@ -33,7 +35,7 @@ public class VideoService {
 
     private static VideoPlayerData videoPlayerData = new VideoPlayerData();
 
-    public static final String DEFAULT_VIDEO_EXAMPLE = "media/big_buck_bunny.mp4";
+    public static final String DEFAULT_VIDEO_EXAMPLE = "public/media/crono.mp4";
 
     @Autowired
     protected DataHubService dataHubService;
@@ -60,7 +62,11 @@ public class VideoService {
                 list.put(currentFileName, type);
             }
             if (list.size() == 0) {
-                list.put(ServerAppParams.VIDEO_TEST_ALIAS, ServerAppParams.VIDEO_TEST_TYPE);
+                File file = new File(
+                        getClass().getClassLoader().getResource(DEFAULT_VIDEO_EXAMPLE).getFile()
+                );
+                dataHubService.getVideoPlayList().setAll(file);
+                return getPlaylistData();
             }
         } catch (Exception e) {
             JavaFXLogHelper.addLogError("UPS, problemas cargando lista de videos...", e);
@@ -70,6 +76,7 @@ public class VideoService {
 
     /**
      * Return the url collection for rendering videos from remote connection via Spring Controller
+     *
      * @return Video list to render
      */
     public List<VideoPlayerData> getRemotePlayListCollection() {

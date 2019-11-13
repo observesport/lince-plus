@@ -10,7 +10,8 @@ public class LinceDataConstants {
     public static final String CSV_CHAR_SEPARATOR_SEMICOLON =";";
     public static final String CATEGORY_PREFIX = "cat";
     public static final String CRITERIA_PREFIX = "cri";
-
+    public static final String CATEGORY_INFO_SUFIX = "-DATA";
+    public static final int CATEGORY_INFO_ID_MULTIPLIER = 1000000;
 
     public static final String SUPPORTED_VIDEO_FILES = "*.mp4;*.flv;*.wmv;*.mpg;*.mpeg;*.flv;*.ogv";
     public static final String PREFERENCES_FILE_PATH = "filePath";
@@ -29,4 +30,12 @@ public class LinceDataConstants {
     public static final String CTX_IS_SCENE = "isScenes";
     public static final String CTX_TIME="time";
     public static final String CTX_LINCE_VERSION = "lince_version";
+
+    public static final String COL_TFRAMES = "TFrames";
+    public static final String COL_DURACION_FR = "DuracionFr";
+    public static final String COL_TSEGUNDOS = "TSegundos";
+    public static final String COL_DURACION_SEC = "DuracionSeg";
+    public static final String COL_TMILISEGUNDOS = "TMilisegundos";
+    public static final String COL_DURACION_MS = "DuracionMiliseg";
+
 }

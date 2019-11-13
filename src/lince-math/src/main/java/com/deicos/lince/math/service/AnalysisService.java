@@ -3,6 +3,7 @@ package com.deicos.lince.math.service;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.CategoryData;
+import com.deicos.lince.data.bean.categories.CategoryInformation;
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.math.AppParams;
 import com.deicos.lince.math.highcharts.HighChartsSerie;
@@ -103,23 +104,38 @@ public class AnalysisService {
         }
     }
 
-    /**
-     * TODO Xavi review: Se debe eliminar registro no valido o sin referencia. Avisar al usuario. Queda corrupto
+    /***
+     * Comprueba que para cada elemento del registro existe uno asociado similar en el instrumento de observación
+     * y sólo inserta los criterios validados.
+     *
+     * Así evitamos inconsistencia en el registro para observaciones que ya no existen en el instrumento de observación.
+     * Aumenta el computo en las consultas, pero evita inconsistencias.
+     *
+     * //TODO 2020: hacer que cuando el elemento sea de categoría info, no se valide y se guarde como está antes.
      */
     private void ensureDataRegisterConsistency() {
         for (RegisterItem reg : dataHubService.getCurrentDataRegister()) {
             int i = 0;
             for (Category c : reg.getRegister()) {
-                reg.getRegister().set(i, categoryService.findDataById(null, c.getCode(), null).getValue());
-                i++;
+                Pair<Criteria, Category> elem = categoryService.findDataById(null, c.getCode(), null);
+                if (elem != null) {
+                    //se ha encontrado
+                    Category tableValue;
+                    if (elem.getValue() != null) {
+                        tableValue = elem.getValue();
+                    } else {
+                        tableValue = new CategoryInformation(elem.getKey(), c.getNodeInformation());
+                    }
+                    reg.getRegister().set(i, tableValue);
+                    i++;
+                }
+
             }
         }
     }
 
     /**
-     * TODO Xavi review: no tendriamos que hacer un set directo. Aqui tendríamos que buscar por nombre el criterio equivalente en toda la colección
-     *
-     *
+     * TODO 2020 Falta hacer set  por UUID
      *
      * @param dataRegister
      */
@@ -166,14 +182,12 @@ public class AnalysisService {
      */
     public boolean pushRegister(RegisterItem item) {
         boolean isNew = false;
-        //LinceDataHelper dataHelper = LinceDataHelper.getInstance();
         RegisterItem sysRegister = findRegister(item);
         if (sysRegister == null) {
             item.setId(generateID());
             dataHubService.getCurrentDataRegister().add(item);
         } else {
             BeanUtils.copyProperties(item, sysRegister, AppParams.getNullPropertyNames(item));
-            //dataHelper.addLogInfo("Modificados parametros observacionales en el momento " + sysRegister.getVideoTime().toString());
         }
         return true;
     }
@@ -219,13 +233,16 @@ public class AnalysisService {
             //para todas los criterios del sistema montamos eje Y
             for (CategoryData cats : categoryService.getCollection()) {
                 //es criterio
-                HighChartsSerie serie = new HighChartsSerie();
-                serie.setName(cats.getName());
-                rtn.getSeries().add(serie);
-                //para todos sus categorias
-                for (CategoryData aux : categoryService.getChildren(cats.getId())) {
-                    Category crit = (Category) aux;
-                    rtn.getySeriesLabels().add(new Pair<>(crit.getId(), crit.getCode())); //valor de alias
+                Criteria parent = (Criteria) cats;
+                if (!parent.isInformationNode()){
+                    HighChartsSerie serie = new HighChartsSerie();
+                    serie.setName(cats.getName());
+                    rtn.getSeries().add(serie);
+                    //para todos sus categorias
+                    for (CategoryData aux : categoryService.getChildren(cats.getId())) {
+                        Category crit = (Category) aux;
+                        rtn.getySeriesLabels().add(new Pair<>(crit.getId(), crit.getCode())); //valor de alias
+                    }
                 }
             }
             //Analizamos todas las escenas y buscamos recursivamente si coincide cada elemento en alguna categoría
@@ -273,6 +290,7 @@ public class AnalysisService {
     /**
      * Checks criteria
      * TODO Xavi review: Tenemos que pensar como atacar aquí
+     *
      * @param a
      * @param b
      * @return
@@ -365,21 +383,23 @@ public class AnalysisService {
             //Montamos la lista de los padres
             HighChartsSerie rootSerie = new HighChartsSerie();
             for (Criteria cri : tool) {
-                double totalPerCategory = 0;
-                HighChartsSerie childSerie = new HighChartsSerie();
-                for (Pair<CategoryData, Double> item : globalCounter) {
-                    //si es el mismo padre
-                    if (item.getKey().getParent().equals(cri.getId())) {
-                        totalPerCategory += item.getValue();
-                        childSerie.getDataBean().add(getBean(item.getKey().getName(),
-                                getFrecuency(item.getValue(), total),
-                                item.getValue()));
+                if (!cri.isInformationNode()) {
+                    double totalPerCategory = 0;
+                    HighChartsSerie childSerie = new HighChartsSerie();
+                    for (Pair<CategoryData, Double> item : globalCounter) {
+                        //si es el mismo padre
+                        if (item.getKey().getParent().equals(cri.getId())) {
+                            totalPerCategory += item.getValue();
+                            childSerie.getDataBean().add(getBean(item.getKey().getName(),
+                                    getFrecuency(item.getValue(), total),
+                                    item.getValue()));
+                        }
                     }
+                    childSerie.setName(cri.getName());
+                    double percentPerCategory = getFrecuency(totalPerCategory, total);
+                    rootSerie.getDataBean().add(getBean(cri.getName(), percentPerCategory, totalPerCategory));
+                    drillDown.getSeries().add(childSerie);
                 }
-                childSerie.setName(cri.getName());
-                double percentPerCategory = getFrecuency(totalPerCategory, total);
-                rootSerie.getDataBean().add(getBean(cri.getName(), percentPerCategory, totalPerCategory));
-                drillDown.getSeries().add(childSerie);
             }
             rtn.getDrilldown().add(drillDown);
             rtn.getSeries().add(rootSerie);
