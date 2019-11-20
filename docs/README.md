@@ -29,29 +29,21 @@ Please, if any use or scientific research is done through this application, cite
 
 ## Download 
 
-### Current version 1.0.3 RELEASE
+### Current version 1.1.0 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)
-					  
-
-- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)					  
+- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)
 
 
 ### Previous versions
 
-
-- [1.0.2 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)
-					  
-
+- [1.0.3 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)					  
+- [1.0.3 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)
+- [1.0.2 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)					  
 - [1.0.2 - Mac](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.zip)
-
-- [1.0.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)
-					  
-
+- [1.0.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)					  
 - [1.0.1 - Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.zip)
-
 - [1.0.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
-
 - [1.0.0 - Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-mac.zip)
 
 
@@ -74,6 +66,22 @@ Use our bug system to report any problem at [bug reporting](https://github.com/o
 Lince Plus installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+- Version 1.1.0 RELEASE, 20/11/2019
+This version is a major update. New features
+	- Installer works on mac os 100%
+	- Installer improvements on windows (needs resolve uninstall for previous version)
+	- QR code generator for devices connection
+	- Network utils
+	- Recording sandbox
+	- Video chrono
+	- Mix data: Information nodes on toolbox
+	- Unit tests
+	- Renjin version update (carefully)
+	- CSV export update
+	- Web update
+
+
+
 - Version 1.0.3 RELEASE, 06/08/2019
     - Multi-observer file import issues
     - Non-existing file check on autoload

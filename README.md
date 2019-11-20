@@ -18,7 +18,3 @@ Analysis. Apunts. Educación Física y Deportes, 137, 149-153. doi:10.5672/apunt
 ## Public link
 
 https://observesport.github.io/lince-plus/
-
-## LFS
-
-Uses https://git-lfs.github.com/ for storing zip files
