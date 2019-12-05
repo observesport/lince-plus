@@ -22,6 +22,6 @@ public class ServerAppParams extends AppParams {
     public static final String CONFIGURATION_FILE = "application.properties";
     public static final String PARAM_LINCE_VERSION = "app.version";
     public static final String PARAM_PORT = "local.server.port";
-
+    public static final String LINCE_GIT_VERSION = "https://raw.githubusercontent.com/observesport/lince-plus/master/lince-version.json";
 
 }

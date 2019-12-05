@@ -47,11 +47,11 @@
                   <MenuItem mnemonicParsing="false" onAction="#handleOpenBrowser" text="Abrir navegador" />
                </items>
             </Menu>
-          <Menu mnemonicParsing="false" text="Estadisticas" visible="false">
+         <!-- <Menu mnemonicParsing="false" text="Estadisticas" visible="false">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#handleShowBirthdayStatistics" text="Ver estadisticas" />
             </items>
-          </Menu>
+          </Menu>-->
             <Menu mnemonicParsing="false" text="Datos">
                <items>
                   <Menu mnemonicParsing="false" text="Importar">

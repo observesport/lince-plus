@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 /**
  * com.deicos.lince.data
@@ -21,6 +23,7 @@ public class IpTest {
         String name = SystemNetworkHelper.getHostName();
         Assert.assertNotNull(name);
     }
+
     @Test
     public void getHostIp() {
         String ip = SystemNetworkHelper.getStandardIp();
@@ -31,5 +34,14 @@ public class IpTest {
     public void testExternalIp() {
         String ip = SystemNetworkHelper.getAccessibleIp();
         Assert.assertNotNull(ip);
+    }
+
+    @Test
+    public void testExternalIpMac() {
+        try {
+            System.out.println(SystemNetworkHelper.getMacAccessibleIp());
+        } catch (Exception e) {
+            System.out.println("Exception:" + e);
+        }
     }
 }

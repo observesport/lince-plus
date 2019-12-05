@@ -1,10 +1,14 @@
 package com.deicos.lince.app.spring.controller;
 
+import com.deicos.lince.app.component.ApplicationContextProvider;
 import com.deicos.lince.data.LinceDataConstants;
+import com.deicos.lince.data.barcode.QRCodeGenerator;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.CategoryData;
+import com.deicos.lince.data.system.operations.OSUtils;
 import com.deicos.lince.math.service.AnalysisService;
 import com.deicos.lince.math.service.CategoryService;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,35 +40,42 @@ public class ComponentController {
 
     private final CategoryService categoryService;
     private final AnalysisService analysisService;
+    private final ApplicationContextProvider applicationContextProvider;
 
     @Autowired
-    public ComponentController(CategoryService categoryService, AnalysisService analysisService) {
+    public ComponentController(CategoryService categoryService, AnalysisService analysisService, ApplicationContextProvider applicationContextProvider) {
         this.categoryService = categoryService;
         this.analysisService = analysisService;
+        this.applicationContextProvider = applicationContextProvider;
     }
 
     @RequestMapping(value = "/getQRCode", method = RequestMethod.GET)
     public void showImage(HttpServletResponse response) throws Exception {
 
-        ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
-
-        try {
-            BufferedImage image = ImageIO.read(new File("codeQR.png"));
-            ImageIO.write(image, "png", jpegOutputStream);
-        } catch (IllegalArgumentException e) {
+        ByteArrayOutputStream jpegOutputStream = QRCodeGenerator.getQRCodeImage();
+        if (jpegOutputStream == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            byte[] imgByte = jpegOutputStream.toByteArray();
+            response.setHeader("Cache-Control", "no-store");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
+            response.setContentType("image/png");
+            ServletOutputStream responseOutputStream = response.getOutputStream();
+            responseOutputStream.write(imgByte);
+            responseOutputStream.flush();
+            responseOutputStream.close();
         }
+    }
 
-        byte[] imgByte = jpegOutputStream.toByteArray();
-
-        response.setHeader("Cache-Control", "no-store");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setContentType("image/png");
-        ServletOutputStream responseOutputStream = response.getOutputStream();
-        responseOutputStream.write(imgByte);
-        responseOutputStream.flush();
-        responseOutputStream.close();
+    @RequestMapping(value = "/update", method = RequestMethod.GET)
+    public void updater(HttpServletResponse response) throws Exception {
+        OSUtils osUtils = new OSUtils();
+        JSONObject o = applicationContextProvider.getLastLinceVersion();
+        if (o != null && o.has("link")) {
+            osUtils.openLinkInBrowser((String) o.get("link"), false);
+        }
+        response.setStatus(HttpServletResponse.SC_ACCEPTED);
     }
 
     @RequestMapping("/dummy")

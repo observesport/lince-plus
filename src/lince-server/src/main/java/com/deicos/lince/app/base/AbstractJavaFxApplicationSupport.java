@@ -23,6 +23,7 @@ import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,9 +122,16 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
         LauncherImpl.launchApplication(appClass, AppPreloader.class, args);
     }
 
-    public String getServerURL() {
+    public Integer getCurrentPort() {
         String port = environment.getProperty("local.server.port");
-        return ServerValuesHelper.getServerURL(context, Integer.valueOf(port));
+        if (StringUtils.isNotEmpty(port)) {
+            return Integer.valueOf(port);
+        }
+        return null;
+    }
+
+    public String getServerURL() {
+        return ServerValuesHelper.getServerURL(context, getCurrentPort());
     }
 
     /**

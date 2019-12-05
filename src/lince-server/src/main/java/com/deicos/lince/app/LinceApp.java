@@ -18,12 +18,10 @@ package com.deicos.lince.app;
 
 import com.deicos.lince.app.base.AbstractJavaFxApplicationSupport;
 import com.deicos.lince.app.base.PropertyLoader;
+import com.deicos.lince.app.component.ApplicationContextProvider;
 import com.deicos.lince.app.javafx.JavaFXLoader;
-import com.deicos.lince.app.javafx.view.example.BirthdayStatisticsController;
-import com.deicos.lince.app.javafx.view.example.PersonEditDialogController;
 import com.deicos.lince.app.service.VideoService;
 import com.deicos.lince.data.barcode.QRCodeGenerator;
-import com.deicos.lince.data.bean.example.Person;
 import com.deicos.lince.data.system.operations.LinceFileHelper;
 import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.data.util.SystemNetworkHelper;
@@ -34,14 +32,12 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import javax.servlet.ServletContext;
 import java.io.File;
 
 /**
@@ -54,6 +50,7 @@ import java.io.File;
 @SpringBootApplication
 @Configuration
 @ComponentScan(basePackages = "com.deicos.lince")
+//@EnableWebSecurity
 @EnableScheduling
 public class LinceApp extends AbstractJavaFxApplicationSupport {
 
@@ -62,6 +59,8 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
      */
     @Value("${app.ui.title:Lince App}")//
     public String windowTitle;
+    @Autowired
+    ApplicationContextProvider applicationContextProvider;
     @Autowired
     Environment environment;
     @Autowired
@@ -108,7 +107,8 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
         return dataHubService;
     }
 
-    File codeQR = null;
+    private File codeQR = null;
+
 
     @Override
     public void initRootLayout() {
@@ -124,27 +124,18 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
         generateQRCode();
     }
 
+
     private void generateQRCode() {
         try {
-            String port = environment.getProperty("local.server.port");
-            String url = String.format("http://%s:%s", SystemNetworkHelper.getAccessibleIp(), port);
+            String url = String.format("http://%s:%s", StringUtils.removeStart(SystemNetworkHelper.getMacAccessibleIp(), "/"), getCurrentPort());
             //getServerURL()
-            codeQR = QRCodeGenerator.generateQR(url, "codeQR.png");
+            codeQR = QRCodeGenerator.generateQRCodeFileImage(url);
             log.info("QR Code to " + url);
         } catch (Exception e) {
-            log.error("Generating QR Code");
+            log.error("Generating QR Code", e);
         }
     }
 
-
-    private String getRunVersion(){
-        try{
-            PropertyLoader propertyLoader = PropertyLoader.getInstance();
-            return propertyLoader.getVersionNumber();
-        }catch (Exception e){
-            return StringUtils.EMPTY;
-        }
-    }
 
     @Override
     public String getWindowTitle() {
@@ -161,70 +152,20 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
         //cerramos el preloader
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         String url = getServerURL();
-        String version = getRunVersion();
-        if (StringUtils.isNotEmpty(version)){
+        String version = applicationContextProvider.getRunVersion();
+        if (StringUtils.isNotEmpty(version)) {
             JavaFXLogHelper.addLogInfo("Running Lince PLUS version " + version);
         }
         log.info("==============================================================================");
         log.info("   Remote uri     :" + url);
         log.info("==============================================================================");
-        String ip = SystemNetworkHelper.getAccessibleIp();
-        if (StringUtils.isNotEmpty(ip)){
-
+        String ip = SystemNetworkHelper.getMacAccessibleIp();
+        if (StringUtils.isNotEmpty(ip)) {
             JavaFXLogHelper.addLogInfo("Tu IP accesible es " + ip);
         }
-        String port = environment.getProperty("local.server.port");
-        if (StringUtils.isNotEmpty(port)) {
-            JavaFXLogHelper.addLogInfo("Puerto: " + port);
-        }
+        JavaFXLogHelper.addLogInfo("Puerto: " + getCurrentPort());
         JavaFXLogHelper.addLogInfo("Arrancado lince server en la URL " + url);
     }
 
-    /**
-     * Opens a dialog to edit details for the specified person. If the user
-     * clicks OK, the changes are saved into the provided person object and true
-     * is returned.
-     *
-     * @param person the person object to be edited
-     * @return true if the user clicked OK, false otherwise.
-     */
-    public boolean showPersonEditDialog(Person person) {
-        try {
-            // Load the fxml file and create a new stage for the popup dialog.
-            JavaFXLoader fxLoader = new JavaFXLoader
-                    <PersonEditDialogController>("javafx/view/example/PersonEditDialog.fxml", this);
-            // Create the dialog Stage & Set the dialog icon.
-            Stage dialogStage = fxLoader.getDialog("Edit Person", "file:resources/images/edit.png");
-            // Set the person into the controller.
-            PersonEditDialogController controller = (PersonEditDialogController) fxLoader.getController();
-            controller.setDialogStage(dialogStage);
-            controller.setPerson(person);
-            // Show the dialog and wait until the user closes it
-            dialogStage.showAndWait();
-            return controller.isOkClicked();
-        } catch (Exception e) {
-            log.error(getClass().getEnclosingMethod().getName(), e);
-            return false;
-        }
-    }
-
-    /**
-     * Opens a dialog to show birthday statistics.
-     */
-    public void showBirthdayStatistics() {
-        try {
-            // Load the fxml file and create a new stage for the popup.
-            JavaFXLoader fxLoader = new JavaFXLoader
-                    <BirthdayStatisticsController>("javafx/view/example/BirthdayStatistics.fxml", this);
-            Stage dialogStage = fxLoader.getDialog("Birthday Statistics", "file:resources/images/calendar.png");
-            // Set the persons into the controller.
-            BirthdayStatisticsController controller = (BirthdayStatisticsController) fxLoader.getController();
-            controller.setPersonData(dataHubService.getUserData());
-            // Set the dialog icon.
-            dialogStage.show();
-        } catch (Exception e) {
-            log.error(getClass().getEnclosingMethod().getName(), e);
-        }
-    }
 
 }

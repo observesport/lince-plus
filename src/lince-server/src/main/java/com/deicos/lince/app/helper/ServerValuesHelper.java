@@ -68,10 +68,17 @@ public class ServerValuesHelper {
         return osUtils.openLinkInBrowser(getServerURL(context, null), false);
     }
 
-    public static boolean openLANLinceBrowser(String url) {
+    /**
+     *
+     * @param url uri to check
+     * @param changeLocalhost replace localhost for valid ip
+     * @return landing URI
+     */
+    public static boolean openLANLinceBrowser(String url, boolean changeLocalhost) {
         OSUtils osUtils = new OSUtils();
-        return osUtils.openLinkInBrowser(url, true);
+        return osUtils.openLinkInBrowser(url, changeLocalhost);
     }
+
 
 
     /**

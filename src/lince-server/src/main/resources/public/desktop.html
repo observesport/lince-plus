@@ -67,10 +67,11 @@
                                 </a>
                             </div>
                             <div class="blog-post-content" style="margin-top: 0!important;margin-bottom: 0!important;">
-                                <h3 class="blog-title blog-quote-title" style="margin-top: 0!important;margin-bottom: 0!important;">
+                                <h3 class="blog-title blog-quote-title"
+                                    style="margin-top: 0!important;margin-bottom: 0!important;">
                                     Article citation
                                 </h3>
-                                <span >Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., &
+                                <span>Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., &
                                     Castañer, M.(2019). LINCE PLUS: Research Software for Behaviour Video Analysis.
                                     <span
                                             style="font-style: italic!important;"> Apunts. Educación Física y Deportes</span>,137,
@@ -107,8 +108,12 @@
                     <div class="col-sm-6">
                         <div class="blog-post-sm bordered">
                             <div class="blog-post-content ">
+                                <div id="updateMessageWrapper" class="alert alert-warning hidden">
+                                    <span id="updateMessage">&#160;</span>
+                                    <button id="updateButton" type="button" class="btn red-mint" onclick="openUpdateLincePLus();">Download</button>
+                                </div>
                                 <h2 class="blog-title blog-post-title">
-                                    Lince plus
+                                    Lince PLUS
                                 </h2>
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -116,10 +121,10 @@
                                             <p> Escaneando este código QR puedes conectar con la aplicación de Lince
                                                 desde otros tablets o dispositivos</p>
                                             <img src="/component/getQRCode" width="180" height="180"/>
-
                                         </div>
                                     </div>
                                     <div class="col-sm-6 hidden" id="projectInfo">
+
                                         <div class="blog-post-desc">
                                             <p>
                                                 Bienvenido a Lince plus. Ya puedes generar tus estudios con la
@@ -171,6 +176,15 @@
 <script src="global/plugins/jquery.min.js" type="text/javascript"></script>
 <script src="js/linceApp.global.js" type="text/javascript"></script>
 <script type="text/javascript">
+    function openUpdateLincePLus(){
+        $.when($.linceApp.global.doAjax('/component/update', 'GET', null, function (e) {
+            console.log("opening updater");
+        }, function (e) {
+            console.log(e);
+        })).done(function (data) {
+            return true;
+        });
+    }
     function updateStats() {
         $.when($.linceApp.global.doAjax('/session/getProjectInfo', 'GET', null, function (e) {
             console.log(e);
@@ -178,6 +192,11 @@
             $("#statVideo").html(e.videos);
             $("#statObserver").html(e.observers);
             $("#projectInfo").removeClass('hidden');
+            if (e.update) {
+                let msg = "There is a newer version of Lince PLUS: " + e.version;
+                $("#updateMessage").html(msg);
+                $("#updateMessageWrapper").removeClass('hidden');
+            }
         }, function (e) {
             console.log(e);
         })).done(function (data) {

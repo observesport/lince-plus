@@ -3,11 +3,8 @@ package com.deicos.lince.data;
 import com.deicos.lince.data.barcode.QRCodeGenerator;
 import org.junit.Assert;
 import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * com.deicos.lince.data
@@ -19,8 +16,7 @@ import java.util.Map;
 public class QRTest {
     @Test
     public void testDump() {
-        File file = QRCodeGenerator.generateQR("http://www.nba.com"
-                , GenericFileUtils.getResourcePath("testQR.png"));
+        File file = QRCodeGenerator.generateQRCodeFileImage("http://www.nba.com");
         Assert.assertNotNull(file);
     }
 }

@@ -297,19 +297,12 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         JavaFXLoader.exit();
     }
 
-    /**
-     * Opens the birthday statistics.
-     */
-    @FXML
-    private void handleShowBirthdayStatistics() {
-        mainLinceApp.showBirthdayStatistics();
-    }
 
     @FXML
     private void handleOpenBrowser() {
         String url = mainLinceApp.getServerURL();
         JavaFXLogHelper.addLogInfo("Abriendo navegador para analisis ubicado en " + url);
-        ServerValuesHelper.openLANLinceBrowser(url);
+        ServerValuesHelper.openLANLinceBrowser(url,false);
     }
 
     /**
@@ -367,18 +360,16 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void doDataIntegration(Command cmd, JPanel panel, String key, String label, boolean isExport) {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
-
-            ensureCompatibility(true);
-
+            ensureCompatibility(isExport);
             if (cmd != null) {
                 cmd.execute();
             } else {
                 openEmbedded(panel, i18n);
             }
-            /*if (!isExport) {
+            if (!isExport) {
                 //solo es el caso de Hoisan y de ficheros de carga
                 ensureCompatibility(isExport);
-            }*/
+            }
             JavaFXLogHelper.addLogInfo(i18n);
         } catch (Exception e) {
             JavaFXLogHelper.addLogError(i18n, e);

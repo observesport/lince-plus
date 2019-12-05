@@ -1,6 +1,7 @@
 package com.deicos.lince.app.spring.controller.rest;
 
 import com.deicos.lince.app.base.BaseRestControllerWrapper;
+import com.deicos.lince.app.component.ApplicationContextProvider;
 import com.deicos.lince.data.bean.Tuple;
 import com.deicos.lince.math.SessionDataAttributes;
 import com.deicos.lince.math.service.DataHubService;
@@ -36,6 +37,7 @@ import java.util.function.Function;
 public class SessionController extends BaseRestControllerWrapper {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
     static final String RQ_MAPPING_NAME = "/session";
     private final LocaleResolver localeResolver;
 
@@ -45,12 +47,14 @@ public class SessionController extends BaseRestControllerWrapper {
 
     protected final SessionService service;
     private final DataHubService dataHubService;
+    private final ApplicationContextProvider applicationContextProvider;
 
     @Autowired
-    public SessionController(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver) {
+    public SessionController(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver, ApplicationContextProvider applicationContextProvider) {
         this.service = service;
         this.dataHubService = dataHubService;
         this.localeResolver = localeResolver;
+        this.applicationContextProvider = applicationContextProvider;
     }
 
 
@@ -152,6 +156,7 @@ public class SessionController extends BaseRestControllerWrapper {
     public ResponseEntity<String> getMiniInfo() {
         JSONObject rtn = new JSONObject();
         try {
+            rtn = applicationContextProvider.getLastLinceVersion();
             rtn.put("videos", dataHubService.getVideoPlayList().size());
             rtn.put("scenes", dataHubService.getCurrentDataRegister().size());
             int observers = 0;

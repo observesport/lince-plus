@@ -1,19 +1,21 @@
 package com.deicos.lince.app.service;
 
 import com.deicos.lince.app.ServerAppParams;
-import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.app.helper.ServerValuesHelper;
 import com.deicos.lince.data.bean.VideoPlayerData;
+import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.math.service.DataHubService;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,6 +47,39 @@ public class VideoService {
             dataHubService.getVideoPlayList().add(f);
     }
 
+    /**
+     * Why? getting a file from classpath files outside of spring context in any OS breaks
+     * <p>
+     * A java.io.File represents a file on the file system, in a directory structure.
+     * The Jar is a java.io.File. But anything within that file is beyond the reach of java.io.File.
+     * As far as java is concerned, until it is uncompressed, a class in jar file is no different than
+     * a word in a word document.
+     * <p>
+     * Font:  https://stackoverflow.com/questions/36371748/spring-boot-access-static-resources-missing-scr-main-resources
+     * Font2: https://medium.com/@jonathan.henrique.smtp/reading-files-in-resource-path-from-jar-artifact-459ce00d2130
+     * Font3: https://stackoverflow.com/questions/14876836/file-inside-jar-is-not-visible-for-spring
+     *
+     * @param path classpath uri
+     * @return valid file from classpath
+     */
+    private File getResourceFile(String path) {
+        try {
+            String filename = StringUtils.substringBeforeLast(path, ".");
+            String extension = StringUtils.substringAfterLast(path, ".");
+            File file = File.createTempFile(filename, "." + extension);
+            ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext();
+            InputStream inputStream = ctx.getResource("classpath:" + path).getInputStream();
+            FileUtils.copyInputStreamToFile(inputStream, file);
+            //Common way : File file = new File(getClass().getClassLoader().getResource(DEFAULT_VIDEO_EXAMPLE).getFile());
+            //Way2 not working: File file = new ClassPathResource(path).getFile();
+            return file;
+        } catch (Exception e) {
+            log.error("Getting resource file", e);
+            JavaFXLogHelper.addLogError("Getting resource file", e);
+            return null;
+        }
+    }
+
     public void addAllFiles(List<File> file) {
         dataHubService.getVideoPlayList().clear();
         dataHubService.getVideoPlayList().addAll(file);
@@ -62,9 +97,7 @@ public class VideoService {
                 list.put(currentFileName, type);
             }
             if (list.size() == 0) {
-                File file = new File(
-                        getClass().getClassLoader().getResource(DEFAULT_VIDEO_EXAMPLE).getFile()
-                );
+                File file = getResourceFile(DEFAULT_VIDEO_EXAMPLE);
                 dataHubService.getVideoPlayList().setAll(file);
                 return getPlaylistData();
             }
@@ -113,8 +146,7 @@ public class VideoService {
             if (isLocal()) {
                 rtn = getVideoPlayerData().getPath().toFile();
             } else {
-                ClassLoader classLoader = getClass().getClassLoader();
-                rtn = new File(classLoader.getResource("public/" + getVideoUrl()).getFile());
+                rtn = getResourceFile(getVideoUrl());
             }
             return rtn;
         } catch (Exception e) {
