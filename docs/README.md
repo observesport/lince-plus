@@ -69,7 +69,7 @@ Lince Plus installer is build using Install4J [multi-platform installer builder]
 
 ## Release notes
 
-- Version 1.1.0 RELEASE, 10/12/2019
+- Version 1.1.1 RELEASE, 10/12/2019
     - Repairs problems on importing files
     - Includes change version notificacion
     - Source clean up
