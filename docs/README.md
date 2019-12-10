@@ -29,14 +29,16 @@ Please, if any use or scientific research is done through this application, cite
 
 ## Download 
 
-### Current version 1.1.0 RELEASE
+### Current version 1.1.1 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)					  
-- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)					  
+- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)
 
 
 ### Previous versions
 
+- [1.1.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)					  
+- [1.1.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)
 - [1.0.3 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)					  
 - [1.0.3 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)
 - [1.0.2 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)					  
@@ -66,6 +68,15 @@ Use our bug system to report any problem at [bug reporting](https://github.com/o
 Lince Plus installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 1.1.0 RELEASE, 10/12/2019
+    - Repairs problems on importing files
+    - Includes change version notificacion
+    - Source clean up
+    - Adds localhost on view option
+    - Improves QR
+    - Sandboxing https support
+
 - Version 1.1.0 RELEASE, 20/11/2019
 This version is a major update. New features
 	- Installer works on mac os 100%
