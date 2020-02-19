@@ -31,7 +31,7 @@ Please, if any use or scientific research is done through this application, cite
 
 #### Important: MacOS users
 
-20/02/2020 Since the update of MacOS Catalina, we can't support install on MA due to private sign procedure for Apple Inc. We are trying to change this behaviour, but, by now, LINCE PLUS can't work on latest MacOS version. Sorry for the inconvenience.
+20/02/2020 Since the update of MacOS Catalina, we can't support install on MacOS due to private sign procedure for Apple Inc. We are trying to change this behaviour, but, by now, LINCE PLUS can't work on latest MacOS version. Sorry for the inconvenience.
 
 ### Current version 1.1.1 RELEASE
 
