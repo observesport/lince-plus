@@ -29,6 +29,10 @@ Please, if any use or scientific research is done through this application, cite
 
 ## Download 
 
+#### Important: MacOS users
+
+20/02/2020 Since the update of MacOS Catalina, we can't support install due to sign procedure and tax payment from Apple Inc. We are trying to change this behaviour, but, by now, LINCE PLUS can't work on latest MacOS version.
+
 ### Current version 1.1.1 RELEASE
 
 - [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)					  
