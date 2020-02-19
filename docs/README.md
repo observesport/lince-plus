@@ -10,7 +10,7 @@ Lince is a visualization tool for research, that let's you analyze data and orga
 
 Please, if any use or scientific research is done through this application, cite us to improve:
 
-- Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., & Castañer, M. (2019). LINCE PLUS: Research Software for Behaviour Video Analysis. _Apunts. Educación Física y Deportes_, 137, 149-153. doi:10.5672/apunts. 2014-0983.es.(2019/3).137.11
+- Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., & Castañer, M. (2019). LINCE PLUS: Research Software for Behaviour Video Analysis. _Apunts. Educación Física y Deportes_, 137, 149-153. doi:10.5672/apunts.2014-0983.es.(2019/3).137.11
 
 
 ### Contact 
