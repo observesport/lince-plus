@@ -17,7 +17,6 @@ package com.deicos.lince.app;
 
 
 import com.deicos.lince.app.base.AbstractJavaFxApplicationSupport;
-import com.deicos.lince.app.base.PropertyLoader;
 import com.deicos.lince.app.component.ApplicationContextProvider;
 import com.deicos.lince.app.javafx.JavaFXLoader;
 import com.deicos.lince.app.service.VideoService;
@@ -49,7 +48,7 @@ import java.io.File;
 
 @SpringBootApplication
 @Configuration
-@ComponentScan(basePackages = "com.deicos.lince")
+    @ComponentScan(basePackages = "com.deicos.lince")
 //@EnableWebSecurity
 @EnableScheduling
 public class LinceApp extends AbstractJavaFxApplicationSupport {

@@ -1,10 +1,9 @@
 package com.deicos.lince.app.component;
 
+import com.deicos.lince.app.ServerAppParams;
 import com.deicos.lince.data.system.operations.LinceFileHelper;
 import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.math.service.DataHubService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,15 +21,14 @@ import java.util.Date;
  */
 @Component
 public class ScheduledTasks {
-    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
-
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-    static final long SAVING_WINDOW = 120000; //autosave cada 2 min
     private final DataHubService dataHubService;
+    private final ApplicationContextProvider applicationContextProvider;
     private static boolean isFirst = true;
 
-    public ScheduledTasks(DataHubService dataHubService) {
+    public ScheduledTasks(DataHubService dataHubService, ApplicationContextProvider applicationContextProvider) {
         this.dataHubService = dataHubService;
+        this.applicationContextProvider = applicationContextProvider;
     }
 
     /**
@@ -39,7 +37,7 @@ public class ScheduledTasks {
      * <p>
      * When loading it checks if the
      */
-    @Scheduled(fixedRate = SAVING_WINDOW)
+    @Scheduled(fixedRate = ServerAppParams.SCHEDULE_AUTOSAVE_WINDOW)
     public void doAutoSave() {
         if (!isFirst) {
             try {
@@ -69,4 +67,13 @@ public class ScheduledTasks {
         }
         isFirst = false;
     }
+
+    /**
+     * Updates the current version of git repository
+     */
+    @Scheduled(fixedRate = ServerAppParams.SCHEDULE_UPDATE_CHECK_WINDOW)
+    public void doUpdateCheck() {
+        applicationContextProvider.setLastLinceVersion();
+    }
+
 }

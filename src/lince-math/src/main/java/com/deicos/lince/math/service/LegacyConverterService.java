@@ -4,8 +4,13 @@ import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.CategoryData;
-import com.deicos.lince.data.bean.categories.CategoryInformation;
 import com.deicos.lince.data.bean.categories.Criteria;
+import com.deicos.lince.data.bean.user.UserProfile;
+import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
+import com.deicos.lince.math.SessionDataAttributes;
+import com.deicos.lince.math.WebContextHolder;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lince.modelo.FilaRegistro;
 import lince.modelo.InstrumentoObservacional.Categoria;
 import lince.modelo.InstrumentoObservacional.Criterio;
@@ -29,7 +34,7 @@ import java.util.*;
  * @author berto (alberto.soto@gmail.com)in 29/02/2016.
  * Description:
  * <p>
- * todo asf summer'17 check where uuid problem is
+ *
  */
 @Service
 public class LegacyConverterService {
@@ -37,11 +42,15 @@ public class LegacyConverterService {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     private final CategoryService categoryService;
     private final AnalysisService analysisService;
+    private final DataHubService dataHubService;
+    private final SessionService sessionService;
 
     @Autowired
-    public LegacyConverterService(CategoryService categoryService, AnalysisService analysisService) {
+    public LegacyConverterService(CategoryService categoryService, AnalysisService analysisService, DataHubService dataHubService, SessionService sessionService) {
         this.categoryService = categoryService;
         this.analysisService = analysisService;
+        this.dataHubService = dataHubService;
+        this.sessionService = sessionService;
     }
 
     /**
@@ -63,6 +72,29 @@ public class LegacyConverterService {
     public Registro migrateDataToLegacy(UUID registerId) {
         migrateDataToLegacyInstrument();
         return migrateDataToLegacyRegister(true, registerId);
+    }
+
+    /**
+     * Creates a new user profile, sets as current and stores new UserData
+     *
+     * @param observerName observer name
+     * @param lst          register
+     */
+    public void saveRegisterForNewUser(String observerName, List<RegisterItem> lst) {
+        try {
+            if (lst != null && !lst.isEmpty()) {
+                UserProfile profile = new UserProfile();
+                profile.setUserName(StringUtils.defaultIfEmpty(observerName, "New observer"));
+                List<LinceRegisterWrapper> newItems = new ArrayList<>();
+                LinceRegisterWrapper aux = new LinceRegisterWrapper();
+                aux.setRegisterData(FXCollections.observableArrayList(lst));
+                aux.setUserProfile(profile);
+                newItems.add(aux);
+                dataHubService.addDataRegister(newItems);
+            }
+        } catch (Exception e) {
+            log.error("Saving imported data", e);
+        }
     }
 
     /**
@@ -89,7 +121,6 @@ public class LegacyConverterService {
     }
 
     /**
-     * TODO XAVI review: re-doublecheck
      * Returns a non-existing-generated code for the criteria
      *
      * @param c criteria
@@ -100,7 +131,8 @@ public class LegacyConverterService {
         boolean isValid = true;
         try {
             int random = (int) (Math.random() * 100 + 1);
-            String value = StringUtils.trim(StringUtils.substring(c.getNombre(), 0, 3)) + random;
+            String value = c.getNombre().replaceAll("[^a-zA-Z0-9]", "");
+            value += random;
             //let's check if exists
             for (Criteria cri : l) {
                 if (StringUtils.equals(value, cri.getCode())) {
@@ -135,7 +167,7 @@ public class LegacyConverterService {
                 //crit.setCode(UUID.fromString(crit.getName()).toString());
                 crit.setDescription(c.getDescripcion());
                 LinkedList<Category> innerCategories = new LinkedList<>();
-                int catId = 0;
+                int catId = 1;//very important! if not, children id will be parent id when 0
                 for (Categoria cat : c.getCategoriasHijo()) {
                     innerCategories.add(getCategoryFromLegacy(crit, cat, id * 10 + catId));
                     catId++;
@@ -160,7 +192,7 @@ public class LegacyConverterService {
                 Criterio[] criterios = i.getCriterios();
                 if (criterios != null && criterios.length > 0) {
                     List<Criteria> l = new ArrayList<>();
-                    int id = 0;
+                    int id = 1;//si fuera 0 en js se evalua a false y no se puede abrir (flipa)
                     for (Criterio c : i.getCriterios()) {
                         l.add(getCriteriaFromLegacy(c, id, l));
                         id++;
@@ -183,7 +215,6 @@ public class LegacyConverterService {
     private void migrateDataFromLegacyRegister() {
         try {
             Registro r = Registro.getInstance();
-            //TODO asf (sum'17) si no esta cargado el instrumento lo deberíamos recuperamos del interno en registro
             int id = 1;
             List<RegisterItem> lst = new ArrayList<>();
             for (FilaRegistro entry : r.datosVariables) {
@@ -200,7 +231,17 @@ public class LegacyConverterService {
                     //Category pairCat = (Category) categoryService.findCategoryByCode(cat.getCodigo());
                     Pair<Criteria, Category> pairCat = categoryService.findDataById(null, cat.getCodigo(), null);
                     //Criteria cri = (Criteria)categoryService.findCategoryByCode(data.getKey());
-                    categories.add(pairCat.getValue());
+                    if (pairCat != null && pairCat.getValue() != null) {
+                        categories.add(pairCat.getValue());
+                    } else {
+                        log.error("criterio no valido" + pairCat.getValue().toString());
+                        Criteria aux = Criteria.getRecoveryCriteria();
+                        CategoryData tempData = categoryService.findCategoryByCode(aux.getCode());
+                        if (tempData == null) {
+                            categoryService.getCriteria().add(aux);
+                        }
+                    }
+
                 }
                 if (categories.size() > 0) {
                     register.setRegister(categories);
@@ -209,7 +250,7 @@ public class LegacyConverterService {
                 id++;
             }
             if (lst.size() > 0) {
-                analysisService.setDataRegister(lst);
+                saveRegisterForNewUser("Lince v1 observer", lst);
             }
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
@@ -237,14 +278,14 @@ public class LegacyConverterService {
                 Criterio criterio = cs[cs.length - 1];
                 criterio.setDescripcion(criteriaDescription);
                 criterio.setPersistente(criteria.isPersistence());
-               
+
                 //insert internal Categories
                 for (Category cat : criteria.getInnerCategories()) {
                     InstrumentoObservacional.getInstance().addHijo(criterio, cat.getName());
                     Categoria categoria = (Categoria) criterio.getChildAt(criterio.getChildCount() - 1);
                     String code = cat.getCode();
-                    if (criteria.isInformationNode()){
-                        code+=cat.getId();
+                    if (criteria.isInformationNode()) {
+                        code += cat.getId();
                     }
                     categoria.setCodigo(code);
                     categoria.setDescripcion(cat.getDescription());
@@ -253,7 +294,7 @@ public class LegacyConverterService {
                 }
 
             }
-            
+
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
         }
@@ -282,7 +323,7 @@ public class LegacyConverterService {
             //Criteria parent = (Criteria) categoryService.findCategoryById(c.getParent());
             Criteria parent = categoryService.findDataById(c.getParent(), null, null).getKey();
             cat.setParent(getLegacyCriteria(parent));
-            if (parent.isInformationNode()){
+            if (parent.isInformationNode()) {
                 code += LinceDataConstants.CATEGORY_INFO_SUFIX;
                 cat.setDescripcion(c.getNodeInformation());
             }

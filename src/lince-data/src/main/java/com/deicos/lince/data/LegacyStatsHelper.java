@@ -1,11 +1,9 @@
 package com.deicos.lince.data;
 
-import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import lince.modelo.InstrumentoObservacional.Criterio;
 import lince.modelo.InstrumentoObservacional.InstrumentoObservacional;
 import lince.modelo.Registro;
 import lince.modelo.RegistroException;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +58,7 @@ public class LegacyStatsHelper {
      * @throws RegistroException
      */
     public static List<Double> calcularKappa(Registro register, File otroRegistroFile, List<Object> criterios) throws RegistroException {
-        List<String> exceptions = new ArrayList<>();
+        List<LegacyToolException> exceptions = new ArrayList<>();
         Registro otroRegistro = Registro.cargarRegistro(otroRegistroFile, exceptions);
         return getKappaValues(register, otroRegistro, criterios);
     }

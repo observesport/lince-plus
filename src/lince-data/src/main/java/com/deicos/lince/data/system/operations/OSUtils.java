@@ -74,7 +74,7 @@ public class OSUtils {
                     }
                     return true;
                 } catch (Exception e1) {
-                    log.error("Exception on opening", e1);
+                    log.error("============ Controlled Exception on opening =============== ", e1);
                     return false;
                 }
             }

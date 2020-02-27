@@ -15,6 +15,7 @@
  */
 package com.deicos.lince.app.base;
 
+import com.deicos.lince.app.component.I18nMessageProvider;
 import com.deicos.lince.app.helper.ServerValuesHelper;
 import com.deicos.lince.app.javafx.AppPreloader;
 import com.deicos.lince.data.base.ILinceApp;
@@ -31,15 +32,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-
-import java.util.Locale;
 
 /**
  * @author Thomas Darimont
@@ -48,7 +44,7 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
 
     private static String[] savedArgs;
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    private Locale currentLocale = new Locale("es", "ES");
+
 
     protected Stage primaryStage;
 
@@ -76,6 +72,8 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
     protected ApplicationContext context;
     @Autowired
     protected Environment environment;
+    @Autowired
+    protected I18nMessageProvider i18nMessageProvider;
 
 
     @Override
@@ -151,26 +149,13 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
             }
         };
     }
-    @Bean
-    public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(currentLocale); // Set default Locale as US
-        return slr;
-    }
 
-    @Bean
-    public ResourceBundleMessageSource messageSource() {
-        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasenames("messages");  // name of the resource bundle
-        source.setUseCodeAsDefaultMessage(true);
-        return source;
-    }
 
     public String getMessage(String label) {
-        return getMessage(label,null);
+        return i18nMessageProvider.getMessage(label, null);
     }
 
     public String getMessage(String label, Object... msgParameters) {
-        return messageSource().getMessage(label, msgParameters, currentLocale);
+        return i18nMessageProvider.getMessage(label, msgParameters);
     }
 }

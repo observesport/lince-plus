@@ -2,19 +2,18 @@ package com.deicos.lince.app.helper;
 
 import com.deicos.lince.data.system.operations.OSUtils;
 import com.google.common.base.Charsets;
-import edu.stanford.ejalbert.BrowserLauncher;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.util.UriUtils;
 
-import java.io.File;
-import java.net.InetAddress;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * lince-scientific-desktop
@@ -157,5 +156,38 @@ public class ServerValuesHelper {
             absPath += File.separatorChar;
         }
         return absPath;
+    }
+
+
+    /**
+     * Reads all input into a string
+     *
+     * @param rd reader
+     * @return string
+     * @throws IOException any
+     */
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Reads JSON file from URL
+     *
+     * @param url web url
+     * @return JSON object
+     * @throws IOException   e
+     * @throws JSONException e
+     */
+    public static JSONObject readJSONFromUrl(String url) throws IOException, JSONException {
+        try (InputStream is = new URL(url).openStream()) {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            String jsonText = readAll(rd);
+            return new JSONObject(jsonText);
+        }
     }
 }

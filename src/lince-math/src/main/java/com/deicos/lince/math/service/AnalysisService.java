@@ -5,6 +5,7 @@ import com.deicos.lince.data.bean.categories.Category;
 import com.deicos.lince.data.bean.categories.CategoryData;
 import com.deicos.lince.data.bean.categories.CategoryInformation;
 import com.deicos.lince.data.bean.categories.Criteria;
+import com.deicos.lince.data.bean.user.UserProfile;
 import com.deicos.lince.math.AppParams;
 import com.deicos.lince.math.highcharts.HighChartsSerie;
 import com.deicos.lince.math.highcharts.HighChartsSerieBean;
@@ -111,7 +112,7 @@ public class AnalysisService {
      * Así evitamos inconsistencia en el registro para observaciones que ya no existen en el instrumento de observación.
      * Aumenta el computo en las consultas, pero evita inconsistencias.
      *
-     * //TODO 2020: hacer que cuando el elemento sea de categoría info, no se valide y se guarde como está antes.
+     *
      */
     private void ensureDataRegisterConsistency() {
         for (RegisterItem reg : dataHubService.getCurrentDataRegister()) {
@@ -134,13 +135,23 @@ public class AnalysisService {
         }
     }
 
-    /**
-     * TODO 2020 Falta hacer set  por UUID
-     *
-     * @param dataRegister
-     */
     public void setDataRegister(List<RegisterItem> dataRegister) {
         dataHubService.getCurrentDataRegister().setAll(dataRegister);
+    }
+
+    public boolean setDataRegister(UUID uuid, List<RegisterItem> dataRegister) {
+        //dataHubService.getCurrentDataRegister().setAll(dataRegister);
+        try {
+            for (UserProfile profile : dataHubService.getResearchProfile().getUserProfiles()) {
+                if (profile.getKey().equals(uuid)) {
+                    //TODO 2020 20 02 profile.setRegisterCode();
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            log.error("setting register", e);
+        }
+        return false;
     }
 
     /**
@@ -213,8 +224,6 @@ public class AnalysisService {
 
 
     /**
-     * TODO: reduce. Pasar a functional. Siempre hacemos los mismos calculos
-     *
      * @return
      */
     public HighChartsWrapper getRegisterStatsByScene() {
@@ -234,7 +243,7 @@ public class AnalysisService {
             for (CategoryData cats : categoryService.getCollection()) {
                 //es criterio
                 Criteria parent = (Criteria) cats;
-                if (!parent.isInformationNode()){
+                if (!parent.isInformationNode()) {
                     HighChartsSerie serie = new HighChartsSerie();
                     serie.setName(cats.getName());
                     rtn.getSeries().add(serie);

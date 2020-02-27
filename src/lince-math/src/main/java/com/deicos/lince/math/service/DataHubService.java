@@ -2,6 +2,7 @@ package com.deicos.lince.math.service;
 
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.data.bean.user.ResearchProfile;
+import com.deicos.lince.data.bean.user.UserProfile;
 import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import com.deicos.lince.data.base.DataHubServiceBase;
 import com.deicos.lince.math.SessionDataAttributes;

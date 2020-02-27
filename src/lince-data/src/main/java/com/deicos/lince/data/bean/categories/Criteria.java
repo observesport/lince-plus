@@ -1,6 +1,7 @@
 package com.deicos.lince.data.bean.categories;
 
 import com.deicos.lince.data.LinceDataConstants;
+import lince.modelo.InstrumentoObservacional.Criterio;
 
 import java.util.LinkedList;
 
@@ -51,6 +52,16 @@ public class Criteria extends CategoryData implements INodeInfo{
         this.persistence = persistence;
     }
 
+
+    public static Criteria getRecoveryCriteria(){
+        Criteria aux = new Criteria();
+        aux.setCode("RECOVERY");
+        aux.setName("Data recovery criteria from legacy data");
+        aux.setId(1234567890);
+        aux.setInformationNode(false);
+        aux.setPersistence(false);
+        return aux;
+    }
 
     @Override
     public boolean isInformationNode() {

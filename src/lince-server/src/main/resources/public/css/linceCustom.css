@@ -29,12 +29,14 @@
     padding: 5px 0 0 0 !important;
 }
 .icon-btn > div {
-    margin-top: 7px;
-    margin-bottom: 7px;
+    /*margin-top: 7px;
+    margin-bottom: 7px;*/
     font-size: 10px;
     font-weight: 300;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    min-width: 40px !important;
+    margin: 0 0 0 0 !important;
 }
 /*
 .page-container-bg-solid .page-content {

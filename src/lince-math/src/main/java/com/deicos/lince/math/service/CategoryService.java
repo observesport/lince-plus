@@ -30,8 +30,12 @@ public class CategoryService {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     //private static List<Criteria> criteria = new LinkedList<>();
 
+    protected final DataHubService dataHubService;
+
     @Autowired
-    protected DataHubService dataHubService;
+    public CategoryService(DataHubService dataHubService) {
+        this.dataHubService = dataHubService;
+    }
 
     public void generateDummyCollection() {
         CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(dataHubService.getCriteria()));

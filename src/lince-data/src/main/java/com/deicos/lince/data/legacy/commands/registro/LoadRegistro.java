@@ -21,6 +21,7 @@ import com.deicos.lince.data.base.EmptyLinceApp;
 import com.deicos.lince.data.base.ILinceApp;
 import com.deicos.lince.data.legacy.Command;
 import com.deicos.lince.data.system.operations.LinceFileHelper;
+import com.deicos.lince.data.util.JavaFXLogHelper;
 import lince.modelo.Registro;
 import lince.modelo.RegistroException;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -53,6 +54,7 @@ public class LoadRegistro extends Command {
                     Registro.loadInstance(f);
                 } catch (RegistroException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Lince", JOptionPane.INFORMATION_MESSAGE);
+                    JavaFXLogHelper.addLogInfo("El instrumento o registro importado contenia los siguientes errores:\n "+ ex.getMessage());
                 }
             } else {
                 JOptionPane.showMessageDialog(null, java.util.ResourceBundle.getBundle("i18n.Bundle").getString("EL ARCHIVO ") + f.getName() + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" NO EXISTE."), java.util.ResourceBundle.getBundle("i18n.Bundle").getString("LINCE"), JOptionPane.INFORMATION_MESSAGE);

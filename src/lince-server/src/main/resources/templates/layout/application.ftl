@@ -74,7 +74,7 @@
 <!-- END CONTAINER -->
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
-    <div class="page-footer-inner"> 2019 &copy; Lince observation tool by Alberto Soto Fernández.
+    <div class="page-footer-inner"> 2020 &copy; Lince observation tool by Alberto Soto Fernández.
     </div>
     <div class="scroll-to-top">
         <i class="icon-arrow-up"></i>

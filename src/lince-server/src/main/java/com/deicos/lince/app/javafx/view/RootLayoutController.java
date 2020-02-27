@@ -131,6 +131,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         dataHubService.clearData();
         mainLinceApp.getAnalysisService().getDataRegister().clear();
         mainLinceApp.getCategoryService().clearAll();
+        Registro.loadNewInstance();//legacy
         LinceFileHelper fileHelper = new LinceFileHelper();
         fileHelper.setLinceProjectPath(null, mainLinceApp);
         JavaFXLogHelper.addLogInfo("Nuevo proyecto");
@@ -190,7 +191,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     /**
      * Opens a FileChooser to let the user select a project file
-     * It only adds all observations in the selected project into current project
+     * It only adds all observations into current project
      */
     @FXML
     private void handleImportLincePlusObserver() {
@@ -247,14 +248,14 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         }
         List<File> fileList = LinceFileHelper.openMultipleFileDialog(mainLinceApp, supportedTypes);
         if (CollectionUtils.isNotEmpty(fileList)) {
-            String urls = "";
+            StringBuilder urls = new StringBuilder();
             for (File file : fileList) {
-                urls += "- " + file.getPath() + "\n";
+                urls.append("- ").append(file.getPath()).append("\n");
                 dataHubService.getVideoPlayList().add(file);
             }
             JavaFXLogHelper.showMessage(AlertType.INFORMATION
                     , "Videos añadido"
-                    , urls);
+                    , urls.toString());
         } else {
             if (CollectionUtils.isEmpty(dataHubService.getVideoPlayList())) {
                 JavaFXLogHelper.showMessage(AlertType.ERROR
@@ -360,6 +361,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void doDataIntegration(Command cmd, JPanel panel, String key, String label, boolean isExport) {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
+            Registro.loadNewInstance();
             ensureCompatibility(isExport);
             if (cmd != null) {
                 cmd.execute();
@@ -368,7 +370,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             }
             if (!isExport) {
                 //solo es el caso de Hoisan y de ficheros de carga
-                ensureCompatibility(isExport);
+                ensureCompatibility(false);
             }
             JavaFXLogHelper.addLogInfo(i18n);
         } catch (Exception e) {
@@ -578,7 +580,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 event.consume();
             }
         } catch (Exception e) {
-            log.error("onClose", e);
+            log.info("onClose Exception");
         }
 
     };

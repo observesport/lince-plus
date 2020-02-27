@@ -17,6 +17,7 @@
  */
 package lince.modelo;
 
+import com.deicos.lince.data.LegacyToolException;
 import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.legacy.datos.ControladorArchivos;
 import com.deicos.lince.data.legacy.utiles.Tiempo;
@@ -53,19 +54,20 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     }
 
     public static void loadInstance(File f) throws RegistroException {
-        List<String> exceptions = new ArrayList<String>();
+        List<LegacyToolException> exceptions = new ArrayList<>();
+        //TODO 2020 update observer?
         Registro registro = cargarRegistro(f, exceptions);
         cambiarInstancia(registro);
         if (!exceptions.isEmpty()) {
-            String string = "";
-            for (String exception : exceptions) {
-                string += exception + "\n";
+            StringBuilder string = new StringBuilder();
+            for (LegacyToolException exception : exceptions) {
+                string.append(exception.getMessage()).append("\n");
             }
-            throw new RegistroException(string);
+            throw new RegistroException(string.toString());
         }
     }
 
-    public static Registro cargarRegistro(File f, List<String> exceptions) throws RegistroException {
+    public static Registro cargarRegistro(File f, List<LegacyToolException> exceptions) throws RegistroException {
         try {
             Map<String, Object> datosGuardados = (Map<String, Object>) ControladorArchivos.getInstance().cargar(f);
             String nombre = (String) datosGuardados.get(NOMBRE_INSTRUMENTO_OBSERVACIONAL);
@@ -87,7 +89,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         return null;
     }
 
-    private static Map<NodoInformacion, String> cargarDatosFijos(Map<NodoInformacion, String> map, List<String> exceptions) {
+    private static Map<NodoInformacion, String> cargarDatosFijos(Map<NodoInformacion, String> map, List<LegacyToolException> exceptions) {
         InstrumentoObservacional instrumentoObservacional = InstrumentoObservacional.getInstance();
         Map<NodoInformacion, String> datosFijos = new HashMap<NodoInformacion, String>(map.size());
         Set<NodoInformacion> setDeKeys = map.keySet();
@@ -102,7 +104,10 @@ public class Registro extends ModeloDeTablaLince implements Observer {
                 }
             }
             if (!encontrado) {
-                exceptions.add(ResourceBundle.getBundle("i18n.Bundle").getString("NO SE HA ENCONTRADO REFERENCIA PARA EL DATO ESTÁTICO: ") + nodoInformacionProvisional + ResourceBundle.getBundle("i18n.Bundle").getString(" EN EL INSTRUMENTO OBSERVACIONAL ACTUAL."));
+                LegacyToolException exception = new LegacyToolException(ResourceBundle.getBundle("i18n.Bundle").getString("NO SE HA ENCONTRADO REFERENCIA PARA EL DATO ESTÁTICO: ")
+                        + nodoInformacionProvisional
+                        + ResourceBundle.getBundle("i18n.Bundle").getString(" EN EL INSTRUMENTO OBSERVACIONAL ACTUAL."));
+                exceptions.add(exception);
             }
         }
         return datosFijos;
@@ -115,7 +120,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
      * @param criterios
      * @param exceptions
      */
-    private static void comprobarCriterios(Criterio[] criterios, List<String> exceptions) {
+    private static void comprobarCriterios(Criterio[] criterios, List<LegacyToolException> exceptions) {
         Criterio criteriosActuales[] = InstrumentoObservacional.getInstance().getCriterios();
 
         for (Criterio criterio : criterios) {
@@ -127,12 +132,13 @@ public class Registro extends ModeloDeTablaLince implements Observer {
                 }
             }
             if (!encontrado) {
-                exceptions.add(ResourceBundle.getBundle("i18n.Bundle").getString("EN EL INSTUMENTO ACTUAL NO SE ENCUENTRA EL CRITERIO ") + criterio + ".");
+                LegacyToolException exception = new LegacyToolException(ResourceBundle.getBundle("i18n.Bundle").getString("EN EL INSTUMENTO ACTUAL NO SE ENCUENTRA EL CRITERIO ") + criterio + ".");
+                exceptions.add(exception);
             }
         }
     }
 
-    public static List<FilaRegistro> cargarDatos(List<FilaRegistro> list, List<String> exceptions, boolean resetContent) {
+    public static List<FilaRegistro> cargarDatos(List<FilaRegistro> list, List<LegacyToolException> exceptions, boolean resetContent) {
         //ASF trial
         if (resetContent) {
             getInstance().initRegistro(list, null, null);
@@ -140,6 +146,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         //ASF end trial
         List<FilaRegistro> datos = new ArrayList<FilaRegistro>();
         for (FilaRegistro filaRegistro : list) {
+
             datos.add(FilaRegistro.getFilaRegistroCorrecta(filaRegistro, exceptions));
         }
         return datos;

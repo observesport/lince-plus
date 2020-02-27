@@ -1,32 +1,36 @@
 /*
  *  Lince - Automatizacion de datos observacionales
  *  Copyright (C) 2010  Brais Gabin Moreira
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package lince.modelo;
 
+import com.deicos.lince.data.LegacyToolException;
 import lince.modelo.InstrumentoObservacional.Categoria;
 import lince.modelo.InstrumentoObservacional.Criterio;
 import lince.modelo.InstrumentoObservacional.InstrumentoObservacional;
 import lince.modelo.InstrumentoObservacional.NodoInformacion;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Brais
+ * @author berto
  */
 public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
 
@@ -34,16 +38,16 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
     private Map<Criterio, Categoria> registro;
     private Map<NodoInformacion, String> datosMixtos;
 
-    public static FilaRegistro getFilaRegistroCorrecta(FilaRegistro filaRegistroAntigua, List<String> exceptions) {
+    public static FilaRegistro getFilaRegistroCorrecta(FilaRegistro filaRegistroAntigua, List<LegacyToolException> exceptions) {
         Criterio criteriosActuales[] = InstrumentoObservacional.getInstance().getCriterios();
         NodoInformacion mixtosActuales[] = InstrumentoObservacional.getInstance().getDatosMixtos();
         Map<Criterio, Categoria> mapRegistro = filaRegistroAntigua.registro;
         Set<Criterio> setDeKeys = mapRegistro.keySet();
         Map<NodoInformacion, String> mapDatosMixtos = filaRegistroAntigua.datosMixtos;
-        Set<NodoInformacion> SetDeKeysDatosMixtos = mapDatosMixtos.keySet();
+        Set<NodoInformacion> setDeKeysDatosMixtos = mapDatosMixtos.keySet();
 
         Map<Criterio, Categoria> registroActual = new HashMap<Criterio, Categoria>(mapRegistro.size());
-        Map<NodoInformacion, String> datosMixtosAcutuales = new HashMap<NodoInformacion, String>();
+        Map<NodoInformacion, String> datosMixtosActuales = new HashMap<NodoInformacion, String>();
 
         for (Criterio criterio : setDeKeys) {
             Categoria categoria = mapRegistro.get(criterio);
@@ -54,7 +58,23 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
                         if (categoriaActual != null) {
                             registroActual.put(criterioActual, categoriaActual);
                         } else {
-                            exceptions.add(java.util.ResourceBundle.getBundle("i18n.Bundle").getString("CATEGORIA ") + categoria.getNombre() + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" CON CODIGO ") + categoria.getCodigo() + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" NO ENCONTRADA."));
+                            String message = java.util.ResourceBundle.getBundle("i18n.Bundle").getString("CATEGORIA ")
+                                    + categoria.getNombre()
+                                    + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" CON CODIGO ")
+                                    + categoria.getCodigo()
+                                    + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" NO ENCONTRADA.");
+                            AtomicBoolean found = new AtomicBoolean(false);
+                            exceptions.forEach(s -> {
+                                if (StringUtils.contains(s.getMessage(), message)) {
+                                    found.set(true);
+                                }
+                            });
+                            if (!found.get()) {
+                                //TODO 2020: check exceptions to create new criteria with lost ones
+                                LegacyToolException e = new LegacyToolException(message);
+                                e.setCategoria(categoria);
+                                exceptions.add(e);
+                            }
                         }
                         break;
                     }
@@ -62,14 +82,14 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
             }
         }
 
-        for (NodoInformacion nodoInformacion : SetDeKeysDatosMixtos) {
+        for (NodoInformacion nodoInformacion : setDeKeysDatosMixtos) {
             String string = mapDatosMixtos.get(nodoInformacion);
             if (string != null) {
                 for (NodoInformacion nodoInformacionActual : mixtosActuales) {
                     if (nodoInformacion.getNombre().equalsIgnoreCase(nodoInformacionActual.getNombre())) {
                         String stringActual = mapDatosMixtos.get(nodoInformacion);
                         if (stringActual != null) {
-                            datosMixtosAcutuales.put(nodoInformacionActual, stringActual);
+                            datosMixtosActuales.put(nodoInformacionActual, stringActual);
                         }
                         break;
                     }
@@ -77,7 +97,7 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
             }
         }
 
-        FilaRegistro filaRegistroActual = new FilaRegistro(filaRegistroAntigua.milis, registroActual, datosMixtosAcutuales);
+        FilaRegistro filaRegistroActual = new FilaRegistro(filaRegistroAntigua.milis, registroActual, datosMixtosActuales);
         return filaRegistroActual;
     }
 

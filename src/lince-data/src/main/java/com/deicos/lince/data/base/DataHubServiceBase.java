@@ -7,6 +7,7 @@ import com.deicos.lince.data.bean.user.UserProfile;
 import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lince.modelo.Registro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class DataHubServiceBase {
     }
 
     /**
-     * Adds new observations checking it does not exists in the previous register
+     * Adds new observations checking if does not exists in the previous register
      * TODO 2019 check
      * @param newItems
      */
@@ -62,7 +63,7 @@ public class DataHubServiceBase {
 
     /**
      * Checks if all data register have it's demanding user profile in the register
-     * TODO 2019 check
+     *
      */
     public void addObserver(UserProfile profile) {
         boolean hasAdd = false;
@@ -173,6 +174,7 @@ public class DataHubServiceBase {
 
 
     public void clearData() {
+        Registro.loadNewInstance();
         dataRegister.clear();
         criteria.clear();
         videoPlayList.clear();
