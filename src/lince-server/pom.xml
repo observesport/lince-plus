@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lince-scientific-base</artifactId>
         <groupId>com.deicos.lince</groupId>
-        <version>1.1.2-RELEASE</version>
+        <version>1.2.0-RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>lince-server</artifactId>
@@ -138,23 +138,7 @@
             <version>0.1</version>
         </dependency>-->
         <!-- Soporte para transactional, por ahora no se necesita. Estudiamos caso posterior.  -->
-        <!--dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency-->
-        <!-- <dependency>
-             <groupId>de.adesso.wicked-charts</groupId>
-             <artifactId>chartjs-wrapper</artifactId>
-             <version>3.1.0</version>
-             <type>pom</type>
-         </dependency>-->
 
-        <!-- https://mvnrepository.com/artifact/de.adesso.wicked-charts/highcharts-wrapper -->
-        <!-- <dependency>
-             <groupId>de.adesso.wickedº-charts</groupId>
-             <artifactId>highcharts-wrapper</artifactId>
-             <version>3.1.0</version>
-         </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.fujion/fujion-highcharts -->
         <dependency>
             <groupId>org.fujion</groupId>
@@ -174,7 +158,11 @@
             <artifactId>lince-math</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.deicos.lince</groupId>
+            <artifactId>lince-transcoding</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
         <!--dependency>
             <groupId>commons-fileupload</groupId>

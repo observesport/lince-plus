@@ -25,6 +25,7 @@ import com.deicos.lince.data.system.operations.LinceFileHelper;
 import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.data.util.SystemNetworkHelper;
 import com.deicos.lince.math.service.*;
+import com.deicos.lince.transcoding.component.TranscodingProvider;
 import javafx.application.Preloader;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -74,7 +75,8 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
     protected VideoService videoService;
     @Autowired
     protected DataHubService dataHubService;
-
+    @Autowired
+    protected TranscodingProvider transcodingProvider;
 
     /**
      * Constructor
@@ -104,6 +106,10 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
 
     public DataHubService getDataHubService() {
         return dataHubService;
+    }
+
+    public TranscodingProvider getTranscodingProvider() {
+        return transcodingProvider;
     }
 
     private File codeQR = null;

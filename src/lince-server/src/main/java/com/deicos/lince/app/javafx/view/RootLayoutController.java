@@ -17,6 +17,7 @@ import com.deicos.lince.data.system.operations.LinceFileHelper;
 import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.math.service.DataHubService;
 import com.deicos.lince.math.service.LegacyConverterService;
+import com.deicos.lince.transcoding.component.TranscodingProvider;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -57,6 +58,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     @Autowired
     protected DataHubService dataHubService;
+
+    protected TranscodingProvider transcodingProvider=null;
 
     @FXML
     private ListView logArea;
@@ -241,6 +244,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     @FXML
     private void handleSelectVideo() {
+        if (this.transcodingProvider==null){
+            this.transcodingProvider = getMainLinceApp().getTranscodingProvider();
+        }
         final String label = "Video ";
         List<Pair<String, String>> supportedTypes = new ArrayList<>();
         for (String type : StringUtils.split(LinceDataConstants.SUPPORTED_VIDEO_FILES, ";")) {
@@ -249,13 +255,23 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         List<File> fileList = LinceFileHelper.openMultipleFileDialog(mainLinceApp, supportedTypes);
         if (CollectionUtils.isNotEmpty(fileList)) {
             StringBuilder urls = new StringBuilder();
+            boolean conversionDone = false;
             for (File file : fileList) {
                 urls.append("- ").append(file.getPath()).append("\n");
-                dataHubService.getVideoPlayList().add(file);
+                File file2Add = transcodingProvider.reviewVideoFile(file);
+                if (file2Add != file) {
+                    conversionDone = true;
+                }
+                dataHubService.getVideoPlayList().add(file2Add);
             }
             JavaFXLogHelper.showMessage(AlertType.INFORMATION
                     , "Videos añadido"
                     , urls.toString());
+            if (conversionDone) {
+                JavaFXLogHelper.showMessage(AlertType.INFORMATION
+                        , "Conversión realizada"
+                        , "Se han generado automáticamente ficheros MP4 para los videos seleccionados en la misma carpeta del original");
+            }
         } else {
             if (CollectionUtils.isEmpty(dataHubService.getVideoPlayList())) {
                 JavaFXLogHelper.showMessage(AlertType.ERROR
@@ -303,7 +319,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void handleOpenBrowser() {
         String url = mainLinceApp.getServerURL();
         JavaFXLogHelper.addLogInfo("Abriendo navegador para analisis ubicado en " + url);
-        ServerValuesHelper.openLANLinceBrowser(url,false);
+        ServerValuesHelper.openLANLinceBrowser(url, false);
     }
 
     /**
