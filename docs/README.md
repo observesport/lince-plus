@@ -40,6 +40,12 @@ Please, send an email to alberto.soto@gmail.com with the concept "soporte macos"
 - [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
 
 
+## Documentation
+
+- Check our on-line guide in [spanish](http://learning.albertosoto.es/lince-plus-guide.html) or in [english](http://learning.albertosoto.es/lince-plus-guide_en.html)
+- Check our workshop material at [workshop](http://learning.albertosoto.es/Lince-plus-workshop1.html)
+- Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
+
 ### Previous versions
 
 - [1.1.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)					  
@@ -55,13 +61,6 @@ Please, send an email to alberto.soto@gmail.com with the concept "soporte macos"
 - [1.0.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
 - [1.0.0 - Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-mac.zip)
 
-
-## Documentation
-
-
-- Check our on-line guide in [spanish](http://learning.albertosoto.es/lince-plus-guide.html) or in [english](http://learning.albertosoto.es/lince-plus-guide_en.html)
-- Check our workshop material at [workshop](http://learning.albertosoto.es/Lince-plus-workshop1.html)
-- Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
 
 ### Bugs or problems? No problem
 
