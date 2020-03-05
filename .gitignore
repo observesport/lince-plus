@@ -3,3 +3,7 @@
 target
 *.log
 /src/lince-server/src/main/resources/public/plugin/videojs/plugins/videojs-framebyframe-example.zip
+*.gz
+doc
+/src/lince-transcoding/howto.md
+/MSIFileRunAsAdmin.zip
