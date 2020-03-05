@@ -34,14 +34,16 @@ Please, if any use or scientific research is done through this application, cite
 20/02/2020 Since the update of MacOS Catalina, we can't support install on MacOS due to private sign procedure for Apple Inc. We are trying to change this behaviour, but, by now, LINCE PLUS can't work on latest MacOS version. Sorry for the inconvenience. 
 Please, send an email to alberto.soto@gmail.com with the concept "soporte macos" to be able to notify directly when the issue is solved.
 
-### Current version 1.1.1 RELEASE
+### Current version 1.1.2 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)					  
-- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)					  
+- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
 
 
 ### Previous versions
 
+- [1.1.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)					  
+- [1.1.1 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)
 - [1.1.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)					  
 - [1.1.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)
 - [1.0.3 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)					  
@@ -74,6 +76,18 @@ Lince Plus installer is build using Install4J [multi-platform installer builder]
 
 ## Release notes
 
+- Version 1.1.2 RELEASE, 25/02/2020
+	- creation of new observers from legacy Lince register import  
+	- kappa index review  
+	- video analysis improvement: better dragable area, minimal gaps to improve UX and shows description when the mouse goes over
+	- adaptative graphs
+	- legacy instrument review
+	- log improvement and better messaging
+	- temporal saving 
+	- mac update. License needed. Installer has been updated.
+	- better working atmosphere with margin decrease 
+	- PoP (Picture on picture) behaviour review
+
 - Version 1.1.1 RELEASE, 10/12/2019
     - Repairs problems on importing files
     - Includes change version notificacion
@@ -95,8 +109,6 @@ This version is a major update. New features
 	- Renjin version update (carefully)
 	- CSV export update
 	- Web update
-
-
 
 - Version 1.0.3 RELEASE, 06/08/2019
     - Multi-observer file import issues
@@ -124,6 +136,5 @@ This version is a major update. New features
     - Desktop app new Design with interactive stats 
 
 - Version 1.0.0 RELEASE, 10/06/2019
-
     - Initial desktop version
     - MacOS installer and 
