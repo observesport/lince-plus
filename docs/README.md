@@ -36,7 +36,7 @@ Please, send an email to alberto.soto@gmail.com with the concept "soporte macos"
 
 ### Current version 1.1.2 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)					  
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)					  
 - [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
 
 
