@@ -42,6 +42,7 @@ Please, send an email to alberto.soto@gmail.com with the concept "soporte macos"
 
 ## Documentation
 
+- Check the youtube channel! [LINCE PLUS YOUTUBE](https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g)
 - Check our on-line guide in [spanish](http://learning.albertosoto.es/lince-plus-guide.html) or in [english](http://learning.albertosoto.es/lince-plus-guide_en.html)
 - Check our workshop material at [workshop](http://learning.albertosoto.es/Lince-plus-workshop1.html)
 - Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
