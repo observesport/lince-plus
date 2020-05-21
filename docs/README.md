@@ -31,7 +31,8 @@ Please, if any use or scientific research is done through this application, cite
 
 #### Important: MacOS users
 
-20/02/2020 Since the update of MacOS Catalina, we can't support install on MacOS due to private sign procedure for Apple Inc. We are trying to change this behaviour, but, by now, LINCE PLUS can't work on latest MacOS version. Sorry for the inconvenience. 
+20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install Lince.
+We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software](https://support.apple.com/es-es/guide/mac-help/mh40616/mac).
 Please, send an email to alberto.soto@gmail.com with the concept "soporte macos" to be able to notify directly when the issue is solved.
 
 ### Current version 1.2.0 RELEASE
