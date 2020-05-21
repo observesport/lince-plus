@@ -79,6 +79,10 @@ Lince Plus installer is build using Install4J [multi-platform installer builder]
 
 ## Release notes
 
+- Version 1.2.0 RELEASE, 21/05/2020
+	- Solves multiobserver problems
+	- Adds transcoding support. Lince can convert automatically now to mp4 any video you choose.
+	
 - Version 1.1.2 RELEASE, 25/02/2020
 	- creation of new observers from legacy Lince register import  
 	- kappa index review  
