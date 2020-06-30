@@ -3,6 +3,7 @@ package com.deicos.lince.data.util;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +27,15 @@ public class JavaFXLogHelper {
     }
 
     public static void showMessageDialog(Alert.AlertType type, String header, String content) {
+        TextArea area = new TextArea(content);
+        area.setWrapText(true);
+        area.setEditable(false);
+
         Alert alert = new Alert(type);
         alert.setTitle(header);
         alert.setHeaderText(header);
-        alert.setContentText(content);
+        alert.getDialogPane().setContent(area);
+        alert.setResizable(true);
         alert.showAndWait();
     }
 

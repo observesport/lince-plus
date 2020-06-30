@@ -1,17 +1,17 @@
 /*
  *  Lince - Automatizacion de datos observacionales
  *  Copyright (C) 2010  Brais Gabin Moreira
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -71,15 +71,19 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         try {
             Map<String, Object> datosGuardados = (Map<String, Object>) ControladorArchivos.getInstance().cargar(f);
             String nombre = (String) datosGuardados.get(NOMBRE_INSTRUMENTO_OBSERVACIONAL);
-            if (!nombre.equalsIgnoreCase(InstrumentoObservacional.getInstance().getName())) {
-                throw new RegistroException(ResourceBundle.getBundle("i18n.Bundle").getString("EL INSTRUMENTO OBSERVACIONAL ACTUALMENTE ABIERTO NO CORRESPONDE CON EL DE ESTE REGISTRO. ABRA EL INTSRUMENTO OBSERVACIONAL ") + nombre + ResourceBundle.getBundle("i18n.Bundle").getString(" Y VUELVA A INTENTAR ABRIRLO."));
-            }
-
+           /* if (!nombre.equalsIgnoreCase(InstrumentoObservacional.getInstance().getName())) {
+                String msg = String.format("%s %s %s"
+                        , ResourceBundle.getBundle("i18n.Bundle").getString("EL INSTRUMENTO OBSERVACIONAL ACTUALMENTE ABIERTO NO CORRESPONDE CON EL DE ESTE REGISTRO. ABRA EL INSTRUMENTO OBSERVACIONAL ")
+                        , nombre
+                        , ResourceBundle.getBundle("i18n.Bundle").getString(" Y VUELVA A INTENTAR ABRIRLO."));
+                msg = StringUtils.lowerCase(msg);
+                msg = StringUtils.capitalize(msg);
+                throw new RegistroException(msg);
+            }*/
+            Criterio[] criterios = (Criterio[]) datosGuardados.get(CRITERIOS);
             Map<NodoInformacion, String> datosFijosGuardados = (Map<NodoInformacion, String>) datosGuardados.get(DATOS_FIJOS);
             Map<NodoInformacion, String> datosFijos = cargarDatosFijos(datosFijosGuardados, exceptions);
-
-            comprobarCriterios((Criterio[]) datosGuardados.get(CRITERIOS), exceptions);
-
+            comprobarCriterios(criterios, exceptions);
             List<FilaRegistro> datosVariablesGuardados = (List<FilaRegistro>) datosGuardados.get(DATOS_VARIABLES);
             List<FilaRegistro> datosVariables = cargarDatos(datosVariablesGuardados, exceptions, false);
             return new Registro(datosVariables, datosFijos, exceptions.isEmpty() ? f : null);
@@ -132,7 +136,8 @@ public class Registro extends ModeloDeTablaLince implements Observer {
                 }
             }
             if (!encontrado) {
-                LegacyToolException exception = new LegacyToolException(ResourceBundle.getBundle("i18n.Bundle").getString("EN EL INSTUMENTO ACTUAL NO SE ENCUENTRA EL CRITERIO ") + criterio + ".");
+                String msg = String.format("%s: %s.", ResourceBundle.getBundle("i18n.Bundle").getString("EN EL INSTUMENTO ACTUAL NO SE ENCUENTRA EL CRITERIO "), criterio);
+                LegacyToolException exception = new LegacyToolException(msg);
                 exceptions.add(exception);
             }
         }
@@ -534,21 +539,21 @@ public class Registro extends ModeloDeTablaLince implements Observer {
             for (Object columna : columnas) {
                 //"TFrames", "DuraciónFr", "TSegundos", "DuraciónSeg", "TMilisegundos", "DuraciónMiliseg"
                 if (columna instanceof String) {
-                    if (StringUtils.equals(LinceDataConstants.COL_TFRAMES,columna.toString())) {
+                    if (StringUtils.equals(LinceDataConstants.COL_TFRAMES, columna.toString())) {
                         f[i] = (frActual.getMilis() / 40) + "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_TSEGUNDOS,columna.toString())) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_TSEGUNDOS, columna.toString())) {
                         f[i] = Tiempo.formatCompletMiliseconds(frActual.getMilis());
-                    } else if (StringUtils.equals(LinceDataConstants.COL_TMILISEGUNDOS,columna.toString())) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_TMILISEGUNDOS, columna.toString())) {
                         f[i] = frActual.getMilis() + "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_FR,columna.toString()) && frAnterior != null) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_FR, columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
                         fila[i] = ((frActual.getMilis() - frAnterior.getMilis()) / 40) + "";
                         f[i] = "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_SEC,columna.toString()) && frAnterior != null) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_SEC, columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
                         fila[i] = Tiempo.formatCompletMiliseconds(frActual.getMilis() - frAnterior.getMilis());
                         f[i] = "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_MS,columna.toString()) && frAnterior != null) {
+                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_MS, columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
                         fila[i] = (frActual.getMilis() - frAnterior.getMilis()) + "";
                         f[i] = "";
@@ -557,9 +562,9 @@ public class Registro extends ModeloDeTablaLince implements Observer {
                     Categoria categoria = frActual.getCategoria((Criterio) columna);
                     if (categoria != null) {
                         //Support for static information nodes
-                        if (!StringUtils.endsWith(categoria.getCodigo(),LinceDataConstants.CATEGORY_INFO_SUFIX)){
+                        if (!StringUtils.endsWith(categoria.getCodigo(), LinceDataConstants.CATEGORY_INFO_SUFIX)) {
                             f[i] = categoria.getCodigo();
-                        }else{
+                        } else {
                             f[i] = categoria.getDescripcion();
                         }
                     } else {

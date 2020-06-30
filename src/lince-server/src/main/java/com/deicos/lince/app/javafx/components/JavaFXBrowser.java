@@ -25,9 +25,8 @@ public class JavaFXBrowser extends Region {
         getStyleClass().add("browser");
         // load the web page
         final WebEngine webEngine = browser.getEngine();
+        webEngine.setJavaScriptEnabled(true);
         webEngine.load(uri);
-/*        browser.setPrefHeight(400);
-        browser.setPrefWidth(600);*/
         //add the web view to the scene
         getChildren().add(browser);
 

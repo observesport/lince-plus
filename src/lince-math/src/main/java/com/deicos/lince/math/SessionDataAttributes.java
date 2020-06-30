@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum SessionDataAttributes implements CgEnum {
+    OBSERVER_NAME("observer"),
+    OBSERVERS("observers"),
     ERROR("error"),
     VIDEO("video"),
     LOCALE("locale"),

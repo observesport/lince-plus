@@ -56,7 +56,7 @@ public class OSUtils {
                 launcher.openURLinBrowser(url);
                 return true;
             } catch (Exception e) {
-                log.error("Exception on opening. Trying in raw mode", e);
+                log.info("Exception on opening browsering. Trying in raw mode:" + e.toString());
                 try {
                     Runtime rt = Runtime.getRuntime();
                     if (sys_type == OSDetector.SYS_TYPE.WIN) {

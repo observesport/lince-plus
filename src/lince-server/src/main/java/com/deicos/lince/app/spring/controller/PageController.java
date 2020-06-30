@@ -72,9 +72,6 @@ public class PageController {
 
     private void addVideoConstants(HttpSession httpSession, Model model, String videoUrl) {
         List<CategoryData> data = categoryService.getCollection();
-        /*if (CollectionUtils.isEmpty(data)) {
-            categoryService.generateDummyCollection();
-        }*/
         if (StringUtils.isNotEmpty(videoUrl)) {
             videoService.setVideoUrl(videoUrl);
             if (StringUtils.equals(VideoService.DEFAULT_VIDEO_EXAMPLE, videoUrl)) {
@@ -127,7 +124,7 @@ public class PageController {
     private void addCommonSettings(HttpServletRequest request, HttpSession session, Model model) {
         try {
             Locale currentLocale = localeResolver.resolveLocale(request);
-            final String langCode =currentLocale.getLanguage();
+            final String langCode = currentLocale.getLanguage();
             model.addAttribute(LinceDataConstants.CTX_LOCALE, StringUtils.lowerCase(langCode));
             model.addAttribute(LinceDataConstants.CTX_LINCE_VERSION, linceVersion);
             /*if (StringUtils.isEmpty(sessionService.getSessionData(session, SessionDataAttributes.REGISTER))) {
@@ -139,16 +136,17 @@ public class PageController {
         }
     }
 
-    @RequestMapping("/")
+    @RequestMapping(value = {"/", "/dashboard", "/dashboard/*"})
     public String index(HttpServletRequest request, HttpSession session, Model model) {
         addCommonSettings(request, session, model);
-        return "index";
+        addVideoConstants(session, model, null);
+        return "/index.html";
     }
 
     @RequestMapping("/desktop")
     public String desktop(HttpServletRequest request, HttpSession session, Model model) {
         addCommonSettings(request, session, model);
-        return "desktop-landing";
+        return "/index.html";
     }
 
     @RequestMapping("/videoPlayerOpenBrowser")

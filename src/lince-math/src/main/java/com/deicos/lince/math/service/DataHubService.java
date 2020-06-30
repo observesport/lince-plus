@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
@@ -54,8 +55,6 @@ public class DataHubService extends DataHubServiceBase {
     }
 
 
-
-
     /**
      * get current register saved in httpSession
      *
@@ -65,14 +64,14 @@ public class DataHubService extends DataHubServiceBase {
     protected LinceRegisterWrapper getSessionRegister() {
         try {
             //Too messy passsing httpSession object everywhere. Let's get it in another way
-            WebContextHolder contextHolder = WebContextHolder.get();
+            HttpSession httpSession = WebContextHolder.get().getSession();
             List<LinceRegisterWrapper> dataRegister = getDataRegister();
             UUID defaultKeyRegister = dataRegister.get(0).getId();
             // Let's get or set a default context register
-            String currentSession = sessionService.getSessionData(contextHolder.getSession()
+            String currentSession = sessionService.getSessionData(httpSession
                     , SessionDataAttributes.REGISTER
                     , defaultKeyRegister.toString());
-            log.info("currentSesssion" + currentSession);
+            log.info(String.format("Current session (%s) has selected register %s", httpSession.getId(), currentSession));
             if (currentSession != null) {
                 for (LinceRegisterWrapper aux : dataRegister) {
                     if (aux.getId().equals(UUID.fromString(currentSession))) {
@@ -81,14 +80,10 @@ public class DataHubService extends DataHubServiceBase {
                 }
             }
         } catch (Exception e) {
-            log.error("GETTING Session object", e);
+            log.info("ERR GETTING Session object" + e.toString());
         }
         return null;
     }
-
-
-
-
 
 
 }

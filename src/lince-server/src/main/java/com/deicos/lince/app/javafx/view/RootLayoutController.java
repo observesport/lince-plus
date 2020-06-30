@@ -5,6 +5,8 @@ import com.deicos.lince.app.javafx.JavaFXLoader;
 import com.deicos.lince.app.javafx.components.JavaFXBrowser;
 import com.deicos.lince.app.javafx.generic.JavaFXLinceBaseController;
 import com.deicos.lince.data.LinceDataConstants;
+import com.deicos.lince.data.bean.user.ResearchProfile;
+import com.deicos.lince.data.bean.user.UserProfile;
 import com.deicos.lince.data.export.Lince2ThemeExport;
 import com.deicos.lince.data.legacy.Command;
 import com.deicos.lince.data.legacy.commands.importar.AbrirImportarHoisan;
@@ -40,9 +42,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -59,7 +59,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @Autowired
     protected DataHubService dataHubService;
 
-    protected TranscodingProvider transcodingProvider=null;
+    protected TranscodingProvider transcodingProvider = null;
 
     @FXML
     private ListView logArea;
@@ -244,7 +244,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     @FXML
     private void handleSelectVideo() {
-        if (this.transcodingProvider==null){
+        if (this.transcodingProvider == null) {
             this.transcodingProvider = getMainLinceApp().getTranscodingProvider();
         }
         final String label = "Video ";
@@ -327,18 +327,71 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
 
     private void ensureCompatibility(boolean isExport) {
+        ensureCompatibility(isExport, false);
+    }
+
+    private void ensureCompatibility(boolean isExport, boolean checkMultipleObservers) {
         try {
             Registro.getInstance();
             InstrumentoObservacional.getInstance();
             LegacyConverterService converter = getMainLinceApp().getLegacyConverterService();
             if (isExport) {
-                converter.migrateDataToLegacy();
+                UUID uuid = null;
+                if (checkMultipleObservers) {
+                    uuid = getResearchSelection();
+                }
+                converter.migrateDataToLegacy(uuid);
             } else {
                 converter.migrateDataFromLegacy();
             }
         } catch (Exception e) {
             JavaFXLogHelper.addLogError("Compatibility issue", e);
         }
+    }
+
+
+    /**
+     * Muestra un panel para seleccionar el observador si existe más de uno en el proyecto.
+     * En caso contrario devuelve null
+     *
+     * @return UUID de observador seleccionado o nulo por defecto
+     */
+    private UUID getResearchSelection() {
+        try {
+            List<ResearchProfile> researchers = getMainLinceApp().getProfileService().getAllResearchInfo();
+            if (researchers.isEmpty()) {
+                return null;
+            } else {
+                Map<UUID, ButtonType> uuids = new HashMap<>();
+                for (ResearchProfile user : researchers) {
+                    for (UserProfile researcher : user.getUserProfiles()) {
+                        uuids.put(researcher.getRegisterCode(), new ButtonType(StringUtils.defaultIfEmpty(researcher.getUserName(), "Sin definir")));
+                    }
+                }
+                if (uuids.size() < 2) {
+                    return null;
+                }
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Selección de observador");
+                alert.setHeaderText("Para continuar, debes seleccionar un observador");
+                alert.setContentText("¿Qué observador quieres seleccionar?");
+                ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                uuids.put(null, buttonTypeCancel);
+                alert.getButtonTypes().setAll(uuids.values());
+                Optional<ButtonType> result = alert.showAndWait();
+                String choice = result.get().getText();
+                if (StringUtils.isNotEmpty(choice) && !StringUtils.equals(choice, "Cancel")) {
+                    for (Map.Entry<UUID, ButtonType> entry : uuids.entrySet()) {
+                        if (StringUtils.equals(choice, entry.getValue().getText())) {
+                            return entry.getKey();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
     }
 
     /**
@@ -378,7 +431,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
             Registro.loadNewInstance();
-            ensureCompatibility(isExport);
+            ensureCompatibility(isExport, isExport); //pasamos registro seleccionado
             if (cmd != null) {
                 cmd.execute();
             } else {
@@ -399,6 +452,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportRegisterLince1() {
+        ensureCompatibility(true);//para importar tenemos que migrar el instrumento!
         doImport(new LoadRegistro(), null, "panel_import_custom", "Registros de la versión 1 de Lince");
     }
 
@@ -507,7 +561,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportExcel() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        ensureCompatibility(true);//pasamos instrumento
         doExport(null, new ExportarCsvPanel(), "panel_export_custom", "Excel");
     }
 

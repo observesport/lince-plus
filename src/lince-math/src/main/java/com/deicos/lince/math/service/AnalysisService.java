@@ -236,7 +236,7 @@ public class AnalysisService {
             for (RegisterItem data : userSceneData) {
                 rtn.getxSeriesLabels().add(String.format("%s (%s seg)",
                         (StringUtils.isEmpty(data.getName()) ? SCENE_LABEL : data.getName()),
-                        data.getVideoTime()));
+                        data.getVideoTimeTxt()));
             }
             rtn.getySeriesLabels().add(EMPTY_SERIES_VALUE); //valor de alias
             //para todas los criterios del sistema montamos eje Y
@@ -391,25 +391,29 @@ public class AnalysisService {
             //tenemos las categorias sin agrupar, con sus totales
             //Montamos la lista de los padres
             HighChartsSerie rootSerie = new HighChartsSerie();
-            for (Criteria cri : tool) {
-                if (!cri.isInformationNode()) {
-                    double totalPerCategory = 0;
-                    HighChartsSerie childSerie = new HighChartsSerie();
-                    for (Pair<CategoryData, Double> item : globalCounter) {
-                        //si es el mismo padre
-                        if (item.getKey().getParent().equals(cri.getId())) {
-                            totalPerCategory += item.getValue();
-                            childSerie.getDataBean().add(getBean(item.getKey().getName(),
-                                    getFrecuency(item.getValue(), total),
-                                    item.getValue()));
+            if (total>0){
+                //si sacan stats sin haber visto tenemos que devolver vacio
+                for (Criteria cri : tool) {
+                    if (!cri.isInformationNode()) {
+                        double totalPerCategory = 0;
+                        HighChartsSerie childSerie = new HighChartsSerie();
+                        for (Pair<CategoryData, Double> item : globalCounter) {
+                            //si es el mismo padre
+                            if (item.getKey().getParent().equals(cri.getId())) {
+                                totalPerCategory += item.getValue();
+                                childSerie.getDataBean().add(getBean(item.getKey().getName(),
+                                        getFrecuency(item.getValue(), total),
+                                        item.getValue()));
+                            }
                         }
+                        childSerie.setName(cri.getName());
+                        double percentPerCategory = getFrecuency(totalPerCategory, total);
+                        rootSerie.getDataBean().add(getBean(cri.getName(), percentPerCategory, totalPerCategory));
+                        drillDown.getSeries().add(childSerie);
                     }
-                    childSerie.setName(cri.getName());
-                    double percentPerCategory = getFrecuency(totalPerCategory, total);
-                    rootSerie.getDataBean().add(getBean(cri.getName(), percentPerCategory, totalPerCategory));
-                    drillDown.getSeries().add(childSerie);
                 }
             }
+
             rtn.getDrilldown().add(drillDown);
             rtn.getSeries().add(rootSerie);
         } catch (Exception e) {

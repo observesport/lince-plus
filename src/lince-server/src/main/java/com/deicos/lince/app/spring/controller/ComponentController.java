@@ -78,11 +78,6 @@ public class ComponentController {
         response.setStatus(HttpServletResponse.SC_ACCEPTED);
     }
 
-    @RequestMapping("/dummy")
-    public String videoPlayerBrowser(Model model) {
-        model.addAttribute(LinceDataConstants.CTX_TIME, System.currentTimeMillis());
-        return "component/dummy";
-    }
 
     @RequestMapping("/currentRegisteredDataTable")
     public String currentRegisteredDataTable(Model model) {

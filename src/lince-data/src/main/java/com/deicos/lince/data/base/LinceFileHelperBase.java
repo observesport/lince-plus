@@ -75,9 +75,9 @@ public class LinceFileHelperBase {
         try {
             File file = getLinceProjectFilePath();
             if (!file.isDirectory()) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String date = dateFormat.format(System.currentTimeMillis());
-                File tmpFile = new File(file.getParentFile(), StringUtils.replace(file.getName(), ".xml", "_" + date + "_AUTOSAVE.xml"));
+          /*      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String date = dateFormat.format(System.currentTimeMillis());*/
+                File tmpFile = new File(file.getParentFile(), StringUtils.replace(file.getName(), ".xml", /*"_" + date +*/ "_AUTOSAVE.xml"));
                 tmpFile.createNewFile();
                 return tmpFile;
             }

@@ -44,6 +44,7 @@ public class DataHubServiceBase {
     /**
      * Adds new observations checking if does not exists in the previous register
      * TODO 2019 check
+     *
      * @param newItems
      */
     public void addDataRegister(List<LinceRegisterWrapper> newItems) {
@@ -63,7 +64,6 @@ public class DataHubServiceBase {
 
     /**
      * Checks if all data register have it's demanding user profile in the register
-     *
      */
     public void addObserver(UserProfile profile) {
         boolean hasAdd = false;
@@ -95,19 +95,19 @@ public class DataHubServiceBase {
      *
      * @return Current researchProfile
      */
-    public ResearchProfile getResearchProfile(){
+    public ResearchProfile getResearchProfile() {
         ResearchProfile profile = null;
-        try{
+        try {
             if (getUserData().isEmpty()) {
                 getUserData().add(new ResearchProfile());
             }
             profile = getUserData().get(0);
             //check registers and create research info asociate to it
-            if(profile.getUserProfiles()==null){
+            if (profile.getUserProfiles() == null) {
                 profile.setUserProfiles(new ArrayList<>());
             }
-        }catch (Exception e){
-            log.error("getting researchProfile",e);
+        } catch (Exception e) {
+            log.error("getting researchProfile", e);
         }
         return profile;
     }
@@ -160,11 +160,11 @@ public class DataHubServiceBase {
             if (register == null) {
                 //save set
                 register = getDataRegister().get(0);
+                //log.info("Data register for session - returning first register by default");
             }
         } catch (Exception e) {
             log.error("on session data access", e);
         }
-        log.info("Data register for session - returning first register by default");
         //save return
         if (register == null) {
             return null;
@@ -172,6 +172,13 @@ public class DataHubServiceBase {
         return register.getRegisterData();
     }
 
+    public UserProfile getCurrentUser() {
+        try {
+            return getSessionRegister().getUserProfile();
+        } catch (Exception e) {
+            return new UserProfile();
+        }
+    }
 
     public void clearData() {
         Registro.loadNewInstance();

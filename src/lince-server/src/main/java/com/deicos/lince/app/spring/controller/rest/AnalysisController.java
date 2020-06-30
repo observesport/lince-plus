@@ -154,14 +154,14 @@ public class AnalysisController {
                 for (Category userCategory : items.getCategories()) {
                     boolean doAdd = true;
                     Category fullCat = (Category) categoryService.findCategoryByCode(userCategory.getCode());
-                    if (CategoryInformation.class.isAssignableFrom(fullCat.getClass())){
-                        if (StringUtils.isEmpty(userCategory.getNodeInformation())){
+                    if (CategoryInformation.class.isAssignableFrom(fullCat.getClass())) {
+                        if (StringUtils.isEmpty(userCategory.getNodeInformation())) {
                             doAdd = false;
-                        }else{
+                        } else {
                             fullCat.setNodeInformation(userCategory.getNodeInformation());
                         }
                     }
-                    if (doAdd){
+                    if (doAdd) {
                         dataValues.add(fullCat);
                     }
                 }
@@ -213,6 +213,10 @@ public class AnalysisController {
                     }
                 }
             }
+            /*if (rtn == null) {
+                //misterios sin resolver!petan las stats si el registro esta vacio
+                rtn = new JSONObject();
+            }*/
             return new ResponseEntity<>(rtn.toString(), HttpStatus.OK);
         } catch (Exception e) {
             log.error("register:statistics/", e);

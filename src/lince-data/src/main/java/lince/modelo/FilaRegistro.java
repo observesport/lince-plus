@@ -70,7 +70,6 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
                                 }
                             });
                             if (!found.get()) {
-                                //TODO 2020: check exceptions to create new criteria with lost ones
                                 LegacyToolException e = new LegacyToolException(message);
                                 e.setCategoria(categoria);
                                 exceptions.add(e);

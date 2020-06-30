@@ -115,12 +115,19 @@ public class SessionController extends BaseRestControllerWrapper {
             dataHubService.getCurrentDataRegister();//sets register by default
             for (SessionDataAttributes item : SessionDataAttributes.values()) {
                 String result;
-                if (item.equals(SessionDataAttributes.LOCALE)) {
-                    result = getLocaleString(rq);
-                } else {
-                    result = service.getSessionData(httpSession, SessionDataAttributes.castString(item.getItemValue()));
+                switch (item) {
+                    case LOCALE:
+                        result = getLocaleString(rq);
+                        break;
+                    case OBSERVER_NAME:
+                        result =dataHubService.getCurrentUser().getUserName();
+                        break;
+                    case OBSERVERS:
+                        result = String.valueOf(getNumObservers());
+                        break;
+                    default:
+                        result = service.getSessionData(httpSession, SessionDataAttributes.castString(item.getItemValue()));
                 }
-
                 rtn.put(item.getItemValue(), result);
             }
             return new ResponseEntity<>(rtn, HttpStatus.OK);
@@ -130,6 +137,17 @@ public class SessionController extends BaseRestControllerWrapper {
         }
     }
 
+    private int getNumObservers() {
+        int observers = 0;
+        try {
+            if (!dataHubService.getUserData().isEmpty()) {
+                observers = dataHubService.getUserData().get(0).getUserProfiles().size();
+            }
+        } catch (Exception e) {
+            log.error("Counting observers!", e);
+        }
+        return observers;
+    }
 
     /**
      * Sets value in session if value is correct
@@ -159,11 +177,7 @@ public class SessionController extends BaseRestControllerWrapper {
             rtn = applicationContextProvider.getLastLinceVersion();
             rtn.put("videos", dataHubService.getVideoPlayList().size());
             rtn.put("scenes", dataHubService.getCurrentDataRegister().size());
-            int observers = 0;
-            if (!dataHubService.getUserData().isEmpty()) {
-                observers = dataHubService.getUserData().get(0).getUserProfiles().size();
-            }
-            rtn.put("observers", observers);
+            rtn.put("observers", getNumObservers());
         } catch (Exception e) {
             log.error("on project info", e);
         }

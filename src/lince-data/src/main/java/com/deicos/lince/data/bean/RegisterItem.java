@@ -2,6 +2,7 @@ package com.deicos.lince.data.bean;
 
 import com.deicos.lince.data.bean.categories.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * lince-scientific-desktop
  * com.deicos.lince.data
+ *
  * @author berto (alberto.soto@gmail.com)in 22/06/2016.
  * Description:
  */
@@ -76,11 +78,13 @@ public class RegisterItem implements Comparable<RegisterItem> {
 
     /**
      * Only use for migration purposes
+     *
      * @param frames
      */
     public void setFrames(Integer frames) {
         this.frames = frames;
     }
+
     public void setFramesFromTime() {
         try {
             this.frames = new Integer(Math.toIntExact((long) (getVideoTime()
@@ -118,18 +122,20 @@ public class RegisterItem implements Comparable<RegisterItem> {
         return videoTime;
     }
 
-    public Integer getVideoTimeMilis(){
+    public Integer getVideoTimeMilis() {
         return Math.toIntExact(getVideoTime().longValue() * 1000);
     }
 
     public void setVideoTime(Double videoTime) {
         this.videoTime = videoTime;
         //this.frames =  videoTime.intValue();//cambiar con el numero de frames por segundo del video
-        try{
+        try {
             setFramesFromTime();
-            setVideoTimeTxt(LocalTime.MIN.plusSeconds(videoTime.longValue()).toString());
-        } catch (Exception e){
-            log.error("setVideoTime additional settings error (format time | frames)",e);
+            //TODO 2020: review: valid conversion to secs + min
+            String secondsTxt = LocalTime.MIN.plusSeconds(videoTime.longValue()).toString();
+            setVideoTimeTxt(secondsTxt);
+        } catch (Exception e) {
+            log.error("setVideoTime additional settings error (format time | frames)", e);
         }
     }
 

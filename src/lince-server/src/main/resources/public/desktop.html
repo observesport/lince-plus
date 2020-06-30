@@ -14,32 +14,33 @@
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <meta content="Lince - Observation tool for research" name="description"/>
     <meta content="Alberto Soto Fernandez" name="author"/>
+    <link rel="shortcut icon" href="favicon.ico"/>
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet"
           type="text/css"/>
-    <link href="global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
-    <link href="global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css"/>
-    <link href="global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css"/>
-    <link href="global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>
-    <link href="global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/css/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/css/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/css/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN THEME GLOBAL STYLES -->
-    <link href="global/css/components.min.css" rel="stylesheet" type="text/css"/>
-    <link href="global/css/components-md.min.css" rel="stylesheet" id="style_components" type="text/css"/>
-    <link href="global/css/plugins-md.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/css/components.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/css/components-md.min.css" rel="stylesheet" id="style_components" type="text/css"/>
+    <link href="desktop/css/plugins-md.min.css" rel="stylesheet" type="text/css"/>
     <!-- END THEME GLOBAL STYLES -->
-
     <!-- BEGIN THEME LAYOUT STYLES -->
-    <link href="global/layout/css/layout.min.css" rel="stylesheet" type="text/css"/>
-    <link href="global/layout/css/dark.min.css" rel="stylesheet" type="text/css" id="style_color"/>
-    <link href="global/layout/css/custom.min.css" rel="stylesheet" type="text/css"/>
-    <link href="global/css/todo.min.css" rel="stylesheet" type="text/css">
-    <link href="js/react/video-react.css" rel="stylesheet" type="text/css"/>
-    <link href="css/linceThemeAdapter.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/layout/css/layout.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/layout/css/dark.min.css" rel="stylesheet" type="text/css" id="style_color"/>
+    <link href="desktop/layout/css/custom.min.css" rel="stylesheet" type="text/css"/>
+    <!--link href="old/global/css/todo.min.css" rel="stylesheet" type="text/css"-->
+    <link href="desktop/css/linceThemeAdapter.css" rel="stylesheet" type="text/css"/>
     <!-- END THEME LAYOUT STYLES -->
-    <link rel="shortcut icon" href="favicon.ico"/>
-    <link href="global/css/blog.min.css" rel="stylesheet" type="text/css"/>
+    <link href="desktop/css/blog.min.css" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        .page-sidebar-closed .page-content-wrapper .page-content {
+            margin-left: 0 !important;
+        }
+    </style>
 </head>
 <!-- END HEAD -->
 <body class="page-header-static page-sidebar-closed-hide-logo page-container-bg-solid page-md page-sidebar-closed">
@@ -58,12 +59,12 @@
                         <div class="blog-quote bordered blog-container" style="margin-bottom: 0!important;">
                             <div class="blog-quote-label bg-green-jungle">
                                 <i class="fa fa-quote-left"></i>
-                                Open source software made for your studies. Please, refer us to be able to keep
-                                growing.
+                                <br/><span>Scientific open source software.</span>
+                                <br/><span>Please, refer us so we can continue growing.</span>
                             </div>
                             <div class="blog-quote-avatar" style="margin-bottom: 0!important;">
                                 <a href="javascript:;">
-                                    <img src="/img/lince-icon.jpg">
+                                    <img src="/images/lince-icon.jpg">
                                 </a>
                             </div>
                             <div class="blog-post-content" style="margin-top: 0!important;margin-bottom: 0!important;">
@@ -81,46 +82,46 @@
                     <div class="col-sm-6">
                         <div class="blog-post-sm bordered">
                             <div class="blog-post-content ">
+                                <h2 class="blog-title blog-post-title">
+                                    Lince PLUS
+                                </h2>
                                 <div id="updateMessageWrapper" class="alert alert-warning hidden">
                                     <span id="updateMessage">&#160;</span>
                                     <button id="updateButton" type="button" class="btn red-mint"
                                             onclick="openUpdateLincePLus();">Download
                                     </button>
                                 </div>
-                                <h2 class="blog-title blog-post-title">
-                                    Lince PLUS
-                                </h2>
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="blog-post-desc">
-                                            <p> Escaneando este código QR puedes conectar con la aplicación de Lince
-                                                desde otros tablets o dispositivos</p>
-                                            <img src="/component/getQRCode" width="180" height="180"/>
+                                            <img src="/component/getQRCode" width="180" height="180" alt="QRCode"/>
+                                            <div> Usa este código QR para conectar con la aplicación de LINCE
+                                                PLUS desde otros tablets o dispositivos en la misma red
+                                                local.
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 hidden" id="projectInfo">
 
                                         <div class="blog-post-desc">
-                                            <p>
-                                                Bienvenido a Lince plus. Ya puedes generar tus estudios con la
-                                                última tecnología.Te recordamos que esta versión de Lince integra R, que
-                                                funciona
-                                                por web, y que
-                                                necesitarás acceder a través de la opción abrir navegador del botón
-                                                superior.
-                                            </p>
-                                            <ul class="list-group">
+                                            <div>Ya puedes generar tus estudios con la
+                                                última tecnología. Recuerda: LINCE PLUS integra
+                                                el programa estadístico R en su interior y cálculos validados.
+                                            </div>
+                                            <div style="padding-top: 5px;"><b> Para empezar, abre tu navegador a través de la
+                                                opción superior "Visualizar" > "Abrir navegador".</b></div>
+                                            <ul class="list-group" style="padding-top: 5px;">
                                                 <li class="list-group-item">
-                                                    Scenes detected
-                                                    <span class="badge badge-success" id="statScene"></span>
+                                                    Registros por investigador 1
+                                                    <span class="badge badge-success" id="statScene">&#160;</span>
                                                 </li>
                                                 <li class="list-group-item">
-                                                    Selected videos
-                                                    <span class="badge badge-success" id="statVideo"></span>
+                                                    Videos
+                                                    <span class="badge badge-success" id="statVideo">&#160;</span>
                                                 </li>
                                                 <li class="list-group-item">
-                                                    Observers on the project
-                                                    <span class="badge badge-success" id="statObserver"></span>
+                                                    Observadores
+                                                    <span class="badge badge-success" id="statObserver">&#160;</span>
                                                 </li>
                                             </ul>
                                         </div>
@@ -148,8 +149,8 @@
 </div>
 <!-- END FOOTER -->
 
-<script src="global/plugins/jquery.min.js" type="text/javascript"></script>
-<script src="js/linceApp.global.js" type="text/javascript"></script>
+<script src="desktop/js/jquery.min.js" type="text/javascript"></script>
+<script src="desktop/js/linceApp.global.js" type="text/javascript"></script>
 <script type="text/javascript">
     function openUpdateLincePLus() {
         $.when($.linceApp.global.doAjax('/component/update', 'GET', null, function (e) {

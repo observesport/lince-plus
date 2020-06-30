@@ -7,6 +7,7 @@ import com.deicos.lince.data.bean.categories.CategoryData;
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.data.bean.user.UserProfile;
 import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
+import com.deicos.lince.data.util.JavaFXLogHelper;
 import com.deicos.lince.math.SessionDataAttributes;
 import com.deicos.lince.math.WebContextHolder;
 import javafx.collections.FXCollections;
@@ -34,7 +35,6 @@ import java.util.*;
  * @author berto (alberto.soto@gmail.com)in 29/02/2016.
  * Description:
  * <p>
- *
  */
 @Service
 public class LegacyConverterService {
@@ -178,7 +178,7 @@ public class LegacyConverterService {
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
         }
-        return null;
+        return null;//new Criteria();
     }
 
     /**
@@ -194,8 +194,11 @@ public class LegacyConverterService {
                     List<Criteria> l = new ArrayList<>();
                     int id = 1;//si fuera 0 en js se evalua a false y no se puede abrir (flipa)
                     for (Criterio c : i.getCriterios()) {
-                        l.add(getCriteriaFromLegacy(c, id, l));
-                        id++;
+                        Criteria aux = getCriteriaFromLegacy(c, id, l);
+                        if (aux != null) {
+                            l.add(aux);
+                            id++;
+                        }
                     }
                     if (l.size() > 0) {
                         categoryService.clearAll();
@@ -371,26 +374,45 @@ public class LegacyConverterService {
             Registro.loadNewInstance();
             Registro r = Registro.getInstance();
             //Reutilizamos para obtener datos por uuid. El instrumento DEBE ser el mismo siempre
-            for (RegisterItem row : (uuid == null) ? analysisService.getDataRegister() : analysisService.getDataRegisterById(uuid)) {
+            List<Category> errors = new ArrayList<>();
+            List<RegisterItem> register = (uuid == null) ? analysisService.getDataRegister() : analysisService.getDataRegisterById(uuid);
+            for (RegisterItem row : register) {
                 Integer timeID = row.getVideoTimeMilis();
                 Map<Criterio, Categoria> registeredData = new HashMap<>();
                 for (Category c : row.getRegister()) {
-                    Criteria parent = categoryService.findDataById(c.getParent(), null, null).getKey();
-                    Pair<Criterio, Categoria> rtn = null;
-                    if (doCriteriaInstrumentSearch) {
-                        //tiene UUID corregidos ??
-                        rtn = findInstrumentDataByCategory(parent, c);
-                    }
-                    if (rtn == null || (rtn.getValue() == null && rtn.getKey() == null)) {
-                        Categoria cat = getLegacyCategory(c);
-                        Criterio cri = getLegacyCriteria(parent);
-                        //tiene UUID corregidos
-                        registeredData.put(cri, cat);
+                    Pair<Criteria, Category> dataPair = categoryService.findDataById(c.getParent(), null, null);
+                    if (dataPair != null && dataPair.getKey() != null) {
+                        Criteria parent = dataPair.getKey();
+                        //si es nulo, es criterio no es correcto
+                        Pair<Criterio, Categoria> rtn = null;
+                        if (doCriteriaInstrumentSearch) {
+                            //tiene UUID corregidos ??
+                            rtn = findInstrumentDataByCategory(parent, c);
+                        }
+                        if (rtn == null || (rtn.getValue() == null && rtn.getKey() == null)) {
+                            Categoria cat = getLegacyCategory(c);
+                            Criterio cri = getLegacyCriteria(parent);
+                            //tiene UUID corregidos
+                            registeredData.put(cri, cat);
+                        } else {
+                            registeredData.put(rtn.getKey(), rtn.getValue());
+                        }
                     } else {
-                        registeredData.put(rtn.getKey(), rtn.getValue());
+                        errors.add(c);
                     }
                 }
                 r.addRow(timeID, registeredData, new HashMap<>());
+            }
+            if (!errors.isEmpty()) {
+                StringBuilder categories = new StringBuilder();
+                for (Category cat : errors) {
+                    categories.append("-").append(cat.getCode()).append("\n");
+                }
+                String msg = String.format("Su registro tiene inconsistencias, normalmente causadas \n" +
+                        "por modificaciones del instrumento, eliminando parámetros que se han utilizado. \n Por favor, " +
+                        "corrije las observaciones de las siguientes categorías: \n %s", categories);
+                JavaFXLogHelper.showMessageDialog("Registro inconsistente", msg);
+                JavaFXLogHelper.addLogError(msg, new NullPointerException());
             }
             return r;
         } catch (Exception e) {
