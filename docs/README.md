@@ -33,12 +33,11 @@ Please, if any use or scientific research is done through this application, cite
 
 20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install Lince.
 We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software](https://support.apple.com/es-es/guide/mac-help/mh40616/mac).
-Please, send an email to alberto.soto@gmail.com with the concept "soporte macos" to be able to notify directly when the issue is solved.
 
-### Current version 1.2.0 RELEASE
+### Current version 1.3.0 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)					  
-- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)					  
+- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)
 
 
 ## Documentation
@@ -50,7 +49,8 @@ Please, send an email to alberto.soto@gmail.com with the concept "soporte macos"
 
 ### Previous versions
 
-
+- [1.2.0 - Win x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
+- [1.2.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
 - [1.1.2 - Win x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
 - [1.1.2 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
 - [1.1.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)
@@ -79,6 +79,14 @@ Lince Plus installer is build using Install4J [multi-platform installer builder]
 
 ## Release notes
 
+- Version 1.3.0 RELEASE, 30/06/2020
+	- UI Enhancement & web redesign
+	- React + lerna monorepo + full microservices aproach
+	- Scene program
+	- Keyboard usage
+	- Multi-observer exporting support
+	- Lince v1 support reviewed
+	
 - Version 1.2.0 RELEASE, 21/05/2020
 	- Solves multiobserver problems
 	- Adds transcoding support. Lince can convert automatically now to mp4 any video you choose.
