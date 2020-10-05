@@ -1,17 +1,17 @@
 /*
  *  Lince - Automatizacion de datos observacionales
  *  Copyright (C) 2010  Brais Gabin Moreira
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,7 @@ package lince.modelo.InstrumentoObservacional;
 
 import com.deicos.lince.data.legacy.datos.ControladorArchivos;
 import com.deicos.lince.data.legacy.utiles.MyObservable;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -34,7 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author Brais
  */
 public class InstrumentoObservacional implements TreeModelListener {
@@ -45,7 +45,8 @@ public class InstrumentoObservacional implements TreeModelListener {
     private transient File path;
     private transient boolean necesarySave;
     private transient DefaultTreeModel modelo = null;
-    static Logger log = Logger.getLogger(InstrumentoObservacional.class.getName());
+    protected final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
+
     public static synchronized InstrumentoObservacional getInstance() {
         if (instance == null) {
             loadNewInstance();
@@ -146,7 +147,12 @@ public class InstrumentoObservacional implements TreeModelListener {
         int numCriterios = variables.getChildCount();
         Criterio criterios[] = new Criterio[numCriterios];
         for (int i = 0; i < numCriterios; i++) {
-            criterios[i] = (Criterio) variables.getChildAt(i);
+            try {
+                criterios[i] = (Criterio) variables.getChildAt(i);
+            } catch (Exception e) {
+                log.error("adding criteria", e);
+            }
+
         }
         return criterios;
     }
@@ -203,24 +209,31 @@ public class InstrumentoObservacional implements TreeModelListener {
 
     /**
      * Genera nombre adicional
+     *
      * @param parent
      * @param nombre
      */
     public void addHijo(DefaultMutableTreeNode parent, String nombre) {
-        String nodeName = nombre;//TODO asf review -- uuid issue + " " +  (parent.getChildCount() +1);
-        if (modelo.getPathToRoot(parent).length > 2) {
-            modelo.insertNodeInto(new Categoria(nodeName), parent, parent.getChildCount());
-        } else {
-            int index = raiz.getIndex(parent);
-            switch (index) {
-                case 0:
-                case 1:
-                    modelo.insertNodeInto(new NodoInformacion(nodeName), parent, parent.getChildCount());
-                    break;
-                case 2:
-                    modelo.insertNodeInto(new Criterio(nodeName), parent, parent.getChildCount());
+        try{
+            String nodeName = nombre;//TODO 2020 asf review -- uuid issue + " " +  (parent.getChildCount() +1);
+            if (modelo.getPathToRoot(parent).length > 2) { //
+                //pq 2? se trata de una categoría!
+                modelo.insertNodeInto(new Categoria(nodeName), parent, parent.getChildCount());
+            } else {
+                int index = raiz.getIndex(parent);
+                switch (index) {
+                    case 0:
+                    case 1://fijo?
+                        modelo.insertNodeInto(new NodoInformacion(nodeName), parent, parent.getChildCount());
+                        break;
+                    case 2://mixto?
+                        modelo.insertNodeInto(new Criterio(nodeName), parent, parent.getChildCount());
+                }
             }
+        }catch (Exception e){
+            log.error("UUID issue adding children to legacy instrument",e);
         }
+
     }
 
     public void removeNodo(DefaultMutableTreeNode node) {
@@ -229,23 +242,21 @@ public class InstrumentoObservacional implements TreeModelListener {
 
     /**
      * Checks children in sourceTree nodes and creates new ones into subRoot
-     *
+     * <p>
      * Asoto : 18/01/2015
-     * @param subRoot destination mutable tree to place inside data
+     *
+     * @param subRoot    destination mutable tree to place inside data
      * @param sourceTree source mutable tree with interesting inner children
      * @return modified tree
      * @throws CloneNotSupportedException
      */
-    public DefaultMutableTreeNode copySubTree(DefaultMutableTreeNode subRoot, DefaultMutableTreeNode sourceTree) throws CloneNotSupportedException
-    {
-        if (sourceTree == null)
-        {
+    public DefaultMutableTreeNode copySubTree(DefaultMutableTreeNode subRoot, DefaultMutableTreeNode sourceTree) throws CloneNotSupportedException {
+        if (sourceTree == null) {
             return subRoot;
         }
-        for (int i = 0; i < sourceTree.getChildCount(); i++)
-        {
-            DefaultMutableTreeNode child = (DefaultMutableTreeNode)sourceTree.getChildAt(i);
-            DefaultMutableTreeNode clone = (DefaultMutableTreeNode)child.clone();
+        for (int i = 0; i < sourceTree.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) sourceTree.getChildAt(i);
+            DefaultMutableTreeNode clone = (DefaultMutableTreeNode) child.clone();
             //new DefaultMutableTreeNode(child.getUserObject()); // better than toString()
             subRoot.add(clone);
             copySubTree(clone, child);
@@ -257,19 +268,19 @@ public class InstrumentoObservacional implements TreeModelListener {
      * Move a node inside a tree up or down with their siblings
      * Inner children will be duplicated recursively
      *
-     * @param node current node to move
-     * @param isMoveToUp move up or down this node inside same tree level
+     * @param node         current node to move
+     * @param isMoveToUp   move up or down this node inside same tree level
      * @param doCopyValues if true, values will be replicated, and original item will be deleted
      */
-    public void moveNode(DefaultMutableTreeNode node,boolean isMoveToUp ,boolean doCopyValues ){
-        int parentPosition =node.getParent().getIndex(node);
-        boolean hasCondition = isMoveToUp? (parentPosition>0):((parentPosition+1) < node.getParent().getChildCount());
-        if (hasCondition){
-            int newPosition = parentPosition-1;
-            if (!isMoveToUp){
+    public void moveNode(DefaultMutableTreeNode node, boolean isMoveToUp, boolean doCopyValues) {
+        int parentPosition = node.getParent().getIndex(node);
+        boolean hasCondition = isMoveToUp ? (parentPosition > 0) : ((parentPosition + 1) < node.getParent().getChildCount());
+        if (hasCondition) {
+            int newPosition = parentPosition - 1;
+            if (!isMoveToUp) {
                 //si es dirección inferior tenemos que saltar el nodo siguiente
                 //o 2 si queremos saltar el que queremos borrar
-                newPosition = (doCopyValues)?(parentPosition+2):(parentPosition+1);
+                newPosition = (doCopyValues) ? (parentPosition + 2) : (parentPosition + 1);
             }
             DefaultMutableTreeNode newObj = null;
             if (doCopyValues) {
@@ -279,8 +290,8 @@ public class InstrumentoObservacional implements TreeModelListener {
                     Logger.getLogger(InstrumentoObservacional.class.getName()).log(Level.SEVERE, null, e);
                 }
             }
-            modelo.insertNodeInto(doCopyValues?newObj:node, (DefaultMutableTreeNode) node.getParent(), newPosition);
-            if (doCopyValues){
+            modelo.insertNodeInto(doCopyValues ? newObj : node, (DefaultMutableTreeNode) node.getParent(), newPosition);
+            if (doCopyValues) {
                 //si borramos el nodo, afectamos a los listener, eso implica jtable de datos
                 //dejamos como alternativa para otros usos de replica de tablas
                 ((DefaultMutableTreeNode) node.getParent()).remove(node.getParent().getIndex(node));
@@ -289,7 +300,6 @@ public class InstrumentoObservacional implements TreeModelListener {
             observable.notifyObservers("load");
         }
     }
-
 
 
 }

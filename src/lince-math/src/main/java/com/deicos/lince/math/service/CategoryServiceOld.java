@@ -153,6 +153,7 @@ public class CategoryServiceOld {
                 if (cat.getValue() != null) {
                     String parent = StringUtils.EMPTY;
                     if (cat.isCategory()) {
+                        // TODO - REVISAR URGENTE!
                         parent = findById(criteria, cat.getParent()).getValue() + "-";
                     }
                     String currentCode = String.format("%s%s%s"

@@ -1,17 +1,17 @@
 /*
  *  Lince - Automatizacion de datos observacionales
  *  Copyright (C) 2010  Brais Gabin Moreira
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,7 +24,6 @@ import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- *
  * @author Brais
  */
 public class Categoria extends DefaultMutableTreeNode {
@@ -38,12 +37,17 @@ public class Categoria extends DefaultMutableTreeNode {
 
     public Categoria(String nombre) {
         this.nombre = nombre;
-        if (StringUtils.isEmpty(this.codigo)){
-            String codeName = StringUtils.EMPTY;
-            for (String item: nombre.split(" ")){
-                codeName+= item.substring(0,1);
+        if (StringUtils.isEmpty(this.codigo)) {
+            StringBuilder codeName = new StringBuilder(StringUtils.EMPTY);
+            for (String item : nombre.split(" ")) {
+                try{
+                    if (StringUtils.isNotEmpty(item))
+                        codeName.append(item.substring(0, 1));
+                }catch (Exception e){
+                    System.out.println("Carácteres raros evitados"); //Con doble espacio generaba error! 202
+                }
             }
-            this.codigo = codeName;
+            this.codigo = codeName.toString();
         }
     }
 

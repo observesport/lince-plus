@@ -262,44 +262,62 @@ public class LegacyConverterService {
     }
 
     /**
+     * Maximizes exception control for export actions
+     *
+     * @param legacyCriteria base legacy data
+     * @param linceCriteria  new component
+     */
+    private void addCategoriesToLegacyCriteria(Criterio legacyCriteria, Criteria linceCriteria) {
+        if (linceCriteria != null) {
+            List<Category> currentCategories = linceCriteria.getInnerCategories();
+            boolean containsInformationNode = linceCriteria.isInformationNode();
+            if (currentCategories != null && !currentCategories.isEmpty()) {
+                for (Category cat : currentCategories) {
+                    try {
+                        InstrumentoObservacional.getInstance().addHijo(legacyCriteria, cat.getName());
+                        Categoria categoria = (Categoria) legacyCriteria.getChildAt(legacyCriteria.getChildCount() - 1);
+                        String code = cat.getCode();
+                        if (containsInformationNode) {
+                            code += cat.getId();
+                        }
+                        categoria.setCodigo(code);
+                        categoria.setDescripcion(cat.getDescription());
+                        //categoria.setNombre(cat.getName());
+                        categoria.setParent(legacyCriteria);
+                    } catch (Exception e) {
+                        log.error(getClass().getEnclosingMethod().toString(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Valid migration to Legacy instrument.
      * Adding items is done by reference, which justifies using an unique method for it.
      * Based on HoisanTool::import
      */
     private void migrateDataToLegacyInstrument() {
-        try {
-            InstrumentoObservacional.loadNewInstance();
-            InstrumentoObservacional i = InstrumentoObservacional.getInstance();
-            RootInstrumentoObservacional root = (RootInstrumentoObservacional) i.getModel().getRoot();
-            DefaultMutableTreeNode variable = (DefaultMutableTreeNode) root.getChildAt(2);
-            for (CategoryData c : categoryService.getCollection()) {
+
+        InstrumentoObservacional.loadNewInstance();
+        InstrumentoObservacional i = InstrumentoObservacional.getInstance();
+        RootInstrumentoObservacional root = (RootInstrumentoObservacional) i.getModel().getRoot();
+        DefaultMutableTreeNode variable = (DefaultMutableTreeNode) root.getChildAt(2);
+        for (CategoryData c : categoryService.getCollection()) {
+            try {
                 Criteria criteria = (Criteria) c;
-                String criteriaName = c.getName();
-                String criteriaDescription = c.getDescription();
+                String criteriaName = criteria.getName();
+                String criteriaDescription = criteria.getDescription();
                 InstrumentoObservacional.getInstance().addHijo(variable, criteriaName);
                 Criterio[] cs = i.getCriterios();
                 Criterio criterio = cs[cs.length - 1];
                 criterio.setDescripcion(criteriaDescription);
                 criterio.setPersistente(criteria.isPersistence());
-
                 //insert internal Categories
-                for (Category cat : criteria.getInnerCategories()) {
-                    InstrumentoObservacional.getInstance().addHijo(criterio, cat.getName());
-                    Categoria categoria = (Categoria) criterio.getChildAt(criterio.getChildCount() - 1);
-                    String code = cat.getCode();
-                    if (criteria.isInformationNode()) {
-                        code += cat.getId();
-                    }
-                    categoria.setCodigo(code);
-                    categoria.setDescripcion(cat.getDescription());
-                    //categoria.setNombre(cat.getName());
-                    categoria.setParent(criterio);
-                }
-
+                addCategoriesToLegacyCriteria(criterio, criteria);
+            } catch (Exception e) {
+                log.error(getClass().getEnclosingMethod().toString(), e);
             }
-
-        } catch (Exception e) {
-            log.error(getClass().getEnclosingMethod().toString(), e);
         }
     }
 

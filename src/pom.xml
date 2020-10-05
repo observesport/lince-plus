@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.deicos.lince</groupId>
     <artifactId>lince-scientific-base</artifactId>
-    <version>1.3.0-RELEASE</version>
+    <version>1.3.1-RELEASE</version>
     <packaging>pom</packaging>
     <description>Lince - Multi-platform sport analysis software base</description>
     <parent>
