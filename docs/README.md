@@ -15,7 +15,6 @@ Please, if any use or scientific research is done through this application, cite
 
 ### Contact 
 
-
 - Any bug, mistake or improvement can be suggested using the "issues" part from this project
 - Check online documentation and our wiki 
 - For any usage or request please send an email to alberto.soto@gmail.com
@@ -23,9 +22,8 @@ Please, if any use or scientific research is done through this application, cite
 
 ### System requirements
 
-
 - Lince works in any computer (x64) and has been tested with Win10 and MacOS
-- Any version needs, at least, java 1.8 preconfigured on your system
+- Any version needs, at least, java 1.8 preconfigured on your system. Lince will install it automatically.
 
 ## Download 
 
@@ -34,10 +32,10 @@ Please, if any use or scientific research is done through this application, cite
 20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install Lince.
 We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software](https://support.apple.com/es-es/guide/mac-help/mh40616/mac).
 
-### Current version 1.3.0 RELEASE
+### Current version 1.3.1 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)					  
-- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)					  
+- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
 
 
 ## Documentation
@@ -49,6 +47,8 @@ We are working on the licensing issue, but, until it´s solved you must follow t
 
 ### Previous versions
 
+- [1.3.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)					  
+- [1.3.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)
 - [1.2.0 - Win x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
 - [1.2.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
 - [1.1.2 - Win x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
@@ -78,6 +78,14 @@ Use our bug system to report any problem at [bug reporting](https://github.com/o
 Lince Plus installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 1.3.1 RELEASE, 05/10/2020
+	- Solves problems with big instruments.
+	- This version resolves the following issues:
+		- Exporting data does not break anymore
+		- Improving performance on visualization and recording
+		- Better Quantitizing phase
+		- GA
 
 - Version 1.3.0 RELEASE, 30/06/2020
 	- UI Enhancement & web redesign
