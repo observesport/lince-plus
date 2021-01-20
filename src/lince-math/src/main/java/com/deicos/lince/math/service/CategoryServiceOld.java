@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -264,18 +265,21 @@ public class CategoryServiceOld {
 
     public boolean isSameEntry(CategoryData elem, Integer id, String code, String name) {
         String realCode = code;
-        if (StringUtils.isNotEmpty(realCode) && CategoryData.isInformationNode(code)) {
-            //category element associates to criteria
-            realCode = CategoryData.getInformationNodeCode(code);
+        try{
+            if (StringUtils.isNotEmpty(realCode) && CategoryData.isInformationNode(code)) {
+                //category element associates to criteria
+                realCode = CategoryData.getInformationNodeCode(code);
+            }
+            if (id != null && Objects.equals(elem.getId(), id)) {
+                return true;
+            } else if (StringUtils.isNotEmpty(code) && StringUtils.equals(realCode, elem.getCode())) {
+                return true;
+            }
+            //last case by exact name
+            return (StringUtils.isNotEmpty(name) && StringUtils.equals(name, elem.getName()));
+        }catch (Exception e){
+            return false;
         }
-        if (id != null && elem.getId() == id) {
-            return true;
-        } else if (StringUtils.isNotEmpty(code) && StringUtils.equals(realCode, elem.getCode())) {
-            return true;
-        }
-
-        //last case by exact name
-        return (StringUtils.isNotEmpty(name) && StringUtils.equals(name, elem.getName()));
     }
 
 

@@ -449,7 +449,8 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         boolean isFirst = true;
 
         for (FilaRegistro filaRegistro : datosVariables) {
-            String cont = exportFila(criterios, filaRegistro, ",");
+            //asoto 2020 correction, trimming result in strange behavior project
+            String cont = StringUtils.trim(exportFila(criterios, filaRegistro, ","));
 
             if (isFirst) {
                 int time = filaRegistro.getFrames();
