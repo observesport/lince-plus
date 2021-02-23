@@ -32,10 +32,10 @@ Please, if any use or scientific research is done through this application, cite
 20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install Lince.
 We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software](https://support.apple.com/es-es/guide/mac-help/mh40616/mac).
 
-### Current version 1.3.1 RELEASE
+### Current version 1.3.2 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)					  
-- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
+- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)					  
+- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)
 
 
 ## Documentation
@@ -47,6 +47,8 @@ We are working on the licensing issue, but, until it´s solved you must follow t
 
 ### Previous versions
 
+- [1.3.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
+- [1.3.1 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
 - [1.3.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)					  
 - [1.3.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)
 - [1.2.0 - Win x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
@@ -79,6 +81,9 @@ Lince Plus installer is build using Install4J [multi-platform installer builder]
 
 ## Release notes
 
+- Version 1.3.2 RELEASE, 20/01/2021
+	- Excel CSV error review 
+  
 - Version 1.3.1 RELEASE, 05/10/2020
 	- Solves problems with big instruments.
 	- This version resolves the following issues:
