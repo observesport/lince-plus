@@ -1,10 +1,10 @@
 ![Lince plus icon](./lince-icon.png)
 
-Lince plus is a project under development through a Phd study with the collaboration of Inefc Catalunya.
+LINCE PLUS is a project under development through a Phd study with the collaboration of Inefc Catalunya.
 
-## About Lince
+## About LINCE PLUS
 
-Lince is a visualization tool for research, that let's you analyze data and organize your study
+LINCE PLUS is a visualization tool for research, that let's you analyze data and organize your study
 
 ## Article Citation
 
@@ -22,14 +22,14 @@ Please, if any use or scientific research is done through this application, cite
 
 ### System requirements
 
-- Lince works in any computer (x64) and has been tested with Win10 and MacOS
-- Any version needs, at least, java 1.8 preconfigured on your system. Lince will install it automatically.
+- LINCE PLUS works in any computer (x64) and has been tested with Win10 and MacOS
+- Any version needs, at least, java 1.8 preconfigured on your system. LINCE PLUS will install it automatically.
 
 ## Download 
 
 #### Important: MacOS users
 
-20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install Lince.
+20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install LINCE PLUS.
 We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software](https://support.apple.com/es-es/guide/mac-help/mh40616/mac).
 
 ### Current version 1.3.2 RELEASE
@@ -77,7 +77,7 @@ Use our bug system to report any problem at [bug reporting](https://github.com/o
 ![Install4J](install4j_medium.png)
 
 
-Lince Plus installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
+LINCE PLUS installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
 
