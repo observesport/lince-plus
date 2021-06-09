@@ -30,7 +30,7 @@ Please, if any use or scientific research is done through this application, cite
 #### Important: MacOS users
 
 20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install LINCE PLUS.
-We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software](https://support.apple.com/en-us/HT202491).
+We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software - ES ](https://support.apple.com/es-es/guide/mac-help/mh40616/mac) o [Install uncertified software - EN](https://support.apple.com/en-us/HT202491).
 
 ### Current version 1.3.2 RELEASE
 
