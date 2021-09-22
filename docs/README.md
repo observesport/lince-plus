@@ -74,6 +74,12 @@ Use our bug system to report any problem at [bug reporting](https://github.com/o
 
 ## Support
 
+![Jetbrains](jetbrains-variant-4.png)
+
+
+LINCE PLUS has been develop using [Jetbrains Suite](https://jb.gg/OpenSource) thanks to their license support for Open source projects. 
+
+
 ![Install4J](install4j_medium.png)
 
 
