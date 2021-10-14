@@ -19,6 +19,12 @@ Please, if any use or scientific research is done through this application, cite
 - Check online documentation and our wiki 
 - For any usage or request please send an email to alberto.soto@gmail.com
 
+### Supported languages
+
+Our software it's build on a multilanguage base. Status for it:
+- Spanish: 100%
+- English: 80%. Next release will publish 100%.
+- Deutsch & Catalan will be available soon
 
 ### System requirements
 
