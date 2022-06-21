@@ -10,7 +10,7 @@ LINCE PLUS is a visualization tool for research, that let's you analyze data and
 
 Please, if any use or scientific research is done through this application, cite us to improve:
 
-- Soto, A, Camerino, O, Anguera, M.T., Iglesias, X., & Castañer, M.,  (2021): LINCE PLUS Software for Systematic Observation Studies of Sports and Health. _Behavior Research Methods_. https://doi.org/10.3758/s13428-021-01642-1 [FI: 4.425 (JCR), RANK: 1/13, (2019) Q1 PSYCHOLOGY & MATHEMATICAL]
+- Soto, A, Camerino, O, Anguera, M.T., Iglesias, X., & Castañer, M.,  (2022): LINCE PLUS Software for Systematic Observation Studies of Sports and Health. _Behavior Research Methods 54_ , 1263–1271. , https://doi.org/10.3758/s13428-021-01642-1 [FI: 4.425 (JCR), RANK: 1/13, (2019) Q1 PSYCHOLOGY & MATHEMATICAL]
 
 - Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., & Castañer, M. (2019). LINCE PLUS: Research Software for Behaviour Video Analysis. _Apunts. Educación Física y Deportes_, 137, 149-153. doi:10.5672/apunts.2014-0983.es.(2019/3).137.11
 
