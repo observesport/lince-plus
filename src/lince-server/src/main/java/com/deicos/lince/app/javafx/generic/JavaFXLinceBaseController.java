@@ -40,7 +40,7 @@ public abstract class JavaFXLinceBaseController {
     private void handleAbout() {
         JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION
                 , "About"
-                , "Author: Alberto Soto Fernandez\nWebsite: http://www.albertosoto.es");
+                , "\n Author: Alberto Soto Fernandez\nhttps://www.albertosoto.es");
     }
 
     /**

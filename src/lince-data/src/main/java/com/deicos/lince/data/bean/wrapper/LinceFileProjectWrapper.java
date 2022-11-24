@@ -3,7 +3,7 @@ package com.deicos.lince.data.bean.wrapper;
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.data.bean.user.ResearchProfile;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

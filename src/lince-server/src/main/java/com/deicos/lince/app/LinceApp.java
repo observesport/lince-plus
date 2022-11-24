@@ -19,6 +19,7 @@ package com.deicos.lince.app;
 import com.deicos.lince.app.base.AbstractJavaFxApplicationSupport;
 import com.deicos.lince.app.component.ApplicationContextProvider;
 import com.deicos.lince.app.javafx.JavaFXLoader;
+import com.deicos.lince.app.service.SystemService;
 import com.deicos.lince.app.service.VideoService;
 import com.deicos.lince.data.barcode.QRCodeGenerator;
 import com.deicos.lince.data.system.operations.LinceFileHelper;
@@ -73,6 +74,8 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
     protected ProfileService profileService;
     @Autowired
     protected VideoService videoService;
+    @Autowired
+    protected SystemService systemService;
     @Autowired
     protected DataHubService dataHubService;
     @Autowired
@@ -132,7 +135,7 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
 
     private void generateQRCode() {
         try {
-            String url = String.format("http://%s:%s", StringUtils.removeStart(SystemNetworkHelper.getMacAccessibleIp(), "/"), getCurrentPort());
+            String url = systemService.getCurrentServerURI();
             //getServerURL()
             codeQR = QRCodeGenerator.generateQRCodeFileImage(url);
             log.info("QR Code to " + url);

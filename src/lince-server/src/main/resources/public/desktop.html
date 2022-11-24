@@ -72,10 +72,14 @@
                                     style="margin-top: 0!important;margin-bottom: 0!important;">
                                     Article citation
                                 </h3>
-                                <span>Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., &
-                                    Castañer, M.(2019). LINCE PLUS: Research Software for Behaviour Video Analysis.
-                                    <span style="font-style: italic!important;"> Apunts. Educación Física y Deportes</span>,137,
-                                    149-153. doi:10.5672/apunts.2014-0983.es.(2019/3).137.11</span>
+                                <span>Soto, A, Camerino, O, Anguera, M.T., Iglesias, X., & Castañer, M., (2022): LINCE PLUS Software for Systematic Observation Studies of Sports and Health.
+                                    <span style="font-style: italic!important;"> Behavior Research Methods </span>
+                                    54 , 1263–1271 , https://doi.org/10.3758/s13428-021-01642-1
+                                </span>
+                                <!--                                <span>Soto, A., Camerino, O., Iglesias, X., Anguera, M. T., &-->
+                                <!--                                    Castañer, M.(2019). LINCE PLUS: Research Software for Behaviour Video Analysis.-->
+                                <!--                                    <span style="font-style: italic!important;"> Apunts. Educación Física y Deportes</span>,137,-->
+                                <!--                                    149-153. doi:10.5672/apunts.2014-0983.es.(2019/3).137.11</span>-->
                             </div>
                         </div>
                     </div>
@@ -95,32 +99,33 @@
                                     <div class="col-sm-6">
                                         <div class="blog-post-desc">
                                             <img src="/component/getQRCode" width="180" height="180" alt="QRCode"/>
-                                            <div> Usa este código QR para conectar con la aplicación de LINCE
-                                                PLUS desde otros tablets o dispositivos en la misma red
+                                            <div id="lang_qr"> Usa este código QR para conectar con la aplicación de
+                                                LINCE PLUS desde otros tablets o dispositivos en la misma red
                                                 local.
                                             </div>
+                                            <p id="projectUri"></p>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 hidden" id="projectInfo">
-
                                         <div class="blog-post-desc">
-                                            <div>Ya puedes generar tus estudios con la
+                                            <div id="lang_desc_1">Ya puedes generar tus estudios con la
                                                 última tecnología. Recuerda: LINCE PLUS integra
                                                 el programa estadístico R en su interior y cálculos validados.
                                             </div>
-                                            <div style="padding-top: 5px;"><b> Para empezar, abre tu navegador a través de la
+                                            <div style="padding-top: 5px;"><b id="lang_desc_2"> Para empezar, abre tu
+                                                navegador a través de la
                                                 opción superior "Visualizar" > "Abrir navegador".</b></div>
                                             <ul class="list-group" style="padding-top: 5px;">
                                                 <li class="list-group-item">
-                                                    Registros por investigador 1
+                                                    <span id="option_registers">Registros por investigador 1</span>
                                                     <span class="badge badge-success" id="statScene">&#160;</span>
                                                 </li>
                                                 <li class="list-group-item">
-                                                    Videos
+                                                    <span>Videos</span>
                                                     <span class="badge badge-success" id="statVideo">&#160;</span>
                                                 </li>
                                                 <li class="list-group-item">
-                                                    Observadores
+                                                    <span id="option_observers">Observadores</span>
                                                     <span class="badge badge-success" id="statObserver">&#160;</span>
                                                 </li>
                                             </ul>
@@ -141,7 +146,7 @@
 <!-- END CONTAINER -->
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
-    <div class="page-footer-inner"> 2020 &copy; Lince PLUS observation tool by Alberto Soto Fernández.
+    <div class="page-footer-inner"> 2022 &copy; Lince PLUS observation tool by Alberto Soto Fernández.
     </div>
     <div class="scroll-to-top">
         <i class="icon-arrow-up"></i>
@@ -164,11 +169,21 @@
 
     function updateStats() {
         $.when($.linceApp.global.doAjax('/session/getProjectInfo', 'GET', null, function (e) {
+            console.log("getting project info");
             console.log(e);
             $("#statScene").html(e.scenes);
             $("#statVideo").html(e.videos);
+            $("#projectUri").html(e.url);
             $("#statObserver").html(e.observers);
             $("#projectInfo").removeClass('hidden');
+            if (e.i18n) {
+                const ids = ["lang_qr", "lang_desc_1", "lang_desc_2", "option_registers", "option_observers"];
+                ids.forEach(id => {
+                    const msg = e.i18n[id];
+                    console.log(msg);
+                    $("#" + id).html(msg);
+                });
+            }
             if (e.update) {
                 let msg = "There is a newer version of Lince PLUS: " + e.version;
                 $("#updateMessage").html(msg);

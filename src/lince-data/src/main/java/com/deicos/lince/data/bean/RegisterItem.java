@@ -87,8 +87,8 @@ public class RegisterItem implements Comparable<RegisterItem> {
 
     public void setFramesFromTime() {
         try {
-            this.frames = new Integer(Math.toIntExact((long) (getVideoTime()
-                    * VideoPlayerData.DEFAULT_FRAMES_PER_SECOND)));
+            this.frames = Math.toIntExact((long) (getVideoTime()
+                    * VideoPlayerData.DEFAULT_FRAMES_PER_SECOND));
         } catch (Exception e) {
             log.error("Excepción en conversion de frames", e);
         }

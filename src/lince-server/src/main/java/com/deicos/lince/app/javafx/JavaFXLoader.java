@@ -11,6 +11,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.core.Local;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * lince-scientific-base
@@ -27,6 +31,7 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
     private FXMLLoader loader = new FXMLLoader();
     private LinceApp mainLinceApp;
     private Pane pane;
+    private Locale locale;
     private T controller;
 
     public T getController() {
@@ -47,8 +52,8 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
 
     public JavaFXLoader(String location, LinceApp mainLinceApp) {
         try {
-            //String location1 = location;
             this.loader = new FXMLLoader();
+            this.loader.setResources(getLocalizedResourceBundle());
             this.mainLinceApp = mainLinceApp;
             loader.setLocation(this.mainLinceApp.getClass().getResource(location));
             this.pane = loader.load();
@@ -57,6 +62,26 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
         }
     }
 
+    /**
+     * https://stackoverflow.com/questions/2469435/how-to-detect-operating-system-language-locale-from-java-code
+     * @return System locale
+     */
+    public Locale getLocale() {
+        if (this.locale == null) {
+//            this.locale = new Locale(System.getProperty("user.language"), System.getProperty("user.country"));
+            this.locale = new Locale(System.getProperty("user.language"));
+        }
+        return this.locale;
+//        return Locale.getDefault();
+    }
+    public ResourceBundle getLocalizedResourceBundle(){
+        try {
+            Locale locale = getLocale();
+            return ResourceBundle.getBundle("messages", locale);
+        }catch (Exception e){
+            return ResourceBundle.getBundle("messages", Locale.ENGLISH);
+        }
+    }
     /**
      * DARK ZONE
      * Javafx controllers cannot use autowired settings

@@ -3,7 +3,7 @@ package com.deicos.lince.data.bean.example;
 import com.deicos.lince.data.util.LocalDateAdapter;
 import javafx.beans.property.*;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 
 /**

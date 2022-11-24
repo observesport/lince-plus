@@ -51,7 +51,6 @@ import java.util.function.Consumer;
  * elements can be placed.
  *
  * @author Alberto Soto Fernandez
- * @author Marco Jakob
  */
 @Component
 public class RootLayoutController extends JavaFXLinceBaseController {
@@ -301,7 +300,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleAbout() {
         JavaFXLogHelper.showMessage(AlertType.INFORMATION
-                //, getMainApp().getMessage("select_data","person")
                 , getMainLinceApp().getMessage("about")
                 , getMainLinceApp().getMessage("about_content"));
     }

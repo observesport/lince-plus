@@ -12,17 +12,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.deicos.lince.app.ServerAppParams.*;
+import static com.deicos.lince.app.ServerAppParams.BYTES;
 
 /**
  * lince-scientific-desktop
@@ -33,10 +45,11 @@ import java.util.Map;
  */
 @Service
 public class VideoService {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static VideoPlayerData videoPlayerData = new VideoPlayerData();
-
+    @Autowired
+    private ResourceLoader resourceLoader;
     public static final String DEFAULT_VIDEO_EXAMPLE = "public/media/crono.mp4";
 
     @Autowired
@@ -45,6 +58,31 @@ public class VideoService {
     public void addVideoFile(File f) {
         if (f != null)
             dataHubService.getVideoPlayList().add(f);
+    }
+
+    /**
+     * Returns selected video File from a rq named
+     *
+     * @param fileRQ user selection name
+     * @return File holding selectino
+     */
+    public File getSelectedVideoFile(String fileRQ) {
+        try {
+            File result = null;
+            if (StringUtils.equals(fileRQ, "test")) {
+                //The old version uses profileService, so lets get the damn rabbit into action
+                result = getVideoFile();
+            } else {
+                for (File f : dataHubService.getVideoPlayList()) {
+                    if (StringUtils.contains(f.getPath(), fileRQ)) {
+                        result = f;
+                    }
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            return getVideoFile();
+        }
     }
 
     /**
@@ -74,7 +112,7 @@ public class VideoService {
             //Way2 not working: File file = new ClassPathResource(path).getFile();
             return file;
         } catch (Exception e) {
-            log.error("Getting resource file", e);
+            logger.error("Getting resource file", e);
             JavaFXLogHelper.addLogError("Getting resource file", e);
             return null;
         }
@@ -150,7 +188,7 @@ public class VideoService {
             }
             return rtn;
         } catch (Exception e) {
-            log.error("ERR accediendo fichero", e);
+            logger.error("ERR accediendo fichero", e);
             return null;
         }
     }
@@ -206,4 +244,90 @@ public class VideoService {
     public void setCurrentSpeed(Double currentSpeed) {
         videoPlayerData.setSpeed(currentSpeed);
     }
+
+//    https://melgenek.github.io/spring-video-service
+    public ResponseEntity<byte[]> getStreamingResponse(File file, String httpRangeList) throws MalformedURLException {
+        try {
+            if (file != null) {
+                byte[] data = null;
+                final Long fileSize = FileUtils.sizeOf(file);
+                UrlResource video = new UrlResource(file.toURI());
+                String contentLength = fileSize.toString();
+                long rangeStart = 0;
+                long rangeEnd = CHUNK_SIZE;
+                if (StringUtils.isNotEmpty(httpRangeList)) {
+                    String[] ranges = httpRangeList.split("-");
+                    rangeStart = Long.parseLong(ranges[0].substring(6));
+                    if (ranges.length > 1) {
+                        rangeEnd = Long.parseLong(ranges[1]);
+                    } else {
+                        rangeEnd = rangeStart + CHUNK_SIZE;
+                    }
+                    rangeEnd = Math.min(rangeEnd, fileSize - 1);
+                    contentLength = String.valueOf((rangeEnd - rangeStart) + 1);
+                    data = readByteRange(video.getFile().getAbsolutePath(), rangeStart, rangeEnd);
+                }
+                return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                        .header(CONTENT_TYPE, VIDEO_CONTENT + "mp4")
+                        .header(ACCEPT_RANGES, BYTES)
+                        .header(CONTENT_LENGTH, StringUtils.isNotEmpty(httpRangeList)?contentLength:String.valueOf(fileSize))
+                        .header(CONTENT_RANGE, BYTES + " " + rangeStart + "-" + rangeEnd + "/" + fileSize)
+                        .contentType(MediaTypeFactory
+                                .getMediaType(video)
+                                .orElse(MediaType.APPLICATION_OCTET_STREAM))
+                        .body(data);
+            } else {
+                //if reach point, is not found
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            logger.error("videoOutputError", e);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+    }
+
+    public static byte[] readByteRange(String sourceFilePath, long startingOffset, Long length) throws IOException
+    {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(sourceFilePath, "r"))
+        {
+            byte[] buffer = new byte[length.intValue()];
+            randomAccessFile.seek(startingOffset);
+            randomAccessFile.readFully(buffer);
+            return buffer;
+        }
+    }
+
+    /**
+     * Content length.
+     *
+     * @param filePath String.
+     * @return Long.
+     */
+    public Long getFileSize(String filePath) {
+        return Optional.ofNullable(filePath)
+                .map(file -> Paths.get(filePath)) //Paths.get(getFilePath(), file)
+                .map(this::sizeFromFile)
+                .orElse(0L);
+    }
+
+    /**
+     * Getting the size from the path.
+     *
+     * @param path Path.
+     * @return Long.
+     */
+    private Long sizeFromFile(Path path) {
+        try {
+            return Files.size(path);
+        } catch (IOException ioException) {
+            logger.error("Error while getting the file size", ioException);
+        }
+        return 0L;
+    }
+
+    public Mono<Resource> getMonoVideo(String url){
+        return Mono.fromSupplier(()->resourceLoader.
+                getResource("file:"+url))   ;
+    }
+
 }

@@ -1,38 +1,31 @@
 package com.deicos.lince.app.spring.controller;
 
 import com.deicos.lince.app.ServerAppParams;
-import com.deicos.lince.app.service.MultiPartFileSenderService;
 import com.deicos.lince.app.service.VideoService;
 import com.deicos.lince.data.LinceDataConstants;
 import com.deicos.lince.data.bean.RegisterItem;
 import com.deicos.lince.data.bean.categories.CategoryData;
 import com.deicos.lince.math.RenjinDataAttribute;
 import com.deicos.lince.math.SessionDataAttributes;
-import com.deicos.lince.math.service.*;
+import com.deicos.lince.math.service.AnalysisService;
+import com.deicos.lince.math.service.CategoryService;
+import com.deicos.lince.math.service.ProfileService;
+import com.deicos.lince.math.service.SessionService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.LocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 
 /**
  * Lince_v2
@@ -50,21 +43,17 @@ public class PageController {
     private final CategoryService categoryService;
     private final AnalysisService analysisService;
     private final VideoService videoService;
-    private final DataHubService dataHubService;
-    private final MultiPartFileSenderService multiPartFileSenderService;
     private final SessionService sessionService;
     private final LocaleResolver localeResolver;
     private final String linceVersion;
 
     @Autowired
-    public PageController(Environment environment, ProfileService profileService, CategoryService categoryService, AnalysisService analysisService, VideoService videoService, DataHubService dataHubService, MultiPartFileSenderService multiPartFileSenderService, SessionService sessionController, LocaleResolver localeResolver) {
+    public PageController(Environment environment, ProfileService profileService, CategoryService categoryService, AnalysisService analysisService, VideoService videoService,    SessionService sessionController, LocaleResolver localeResolver) {
         this.environment = environment;
         this.profileService = profileService;
         this.categoryService = categoryService;
         this.analysisService = analysisService;
         this.videoService = videoService;
-        this.dataHubService = dataHubService;
-        this.multiPartFileSenderService = multiPartFileSenderService;
         this.sessionService = sessionController;
         this.localeResolver = localeResolver;
         this.linceVersion = environment.getProperty(ServerAppParams.PARAM_LINCE_VERSION);
@@ -239,68 +228,5 @@ public class PageController {
         addCommonSettings(request, session, model);
         return "categories";
     }
-
-    /**
-     * Commmon response for streaming without cache support
-     *
-     * @param response response
-     * @param request  request
-     * @return
-     */
-    @RequestMapping(value = "/file", method = RequestMethod.GET, produces = {"application/octet-stream"})
-    @ResponseBody
-    public FileSystemResource getFile(final HttpServletResponse response, HttpServletRequest request) {
-        response.setHeader("Cache-Control", "no-cache");
-        try {
-            FileSystemResource rtn = new FileSystemResource(videoService.getVideoFile());
-            return rtn;
-        } catch (Exception e) {
-            log.error("ERR accediendo fichero", e);
-            return null;
-        }
-    }
-
-    /**
-     * Full support for heading and streaming profileService allowing jumps into specific times for chrome and chromium
-     *
-     * @param fileRQ
-     * @return
-     * @throws IOException
-     */
-    @CrossOrigin
-    @RequestMapping(value = ServerAppParams.BASE_URL_STREAMING + "{fileRQ}", method = RequestMethod.GET)
-    public ResponseEntity<UrlResource> getMedia(@PathVariable String fileRQ) throws IOException {
-        try {
-            File result = null;
-            if (StringUtils.equals(fileRQ, "test")) {
-                //The old version uses profileService, so lets get the damn rabbit into action
-                result = videoService.getVideoFile();
-            } else {
-                for (File f : dataHubService.getVideoPlayList()) {
-                    if (StringUtils.contains(f.getPath(), fileRQ)) {
-                        result = f;
-                    }
-                }
-            }
-            if (result != null) {
-                /*
-                multiPartFileSenderService.fromPath(result.toPath()).with(request).with(response).serveResource();
-                */
-                UrlResource video = new UrlResource(result.toURI());
-                return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                        .contentType(MediaTypeFactory
-                                .getMediaType(video)
-                                .orElse(MediaType.APPLICATION_OCTET_STREAM))
-                        .body(video);
-            } else {
-                //if reach point, is not found
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UrlResource(fileRQ));
-            }
-        } catch (Exception e) {
-            log.error("videoOutputError", e);
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new UrlResource(fileRQ));
-        }
-    }
-
 
 }

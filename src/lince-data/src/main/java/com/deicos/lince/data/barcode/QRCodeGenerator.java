@@ -26,20 +26,7 @@ import java.util.Map;
  * @author berto (alberto.soto@gmail.com)
  */
 public class QRCodeGenerator {
-    /*private static  QRCodeGenerator instance;
-    private final String serverUri;
-    private QRCodeGenerator(String serverUri){
-        this.serverUri = "";
-    }
 
-    public static QRCodeGenerator getInstance(String serverUri){
-
-    }
-
-    public static QRCodeGenerator getInstance(){
-        instance = new QRCodeGenerator();
-        return instance;
-    }*/
 
     protected static final Logger log = LoggerFactory.getLogger(BeanSchemeHelper.class);
 

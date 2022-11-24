@@ -18,6 +18,7 @@ package com.deicos.lince.app.base;
 import com.deicos.lince.app.component.I18nMessageProvider;
 import com.deicos.lince.app.helper.ServerValuesHelper;
 import com.deicos.lince.app.javafx.AppPreloader;
+import com.deicos.lince.app.service.SystemService;
 import com.deicos.lince.data.base.ILinceApp;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
@@ -38,7 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * @author Thomas Darimont
+ * Created by Alberto Soto
  */
 public abstract class AbstractJavaFxApplicationSupport extends Application implements ILinceApp {
 
@@ -72,6 +73,8 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
     protected ApplicationContext context;
     @Autowired
     protected Environment environment;
+    @Autowired
+    protected SystemService systemService;
     @Autowired
     protected I18nMessageProvider i18nMessageProvider;
 
@@ -115,17 +118,15 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
     protected static void launchApp(Class<? extends AbstractJavaFxApplicationSupport> appClass, String[] args) {
 
         AbstractJavaFxApplicationSupport.savedArgs = args;
+//        https://stackoverflow.com/questions/59656908/problem-with-javafx-intellij-setting-when-try-to-use-launcherimpl-for-preloader
+        System.setProperty("javafx.preloader", AppPreloader.class.getName());
         //Application.launch(appClass, args);
         //SpringApplication.run(appClass, args); ==> esta en el init - ya es spring. Ver application context.
         LauncherImpl.launchApplication(appClass, AppPreloader.class, args);
     }
 
     public Integer getCurrentPort() {
-        String port = environment.getProperty("local.server.port");
-        if (StringUtils.isNotEmpty(port)) {
-            return Integer.valueOf(port);
-        }
-        return null;
+        return systemService.getCurrentPort();
     }
 
     public String getServerURL() {

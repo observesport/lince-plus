@@ -58,11 +58,11 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
                         if (categoriaActual != null) {
                             registroActual.put(criterioActual, categoriaActual);
                         } else {
-                            String message = java.util.ResourceBundle.getBundle("i18n.Bundle").getString("CATEGORIA ")
+                            String message = ResourceBundle.getBundle("i18n.Bundle").getString("CATEGORIA ")
                                     + categoria.getNombre()
-                                    + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" CON CODIGO ")
+                                    + ResourceBundle.getBundle("i18n.Bundle").getString(" CON CODIGO ")
                                     + categoria.getCodigo()
-                                    + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" NO ENCONTRADA.");
+                                    + ResourceBundle.getBundle("i18n.Bundle").getString(" NO ENCONTRADA.");
                             AtomicBoolean found = new AtomicBoolean(false);
                             exceptions.forEach(s -> {
                                 if (StringUtils.contains(s.getMessage(), message)) {

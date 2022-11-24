@@ -23,7 +23,7 @@ public class OSTest {
         System.out.println("fin");
         try{
             // Process process = runtime.exec(args2);
-            Runtime.getRuntime().exec("open http://albertosoto.es");
+            Runtime.getRuntime().exec("open https://observesport.github.io/lince-plus/");
         }catch (Exception e){
             System.out.printf("err",e);
         }

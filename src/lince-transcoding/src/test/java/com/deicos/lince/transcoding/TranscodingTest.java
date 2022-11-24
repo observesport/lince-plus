@@ -3,15 +3,14 @@ package com.deicos.lince.transcoding;
 import com.deicos.lince.transcoding.component.TranscodingProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacpp.Loader;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 
@@ -22,8 +21,9 @@ import java.io.File;
  *
  * @author berto (alberto.soto@gmail.com)
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {com.deicos.lince.transcoding.component.TranscodingProvider.class})
+//@RunWith(SpringRunner.class) junit4
+@ExtendWith(SpringExtension.class)    //junit5
+@SpringBootTest(classes = {TranscodingProvider.class})
 public class TranscodingTest {
 
     public String getDemoFileURI(MediaFileType mediaFileType) {
@@ -40,12 +40,13 @@ public class TranscodingTest {
 
     private static final Logger log = LoggerFactory.getLogger(TranscodingTest.class);
 
-    //@Test
+//    @Test
     public void providerTranscoderConversion() {
-        File tmp = getDemoFile(MediaFileType.OGG);
+        File tmp = getDemoFile(MediaFileType.MOV);
         File output = transcodingProvider.transcodeFileToMP4(tmp);
-        log.info("output:"+output.getAbsolutePath());
-        Assert.assertNotNull(output);
+        log.info("output:" + output.getAbsolutePath());
+//        Assert.assertNotNull(output); //junit4
+        Assertions.assertNotNull(output); //junit5
     }
 
     @Test
@@ -59,8 +60,6 @@ public class TranscodingTest {
             log.error("MEK", e);
         }
     }
-
-
 
 
 }

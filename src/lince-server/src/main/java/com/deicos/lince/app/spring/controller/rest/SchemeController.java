@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Rest controller to map valid beans structure for data editors
  *
  * TODO: Needs implementation. By now let's work with static schemes
- * @see com.deicos.lince.data.BeanSchemeHelper
+ * @see BeanSchemeHelper
  */
 @CrossOrigin(maxAge = 3600)
 @RestController

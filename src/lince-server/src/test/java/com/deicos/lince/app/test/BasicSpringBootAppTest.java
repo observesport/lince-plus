@@ -1,12 +1,14 @@
 package com.deicos.lince.app.test;
 
-import com.deicos.lince.app.LinceApp;
-import com.deicos.lince.math.service.DataHubService;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * com.deicos.lince.app.test
@@ -20,17 +22,27 @@ import org.springframework.boot.test.context.SpringBootTest;
  *
  * breaks on install
  */
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = LinceApp.class)
-//@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+@SpringBootTest()
 public class BasicSpringBootAppTest {
-    //@Autowired
-    private DataHubService dataHubService;
 
-    //@Test
-    public void serviceWorks() {
-        String name = "pepito";
-        dataHubService.clearData();
-        Assert.assertNotNull(name);
+    @Test
+    public void fxLocaleTest() {
+        Locale locale = Locale.getDefault();
+        String lang = locale.getDisplayLanguage();
+        String country = locale.getDisplayCountry();
+        Assertions.assertNotNull(locale);
+    }
+
+    @Test
+    public void fxLocalizedResourcesTest(){
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", Locale.getDefault());
+        Assertions.assertTrue(StringUtils.contains(bundle.getString("about"), "Lince Plus"));
+    }
+    @Test
+    public void fxLocalizedFailResourcesTest(){
+        Locale locale = Locale.FRANCE;
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",locale);
+        Assertions.assertTrue(StringUtils.contains(bundle.getString("about"), "Lince Plus"));
     }
 }

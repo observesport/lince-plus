@@ -14,10 +14,10 @@ import org.springframework.web.servlet.view.RedirectView;
  *
  * @author berto (alberto.soto@gmail.com)
  */
-@Component
-@ControllerAdvice
+//@Component
+//@ControllerAdvice
 public class UnhandledCustomizer {
-    @ExceptionHandler(NoHandlerFoundException.class)
+//    @ExceptionHandler(NoHandlerFoundException.class)
     public RedirectView notFound() {
         return new RedirectView("/");
     }
