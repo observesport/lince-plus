@@ -182,5 +182,13 @@ This version is a major update. New features
     - MacOS installer
  
 
-<div>hello world</div>
-<script>console.log("hello world"))</script>
+<script>console.log("hello world")</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PGTBMEJ65G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-PGTBMEJ65G');
+</script>
