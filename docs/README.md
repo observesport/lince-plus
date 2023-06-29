@@ -179,4 +179,8 @@ This version is a major update. New features
 
 - Version 1.0.0 RELEASE, 10/06/2019
     - Initial desktop version
-    - MacOS installer and 
+    - MacOS installer
+ 
+
+<div>hello world</div>
+<script>console.log("hello world"))</script>
