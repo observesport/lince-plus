@@ -181,8 +181,6 @@ This version is a major update. New features
     - Initial desktop version
     - MacOS installer
  
-
-<script>console.log("hello world")</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PGTBMEJ65G"></script>
 <script>
