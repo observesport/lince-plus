@@ -40,11 +40,14 @@ Our software it's build on a multilanguage base. Status for it:
 20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install LINCE PLUS.
 We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software - ES ](https://support.apple.com/es-es/guide/mac-help/mh40616/mac) o [Install uncertified software - EN](https://support.apple.com/en-us/HT202491).
 
-### Current version 1.3.2 RELEASE
+### Current version 2.0.0 RELEASE
 
-- [Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)					  
-- [Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)
-
+Supported OS Systems:
+- Windows x64
+- MacOS x64
+- MacOS ARM (M1/M2)
+  
+[Download it here](https://github.com/observesport/lince-plus/releases/tag/v2.0.0)
 
 ## Documentation
 
@@ -54,27 +57,17 @@ We are working on the licensing issue, but, until it´s solved you must follow t
 - Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
 
 ### Previous versions
-
-- [1.3.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
-- [1.3.1 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
-- [1.3.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)					  
-- [1.3.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)
-- [1.2.0 - Win x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
-- [1.2.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
-- [1.1.2 - Win x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
-- [1.1.2 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
-- [1.1.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)
-- [1.1.1 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)
-- [1.1.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)
-- [1.1.0 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)
-- [1.0.3 - Windows x64 / w10](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)
-- [1.0.3 - Mac OS](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)
-- [1.0.2 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)	
-- [1.0.2 - Mac](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.zip)
-- [1.0.1 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)
-- [1.0.1 - Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.zip)
-- [1.0.0 - Windows x64 / w10](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
-- [1.0.0 - Mac OS](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-mac.zip)
+- [1.3.2 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)
+- [1.3.1 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
+- [1.3.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)					  
+- [1.2.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.2.0)
+- [1.1.2 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.1.2)
+- [1.1.1 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.1.1)
+- [1.1.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.1.0)
+- [1.0.3 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.0.3)
+- [1.0.2 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)	
+- [1.0.1 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)
+- [1.0.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
 
 ### Bugs or problems? No problem
 
@@ -95,6 +88,12 @@ LINCE PLUS installer is build using Install4J [multi-platform installer builder]
 
 ## Release notes
 
+- Version 2.0.0 RELEASE, 03/07/2023
+	- GA4 intro
+ 	- Spring boot 2.7
+    	- JDK 17 upgrade from 1.8
+    	- [Support issues solved](https://github.com/observesport/lince-plus/milestone/1?closed=1)
+       
 - Version 1.3.2 RELEASE, 20/01/2021
 	- Excel CSV error review 
   
