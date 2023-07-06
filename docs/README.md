@@ -40,14 +40,14 @@ Our software it's build on a multilanguage base. Status for it:
 20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install LINCE PLUS.
 We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software - ES ](https://support.apple.com/es-es/guide/mac-help/mh40616/mac) o [Install uncertified software - EN](https://support.apple.com/en-us/HT202491).
 
-### Current version 2.0.0 RELEASE
+### Current version 1.3.2 RELEASE
 
 Supported OS Systems:
 - Windows x64
 - MacOS x64
 - MacOS ARM (M1/M2)
   
-[Download it here](https://github.com/observesport/lince-plus/releases/tag/v2.0.0)
+[Download it here](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)
 
 ## Documentation
 
