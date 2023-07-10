@@ -1,4 +1,9 @@
 {
   "version": "2.0.0",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v2.0.0"
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v2.0.0",
+  "message": ["Instalacion recomendada con mejoras significativas", 
+    "JDK17", 
+    "SpringBoot 2.7", 
+    "OpenAI Whisper",
+    "OpenPose Modelling"]
 }
