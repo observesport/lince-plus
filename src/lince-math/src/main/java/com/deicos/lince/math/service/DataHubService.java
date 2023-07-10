@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -54,6 +55,13 @@ public class DataHubService extends DataHubServiceBase {
         setDataCollection(DataHubService.userData, items);
     }
 
+
+    public void addVideoItem(File file, Optional<Integer> fps){
+        getVideoPlayList().add(file);
+        if (fps.isPresent()){
+            getResearchProfile().setFps(fps.get());
+        }
+    }
 
     /**
      * get current register saved in httpSession

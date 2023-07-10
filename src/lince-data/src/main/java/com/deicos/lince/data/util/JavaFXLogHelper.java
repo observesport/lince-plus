@@ -3,9 +3,12 @@ package com.deicos.lince.data.util;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 /**
  * com.deicos.lince.app.helper
@@ -64,10 +67,10 @@ public class JavaFXLogHelper {
         }
     }
 
-    public static void showMessage(Alert.AlertType alertType, String header, String txt) {
-        JavaFXLogHelper.showMessage(alertType, header, txt, null);
+    public static Optional<ButtonType> showMessage(Alert.AlertType alertType, String header, String txt) {
+        return JavaFXLogHelper.showMessage(alertType, header, txt, null);
     }
-    public static void showMessage(Alert.AlertType alertType, String header, String txt, Stage stage) {
+    public static Optional<ButtonType> showMessage(Alert.AlertType alertType, String header, String txt, Stage stage) {
         try{
             Alert alert = new Alert(alertType);
             String title;
@@ -97,11 +100,12 @@ public class JavaFXLogHelper {
             alert.setTitle(title);
             alert.setHeaderText(header);
             alert.setContentText(txt);
-            alert.showAndWait();
+            return alert.showAndWait();
         }catch (Exception e){
             LoggerFactory.getLogger(JavaFXLogHelper.class).error("No javafx environment found");
         }
 
+        return null;
     }
 
 }
