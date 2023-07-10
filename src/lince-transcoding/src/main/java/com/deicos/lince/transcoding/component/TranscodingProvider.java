@@ -13,6 +13,10 @@ import org.springframework.stereotype.Component;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * com.deicos.lince.app.component
@@ -57,19 +61,18 @@ public class TranscodingProvider {
 
     /**
      * @param pFrame frame to render
-     * @param width image size x
+     * @param width  image size x
      * @param height image size y
-     * @param f_idx index for name pattern
-     *
+     * @param f_idx  index for name pattern
      */
     public void saveFrameAsImage(AVFrame pFrame, int width, int height, int f_idx) {
-        try{
+        try {
             // Open file
             String szFilename = String.format("frame%d_.ppm", f_idx);
             String ppmFileUri = getClass().getResource("/").getPath() + szFilename;
             saveFrameAsPPM(ppmFileUri, pFrame, width, height);
             convertPPM2JPG(getClass().getResource("/").getPath(), szFilename);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("saveFrameAsImage", e);
         }
     }
@@ -118,7 +121,11 @@ public class TranscodingProvider {
                 }
             }
             if (StringUtils.isEmpty(output)) {
-                outputFile = String.format("%s\\%s-conversion%s", path, StringUtils.substringBeforeLast(file.getName(), "."), fileType.getExtension());
+                outputFile = String.format("%s%s%s-conversion%s"
+                        , path
+                        , FileSystems.getDefault().getSeparator()
+                        , StringUtils.substringBeforeLast(file.getName(), ".")
+                        , fileType.getExtension());
             } else {
                 outputFile = StringUtils.substringBeforeLast(output, ".") + fileType.getExtension();
             }
@@ -130,7 +137,8 @@ public class TranscodingProvider {
 
     /**
      * Loads ffmpeg, and executes conversion to same file name patter + "-conversion.mp4" overwriting previous files
-     * @param file original video file
+     *
+     * @param file       original video file
      * @param outputPath override path
      * @return created file
      */
@@ -138,7 +146,7 @@ public class TranscodingProvider {
         try {
             String outputFile = getDefaultOutputPath(file, outputPath, MediaFileType.MP4);
             String ffmpeg = Loader.load(org.bytedeco.ffmpeg.ffmpeg.class);
-            ProcessBuilder pb = new ProcessBuilder(ffmpeg,"-y", "-i", file.getAbsolutePath(), "-vcodec", "h264", outputFile);
+            ProcessBuilder pb = new ProcessBuilder(ffmpeg, "-y", "-i", file.getAbsolutePath(), "-vcodec", "h264", outputFile);
             pb.inheritIO().start().waitFor();
             return new File(outputFile);
         } catch (Exception e) {
@@ -149,6 +157,7 @@ public class TranscodingProvider {
 
     /**
      * Transcode file to mp4 in same location
+     *
      * @param file original file
      * @return new file
      */
@@ -158,21 +167,83 @@ public class TranscodingProvider {
 
     /**
      * Analyzes video and converts to MP4 if other format
+     *
      * @param file selected file
      * @return same or new file with mp4 format
      */
-    public File reviewVideoFile(File file) {
+    public File reviewVideoFile(File file, Predicate<String> actionIfNotMp4) {
         File rtn = file;
         try {
-            if (file != null){
+            if (file != null) {
                 String format = StringUtils.substringAfterLast(file.getPath(), ".");
-                if (!StringUtils.lowerCase(format).equals("mp4")){
-                    rtn = transcodeFileToMP4(file);
+                if (!StringUtils.lowerCase(format).equals("mp4")) {
+                    if (actionIfNotMp4.test(format)) {
+                        return transcodeFileToMP4(file);
+                    }
+                    throw new RuntimeException("No conversion accepted");
                 }
             }
         } catch (Exception e) {
             log.error("Reviewing file", e);
+            throw e;
         }
         return rtn;
     }
+
+    public String getFFMPEGInformationForFile(File file) {
+        try {
+            String ffprobe = Loader.load(org.bytedeco.ffmpeg.ffprobe.class);
+            ProcessBuilder pb = new ProcessBuilder(ffprobe, file.getAbsolutePath());
+            Process processDuration = pb.redirectErrorStream(true).start();
+            StringBuilder strBuild = new StringBuilder();
+            try (BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(processDuration.getInputStream(), Charset.defaultCharset()));) {
+                String line;
+                while ((line = processOutputReader.readLine()) != null) {
+                    strBuild.append(line + System.lineSeparator());
+                }
+                processDuration.waitFor();
+            }
+            return strBuild.toString().trim();
+        } catch (Exception e) {
+            log.error("Getting file information", e);
+            return StringUtils.EMPTY;
+        }
+    }
+
+    public Optional<Integer> getFPSFromVideo(File file){
+        if (file !=null){
+            String informationValue = getFFMPEGInformationForFile(file);
+            Integer position = StringUtils.indexOf(informationValue, "fps");
+            if (StringUtils.isNotEmpty(informationValue) && position > 0){
+                Double fps = Double.valueOf(StringUtils.trim(StringUtils.substringAfterLast( StringUtils.substringBeforeLast(informationValue,
+                        "fps"),",")));
+                return Optional.of(fps.intValue());
+            }
+        }
+        return Optional.empty();
+    }
+
+   /*
+   This is a way of consumer in java
+   private String getFPS(File file, Consumer<File> consumer) {
+        // Create a stream to hold the output
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        // IMPORTANT: Save the old System.out!
+        PrintStream old = System.out;
+        // Tell Java to use your special stream
+        System.setOut(ps);
+        // Print some output: goes to your special stream
+        consumer.accept(file);
+        // Put things back
+        System.out.flush();
+        System.setOut(old);
+        // Show what happened
+        return baos.toString();
+    }
+
+    String result = getFPS(file, p);
+    System.out.println(result);
+
+    */
 }

@@ -66,6 +66,21 @@ public class AnalysisService {
         return current;
     }
 
+    public boolean deleteRegisterById(Integer id) {
+        try{
+            if (id != null) {
+                RegisterItem selectedRegister = dataHubService.getCurrentDataRegister().stream()
+                        .filter(p -> p.getId().equals(id))
+                        .findFirst()
+                        .orElse(null);
+                return dataHubService.getCurrentDataRegister().remove(selectedRegister);
+            }
+        }catch (Exception e){
+            log.error("Deleting register by id", e);
+        }
+        return false;
+    }
+
     /**
      * Itera la colleccion y devuelve el estado de su eliminacion
      *
@@ -75,11 +90,9 @@ public class AnalysisService {
     public boolean deleteMomentInfo(Double moment) {
         boolean isDeleted = false;
         try {
-
             if (moment != null) {
                 for (RegisterItem reg : dataHubService.getCurrentDataRegister()) {
-                    if (reg.getVideoTime().doubleValue() == moment.doubleValue()
-                            || convertSysMoment(reg.getVideoTime()).doubleValue() == convertSysMoment(moment).doubleValue()) {
+                    if (reg.getVideoTime().doubleValue() == moment.doubleValue() || convertSysMoment(reg.getVideoTime()).doubleValue() == convertSysMoment(moment).doubleValue()) {
                         dataHubService.getCurrentDataRegister().remove(reg);
                         isDeleted = true;
                     }
@@ -161,6 +174,13 @@ public class AnalysisService {
      * @return
      */
     private RegisterItem findRegister(RegisterItem searchValues) {
+//        RegisterItem selectedRegister = dataHubService.getCurrentDataRegister().stream()
+//                .filter(p -> p.getId().equals(searchValues.getId()) && NumberUtils.compare(p.getVideoTime(), searchValues.getVideoTime()) == 0
+//                        || NumberUtils.compare(p.getVideoTime(), searchValues.getVideoTime()) == 0
+//                        || (p.getSaveDate() != null && p.getSaveDate().equals(searchValues.getSaveDate())))
+//                .findFirst()
+//                .orElse(null);
+//        return selectedRegister;
         for (RegisterItem reg : dataHubService.getCurrentDataRegister()) {
             try {
                 if ((reg.getId() != null && reg.getId().equals(searchValues.getId()))
@@ -171,7 +191,6 @@ public class AnalysisService {
             } catch (Exception e) {
                 log.error("searching results");
             }
-
         }
         return null;
     }
@@ -234,9 +253,7 @@ public class AnalysisService {
             List<RegisterItem> userSceneData = getOrderedRegister();
             //montamos eje X
             for (RegisterItem data : userSceneData) {
-                rtn.getxSeriesLabels().add(String.format("%s (%s seg)",
-                        (StringUtils.isEmpty(data.getName()) ? SCENE_LABEL : data.getName()),
-                        data.getVideoTimeTxt()));
+                rtn.getxSeriesLabels().add(String.format("%s (%s seg)", (StringUtils.isEmpty(data.getName()) ? SCENE_LABEL : data.getName()), data.getVideoTimeTxt()));
             }
             rtn.getySeriesLabels().add(EMPTY_SERIES_VALUE); //valor de alias
             //para todas los criterios del sistema montamos eje Y
@@ -273,7 +290,7 @@ public class AnalysisService {
                             if (StringUtils.equals(serie.getName(), relatedData.getKey().getName())) {
                                 //tenemos la serie a la que hace referencia esta escena y estos valores
                                 hasRelatedRegister = true;
-                                Double value = new Double(relatedData.getValue().getId());
+                                Double value = Double.valueOf(relatedData.getValue().getId());
                                 //HighChartsSerieBean valBean = new HighChartsSerieBean();
                                 //valBean.setY(value);
                                 serie.getData().add(value);
@@ -283,7 +300,7 @@ public class AnalysisService {
                         }
                     }
                     if (!hasRelatedRegister) {
-                        Double value = new Double(EMPTY_SERIES_VALUE.getKey());
+                        Double value =  Double.valueOf(EMPTY_SERIES_VALUE.getKey());
                         //HighChartsSerieBean valBean = new HighChartsSerieBean();
                         //valBean.setY(value);
                         serie.getData().add(value);
@@ -306,15 +323,13 @@ public class AnalysisService {
      */
     private boolean isSameCriteria(CategoryData a, CategoryData b) {
         if (a != null && b != null) {
-            return (StringUtils.equals(a.getCode(), b.getCode())
-                    || a.getId().equals(b.getId()));
+            return (StringUtils.equals(a.getCode(), b.getCode()) || a.getId().equals(b.getId()));
         }
         return false;
     }
 
 
-    private List<Pair<CategoryData, Double>> getRegisterVisibility(Criteria cri,
-                                                                   List<RegisterItem> userSceneData) {
+    private List<Pair<CategoryData, Double>> getRegisterVisibility(Criteria cri, List<RegisterItem> userSceneData) {
         List<Pair<CategoryData, Double>> rtnValues = new ArrayList<>();
         try {
             if (cri != null) {
@@ -348,10 +363,8 @@ public class AnalysisService {
 
 
     private Double getFrecuency(Double item, Double total) {
-        if (item != null && total != null)
-            return (item * 100) / total;
-        else
-            return null;
+        if (item != null && total != null) return (item * 100) / total;
+        else return null;
     }
 
     public List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register) {
@@ -391,7 +404,7 @@ public class AnalysisService {
             //tenemos las categorias sin agrupar, con sus totales
             //Montamos la lista de los padres
             HighChartsSerie rootSerie = new HighChartsSerie();
-            if (total>0){
+            if (total > 0) {
                 //si sacan stats sin haber visto tenemos que devolver vacio
                 for (Criteria cri : tool) {
                     if (!cri.isInformationNode()) {
@@ -401,9 +414,7 @@ public class AnalysisService {
                             //si es el mismo padre
                             if (item.getKey().getParent().equals(cri.getId())) {
                                 totalPerCategory += item.getValue();
-                                childSerie.getDataBean().add(getBean(item.getKey().getName(),
-                                        getFrecuency(item.getValue(), total),
-                                        item.getValue()));
+                                childSerie.getDataBean().add(getBean(item.getKey().getName(), getFrecuency(item.getValue(), total), item.getValue()));
                             }
                         }
                         childSerie.setName(cri.getName());

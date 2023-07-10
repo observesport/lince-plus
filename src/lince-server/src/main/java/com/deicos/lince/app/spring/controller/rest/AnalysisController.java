@@ -83,8 +83,10 @@ public class AnalysisController {
     @RequestMapping(value = "/clear", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> clearData(HttpServletRequest request, @RequestBody SceneWrapper items) {
         try {
-            if (items.getMoment() != null) {
-                analysisService.deleteMomentInfo(items.getMoment());
+            if (!analysisService.deleteRegisterById(items.getId())) {
+                if (items.getMoment() != null) {
+                    analysisService.deleteMomentInfo(items.getMoment());
+                }
             }
             List<RegisterItem> nodeList = analysisService.getDataRegister();
             return new ResponseEntity<>(nodeList, HttpStatus.OK);
@@ -130,7 +132,7 @@ public class AnalysisController {
             }
             item.setName(items.getName());
             item.setDescription(items.getDescription());
-            item.setId(new Integer(momentID)); //SUPER Error TODO:review urgently
+            item.setId(Integer.valueOf(momentID)); //SUPER Error TODO:review urgently
             analysisService.pushRegister(item); //data.toArray(new Category[data.size()])
             return getData();
         } catch (Exception e) {
@@ -139,6 +141,7 @@ public class AnalysisController {
         }
     }
 
+    //TODO 2023 solve ms issue
     @RequestMapping(value = "/setMomentData", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<List<RegisterItem>> saveData(HttpServletRequest request, @RequestBody SceneWrapper items) {
         try {
@@ -147,6 +150,9 @@ public class AnalysisController {
             }
             RegisterItem scene = new RegisterItem();
             scene.setVideoTime(items.getMoment());
+            if (items.getId() != null){
+                scene.setId(items.getId());
+            }
             scene.setRegister(scene.getRegister());//=>no tiene sentido
             // TODO 2020 ASF: This logic should be in another layer
             if (CollectionUtils.isNotEmpty(items.getCategories())) {

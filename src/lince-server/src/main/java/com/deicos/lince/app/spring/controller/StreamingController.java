@@ -50,6 +50,7 @@ public class StreamingController {
      * @param request  request
      * @return
      */
+//    @CrossOrigin
     @RequestMapping(value = "/file", method = RequestMethod.GET, produces = {"application/octet-stream"})
     @ResponseBody
     public FileSystemResource getFile(final HttpServletResponse response, HttpServletRequest request) {
@@ -119,7 +120,7 @@ public class StreamingController {
      * @param range
      * @return
      */
-    @CrossOrigin
+//    @CrossOrigin(originPatterns = "http://localhost")
     @GetMapping(value = ServerAppParams.BASE_URL_STREAMING + "{fileRQ}")
     @ResponseBody
     public Mono<Resource> getVideos(

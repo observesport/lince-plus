@@ -13,7 +13,7 @@ public class LinceDataConstants {
     public static final String CATEGORY_INFO_SUFIX = "-DATA";
     public static final int CATEGORY_INFO_ID_MULTIPLIER = 1000000;
 
-    public static final String SUPPORTED_VIDEO_FILES = "*.mp4;*.flv;*.wmv;*.mpg;*.mpeg;*.ogv;*.mov;*.ogg;*.avi";
+    public static final String SUPPORTED_VIDEO_FILES = "*.mp4;*.mp3;*.flv;*.wmv;*.mpg;*.mpeg;*.ogv;*.mov;*.ogg;*.avi";
     public static final String PREFERENCES_FILE_PATH = "filePath";
 
     public static final String CTX_VIDEO_URL = "videoUrl";

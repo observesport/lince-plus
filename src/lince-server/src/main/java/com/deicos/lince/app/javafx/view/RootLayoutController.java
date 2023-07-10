@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * The controller for the root layout. The root layout provides the basic
@@ -88,10 +89,15 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 ListCell<File> cell = new ListCell<File>() {
                     @Override
                     protected void updateItem(File item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item != null) {
-                            setText(item.getAbsolutePath());
-                        } else {
+                        try{
+                            super.updateItem(item, empty);
+                            if (item != null) {
+                                setText(item.getAbsolutePath());
+                            } else {
+                                setText(StringUtils.EMPTY);
+                            }
+                        }catch (Exception e){
+                            log.error("updateItem in videoPlayList", e);
                             setText(StringUtils.EMPTY);
                         }
                     }
@@ -252,20 +258,30 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             supportedTypes.add(new MutablePair<>(label + type, type));
         }
         List<File> fileList = LinceFileHelper.openMultipleFileDialog(mainLinceApp, supportedTypes);
+        boolean isFirstVideo = true;
         if (CollectionUtils.isNotEmpty(fileList)) {
             StringBuilder urls = new StringBuilder();
             boolean conversionDone = false;
             for (File file : fileList) {
-                urls.append("- ").append(file.getPath()).append("\n");
-                File file2Add = transcodingProvider.reviewVideoFile(file);
-                if (file2Add != file) {
-                    conversionDone = true;
+                urls.append(String.format("-%s\n", file.getPath()));
+                Predicate<String> p = (String videoType) ->
+                        JavaFXLogHelper.showMessage(AlertType.CONFIRMATION
+                                , "Video conversion"
+                                , String.format("You have selected a video file in %s format. We are going to convert it to MP4. Please wait until it finishes, it will take some time :)"
+                                        , videoType)).get() == ButtonType.OK;
+                try {
+                    File videoFile = transcodingProvider.reviewVideoFile(file, p);
+                    if (videoFile != file) {
+                        conversionDone = true;
+                    }
+                    dataHubService.addVideoItem(videoFile, transcodingProvider.getFPSFromVideo(isFirstVideo ? file : null));
+                    isFirstVideo = false;
+                    JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Videos añadido", urls.toString());
+                } catch (RuntimeException e) {
+                    JavaFXLogHelper.addLogInfo("Conversion de video cancelada");
                 }
-                dataHubService.getVideoPlayList().add(file2Add);
             }
-            JavaFXLogHelper.showMessage(AlertType.INFORMATION
-                    , "Videos añadido"
-                    , urls.toString());
+
             if (conversionDone) {
                 JavaFXLogHelper.showMessage(AlertType.INFORMATION
                         , "Conversión realizada"
@@ -617,7 +633,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         try {
             Stage primaryStage = getMainLinceApp().getPrimaryStage();
             Alert closeConfirmation = new Alert(
-                    Alert.AlertType.CONFIRMATION,
+                    AlertType.CONFIRMATION,
                     "¿Quieres guardar antes de salir?"
             );
             Button exitButton = (Button) closeConfirmation.getDialogPane().lookupButton(
