@@ -1,13 +1,14 @@
 package com.deicos.lince.math.service;
 
+import com.deicos.lince.data.base.DataHubServiceBase;
 import com.deicos.lince.data.bean.categories.Criteria;
 import com.deicos.lince.data.bean.user.ResearchProfile;
-import com.deicos.lince.data.bean.user.UserProfile;
 import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
-import com.deicos.lince.data.base.DataHubServiceBase;
+import com.deicos.lince.math.AppParams;
 import com.deicos.lince.math.SessionDataAttributes;
 import com.deicos.lince.math.WebContextHolder;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,12 +57,21 @@ public class DataHubService extends DataHubServiceBase {
     }
 
 
-    public void addVideoItem(File file, Optional<Integer> fps){
+    public void addVideoItem(File file, Optional<Integer> fps) {
         getVideoPlayList().add(file);
-        if (fps.isPresent()){
+        if (fps.isPresent()) {
             getResearchProfile().setFps(fps.get());
         }
+        updateUserPlayList();
     }
+
+    public void addYoutubeVideoItem(String link) {
+        if (StringUtils.containsIgnoreCase(link, AppParams.YOUTUBE_SERVER)) {
+            getYoutubeVideoPlayList().add(link);
+        }
+        updateUserPlayList();
+    }
+
 
     /**
      * get current register saved in httpSession

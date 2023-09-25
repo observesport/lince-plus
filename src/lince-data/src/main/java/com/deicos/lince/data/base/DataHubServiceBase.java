@@ -8,6 +8,7 @@ import com.deicos.lince.data.bean.wrapper.LinceRegisterWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lince.modelo.Registro;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * com.deicos.lince.data.util
@@ -33,6 +35,8 @@ public class DataHubServiceBase {
     protected static ObservableList<Criteria> criteria = FXCollections.observableArrayList();
     protected static ObservableList<ResearchProfile> userData = FXCollections.observableArrayList();
     protected static ObservableList<File> videoPlayList = FXCollections.observableArrayList();
+    protected static ObservableList<String> youtubeVideoPlayList = FXCollections.observableArrayList();
+    protected static ObservableList<String> userPlayList = FXCollections.observableArrayList();
 
     public ObservableList<LinceRegisterWrapper> getDataRegister() {
         if (dataRegister == null || dataRegister.isEmpty()) {
@@ -116,6 +120,21 @@ public class DataHubServiceBase {
         return videoPlayList;
     }
 
+    public ObservableList<String> getYoutubeVideoPlayList() {
+        return youtubeVideoPlayList;
+    }
+
+    public ObservableList<String> getUserPlayList() {
+        return userPlayList;
+    }
+
+
+    public void updateUserPlayList(){
+        userPlayList.clear(); //important: needs unique reference, don't recreate it
+        userPlayList.addAll(videoPlayList.stream().map(File::getAbsolutePath).toList());
+        userPlayList.addAll(youtubeVideoPlayList);
+    }
+
     protected <T> void setDataCollection(ObservableList<T> collection, List<T> item) {
         collection.clear();
         collection.setAll(item);
@@ -185,7 +204,9 @@ public class DataHubServiceBase {
         dataRegister.clear();
         criteria.clear();
         videoPlayList.clear();
+        youtubeVideoPlayList.clear();
         userData.clear();
+        updateUserPlayList();
     }
 
 
@@ -205,6 +226,19 @@ public class DataHubServiceBase {
             }
         } catch (Exception e) {
             log.error("err current research", e);
+        }
+    }
+
+
+    public void removeVideoItemByIdentifier(String uri){
+        if (StringUtils.isNotEmpty(uri)){
+            youtubeVideoPlayList = this.getYoutubeVideoPlayList().stream()
+                    .filter( entity -> !StringUtils.equals(entity,uri))
+                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+            videoPlayList =  this.getVideoPlayList().stream()
+                    .filter( file -> !StringUtils.equals(file.getAbsolutePath(),uri))
+                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+            updateUserPlayList();
         }
     }
 }

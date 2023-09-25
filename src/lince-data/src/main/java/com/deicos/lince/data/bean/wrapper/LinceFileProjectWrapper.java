@@ -36,6 +36,9 @@ public class LinceFileProjectWrapper {
     @XmlElementWrapper(name = "videoPlayList")
     @XmlElement(name = "video")
     private List<File> videoPlayList = new ArrayList<>();
+    @XmlElementWrapper(name = "youtubeVideoPlayList")
+    @XmlElement(name = "youtubeVideo")
+    private List<String> youtubeVideoPlayList = new ArrayList<>();
 
     public List<Criteria> getCriteriaData() {
         return criteriaData;
@@ -69,4 +72,11 @@ public class LinceFileProjectWrapper {
         this.videoPlayList = videoPlayList;
     }
 
+    public List<String> getYoutubeVideoPlayList() {
+        return youtubeVideoPlayList;
+    }
+
+    public void setYoutubeVideoPlayList(List<String> youtubeVideoPlayList) {
+        this.youtubeVideoPlayList = youtubeVideoPlayList;
+    }
 }

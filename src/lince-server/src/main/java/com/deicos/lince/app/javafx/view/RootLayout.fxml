@@ -35,6 +35,11 @@
                         <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
+                   <MenuItem mnemonicParsing="false" onAction="#handleSelectYoutubeVideo" text="%desktop.option.video.youtube">
+                       <accelerator>
+                           <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                       </accelerator>
+                   </MenuItem>
                   <MenuItem mnemonicParsing="false" onAction="#handleClearVideos" text="%desktop.option.video.none">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />

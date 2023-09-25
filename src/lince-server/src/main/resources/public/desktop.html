@@ -57,6 +57,9 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="blog-quote bordered blog-container" style="margin-bottom: 0!important;">
+                            <div id="informationMessageWrapper" class="alert alert-info hidden">
+                                <div id="informationMessage"></div>
+                            </div>
                             <div class="blog-quote-label bg-green-jungle">
                                 <i class="fa fa-quote-left"></i>
                                 <br/><span>Scientific open source software.</span>
@@ -95,6 +98,7 @@
                                             onclick="openUpdateLincePLus();">Download
                                     </button>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="blog-post-desc">
@@ -189,6 +193,27 @@
                 $("#updateMessage").html(msg);
                 $("#updateMessageWrapper").removeClass('hidden');
             }
+            if (e.information && e.information.userInformation) {
+                let msg = "";
+                const now = Date.now();
+                e.information.userInformation.forEach(item => {
+                    let itemMsg = "<div>";
+                    itemMsg += `<b>${item.title}: </b><span>${item.description}</span>`;
+                    // itemMsg += "<a target='_blank'></a>"
+                    itemMsg += "</div>"
+                    // if (item.start && item.end) {
+                    //     if (item.start < now < item.end) {
+                    //         msg += itemMsg;
+                    //     }
+                    // } else {
+                        msg += itemMsg;
+                    // }
+                });
+                if (msg !== "") {
+                    $("#informationMessage").html(msg);
+                    $("#informationMessageWrapper").removeClass('hidden');
+                }
+            }
         }, function (e) {
             console.log(e);
         })).done(function (data) {
@@ -211,7 +236,11 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PGTBMEJ65G"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
     gtag('js', new Date());
     gtag('config', 'G-PGTBMEJ65G');
 </script>

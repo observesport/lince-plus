@@ -32,6 +32,7 @@ public class ApplicationContextProvider implements ApplicationContextAware {
     private ApplicationContext applicationContext;
     private final I18nMessageProvider messageProvider;
     private static JSONObject lastLinceVersion = new JSONObject();
+    private static JSONObject userInformation = null;
 
     public ApplicationContextProvider(I18nMessageProvider messageProvider) {
         this.messageProvider = messageProvider;
@@ -85,4 +86,13 @@ public class ApplicationContextProvider implements ApplicationContextAware {
         return lastLinceVersion;
     }
 
+
+    public JSONObject getUserInformation(){
+        try {
+            userInformation = ServerValuesHelper.readJSONFromUrl(ServerAppParams.LINCE_USER_INFORMATION_PANEL);
+        } catch (Exception e) {
+            userInformation = new JSONObject();
+        }
+        return userInformation;
+    }
 }
