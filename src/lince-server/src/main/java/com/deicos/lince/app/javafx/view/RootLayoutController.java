@@ -1,5 +1,6 @@
 package com.deicos.lince.app.javafx.view;
 
+import com.deicos.lince.app.ServerAppParams;
 import com.deicos.lince.app.helper.ServerValuesHelper;
 import com.deicos.lince.app.javafx.JavaFXLoader;
 import com.deicos.lince.app.javafx.components.JavaFXBrowser;
@@ -65,7 +66,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private ListView logArea;
 
     @FXML
-    private ListView videoPlaylistView;
+    private ListView<String> videoPlaylistView;
 
     @FXML
     private Pane pane;
@@ -82,21 +83,16 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     public void lazyInit() {
         try {
             getMainLinceApp().getPrimaryStage().setOnCloseRequest(confirmCloseEventHandler);
-            //es asi pero debe ser despues!
             dataHubService = getMainLinceApp().getDataHubService();
-            videoPlaylistView.setItems(dataHubService.getVideoPlayList());
+            videoPlaylistView.setItems(dataHubService.getUserPlayList());
             videoPlaylistView.setCellFactory(lv -> {
-                ListCell<File> cell = new ListCell<File>() {
+                ListCell<String> cell = new ListCell<>() {
                     @Override
-                    protected void updateItem(File item, boolean empty) {
-                        try{
+                    protected void updateItem(String item, boolean empty) {
+                        try {
                             super.updateItem(item, empty);
-                            if (item != null) {
-                                setText(item.getAbsolutePath());
-                            } else {
-                                setText(StringUtils.EMPTY);
-                            }
-                        }catch (Exception e){
+                            setText(StringUtils.defaultString(item));
+                        } catch (Exception e) {
                             log.error("updateItem in videoPlayList", e);
                             setText(StringUtils.EMPTY);
                         }
@@ -106,15 +102,10 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 MenuItem editItem = new MenuItem();
                 editItem.textProperty().bind(Bindings.format("Eliminar de la lista"));
                 editItem.setOnAction(event -> {
-                    //log.info("a tomar por culo el fichero", item.getName());
-                    File item = cell.getItem();
-                    for (File file : dataHubService.getVideoPlayList()) {
-                        if (item.equals(file)) {
-                            dataHubService.getVideoPlayList().remove(file);
-                            //  videoPlaylistView.setItems(dataHubService.getVideoPlayList());
-                            JavaFXLogHelper.addLogInfo("Eliminado del proyecto el video " + file.getName());
-                        }
-                    }
+                    String item = cell.getItem();
+                    System.out.println(item);
+                    dataHubService.removeVideoItemByIdentifier(item);
+                    //                        JavaFXLogHelper.addLogInfo("Eliminado del proyecto el video " + file.getName());
                 });
                 contextMenu.getItems().addAll(editItem);
                 cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) ->
@@ -248,6 +239,23 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
     @FXML
+    private void handleSelectYoutubeVideo() {
+        TextInputDialog dialog = new TextInputDialog("https://www.youtube.com");
+        dialog.setTitle("Introduce youtube link");
+        dialog.setHeaderText("Visit the video you want and paste the link directly here, please");
+        dialog.setContentText("Youtube link");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> {
+            if (StringUtils.containsIgnoreCase(name, ServerAppParams.YOUTUBE_URL)) {
+                dataHubService.addYoutubeVideoItem(name);
+            } else {
+                JavaFXLogHelper.showMessage(AlertType.ERROR, "Enlace invalido", "Tu enlace no parece ser de youtube");
+            }
+
+        });
+    }
+
+    @FXML
     private void handleSelectVideo() {
         if (this.transcodingProvider == null) {
             this.transcodingProvider = getMainLinceApp().getTranscodingProvider();
@@ -304,6 +312,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleClearVideos() {
         dataHubService.getVideoPlayList().clear();
+        dataHubService.getYoutubeVideoPlayList().clear();
+        dataHubService.updateUserPlayList();
         JavaFXLogHelper.showMessage(AlertType.INFORMATION
                 , getMainLinceApp().getMessage("data_list", "Videos")
                 , getMainLinceApp().getMessage("data_deleted", "todos los videos"));
@@ -332,8 +342,13 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleOpenBrowser() {
         String url = mainLinceApp.getServerURL();
-        JavaFXLogHelper.addLogInfo("Abriendo navegador para analisis ubicado en " + url);
+        JavaFXLogHelper.addLogInfo(i18n("open_browser", url));
         ServerValuesHelper.openLANLinceBrowser(url, false);
+    }
+
+
+    private String i18n(String key, String... args) {
+        return getMainLinceApp().getMessage(key, args);
     }
 
     /**
@@ -386,9 +401,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                     return null;
                 }
                 Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Selección de observador");
-                alert.setHeaderText("Para continuar, debes seleccionar un observador");
-                alert.setContentText("¿Qué observador quieres seleccionar?");
+                alert.setTitle(i18n("select_observer"));
+                alert.setHeaderText(i18n("select_observer.header"));
+                alert.setContentText(i18n("select_observer.content"));
                 ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
                 uuids.put(null, buttonTypeCancel);
                 alert.getButtonTypes().setAll(uuids.values());
@@ -467,7 +482,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportRegisterLince1() {
         ensureCompatibility(true);//para importar tenemos que migrar el instrumento!
-        doImport(new LoadRegistro(), null, "panel_import_custom", "Registros de la versión 1 de Lince");
+        doImport(new LoadRegistro(), null, "panel_import_custom", i18n("import.lince-1.register"));
     }
 
     /**
@@ -475,7 +490,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportToolLince1() {
-        doImport(new LoadInstrumentoObservacional(), null, "panel_import_custom", "Instrumento observacional de la versión 1 de Lince");
+        doImport(new LoadInstrumentoObservacional(), null, "panel_import_custom", i18n("import.lince-1.observationTool"));
     }
 
 
@@ -485,7 +500,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportRegisterLince1() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(new SaveRegistroAs(), null, "panel_export_custom", "Registros para version 1 de Lince");
+        doExport(new SaveRegistroAs(), null, "panel_export_custom", i18n("import.lince-1.register"));
     }
 
     /**
@@ -494,7 +509,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportToolLince1() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(new SaveInstrumentoObservacionalAs(), null, "panel_export_custom", "Instrumento observacional para version 1 de Lince");
+        doExport(new SaveInstrumentoObservacionalAs(), null, "panel_export_custom", i18n("import.lince-1.observationTool"));
     }
 
     /**
@@ -634,17 +649,17 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             Stage primaryStage = getMainLinceApp().getPrimaryStage();
             Alert closeConfirmation = new Alert(
                     AlertType.CONFIRMATION,
-                    "¿Quieres guardar antes de salir?"
+                    i18n("save.beforeClose")
             );
             Button exitButton = (Button) closeConfirmation.getDialogPane().lookupButton(
                     ButtonType.OK
             );
-            exitButton.setText("Si");
+            exitButton.setText(i18n("yes"));
             Button noButton = (Button) closeConfirmation.getDialogPane().lookupButton(
                     ButtonType.CANCEL
             );
-            noButton.setText("No");
-            closeConfirmation.setHeaderText("Salir");
+            noButton.setText(i18n("no"));
+            closeConfirmation.setHeaderText(i18n("exit"));
             closeConfirmation.initModality(Modality.APPLICATION_MODAL);
             closeConfirmation.initOwner(primaryStage);
             // normally, you would just use the default alert positioning,

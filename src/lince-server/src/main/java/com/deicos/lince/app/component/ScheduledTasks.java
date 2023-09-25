@@ -56,6 +56,7 @@ public class ScheduledTasks {
                                 , dataHubService.getUserData()
                                 , dataHubService.getCriteria()
                                 , dataHubService.getVideoPlayList()
+                                , dataHubService.getYoutubeVideoPlayList()
                                 , dataHubService.getDataRegister());
                     }
                 }

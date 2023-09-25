@@ -127,14 +127,16 @@ public class VideoService {
         HashMap<String, String> list = new HashMap<>();
         try {
             Tika tika = new Tika();
-            for (Object f : dataHubService.getVideoPlayList()) {
-                File file = (File) f;
-                String currentFileName = ServerValuesHelper.getHtmlFileName(file);
+            for (File f : dataHubService.getVideoPlayList()) {
+                String currentFileName = ServerValuesHelper.getHtmlFileName(f);
                 //detecting the file type using detect method
-                String type = tika.detect(file);
+                String type = tika.detect(f);
                 list.put(currentFileName, type);
             }
-            if (list.size() == 0) {
+            for (String f : dataHubService.getYoutubeVideoPlayList()) {
+                list.put(f, ServerAppParams.YOUTUBE_VIDEO_TYPE);
+            }
+            if (list.isEmpty()) {
                 File file = getResourceFile(DEFAULT_VIDEO_EXAMPLE);
                 dataHubService.getVideoPlayList().setAll(file);
                 return getPlaylistData();
@@ -155,7 +157,11 @@ public class VideoService {
         try {
             for (Map.Entry<String, String> elem : this.getPlaylistData().entrySet()) {
                 VideoPlayerData aux = new VideoPlayerData();
-                aux.setUrl(ServerAppParams.BASE_URL_STREAMING + elem.getKey());
+                if (StringUtils.equals(elem.getValue(), YOUTUBE_VIDEO_TYPE)){
+                    aux.setUrl(elem.getKey());
+                }else{
+                    aux.setUrl(ServerAppParams.BASE_URL_STREAMING + elem.getKey());
+                }
                 aux.setEncoding(elem.getValue());
                 rtn.add(aux);
             }

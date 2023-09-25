@@ -186,6 +186,7 @@ public class SessionController extends BaseRestControllerWrapper {
             rtn.put("locale", getLocaleString(rq));
             rtn.put("url",systemService.getCurrentServerURI());
             rtn.put("i18n",getI18Messages());
+            rtn.put("information", applicationContextProvider.getUserInformation());
         } catch (Exception e) {
             log.error("on project info", e);
         }

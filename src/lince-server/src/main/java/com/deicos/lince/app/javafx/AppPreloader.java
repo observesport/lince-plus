@@ -16,6 +16,7 @@
 package com.deicos.lince.app.javafx;
 
 import com.deicos.lince.app.base.PropertyLoader;
+import com.deicos.lince.app.component.I18nMessageProvider;
 import javafx.application.Preloader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -29,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.json.JSONObject;
 
 /**
  * @author Tommy Ziegler
@@ -38,6 +40,11 @@ public class AppPreloader extends Preloader {
 
     private Stage stage;
 
+//    private final I18nMessageProvider messageProvider;
+//
+//    public AppPreloader(I18nMessageProvider messageProvider) {
+//        this.messageProvider = messageProvider;
+//    }
 
     public void start(Stage stage) throws Exception {
         this.stage = stage;
@@ -50,7 +57,8 @@ public class AppPreloader extends Preloader {
         label.setTextFill(Color.WHITE);
 
         //final ProgressIndicator progressCircle = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
-        final Text description = new Text(100, 425, "Cargando servicios");
+        final Text description = new Text(100, 425, "Loading services...");
+//        final Text description = new Text(100, 425, messageProvider.getMessage("loading_services"));
         description.setFill(Color.WHITE);
 
         final Text versionNumber = new Text(100, 475,propertyLoader.getVersionNumber());

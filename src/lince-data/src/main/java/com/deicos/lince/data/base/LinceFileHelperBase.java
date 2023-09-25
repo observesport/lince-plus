@@ -169,10 +169,13 @@ public class LinceFileHelperBase {
         try {
             // ASF: Fully functional version
             readProjectFile(file, linceFileProjectWrapper -> {
+                myLinceApp.getDataHubService().clearData();
                 myLinceApp.getDataHubService().getCriteria().setAll(linceFileProjectWrapper.getCriteriaData());
                 myLinceApp.getDataHubService().getVideoPlayList().setAll(linceFileProjectWrapper.getVideoPlayList());
                 myLinceApp.getDataHubService().getUserData().setAll(linceFileProjectWrapper.getProfiles());
                 myLinceApp.getDataHubService().getDataRegister().setAll(linceFileProjectWrapper.getRegister());
+                myLinceApp.getDataHubService().getYoutubeVideoPlayList().setAll(linceFileProjectWrapper.getYoutubeVideoPlayList());
+                myLinceApp.getDataHubService().updateUserPlayList();
             });
             boolean isEmptyApp = myLinceApp instanceof EmptyLinceApp;
             if (!isEmptyApp && !file.isDirectory()) {
@@ -196,6 +199,7 @@ public class LinceFileHelperBase {
      * @param researchProfiles list profiles
      * @param criteria         criteria data
      * @param videos           videos
+     * @param youtubeVideos    youtubeVideos
      * @param register         register
      * @return same file with data on it
      */
@@ -203,6 +207,7 @@ public class LinceFileHelperBase {
             , List<ResearchProfile> researchProfiles
             , List<Criteria> criteria
             , List<File> videos
+            , List<String> youtubeVideos
             , List<LinceRegisterWrapper> register) {
         try {
             JAXBContext context = getXMLContext();
@@ -212,6 +217,7 @@ public class LinceFileHelperBase {
             wrapper.setProfiles(researchProfiles);
             wrapper.setCriteriaData(criteria);
             wrapper.setVideoPlayList(videos);
+            wrapper.setYoutubeVideoPlayList(youtubeVideos);
             wrapper.setRegister(register);
             // Marshalling and saving XML to the file.
             m.marshal(wrapper, file);
@@ -235,6 +241,7 @@ public class LinceFileHelperBase {
                     , myLinceApp.getDataHubService().getUserData()
                     , myLinceApp.getDataHubService().getCriteria()
                     , myLinceApp.getDataHubService().getVideoPlayList()
+                    , myLinceApp.getDataHubService().getYoutubeVideoPlayList()
                     , myLinceApp.getDataHubService().getDataRegister());
             // Save the file path to the registry.
             setLinceProjectPath(file, myLinceApp);
