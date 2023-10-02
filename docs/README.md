@@ -35,19 +35,14 @@ Our software it's build on a multilanguage base. Status for it:
 
 ## Download 
 
-#### Important: MacOS users
-
-20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install LINCE PLUS.
-We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software - ES ](https://support.apple.com/es-es/guide/mac-help/mh40616/mac) o [Install uncertified software - EN](https://support.apple.com/en-us/HT202491).
-
-### Current version 2.0.0 RELEASE
+### Current version 2.1.0 RELEASE
 
 Supported OS Systems:
 - Windows x64
 - MacOS x64
-- MacOS ARM (M1/M2)
+- MacOS ARM
   
-[Download it here](https://github.com/observesport/lince-plus/releases/tag/v2.0.0)
+[Download it here](https://github.com/observesport/lince-plus/releases/tag/v2.1.0)
 
 ## Documentation
 
@@ -57,6 +52,7 @@ Supported OS Systems:
 - Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
 
 ### Previous versions
+- [2.0.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.0.0)
 - [1.3.2 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)
 - [1.3.1 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
 - [1.3.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.0)					  
@@ -68,6 +64,16 @@ Supported OS Systems:
 - [1.0.2 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi)	
 - [1.0.1 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)
 - [1.0.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
+
+
+### Important: MacOS users
+
+20/02/2020 Since the update of MacOS Catalina YOU NEED TO ENABLE MAC OS EXTERNAL SOFTWARE to install LINCE PLUS.
+We are working on the licensing issue, but, until it´s solved you must follow this procedure: [Install uncertified software - ES ](https://support.apple.com/es-es/guide/mac-help/mh40616/mac) o [Install uncertified software - EN](https://support.apple.com/en-us/HT202491).
+
+
+![MacUsers](lince-mac-users.png)
+
 
 ### Bugs or problems? No problem
 
@@ -88,6 +94,11 @@ LINCE PLUS installer is build using Install4J [multi-platform installer builder]
 
 ## Release notes
 
+- Version 2.1.0 RELEASE, 02/10/2023
+	- AI Studio
+	- new Video Player
+    - Youtube player update
+  
 - Version 2.0.0 RELEASE, 03/07/2023
 	- GA4 intro
  	- Spring boot 2.7
