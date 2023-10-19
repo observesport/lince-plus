@@ -41,6 +41,10 @@ Important note:
 - Some Mac computers based on intel can't start this version. Please, use version 1.3.2 100% compatible with you intel computer. Version 2.1 can be installed as an update optionally.
 - ES: Algunos ordenadores Mac con chipset intel, no funciona adecuadamente con la version 2. Instala la version 1.3.2. Opcionalmente puedes instalar la 2.1 encima y funcionara.
 
+Known issues:
+- [Mac intel fresh installation](https://github.com/observesport/lince-plus/issues/61)
+- [Excel exportation](https://github.com/observesport/lince-plus/issues/62)
+
 Supported OS Systems:
 - Windows x64
 - MacOS x64
