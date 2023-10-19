@@ -37,6 +37,10 @@ Our software it's build on a multilanguage base. Status for it:
 
 ### Current version 2.1.0 RELEASE
 
+Important note: 
+- Some Mac computers based on intel can't start this version. Please, use version 1.3.2 100% compatible with you intel computer. Version 2.1 can be installed as an update optionally.
+- ES: Algunos ordenadores Mac con chipset intel, no funciona adecuadamente con la version 2. Instala la version 1.3.2. Opcionalmente puedes instalar la 2.1 encima y funcionara.
+
 Supported OS Systems:
 - Windows x64
 - MacOS x64
