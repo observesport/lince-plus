@@ -1,0 +1,36 @@
+/*!
+   * Programatically add the following
+   */
+
+/*! @name @videojs/http-streaming @version 3.5.3 @license Apache-2.0 */
+
+/*! @name aes-decrypter @version 4.0.1 @license Apache-2.0 */
+
+/*! @name m3u8-parser @version 6.2.0 @license Apache-2.0 */
+
+/*! @name mpd-parser @version 1.2.2 @license Apache-2.0 */
+
+/*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
+
+/*! @name videojs-contrib-quality-levels @version 4.0.0 @license Apache-2.0 */
+
+/**
+ * @license
+ * Video.js 8.5.2 <http://videojs.com/>
+ * Copyright Brightcove, Inc. <https://www.brightcove.com/>
+ * Available under Apache License Version 2.0
+ * <https://github.com/videojs/video.js/blob/main/LICENSE>
+ *
+ * Includes vtt.js <https://github.com/mozilla/vtt.js>
+ * Available under Apache License Version 2.0
+ * <https://github.com/mozilla/vtt.js/blob/main/LICENSE>
+ */
+
+/** @license React v17.0.2
+ * react-jsx-runtime.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */

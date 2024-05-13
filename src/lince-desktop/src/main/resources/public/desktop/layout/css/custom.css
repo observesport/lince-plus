@@ -1,0 +1,33 @@
+/* here you can put your own css to customize and override the theme */
+body {
+    background-color: #202a32;
+}
+@media (max-width: 767px) {
+    .page-header.navbar {
+        background: #202a32;
+    }
+}
+.page-header.navbar .page-logo {
+    background: #202a32;
+}
+
+.page-header.navbar .page-logo .logo-default {
+    margin: 13px 0 0;
+}
+
+.page-sidebar .page-sidebar-menu > li.active.open > a > i, .page-sidebar .page-sidebar-menu > li.active > a > i, .page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li.active.open > a > i, .page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li.active > a > i {
+    color: #d88e58;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown .dropdown-toggle .badge.badge-default {
+    background-color: #d88e58;
+    color: #fff;
+}
+
+.page-sidebar .page-sidebar-menu > li.active.open > a:hover, .page-sidebar .page-sidebar-menu > li.active > a:hover, .page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li.active.open > a:hover, .page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li.active > a:hover {
+    background: #202a32;
+}
+
+.page-sidebar, .page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover {
+    background-color: #202a32;
+}

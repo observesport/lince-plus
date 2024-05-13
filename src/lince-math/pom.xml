@@ -3,12 +3,40 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>lince-scientific-base</artifactId>
-        <groupId>com.deicos.lince</groupId>
-        <version>2.1.0-RELEASE</version>
+        <artifactId>lince-plus-root</artifactId>
+        <groupId>com.lince.observer</groupId>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>lince-math</artifactId>
+    <repositories>
+        <repository>
+            <id>mvnrepository</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <!-- R CRAN repository .. move to math module -->
+        <repository>
+            <id>bedatadriven</id>
+            <name>bedatadriven public repo</name>
+            <url>https://nexus.bedatadriven.com/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+        </repository>
+    </repositories>
     <dependencies>
         <!-- base de spring boot -->
         <dependency>
@@ -31,25 +59,37 @@
         </dependency>
         <!-- inner data-->
         <dependency>
-            <groupId>com.deicos.lince</groupId>
-            <artifactId>lince-data</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.lince.observer</groupId>
+            <artifactId>lince-data-fx</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.deicos.lince</groupId>
+            <groupId>com.lince.observer</groupId>
             <artifactId>lince-ai</artifactId>
-            <version>${project.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
-        <!-- <dependency>
-             <groupId>org.apache.commons</groupId>
-             <artifactId>commons-math3</artifactId>
-             <version>3.6.1</version>
-         </dependency>-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+        </dependency>
 
         <!--
-        jython: python en java
-        -->
+          jython: python en java
+          -->
         <!--dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
@@ -61,27 +101,23 @@
         <dependency>
             <groupId>org.renjin</groupId>
             <artifactId>renjin-script-engine</artifactId>
-            <version>3.5-beta76</version>
-            <!--classifier>jar-with-dependencies</classifier-->
         </dependency>
         <!-- Valid plugins -->
         <dependency>
             <groupId>org.renjin.cran</groupId>
             <artifactId>jsonlite</artifactId>
-            <version>1.5-b2</version>
         </dependency>
-        <dependency>
-            <!--
+<!--        <dependency>
+            &lt;!&ndash;
             Functions for downloading flight data from http://www.munich-airport.de and for analyzing flight patterns.
             > data("airports", package = "MUCflights")
             > head(airports)
             > flight.info <- flights(from = "2011-01-07", to = "2011-01-08")
             > head(flight.info)
-            -->
+            &ndash;&gt;
             <groupId>org.renjin.cran</groupId>
             <artifactId>MUCflights</artifactId>
-            <version>0.0-3-b38</version>
-        </dependency>
+        </dependency>-->
         <!-- Lab Plugins -->
         <!--<dependency>
             &lt;!&ndash;
