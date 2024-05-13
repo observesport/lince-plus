@@ -32,6 +32,13 @@
             <url>https://nexus.bedatadriven.com/content/groups/public/</url>
         </repository>
     </repositories>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub observesport Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/observesport/lince-plus</url>
+        </repository>
+    </distributionManagement>
     <properties>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
