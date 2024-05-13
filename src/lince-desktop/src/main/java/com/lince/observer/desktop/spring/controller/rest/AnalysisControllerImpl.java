@@ -46,7 +46,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     }
 
     @Override
-//    @RequestMapping(value = {"/get/","/get"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = {"/get/","/get"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> getOrderedRegister() {
         try {
             List<RegisterItem> nodeList = analysisService.getOrderedRegister();
@@ -64,7 +64,7 @@ public class AnalysisControllerImpl implements AnalysisController {
      * @return
      */
     @Override
-//    @RequestMapping(value = "/get/{uuid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/get/{uuid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> getRegisterById(@PathVariable UUID uuid) {
         try {
             return new ResponseEntity<>(analysisService.getDataRegisterById(uuid), HttpStatus.OK);
@@ -76,7 +76,7 @@ public class AnalysisControllerImpl implements AnalysisController {
 
 
     @Override
-//    @RequestMapping(value = "/clear", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/clear", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> clearRegisterData(HttpServletRequest request, @RequestBody SceneWrapper items) {
         try {
             if (!analysisService.deleteRegisterById(items.getId())) {
@@ -93,7 +93,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     }
 
     @Override
-//    @RequestMapping(value = "/pushscene", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
+    @RequestMapping(value = "/pushscene", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<List<RegisterItem>> pushScene(HttpServletRequest request, @RequestBody SceneWrapper items) {
         try {
             Double sceneMoment = items.getMoment();
@@ -107,7 +107,7 @@ public class AnalysisControllerImpl implements AnalysisController {
 
     @Override
     @Deprecated
-//    @RequestMapping(value = "/set/{momentID}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
+    @RequestMapping(value = "/set/{momentID}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request
             , @PathVariable String momentID, @RequestBody SceneWrapper items) {
         try {
@@ -127,7 +127,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     }
 
     @Override
-//    @RequestMapping(value = {"/setMomentData","/setMomentData/"}, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
+    @RequestMapping(value = {"/setMomentData","/setMomentData/"}, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request, @RequestBody SceneWrapper items) {
         try {
             if (items.getMoment() != null) {
@@ -152,7 +152,7 @@ public class AnalysisControllerImpl implements AnalysisController {
      * @return
      */
     @Override
-//    @RequestMapping(value = "/timeStats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/timeStats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HighChartsWrapper> getTimeStats() {
         try {
             HighChartsWrapper data = analysisService.getRegisterStatsByScene();
@@ -171,7 +171,7 @@ public class AnalysisControllerImpl implements AnalysisController {
      * @return
      */
     @Override
-//    @RequestMapping(value = "/pieStats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/pieStats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getPieStats() {
         try {
             HighChartsWrapper data = analysisService.getRegisterStatsByCategory();
@@ -200,7 +200,7 @@ public class AnalysisControllerImpl implements AnalysisController {
      * @return
      */
     @Override
-//    @RequestMapping(value = "/kappa/{uuid1}/{uuid2}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/kappa/{uuid1}/{uuid2}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<KeyValue<String, Double>>> getLegacyKappaIndex(@PathVariable String uuid1, @PathVariable String uuid2) {
         try {
             return new ResponseEntity<>(statsService.calculateLegacyKappa(UUID.fromString(uuid1), UUID.fromString(uuid2)), HttpStatus.OK);
@@ -211,7 +211,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     }
 
     @Override
-//    @RequestMapping(value = "/kappaPro/{uuid1}/{uuid2}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/kappaPro/{uuid1}/{uuid2}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AgreementResult>> getAgreementKappaPro(@PathVariable String uuid1, @PathVariable String uuid2) {
         try {
             return new ResponseEntity<>(statsService.calculateKappaPro(UUID.fromString(uuid1)
@@ -223,7 +223,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     }
 
     @Override
-//    @RequestMapping(value = "/matrix/{uuid1}/{uuid2}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/matrix/{uuid1}/{uuid2}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AgreementResult>> getContingencyMatrix(@PathVariable String uuid1, @PathVariable String uuid2) {
         try {
             return new ResponseEntity<>(statsService.getContingencyMatrix(UUID.fromString(uuid1)
@@ -245,7 +245,7 @@ public class AnalysisControllerImpl implements AnalysisController {
 //    }
 
     @Override
-//    @RequestMapping(value = "/krippendorf", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
+    @RequestMapping(value = "/krippendorf", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<List<AgreementResult>> getAgreementKrippendorf(HttpServletRequest request, @RequestBody UUID[] uuids) {
         try {
             return new ResponseEntity<>(statsService.calculateKrippendorf(uuids), HttpStatus.OK);
@@ -256,7 +256,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     }
 
     @Override
-//    @RequestMapping(value = "/percentageAgreement", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
+    @RequestMapping(value = "/percentageAgreement", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<List<AgreementResult>> getAgreementPercentage(HttpServletRequest request, @RequestBody UUID[] uuids) {
         try {
             return new ResponseEntity<>(statsService.calculateAgreementPercentage(uuids), HttpStatus.OK);
