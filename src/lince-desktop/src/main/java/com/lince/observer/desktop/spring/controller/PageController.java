@@ -3,6 +3,7 @@ package com.lince.observer.desktop.spring.controller;
 import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.CategoryData;
+import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.ProfileService;
 import com.lince.observer.data.service.SessionService;
 import com.lince.observer.desktop.ServerAppParams;

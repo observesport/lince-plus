@@ -7,7 +7,7 @@ import com.lince.observer.data.bean.wrapper.SceneWrapper;
 import com.lince.observer.data.bean.highcharts.HighChartsSerie;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
 import com.lince.observer.data.controller.AnalysisController;
-import com.lince.observer.math.service.AnalysisService;
+import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.StatsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;

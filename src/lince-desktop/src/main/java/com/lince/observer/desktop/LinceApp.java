@@ -16,6 +16,7 @@
 package com.lince.observer.desktop;
 
 
+import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.data.service.ProfileService;
 import com.lince.observer.desktop.base.AbstractJavaFxApplicationSupport;

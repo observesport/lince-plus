@@ -2,7 +2,7 @@ package com.lince.observer.desktop.spring.controller.rest;
 
 import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.common.DataTableWrapper;
-import com.lince.observer.math.service.AnalysisService;
+import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.math.service.CategoryServiceImpl;
 import org.slf4j.Logger;

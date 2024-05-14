@@ -5,10 +5,10 @@ import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.CategoryInformation;
 import com.lince.observer.data.bean.categories.Criteria;
+import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.math.AppParams;
 import com.lince.observer.data.bean.highcharts.HighChartsSerie;
-import com.lince.observer.data.bean.highcharts.HighChartsSerieBean;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Description:
  */
 @Service
-public class AnalysisService {
+public class AnalysisServiceImpl implements AnalysisService {
     protected final CategoryService categoryService;
     private final DataHubService dataHubService;
 
@@ -40,19 +40,9 @@ public class AnalysisService {
     private static AtomicInteger idGenerator = new AtomicInteger();
 
     @Autowired
-    public AnalysisService(CategoryService categoryService, DataHubService dataHubService) {
+    public AnalysisServiceImpl(CategoryService categoryService, DataHubService dataHubService) {
         this.categoryService = categoryService;
         this.dataHubService = dataHubService;
-    }
-
-    /**
-     * Normaliza el momento de sistema a dos decimales
-     *
-     * @param moment
-     * @return
-     */
-    private Double convertSysMoment(Double moment) {
-        return Math.round(moment * 100.0) / 100.0;
     }
 
     /**
@@ -60,6 +50,7 @@ public class AnalysisService {
      *
      * @return
      */
+    @Override
     public List<RegisterItem> getOrderedRegister() {
         List<RegisterItem> current = getDataRegister();
         try {
@@ -72,6 +63,7 @@ public class AnalysisService {
         return current;
     }
 
+    @Override
     public boolean deleteRegisterById(Integer id) {
         try {
             if (id != null) {
@@ -93,6 +85,7 @@ public class AnalysisService {
      * @param moment
      * @return
      */
+    @Override
     public boolean deleteMomentInfo(Double moment) {
         boolean isDeleted = false;
         try {
@@ -110,11 +103,13 @@ public class AnalysisService {
         return isDeleted;
     }
 
+    @Override
     public List<RegisterItem> getDataRegister() {
         ensureDataRegisterConsistency();
         return dataHubService.getCurrentDataRegister();
     }
 
+    @Override
     public List<RegisterItem> getDataRegisterById(UUID uuid) {
         try {
             ensureDataRegisterConsistency();
@@ -159,16 +154,35 @@ public class AnalysisService {
      * @param videoTime
      * @param categories
      */
+    @Override
     public boolean pushRegister(Double videoTime, Category... categories) {
         return pushRegister(new RegisterItem(convertSysMoment(videoTime), categories));
     }
 
+    private Integer generateID() {
+        //analizamos todos los ids y devolvemos el maximo
+        try {
+            for (RegisterItem value : dataHubService.getCurrentDataRegister()) {
+                Integer currentGroupID = value.getId() == null ? -1 : value.getId();
+                if (value.getId() == null) {
+                    value.setId(generateID()); //corregimos posible error de ids al recorrer
+                }
+                if (currentGroupID > AnalysisServiceImpl.idGenerator.get()) {
+                    AnalysisServiceImpl.idGenerator.set(currentGroupID);
+                }
+            }
+        } catch (Exception e) {
+            log.error("generateId", e);
+        }
+        return AnalysisServiceImpl.idGenerator.incrementAndGet();
+    }
     /**
      * Inserta el registro introducido, buscando parámetros similares
      * Generates concurrentModificationException on several threads.
      *
      * @param item
      */
+    @Override
     public boolean pushRegister(RegisterItem item) {
         try {
             Optional<RegisterItem> registerItem = dataHubService.getCurrentDataRegister().stream()
@@ -189,6 +203,7 @@ public class AnalysisService {
         return true;
     }
 
+    @Override
     public RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories){
         if (CollectionUtils.isNotEmpty(categories)) {
             List<Category> dataValues = new ArrayList<>();
@@ -211,28 +226,11 @@ public class AnalysisService {
         return scene;
     }
 
-    private Integer generateID() {
-        //analizamos todos los ids y devolvemos el maximo
-        try {
-            for (RegisterItem value : dataHubService.getCurrentDataRegister()) {
-                Integer currentGroupID = value.getId() == null ? -1 : value.getId();
-                if (value.getId() == null) {
-                    value.setId(generateID()); //corregimos posible error de ids al recorrer
-                }
-                if (currentGroupID > idGenerator.get()) {
-                    idGenerator.set(currentGroupID);
-                }
-            }
-        } catch (Exception e) {
-            log.error("generateId", e);
-        }
-        return idGenerator.incrementAndGet();
-    }
-
 
     /**
      * @return
      */
+    @Override
     public HighChartsWrapper getRegisterStatsByScene() {
         HighChartsWrapper rtn = new HighChartsWrapper();
         final Pair<Integer, String> EMPTY_SERIES_VALUE = new Pair<>(-1, "Sin definir");
@@ -302,29 +300,7 @@ public class AnalysisService {
     }
 
 
-    private List<Pair<CategoryData, Double>> getRegisterVisibility(Criteria cri, List<RegisterItem> userSceneData) {
-        List<Pair<CategoryData, Double>> rtnValues = new ArrayList<>();
-        try {
-            if (cri != null) {
-                //Item visibility
-                for (Category cat : cri.getInnerCategories()) {
-                    double counter = 0;
-                    for (RegisterItem scene : userSceneData) {
-                        for (Category sceneCat : scene.getRegister()) {
-                            if (sceneCat.equals(cat)) {
-                                counter++;
-                            }
-                        }
-                    }
-                    rtnValues.add(new Pair<>(cat, counter));
-                }
-            }
-        } catch (Exception e) {
-            log.error("getRegisterVisibility", e);
-        }
-        return rtnValues;
-    }
-
+    @Override
     public double getTotals(List<Pair<CategoryData, Double>> data) {
         //Let's add totals
         double counter = 0;
@@ -335,11 +311,7 @@ public class AnalysisService {
     }
 
 
-    private Double getFrequency(Double item, Double total) {
-        if (item != null && total != null) return (item * 100) / total;
-        else return null;
-    }
-
+    @Override
     public List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register) {
         List<Pair<CategoryData, Double>> globalCounter = new ArrayList<>();
         try {
@@ -353,18 +325,10 @@ public class AnalysisService {
     }
 
 
-    private HighChartsSerieBean getBean(String code, Double frecuency, Double total) {
-        HighChartsSerieBean bean = new HighChartsSerieBean();
-        bean.setTotal(total);
-        bean.setY(frecuency);
-        bean.setName(code);
-        bean.setDrilldown(code);
-        return bean;
-    }
-
     /**
      * @return Total aparience status wrapper to highcharts
      */
+    @Override
     public HighChartsWrapper getRegisterStatsByCategory() {
         HighChartsWrapper rtn = new HighChartsWrapper();
         HighChartsWrapper drillDown = new HighChartsWrapper();
