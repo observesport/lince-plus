@@ -1,9 +1,12 @@
 package com.lince.observer.math.service;
 
+import com.lince.observer.ai.agreement.LinceDkproAdapter;
 import com.lince.observer.data.LegacyStatsHelper;
 import com.lince.observer.data.bean.KeyValue;
+import com.lince.observer.data.bean.agreement.AgreementResult;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
+import com.lince.observer.data.service.StatsService;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
@@ -38,6 +41,9 @@ public class StatsServiceImpl implements StatsService {
         this.legacyConverterService = legacyConverterService;
     }
 
+    private LinceDkproAdapter getAdapter(UUID... uuids) {
+        return new LinceDkproAdapter(getDataRegister(), getObservationTool(), uuids);
+    }
     /**
      * Legacy method, using Lince 1 version
      *
@@ -80,4 +86,37 @@ public class StatsServiceImpl implements StatsService {
         return dataHubService.getCriteria();
     }
 
+    @Override
+    public List<AgreementResult> calculateAgreementPercentage(UUID... selectedRegisters) {
+        LinceDkproAdapter adapter = getAdapter(selectedRegisters);
+        return adapter.calculatePercentageAgreement();
+    }
+
+    @Override
+    public List<AgreementResult> calculateKrippendorf(UUID... selectedRegisters) {
+        LinceDkproAdapter adapter = getAdapter(selectedRegisters);
+        return adapter.calculateKrippendorfAlphaAgreement();
+    }
+
+    @Override
+    public List<AgreementResult> getContingencyMatrix(UUID firstRegister, UUID secondRegister) {
+        try {
+            LinceDkproAdapter adapter = getAdapter(firstRegister, secondRegister);
+            return adapter.getContingencyMatrix();
+        } catch (Exception e) {
+            log.error("StatsService for Kappa index via DKpro", e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<AgreementResult> calculateKappaPro(UUID firstRegister, UUID secondRegister) {
+        try {
+            LinceDkproAdapter adapter = getAdapter(firstRegister, secondRegister);
+            return adapter.calculateKappaIndex();
+        } catch (Exception e) {
+            log.error("StatsService for Kappa index via DKpro", e);
+            return null;
+        }
+    }
 }
