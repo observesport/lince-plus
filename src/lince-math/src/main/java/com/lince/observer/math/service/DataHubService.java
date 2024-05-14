@@ -8,7 +8,7 @@ import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.service.SessionService;
 import com.lince.observer.math.AppParams;
 import com.lince.observer.data.common.SessionDataAttributes;
-import com.lince.observer.math.WebContextHolder;
+import com.lince.observer.math.LinceWebContextHolder;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +83,7 @@ public class DataHubService extends DataHubServiceBase {
     protected LinceRegisterWrapper getSessionRegister() {
         try {
             //Too messy passsing httpSession object everywhere. Let's get it in another way
-            HttpSession httpSession = WebContextHolder.get().getSession();
+            HttpSession httpSession = LinceWebContextHolder.get().getSession();
             List<LinceRegisterWrapper> dataRegister = getDataRegister();
             UUID defaultKeyRegister = dataRegister.get(0).getId();
             // Let's get or set a default context register

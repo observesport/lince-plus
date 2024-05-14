@@ -7,6 +7,7 @@ import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.common.DataTableWrapper;
 import com.lince.observer.data.common.EnumStructure;
+import com.lince.observer.data.controller.CategoryController;
 import com.lince.observer.math.service.CategoryServiceImpl;
 import com.lince.observer.math.service.CategoryServiceOld;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,16 +32,15 @@ import java.util.HashMap;
 @CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping(value = CategoryController.RQ_MAPPING_NAME)
-public class CategoryController /*extends CgEngineBaseController<Book, BookServiceImpl>*/ {
+public class CategoryControllerImpl implements CategoryController /*extends CgEngineBaseController<Book, BookServiceImpl>*/ {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    static final String RQ_MAPPING_NAME = "/categories";
 
     private final CategoryServiceImpl categoryService;
 
     private final CategoryServiceOld oldCategoryService;
 
     @Autowired
-    public CategoryController(CategoryServiceImpl categoryService, CategoryServiceOld oldCategoryService) {
+    public CategoryControllerImpl(CategoryServiceImpl categoryService, CategoryServiceOld oldCategoryService) {
         this.categoryService = categoryService;
         this.oldCategoryService = oldCategoryService;
     }
@@ -61,6 +61,7 @@ public class CategoryController /*extends CgEngineBaseController<Book, BookServi
      * @param txtId
      * @return
      */
+    @Override
     @RequestMapping(value = "/get/{txtId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryContainer> getCategories(@PathVariable String txtId) {
         CategoryContainer nodeList = new CategoryContainer();
@@ -80,6 +81,7 @@ public class CategoryController /*extends CgEngineBaseController<Book, BookServi
         }
     }
 
+    @Override
     @RequestMapping(value = "/saveAll/{gen}", method = RequestMethod.POST)
     public ResponseEntity<DataTableWrapper<CategoryData>> saveAll(HttpServletRequest request
             , @PathVariable("gen") Boolean doGen
@@ -96,6 +98,7 @@ public class CategoryController /*extends CgEngineBaseController<Book, BookServi
     }
 
 
+    @Override
     @RequestMapping(value = "/save", method = RequestMethod.POST/*, produces = MediaType.APPLICATION_JSON_VALUE, headers="Accept=*"*/)
     //@ResponseBody
     public ResponseEntity<CategoryData> save(HttpServletRequest request, @RequestBody CategoryData item) {
@@ -120,6 +123,7 @@ public class CategoryController /*extends CgEngineBaseController<Book, BookServi
         }
     }
 
+    @Override
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     //@ResponseBody
     public ResponseEntity<CategoryData> update(@PathVariable Integer id, @RequestBody CategoryData item) {
@@ -132,6 +136,7 @@ public class CategoryController /*extends CgEngineBaseController<Book, BookServi
         }
     }
 
+    @Override
     @RequestMapping(value = "/move/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     //@ResponseBody
     public ResponseEntity<CategoryData> move(@PathVariable Integer id, @RequestBody CategoryData item) {
@@ -144,6 +149,7 @@ public class CategoryController /*extends CgEngineBaseController<Book, BookServi
         }
     }
 
+    @Override
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<CategoryData> delete(@PathVariable Integer id) {
         try {

@@ -74,4 +74,9 @@ public abstract class BaseRestControllerWrapper {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    protected ResponseEntity getNotImplementedResponse(){
+        return new ResponseEntity(new ArrayList<>(), HttpStatus.NOT_IMPLEMENTED);
+    }
+
 }

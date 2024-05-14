@@ -1,6 +1,7 @@
 package com.lince.observer.desktop.spring.controller.rest;
 
 import com.lince.observer.data.bean.Tuple;
+import com.lince.observer.data.controller.SessionController;
 import com.lince.observer.data.generic.BaseRestControllerWrapper;
 import com.lince.observer.desktop.component.ApplicationContextProvider;
 import com.lince.observer.data.service.SystemService;
@@ -36,32 +37,28 @@ import java.util.function.Function;
  */
 @RestController
 @RequestMapping(value = SessionController.RQ_MAPPING_NAME)
-public class SessionController extends BaseRestControllerWrapper {
+public class SessionControllerImpl extends BaseRestControllerWrapper implements SessionController {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    static final String RQ_MAPPING_NAME = "/session";
+    private final ApplicationContextProvider applicationContextProvider;
     private final LocaleResolver localeResolver;
+    protected final SessionService service;
+    private final DataHubService dataHubService;
+    private final SystemService systemService;
     private ResourceBundle resourceBundle =null;
 
     private String getActionName() {
         return RQ_MAPPING_NAME;
     }
 
-    protected final SessionService service;
-    private final DataHubService dataHubService;
-    private final SystemService systemService;
-    private final ApplicationContextProvider applicationContextProvider;
-
     @Autowired
-    public SessionController(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver, ApplicationContextProvider applicationContextProvider, SystemService systemService) {
+    public SessionControllerImpl(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver, ApplicationContextProvider applicationContextProvider, SystemService systemService) {
         this.service = service;
         this.dataHubService = dataHubService;
         this.localeResolver = localeResolver;
         this.applicationContextProvider = applicationContextProvider;
         this.systemService = systemService;
     }
-
 
     /**
      * Gets value from session
@@ -70,6 +67,7 @@ public class SessionController extends BaseRestControllerWrapper {
      * @param key         session parameter
      * @return value from session
      */
+    @Override
     @RequestMapping(value = "/get/{key}", method = RequestMethod.GET
             , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HashMap<String, String>> getSessionData(HttpSession httpSession, @PathVariable String key) {
@@ -84,25 +82,10 @@ public class SessionController extends BaseRestControllerWrapper {
         }
     }
 
+    @Override
     @RequestMapping(value = "/locale")
     public ResponseEntity<String> getLocale(HttpServletRequest request) {
         return new ResponseEntity<>(getLocaleString(request), HttpStatus.OK);
-    }
-
-    /**
-     * Returns simplified way of locale, like "es", "en", etc
-     *
-     * @param request injected request
-     * @return locale string
-     */
-    private String getLocaleString(HttpServletRequest request) {
-        try {
-            Locale currentLocale = localeResolver.resolveLocale(request);
-            final String langCode = currentLocale.getLanguage();
-            return StringUtils.lowerCase(langCode);
-        } catch (Exception e) {
-            return "es";
-        }
     }
 
     /**
@@ -111,6 +94,7 @@ public class SessionController extends BaseRestControllerWrapper {
      * @param httpSession injected httpSession
      * @return key-map list
      */
+    @Override
     @RequestMapping(value = "/getAll", method = RequestMethod.GET
             , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HashMap<String, String>> getAllSessionData(HttpServletRequest rq,
@@ -142,18 +126,6 @@ public class SessionController extends BaseRestControllerWrapper {
         }
     }
 
-    private int getNumObservers() {
-        int observers = 0;
-        try {
-            if (!dataHubService.getUserData().isEmpty()) {
-                observers = dataHubService.getUserData().get(0).getUserProfiles().size();
-            }
-        } catch (Exception e) {
-            log.error("Counting observers!", e);
-        }
-        return observers;
-    }
-
     /**
      * Sets value in session if value is correct
      *
@@ -162,6 +134,7 @@ public class SessionController extends BaseRestControllerWrapper {
      * @param value       pathVar. Attribute's value
      * @return current value
      */
+    @Override
     @RequestMapping(value = "/set/{key}/{value}", method = RequestMethod.GET
             , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HashMap<String, String>> setSessionData(HttpServletRequest rq, HttpSession httpSession
@@ -175,6 +148,7 @@ public class SessionController extends BaseRestControllerWrapper {
         return getAllSessionData(rq, httpSession);
     }
 
+    @Override
     @RequestMapping(value = "/getProjectInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getMiniInfo(HttpServletRequest rq) {
         JSONObject rtn = new JSONObject();
@@ -193,17 +167,44 @@ public class SessionController extends BaseRestControllerWrapper {
         return new ResponseEntity<>(rtn.toString(), HttpStatus.OK);
     }
 
-    private JSONObject getI18Messages(){
+    /**
+     * Returns simplified way of locale, like "es", "en", etc
+     *
+     * @param request injected request
+     * @return locale string
+     */
+    String getLocaleString(HttpServletRequest request) {
+        try {
+            Locale currentLocale = localeResolver.resolveLocale(request);
+            final String langCode = currentLocale.getLanguage();
+            return StringUtils.lowerCase(langCode);
+        } catch (Exception e) {
+            return "es";
+        }
+    }
+
+    int getNumObservers() {
+        int observers = 0;
+        try {
+            if (!dataHubService.getUserData().isEmpty()) {
+                observers = dataHubService.getUserData().get(0).getUserProfiles().size();
+            }
+        } catch (Exception e) {
+            log.error("Counting observers!", e);
+        }
+        return observers;
+    }
+
+    JSONObject getI18Messages() {
         JSONObject lang = new JSONObject();
-        if (this.resourceBundle == null){
+        if (this.resourceBundle == null) {
             this.resourceBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
-            lang.put("lang_qr"          ,this.resourceBundle.getString("desktop.web.txt.qr"));
-            lang.put("lang_desc_1"      ,this.resourceBundle.getString("desktop.web.txt.p1"));
-            lang.put("lang_desc_2"      ,this.resourceBundle.getString("desktop.web.txt.p2"));
-            lang.put("option_registers" ,this.resourceBundle.getString("desktop.web.txt.label1"));
-            lang.put("option_observers" ,this.resourceBundle.getString("desktop.web.txt.label3"));
+            lang.put("lang_qr", this.resourceBundle.getString("desktop.web.txt.qr"));
+            lang.put("lang_desc_1", this.resourceBundle.getString("desktop.web.txt.p1"));
+            lang.put("lang_desc_2", this.resourceBundle.getString("desktop.web.txt.p2"));
+            lang.put("option_registers", this.resourceBundle.getString("desktop.web.txt.label1"));
+            lang.put("option_observers", this.resourceBundle.getString("desktop.web.txt.label3"));
         }
         return lang;
     }
-
 }

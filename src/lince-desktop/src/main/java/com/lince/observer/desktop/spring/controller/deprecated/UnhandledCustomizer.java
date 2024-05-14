@@ -1,4 +1,4 @@
-package com.lince.observer.desktop.spring.controller;
+package com.lince.observer.desktop.spring.controller.deprecated;
 
 import org.springframework.web.servlet.view.RedirectView;
 

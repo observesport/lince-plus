@@ -24,21 +24,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class RenjinController {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     public static final String RQ_MAPPING_NAME = "/renjin";
-    @Autowired
-    protected RenjinService renjinService;
+    protected final RenjinService renjinService;
 
-    @RequestMapping(value = "/tst", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> getData() {
-        try {
-            //renjinService.tryRFile();
-            renjinService.tryExecuteFileByLine();
-            //renjinService.tryRService();
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("renjin:tst/", e);
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public RenjinController(RenjinService renjinService) {
+        this.renjinService = renjinService;
     }
+
+//    @RequestMapping(value = "/tst", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Boolean> getData() {
+//        try {
+//            //renjinService.tryRFile();
+//            renjinService.tryExecuteFileByLine();
+//            //renjinService.tryRService();
+//            return new ResponseEntity<>(true, HttpStatus.OK);
+//        } catch (Exception e) {
+//            log.error("renjin:tst/", e);
+//            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @RequestMapping(value = "/execute", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> execute(HttpServletRequest request, @RequestBody String code) {

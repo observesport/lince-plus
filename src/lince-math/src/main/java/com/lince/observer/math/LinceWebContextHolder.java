@@ -8,43 +8,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.MessageSource;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.ui.context.Theme;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
 import javax.sql.DataSource;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Locale;
 
 /**
- * .app.base
+ * com.lince.observer.math
  * Class WebContextHolder
- * @author berto (alberto.soto@gmail.com). 09/03/2019
  *
- * @author 应卓(yingzhor@gmail.com)
+ * @author berto (alberto.soto@gmail.com). 09/03/2019
+ * @author 应卓(yingzhor @ gmail.com)
  * https://stackoverflow.com/questions/1629211/how-do-i-get-the-session-object-in-spring
  */
-public final class WebContextHolder {
+public class LinceWebContextHolder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebContextHolder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinceWebContextHolder.class);
 
-    private static WebContextHolder INSTANCE = new WebContextHolder();
+    private static LinceWebContextHolder INSTANCE = new LinceWebContextHolder();
 
-    public static WebContextHolder get() {
+    public static LinceWebContextHolder get() {
         return INSTANCE;
     }
 
-    private WebContextHolder() {
+    private LinceWebContextHolder() {
         super();
     }
 
@@ -63,10 +54,6 @@ public final class WebContextHolder {
         return getRequest().getSession(create);
     }
 
-    public String getSessionId() {
-        return getSession().getId();
-    }
-
     public ServletContext getServletContext() {
         return getSession().getServletContext();    // servlet2.3
     }
@@ -83,44 +70,8 @@ public final class WebContextHolder {
         return WebApplicationContextUtils.getWebApplicationContext(getServletContext());
     }
 
-    public ApplicationEventPublisher getApplicationEventPublisher() {
-        return (ApplicationEventPublisher) getApplicationContext();
-    }
-
-    public LocaleResolver getLocaleResolver() {
-        return RequestContextUtils.getLocaleResolver(getRequest());
-    }
-
-    public ThemeResolver getThemeResolver() {
-        return RequestContextUtils.getThemeResolver(getRequest());
-    }
-
-    public ResourceLoader getResourceLoader() {
-        return (ResourceLoader) getApplicationContext();
-    }
-
-    public ResourcePatternResolver getResourcePatternResolver() {
-        return (ResourcePatternResolver) getApplicationContext();
-    }
-
-    public MessageSource getMessageSource() {
-        return (MessageSource) getApplicationContext();
-    }
-
-    public ConversionService getConversionService() {
-        return getBeanFromApplicationContext(ConversionService.class);
-    }
-
     public DataSource getDataSource() {
         return getBeanFromApplicationContext(DataSource.class);
-    }
-
-    public Collection<String> getActiveProfiles() {
-        return Arrays.asList(getApplicationContext().getEnvironment().getActiveProfiles());
-    }
-
-    public ClassLoader getBeanClassLoader() {
-        return ClassUtils.getDefaultClassLoader();
     }
 
     private <T> T getBeanFromApplicationContext(Class<T> requiredType) {
@@ -134,5 +85,46 @@ public final class WebContextHolder {
             return null;
         }
     }
+
+//    public String getSessionId() {
+//        return getSession().getId();
+//    }
+//
+//    public ApplicationEventPublisher getApplicationEventPublisher() {
+//        return (ApplicationEventPublisher) getApplicationContext();
+//    }
+//
+//    public LocaleResolver getLocaleResolver() {
+//        return RequestContextUtils.getLocaleResolver(getRequest());
+//    }
+//
+//    public ThemeResolver getThemeResolver() {
+//        return RequestContextUtils.getThemeResolver(getRequest());
+//    }
+//
+//    public ResourceLoader getResourceLoader() {
+//        return (ResourceLoader) getApplicationContext();
+//    }
+//
+//    public ResourcePatternResolver getResourcePatternResolver() {
+//        return (ResourcePatternResolver) getApplicationContext();
+//    }
+//
+//    public MessageSource getMessageSource() {
+//        return (MessageSource) getApplicationContext();
+//    }
+//
+//    public ConversionService getConversionService() {
+//        return getBeanFromApplicationContext(ConversionService.class);
+//    }
+//
+//    public Collection<String> getActiveProfiles() {
+//        return Arrays.asList(getApplicationContext().getEnvironment().getActiveProfiles());
+//    }
+//
+//    public ClassLoader getBeanClassLoader() {
+//        return ClassUtils.getDefaultClassLoader();
+//    }
+
 
 }
