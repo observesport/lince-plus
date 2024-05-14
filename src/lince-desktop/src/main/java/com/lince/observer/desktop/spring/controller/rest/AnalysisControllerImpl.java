@@ -32,10 +32,9 @@ import java.util.UUID;
  */
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping(value = AnalysisControllerImpl.RQ_MAPPING_NAME)
+@RequestMapping(value = AnalysisController.RQ_MAPPING_NAME)
 public class AnalysisControllerImpl implements AnalysisController {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    static final String RQ_MAPPING_NAME = "/register";
     private final AnalysisService analysisService;
     private final StatsService statsService;
 

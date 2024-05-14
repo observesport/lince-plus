@@ -20,6 +20,9 @@ import java.util.UUID;
  * Created by Alberto Soto. 15/4/24
  */
 public interface AnalysisController {
+
+    String RQ_MAPPING_NAME = "/register";
+
     @RequestMapping(value = {"/get/", "/get"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<RegisterItem>> getOrderedRegister();
 

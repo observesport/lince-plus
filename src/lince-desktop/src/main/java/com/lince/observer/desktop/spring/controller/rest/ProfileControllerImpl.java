@@ -3,6 +3,7 @@ package com.lince.observer.desktop.spring.controller.rest;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.common.DataTableWrapper;
+import com.lince.observer.data.controller.ProfileController;
 import com.lince.observer.math.service.DataHubService;
 import com.lince.observer.data.service.ProfileService;
 import com.lince.observer.data.service.SessionService;
@@ -27,19 +28,19 @@ import java.util.List;
 @CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping(value = ProfileController.RQ_MAPPING_NAME)
-public class ProfileController {
+public class ProfileControllerImpl implements ProfileController {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    static final String RQ_MAPPING_NAME = "/profile";
+
     private final ProfileService profileService;
     private final DataHubService dataHubService;
-    private final SessionService sessionService;
+//    private final SessionService sessionService;
 
     @Autowired
-    public ProfileController(ProfileService profileService, DataHubService dataHubService, SessionService sessionService) {
+    public ProfileControllerImpl(ProfileService profileService, DataHubService dataHubService) {
         this.profileService = profileService;
         this.dataHubService = dataHubService;
-        this.sessionService = sessionService;
+//        this.sessionService = sessionService;
     }
 
     private String getActionName() {
@@ -47,6 +48,7 @@ public class ProfileController {
     }
 
 
+    @Override
     @RequestMapping(value = "/get", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataTableWrapper<ResearchProfile>> getResearchInfo() {
         try {
@@ -57,6 +59,7 @@ public class ProfileController {
         }
     }
 
+    @Override
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity<DataTableWrapper<ResearchProfile>> saveAll(HttpServletRequest request
             , @RequestBody ResearchProfile item) {
@@ -71,19 +74,10 @@ public class ProfileController {
         }
     }
 
-
-
-    /**
-     * TODO 2020
-     *
-     * @param httpSession
-     * @param key
-     * @return
-     */
+    @Override
     @RequestMapping(value = "/getRegister/{key}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> getRegisterByKey(HttpSession httpSession, @PathVariable String key) {
         try {
-//            log.info("asking for register 4 " + key);
             return new ResponseEntity<>(dataHubService.getCurrentDataRegister(), HttpStatus.OK);
         } catch (Exception e) {
             log.error("rest:save", e);

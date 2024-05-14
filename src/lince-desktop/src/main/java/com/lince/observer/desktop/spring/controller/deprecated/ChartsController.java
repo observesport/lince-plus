@@ -1,4 +1,4 @@
-package com.lince.observer.desktop.spring.controller.rest;
+package com.lince.observer.desktop.spring.controller.deprecated;
 
 import org.fujion.highcharts.Chart;
 import org.fujion.highcharts.ChartInstance;
