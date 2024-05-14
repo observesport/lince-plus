@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  * Created by Alberto Soto. 14/5/24
  */
+@Deprecated
 public interface DataTableController {
     String RQ_MAPPING_NAME = "/datatable";
 

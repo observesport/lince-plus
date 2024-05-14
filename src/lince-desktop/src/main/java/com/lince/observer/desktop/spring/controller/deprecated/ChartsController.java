@@ -5,7 +5,7 @@ import org.fujion.highcharts.ChartInstance;
 import org.fujion.highcharts.Series;
 import com.lince.observer.data.bean.highcharts.HighChartsSerie;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
-import com.lince.observer.math.service.AnalysisService;
+import com.lince.observer.data.service.AnalysisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

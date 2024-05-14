@@ -7,6 +7,7 @@ import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.user.UserProfile;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
+import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.data.service.SessionService;
 import com.lince.observer.data.util.JavaFXLogHelper;
