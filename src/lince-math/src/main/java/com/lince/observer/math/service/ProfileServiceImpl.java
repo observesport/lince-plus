@@ -173,7 +173,6 @@ public class ProfileServiceImpl implements ProfileService {
      * @param data researchProfile
      */
     private void setUsersToRegister(ResearchProfile data) {
-
         try {
             //Legacy for old register (double association)
             checkRegisterIds();

@@ -47,24 +47,6 @@ public class AnalysisServiceImpl implements AnalysisService {
         this.dataHubService = dataHubService;
     }
 
-    /**
-     * Devuelve la lista ordenada de elementos
-     *
-     * @return
-     */
-    @Override
-    public List<RegisterItem> getOrderedRegister() {
-        List<RegisterItem> current = getDataRegister();
-        try {
-            return current.stream().sorted().toList();
-//            current.sort((o1, o2) -> {o1.getVideoTime()> o2.getVideoTime()});
-//            Collections.sort(current);
-        }catch (ConcurrentModificationException e){
-            log.error("Error sorting",e);
-        }
-        return current;
-    }
-
     @Override
     public boolean deleteRegisterById(Integer id) {
         try {
@@ -353,12 +335,12 @@ public class AnalysisServiceImpl implements AnalysisService {
                             //si es el mismo padre
                             if (item.getKey().getParent().equals(cri.getId())) {
                                 totalPerCategory += item.getValue();
-                                childSerie.getDataBean().add(getBean(item.getKey().getName(), getFrequency(item.getValue(), total), item.getValue()));
+                                childSerie.getDataBean().add(getHighChartsBean(item.getKey().getName(), getFrequency(item.getValue(), total), item.getValue()));
                             }
                         }
                         childSerie.setName(cri.getName());
                         double percentPerCategory = getFrequency(totalPerCategory, total);
-                        rootSerie.getDataBean().add(getBean(cri.getName(), percentPerCategory, totalPerCategory));
+                        rootSerie.getDataBean().add(getHighChartsBean(cri.getName(), percentPerCategory, totalPerCategory));
                         drillDown.getSeries().add(childSerie);
                     }
                 }
