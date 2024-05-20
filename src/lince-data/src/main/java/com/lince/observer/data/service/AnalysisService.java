@@ -29,23 +29,14 @@ public interface AnalysisService {
         return Math.round(moment * 100.0) / 100.0;
     }
 
-    List<RegisterItem> getOrderedRegister();
+    default Double getFrequency(Double item, Double total) {
+        if (item != null && total != null) return (item * 100) / total;
+        else return null;
+    }
 
-    boolean deleteRegisterById(Integer id);
-
-    boolean deleteMomentInfo(Double moment);
-
-    List<RegisterItem> getDataRegister();
-
-    List<RegisterItem> getDataRegisterById(UUID uuid);
-
-    boolean pushRegister(Double videoTime, Category... categories);
-
-    boolean pushRegister(RegisterItem item);
-
-    RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories);
-
-    HighChartsWrapper getRegisterStatsByScene();
+    default List<RegisterItem> getOrderedRegister() {
+        return getDataRegister().stream().sorted().toList();
+    }
 
     default List<Pair<CategoryData, Double>> getRegisterVisibility(Criteria cri, List<RegisterItem> userSceneData) {
         List<Pair<CategoryData, Double>> rtnValues = new ArrayList<>();
@@ -69,16 +60,7 @@ public interface AnalysisService {
         return rtnValues;
     }
 
-    double getTotals(List<Pair<CategoryData, Double>> data);
-
-    default Double getFrequency(Double item, Double total) {
-        if (item != null && total != null) return (item * 100) / total;
-        else return null;
-    }
-
-    List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register);
-
-    default HighChartsSerieBean getBean(String code, Double frequency, Double total) {
+    default HighChartsSerieBean getHighChartsBean(String code, Double frequency, Double total) {
         HighChartsSerieBean bean = new HighChartsSerieBean();
         bean.setTotal(total);
         bean.setY(frequency);
@@ -86,6 +68,26 @@ public interface AnalysisService {
         bean.setDrilldown(code);
         return bean;
     }
+
+    boolean deleteRegisterById(Integer id);
+
+    boolean deleteMomentInfo(Double moment);
+
+    List<RegisterItem> getDataRegister();
+
+    List<RegisterItem> getDataRegisterById(UUID uuid);
+
+    boolean pushRegister(Double videoTime, Category... categories);
+
+    boolean pushRegister(RegisterItem item);
+
+    RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories);
+
+    HighChartsWrapper getRegisterStatsByScene();
+
+    double getTotals(List<Pair<CategoryData, Double>> data);
+
+    List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register);
 
     HighChartsWrapper getRegisterStatsByCategory();
 }

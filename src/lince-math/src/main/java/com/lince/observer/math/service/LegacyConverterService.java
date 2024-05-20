@@ -10,7 +10,6 @@ import com.lince.observer.data.bean.user.UserProfile;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
-import com.lince.observer.data.service.SessionService;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.legacy.FilaRegistro;
 import com.lince.observer.legacy.Registro;
@@ -64,6 +63,7 @@ public class LegacyConverterService {
     /**
      * Migrates current structure to Legacy data for export in legacy module
      */
+    @Deprecated
     public Registro migrateDataToLegacy() {
         migrateDataToLegacyInstrument();
         return migrateDataToLegacyRegister(true, null);
