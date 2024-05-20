@@ -1,5 +1,6 @@
 package com.lince.observer.data;
 
+import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.example.HelloWorldServiceForDesktop;
 import com.lince.observer.data.service.example.IHelloWorldService;
 import org.apache.commons.lang3.StringUtils;
@@ -25,4 +26,17 @@ public class SPIServiceTest {
         //then
         Assertions.assertTrue(StringUtils.contains(String.valueOf(txt), classTarget));
     }
+
+    @Test
+    public void testAnalysisServiceLoad(){
+        //given
+        AtomicReference<String> txt = new AtomicReference<>(StringUtils.EMPTY);
+        String classTarget = AnalysisService.class.getName();
+        //when
+        ServiceLoader<AnalysisService> services = ServiceLoader.load(AnalysisService.class);
+        services.findFirst().ifPresent(t-> txt.set(t.toString()));
+        //then
+        Assertions.assertTrue(StringUtils.contains(String.valueOf(txt), classTarget));
+    }
+
 }

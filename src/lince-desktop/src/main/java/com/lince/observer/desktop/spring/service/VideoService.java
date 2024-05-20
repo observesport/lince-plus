@@ -43,6 +43,7 @@ import java.util.*;
  * Description:
  */
 @Service
+@DesktopQualifier
 public class VideoService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 

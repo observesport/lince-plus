@@ -1,5 +1,6 @@
 package com.lince.observer.math.service;
 
+import com.lince.observer.data.LinceQualifier.DesktopQualifier;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.CategoryData;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Description:
  */
 @Service
+@DesktopQualifier
 public class AnalysisServiceImpl implements AnalysisService {
     protected final CategoryService categoryService;
     private final DataHubService dataHubService;

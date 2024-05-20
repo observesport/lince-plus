@@ -1,4 +1,4 @@
-package com.lince.observer.desktop.spring.controller.deprecated;
+package com.lince.observer.desktop.spring.controller.rest;
 
 import com.lince.observer.data.BeanSchemeHelper;
 import com.lince.observer.data.bean.categories.Category;
