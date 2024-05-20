@@ -1,6 +1,7 @@
 package com.lince.observer.math.service;
 
 import com.lince.observer.data.LinceDataConstants;
+import com.lince.observer.data.LinceQualifier.DesktopQualifier;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.CategoryData;
@@ -42,14 +43,14 @@ public class LegacyConverterService {
     private final CategoryService categoryService;
     private final AnalysisService analysisService;
     private final DataHubService dataHubService;
-    private final SessionService sessionService;
 
     @Autowired
-    public LegacyConverterService(CategoryService categoryService, AnalysisService analysisService, DataHubService dataHubService, SessionService sessionService) {
+    public LegacyConverterService(@DesktopQualifier CategoryService categoryService,
+                                  @DesktopQualifier AnalysisService analysisService,
+                                  @DesktopQualifier DataHubService dataHubService) {
         this.categoryService = categoryService;
         this.analysisService = analysisService;
         this.dataHubService = dataHubService;
-        this.sessionService = sessionService;
     }
 
     /**

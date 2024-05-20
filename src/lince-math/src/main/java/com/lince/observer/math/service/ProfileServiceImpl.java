@@ -1,5 +1,6 @@
 package com.lince.observer.math.service;
 
+import com.lince.observer.data.LinceQualifier.DesktopQualifier;
 import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.bean.user.UserProfile;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
@@ -29,6 +30,7 @@ import java.util.UUID;
  *
  */
 @Service
+@DesktopQualifier
 public class ProfileServiceImpl implements ProfileService {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());

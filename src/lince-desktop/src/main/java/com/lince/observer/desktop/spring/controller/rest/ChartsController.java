@@ -1,4 +1,4 @@
-package com.lince.observer.desktop.spring.controller.deprecated;
+package com.lince.observer.desktop.spring.controller.rest;
 
 import org.fujion.highcharts.Chart;
 import org.fujion.highcharts.ChartInstance;
@@ -29,13 +29,11 @@ public class ChartsController {
     static final String RQ_MAPPING_NAME = "/chart";
 
     private final AnalysisService analysisService;
-//    private final ICategoryService categoryService;
 
     @Autowired
-    public ChartsController(AnalysisService analysisService //, CategoryService categoryService
+    public ChartsController(AnalysisService analysisService
     ) {
         this.analysisService = analysisService;
-//        this.categoryService = categoryService;
     }
 
     @RequestMapping(value = "/base", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

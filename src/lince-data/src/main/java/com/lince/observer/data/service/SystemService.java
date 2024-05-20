@@ -1,5 +1,6 @@
 package com.lince.observer.data.service;
 
+import com.lince.observer.data.LinceQualifier.DesktopQualifier;
 import com.lince.observer.data.util.SystemNetworkHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
  * Created by Alberto Soto. 1/11/22
  */
 @Service
+@DesktopQualifier
 public class SystemService {
     protected final Environment environment;
 
