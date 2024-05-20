@@ -1,4 +1,4 @@
-package com.lince.observer.math.controller;
+package com.lince.observer.desktop.spring.controller.rest;
 
 import com.lince.observer.data.controller.RenjinController;
 import com.lince.observer.math.service.RenjinService;
