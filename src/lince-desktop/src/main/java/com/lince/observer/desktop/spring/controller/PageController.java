@@ -38,7 +38,6 @@ public class PageController {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Environment environment;
-    private final ProfileService profileService;
     private final CategoryServiceImpl categoryService;
     private final AnalysisService analysisService;
     private final VideoService videoService;
@@ -47,9 +46,8 @@ public class PageController {
     private final String linceVersion;
 
     @Autowired
-    public PageController(Environment environment, ProfileService profileService, CategoryServiceImpl categoryService, AnalysisService analysisService, VideoService videoService, SessionService sessionController, LocaleResolver localeResolver) {
+    public PageController(Environment environment, CategoryServiceImpl categoryService, AnalysisService analysisService, VideoService videoService, SessionService sessionController, LocaleResolver localeResolver) {
         this.environment = environment;
-        this.profileService = profileService;
         this.categoryService = categoryService;
         this.analysisService = analysisService;
         this.videoService = videoService;
