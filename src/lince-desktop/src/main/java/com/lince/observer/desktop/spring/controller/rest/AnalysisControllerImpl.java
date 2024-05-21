@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +48,7 @@ public class AnalysisControllerImpl implements AnalysisController {
 
     @Override
     @RequestMapping(value = {"/get/","/get"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<RegisterItem>> getOrderedRegister() {
+    public ResponseEntity<List<RegisterItem>> getOrderedRegister(Principal principal) {
         try {
             List<RegisterItem> nodeList = analysisService.getOrderedRegister();
             return new ResponseEntity<>(nodeList, HttpStatus.OK);
@@ -93,11 +95,11 @@ public class AnalysisControllerImpl implements AnalysisController {
 
     @Override
     @RequestMapping(value = "/pushscene", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
-    public ResponseEntity<List<RegisterItem>> pushScene(HttpServletRequest request, @RequestBody SceneWrapper items) {
+    public ResponseEntity<List<RegisterItem>> pushScene(HttpServletRequest request, @RequestBody SceneWrapper items, Principal principal) {
         try {
             Double sceneMoment = items.getMoment();
             analysisService.pushRegister(sceneMoment, null);
-            return getOrderedRegister();
+            return getOrderedRegister(principal);
         } catch (Exception e) {
             log.error("register:push", e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -107,8 +109,10 @@ public class AnalysisControllerImpl implements AnalysisController {
     @Override
     @Deprecated
     @RequestMapping(value = "/set/{momentID}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
-    public ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request
-            , @PathVariable String momentID, @RequestBody SceneWrapper items) {
+    public ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request,
+                                                        @PathVariable String momentID,
+                                                        @RequestBody SceneWrapper items,
+                                                        Principal principal) {
         try {
             RegisterItem item = new RegisterItem();
             if (items.getMoment() != null) {
@@ -122,12 +126,14 @@ public class AnalysisControllerImpl implements AnalysisController {
             log.error("register:save", e);
 //            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return getOrderedRegister();
+        return getOrderedRegister(principal);
     }
 
     @Override
     @RequestMapping(value = {"/setMomentData","/setMomentData/"}, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
-    public ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request, @RequestBody SceneWrapper items) {
+    public ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request,
+                                                        @RequestBody SceneWrapper items,
+                                                        Principal principal) {
         try {
             if (items.getMoment() != null) {
                 RegisterItem scene = new RegisterItem();
@@ -142,7 +148,7 @@ public class AnalysisControllerImpl implements AnalysisController {
             log.error("register:setMomentData - push scene", e);
 //            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR); BREAKS rendering
         }
-        return getOrderedRegister();
+        return getOrderedRegister(principal);
     }
 
     /**
