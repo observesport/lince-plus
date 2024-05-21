@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public interface AnalysisController {
     String RQ_MAPPING_NAME = "/register";
 
     @RequestMapping(value = {"/get/", "/get"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<RegisterItem>> getOrderedRegister();
+    ResponseEntity<List<RegisterItem>> getOrderedRegister(Principal principal);
 
     @RequestMapping(value = "/get/{uuid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<RegisterItem>> getRegisterById(@PathVariable UUID uuid);
@@ -33,14 +34,14 @@ public interface AnalysisController {
     ResponseEntity<List<RegisterItem>> clearRegisterData(HttpServletRequest request, @RequestBody SceneWrapper items);
 
     @RequestMapping(value = "/pushscene", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
-    ResponseEntity<List<RegisterItem>> pushScene(HttpServletRequest request, @RequestBody SceneWrapper items);
+    ResponseEntity<List<RegisterItem>> pushScene(HttpServletRequest request, @RequestBody SceneWrapper items, Principal principal);
 
     @Deprecated
     @RequestMapping(value = "/set/{momentID}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
-    ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request, @PathVariable String momentID, @RequestBody SceneWrapper items);
+    ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request, @PathVariable String momentID, @RequestBody SceneWrapper items, Principal principal);
 
     @RequestMapping(value = {"/setMomentData", "/setMomentData/"}, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
-    ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request, @RequestBody SceneWrapper items);
+    ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request, @RequestBody SceneWrapper items, Principal principal);
 
     @RequestMapping(value = "/timeStats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<HighChartsWrapper> getTimeStats();

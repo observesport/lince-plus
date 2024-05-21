@@ -3,6 +3,7 @@ package com.lince.observer.desktop.spring.controller.rest;
 import com.lince.observer.data.bean.Tuple;
 import com.lince.observer.data.controller.SessionController;
 import com.lince.observer.data.generic.BaseRestControllerWrapper;
+import com.lince.observer.data.security.AuthenticationFacade;
 import com.lince.observer.desktop.component.ApplicationContextProvider;
 import com.lince.observer.data.service.SystemService;
 import com.lince.observer.data.common.SessionDataAttributes;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -46,18 +48,20 @@ public class SessionControllerImpl extends BaseRestControllerWrapper implements 
     private final DataHubService dataHubService;
     private final SystemService systemService;
     private ResourceBundle resourceBundle =null;
+    private final AuthenticationFacade authenticationFacade;
 
     private String getActionName() {
         return RQ_MAPPING_NAME;
     }
 
     @Autowired
-    public SessionControllerImpl(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver, ApplicationContextProvider applicationContextProvider, SystemService systemService) {
+    public SessionControllerImpl(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver, ApplicationContextProvider applicationContextProvider, SystemService systemService, AuthenticationFacade authenticationFacade) {
         this.service = service;
         this.dataHubService = dataHubService;
         this.localeResolver = localeResolver;
         this.applicationContextProvider = applicationContextProvider;
         this.systemService = systemService;
+        this.authenticationFacade = authenticationFacade;
     }
 
     /**
@@ -98,7 +102,8 @@ public class SessionControllerImpl extends BaseRestControllerWrapper implements 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET
             , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HashMap<String, String>> getAllSessionData(HttpServletRequest rq,
-                                                                     HttpSession httpSession) {
+                                                                     HttpSession httpSession,
+                                                                     Principal principal) {
         HashMap<String, String> rtn = new HashMap<>();
         try {
             dataHubService.getCurrentDataRegister();//sets register by default
@@ -145,7 +150,7 @@ public class SessionControllerImpl extends BaseRestControllerWrapper implements 
             return isSet ? data.toString() : "ERROR";
         };
         executeResponseItem(new Tuple<>(key, value), func);
-        return getAllSessionData(rq, httpSession);
+        return getAllSessionData(rq, httpSession, authenticationFacade.getAuthentication());
     }
 
     @Override
