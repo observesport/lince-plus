@@ -29,8 +29,8 @@ public class SessionService {
         try {
             if (httpSession != null && key != null) {
                 httpSession.setAttribute(key.getItemLabel(), value);
+                return true;
             }
-            return true;
         } catch (Exception e) {
             log.error("Managing session: set", e);
         }
