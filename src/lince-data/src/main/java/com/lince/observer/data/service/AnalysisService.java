@@ -17,8 +17,10 @@ import java.util.UUID;
 /**
  * Created by Alberto Soto. 14/5/24
  */
+//@Service
 public interface AnalysisService {
     Logger log = LoggerFactory.getLogger(AnalysisService.class);
+
     /**
      * Normaliza el momento de sistema a dos decimales
      *
@@ -85,7 +87,14 @@ public interface AnalysisService {
 
     HighChartsWrapper getRegisterStatsByScene();
 
-    double getTotals(List<Pair<CategoryData, Double>> data);
+    default double getTotals(List<Pair<CategoryData, Double>> data) {
+        //Let's add totals
+        double counter = 0;
+        for (Pair<CategoryData, Double> item : data) {
+            counter += item.getValue();
+        }
+        return counter;
+    }
 
     List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register);
 

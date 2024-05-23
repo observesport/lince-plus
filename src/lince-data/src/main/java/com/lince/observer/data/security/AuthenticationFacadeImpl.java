@@ -7,12 +7,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * @apiNote https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html
  * @apiNote https://www.baeldung.com/get-user-in-spring-security
- * @apiNote  https://www.springcloud.io/post/2022-02/spring-security-get-current-user/#gsc.tab=0
+ * @apiNote https://www.springcloud.io/post/2022-02/spring-security-get-current-user/#gsc.tab=0
  */
 @Component
 public class AuthenticationFacadeImpl implements AuthenticationFacade {
     @Override
     public Authentication getAuthentication() {
-        return SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new IllegalStateException("Authentication not found");
+        }
+        return authentication;
     }
 }
