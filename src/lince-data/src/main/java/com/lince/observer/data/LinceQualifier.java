@@ -11,12 +11,13 @@ import java.lang.annotation.Target;
  * Created by Alberto Soto. 29/3/24
  */
 public class LinceQualifier {
-    @Target({ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @Qualifier("cloud")
     public @interface CloudQualifier {
     }
-    @Target({ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER})
+
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @Qualifier("desktop")
     public @interface DesktopQualifier {

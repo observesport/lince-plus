@@ -6,22 +6,23 @@ import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.CategoryInformation;
 import com.lince.observer.data.bean.categories.Criteria;
-import com.lince.observer.data.service.AnalysisService;
-import com.lince.observer.data.service.CategoryService;
-import com.lince.observer.math.AppParams;
 import com.lince.observer.data.bean.highcharts.HighChartsSerie;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
+import com.lince.observer.data.service.AnalysisService;
+import com.lince.observer.data.service.AnalysisServiceBase;
+import com.lince.observer.data.service.CategoryService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,58 +34,28 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Service
 @DesktopQualifier
-public class AnalysisServiceImpl implements AnalysisService {
-    protected final CategoryService categoryService;
-    private final DataHubService dataHubService;
+public class AnalysisServiceImpl extends AnalysisServiceBase implements AnalysisService {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private static AtomicInteger idGenerator = new AtomicInteger();
+    protected final CategoryService categoryService;
+    private final DataHubService dataHubService;
+    private final AtomicInteger idGenerator;
 
     @Autowired
     public AnalysisServiceImpl(CategoryService categoryService, DataHubService dataHubService) {
         this.categoryService = categoryService;
         this.dataHubService = dataHubService;
+        this.idGenerator = new AtomicInteger();
     }
 
     @Override
     public boolean deleteRegisterById(Integer id) {
-        try {
-            if (id != null) {
-                RegisterItem selectedRegister = dataHubService.getCurrentDataRegister().stream()
-                        .filter(p -> p.getId().equals(id))
-                        .findFirst()
-                        .orElse(null);
-                return dataHubService.getCurrentDataRegister().remove(selectedRegister);
-            }
-        } catch (Exception e) {
-            log.error("Deleting register by id", e);
-        }
-        return false;
+        return deleteRegisterById(id, dataHubService.getCurrentDataRegister());
     }
 
-    /**
-     * Itera la colleccion y devuelve el estado de su eliminacion
-     *
-     * @param moment
-     * @return
-     */
     @Override
     public boolean deleteMomentInfo(Double moment) {
-        boolean isDeleted = false;
-        try {
-            if (moment != null) {
-                for (RegisterItem reg : dataHubService.getCurrentDataRegister()) {
-                    if (reg.getVideoTime().doubleValue() == moment.doubleValue() || convertSysMoment(reg.getVideoTime()).doubleValue() == convertSysMoment(moment).doubleValue()) {
-                        dataHubService.getCurrentDataRegister().remove(reg);
-                        isDeleted = true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("deleteMoment", e);
-        }
-        return isDeleted;
+        return deleteMomentInfo(moment, dataHubService.getCurrentDataRegister());
     }
 
     @Override
@@ -101,6 +72,28 @@ public class AnalysisServiceImpl implements AnalysisService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @Override
+    public List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register) {
+        return getAllRegisterVisibility(register, dataHubService.getCriteria());
+    }
+
+    @Override
+    public HighChartsWrapper getRegisterStatsByCategory() {
+        List<RegisterItem> register = getOrderedRegister();
+        List<Criteria> tool = dataHubService.getCriteria();
+        return getRegisterStatsByCategory(register, tool);
+    }
+
+    @Override
+    public boolean pushRegister(Double videoTime, Category... categories) {
+        return pushRegister(dataHubService.getCurrentDataRegister(), videoTime,categories);
+    }
+
+    @Override
+    public boolean pushRegister(RegisterItem item) {
+        return pushRegister(item, dataHubService.getCurrentDataRegister());
     }
 
     /***
@@ -132,18 +125,7 @@ public class AnalysisServiceImpl implements AnalysisService {
         }
     }
 
-    /**
-     * Inserta un registro generado a partir de una colección de categorías
-     *
-     * @param videoTime
-     * @param categories
-     */
-    @Override
-    public boolean pushRegister(Double videoTime, Category... categories) {
-        return pushRegister(new RegisterItem(convertSysMoment(videoTime), categories));
-    }
-
-    private Integer generateID() {
+    protected Integer generateID() {
         //analizamos todos los ids y devolvemos el maximo
         try {
             for (RegisterItem value : dataHubService.getCurrentDataRegister()) {
@@ -151,44 +133,20 @@ public class AnalysisServiceImpl implements AnalysisService {
                 if (value.getId() == null) {
                     value.setId(generateID()); //corregimos posible error de ids al recorrer
                 }
-                if (currentGroupID > AnalysisServiceImpl.idGenerator.get()) {
-                    AnalysisServiceImpl.idGenerator.set(currentGroupID);
+                if (currentGroupID > idGenerator.get()) {
+                    idGenerator.set(currentGroupID);
                 }
             }
         } catch (Exception e) {
             log.error("generateId", e);
         }
-        return AnalysisServiceImpl.idGenerator.incrementAndGet();
-    }
-    /**
-     * Inserta el registro introducido, buscando parámetros similares
-     * Generates concurrentModificationException on several threads.
-     *
-     * @param item
-     */
-    @Override
-    public boolean pushRegister(RegisterItem item) {
-        try {
-            Optional<RegisterItem> registerItem = dataHubService.getCurrentDataRegister().stream()
-                    .filter(p -> p.getId().equals(item.getId()) && NumberUtils.compare(p.getVideoTime(), item.getVideoTime()) == 0
-                            || NumberUtils.compare(p.getVideoTime(), item.getVideoTime()) == 0
-                            || (p.getSaveDate() != null && p.getSaveDate().equals(item.getSaveDate())))
-                    .findFirst();
-            if (registerItem.isPresent()) {
-                BeanUtils.copyProperties(item, registerItem.get(), AppParams.getNullPropertyNames(item));
-            } else {
-                item.setId(generateID());
-                dataHubService.getCurrentDataRegister().add(item);
-            }
-        } catch (ConcurrentModificationException e) {
-            log.error("Concurrent modification exception!", e);
-            return false;
-        }
-        return true;
+        return idGenerator.incrementAndGet();
     }
 
+
+
     @Override
-    public RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories){
+    public RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories) {
         if (CollectionUtils.isNotEmpty(categories)) {
             List<Category> dataValues = new ArrayList<>();
             for (Category userCategory : categories) {
@@ -211,9 +169,6 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
 
-    /**
-     * @return
-     */
     @Override
     public HighChartsWrapper getRegisterStatsByScene() {
         HighChartsWrapper rtn = new HighChartsWrapper();
@@ -261,8 +216,6 @@ public class AnalysisServiceImpl implements AnalysisService {
                                 //tenemos la serie a la que hace referencia esta escena y estos valores
                                 hasRelatedRegister = true;
                                 Double value = Double.valueOf(relatedData.getValue().getId());
-                                //HighChartsSerieBean valBean = new HighChartsSerieBean();
-                                //valBean.setY(value);
                                 serie.getData().add(value);
                             }
                         } else {
@@ -271,8 +224,6 @@ public class AnalysisServiceImpl implements AnalysisService {
                     }
                     if (!hasRelatedRegister) {
                         Double value = Double.valueOf(EMPTY_SERIES_VALUE.getKey());
-                        //HighChartsSerieBean valBean = new HighChartsSerieBean();
-                        //valBean.setY(value);
                         serie.getData().add(value);
                     }
                 }
@@ -284,73 +235,4 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
 
-    @Override
-    public double getTotals(List<Pair<CategoryData, Double>> data) {
-        //Let's add totals
-        double counter = 0;
-        for (Pair<CategoryData, Double> item : data) {
-            counter += item.getValue();
-        }
-        return counter;
-    }
-
-
-    @Override
-    public List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register) {
-        List<Pair<CategoryData, Double>> globalCounter = new ArrayList<>();
-        try {
-            for (Criteria cri : dataHubService.getCriteria()) {
-                CollectionUtils.addAll(globalCounter, getRegisterVisibility(cri, register));
-            }
-        } catch (Exception e) {
-            log.error("global register count", e);
-        }
-        return globalCounter;
-    }
-
-
-    /**
-     * @return Total aparience status wrapper to highcharts
-     */
-    @Override
-    public HighChartsWrapper getRegisterStatsByCategory() {
-        HighChartsWrapper rtn = new HighChartsWrapper();
-        HighChartsWrapper drillDown = new HighChartsWrapper();
-        try {
-            //obtenemos datos de contabilización
-            List<RegisterItem> register = getOrderedRegister();
-            List<Criteria> tool = dataHubService.getCriteria();
-            List<Pair<CategoryData, Double>> globalCounter = getAllRegisterVisibility(register);
-            Double total = getTotals(globalCounter);
-            //tenemos las categorias sin agrupar, con sus totales
-            //Montamos la lista de los padres
-            HighChartsSerie rootSerie = new HighChartsSerie();
-            if (total > 0) {
-                //si sacan stats sin haber visto tenemos que devolver vacio
-                for (Criteria cri : tool) {
-                    if (!cri.isInformationNode()) {
-                        double totalPerCategory = 0;
-                        HighChartsSerie childSerie = new HighChartsSerie();
-                        for (Pair<CategoryData, Double> item : globalCounter) {
-                            //si es el mismo padre
-                            if (item.getKey().getParent().equals(cri.getId())) {
-                                totalPerCategory += item.getValue();
-                                childSerie.getDataBean().add(getHighChartsBean(item.getKey().getName(), getFrequency(item.getValue(), total), item.getValue()));
-                            }
-                        }
-                        childSerie.setName(cri.getName());
-                        double percentPerCategory = getFrequency(totalPerCategory, total);
-                        rootSerie.getDataBean().add(getHighChartsBean(cri.getName(), percentPerCategory, totalPerCategory));
-                        drillDown.getSeries().add(childSerie);
-                    }
-                }
-            }
-
-            rtn.getDrilldown().add(drillDown);
-            rtn.getSeries().add(rootSerie);
-        } catch (Exception e) {
-            log.error("Error en graficas ", e);
-        }
-        return rtn;
-    }
 }

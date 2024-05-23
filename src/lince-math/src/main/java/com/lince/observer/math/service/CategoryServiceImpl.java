@@ -4,12 +4,10 @@ import com.lince.observer.data.LinceQualifier.DesktopQualifier;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.CategoryData;
-import com.lince.observer.data.bean.categories.CategoryInformation;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.service.CategoryService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +37,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     public CategoryServiceImpl(DataHubService dataHubService) {
         this.dataHubService = dataHubService;
-    }
-
-    public void generateDummyCollection() {
-        CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(dataHubService.getCriteria()));
-        catService.generateDummyCollection();
-        dataHubService.getCriteria().setAll(catService.getLinkedList());
     }
 
     @Override
