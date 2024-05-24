@@ -105,7 +105,7 @@ public class LinceFileHelperFx extends LinceFileHelper {
      * @return Unmarshalled info
      */
     @Override
-    protected LinceFileProjectWrapper readProjectFile(File file, Consumer<LinceFileProjectWrapper> f) {
+    public LinceFileProjectWrapper readProjectFile(File file, Consumer<LinceFileProjectWrapper> f) {
         try {
             return super.readProjectFile(file, f);
         } catch (Exception e) { // catches ANY exception
