@@ -3,7 +3,7 @@ package com.lince.observer.data.base;
 import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
-import com.lince.observer.data.util.FileHelper;
+import com.lince.observer.data.util.LinceFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
@@ -24,7 +24,7 @@ import java.util.prefs.Preferences;
  * <p>
  * Al hacer referencia a la applicacion javafx, tiene que estar en contexto server
  */
-public class LinceFileHelperBase extends FileHelper {
+public class LinceFileHelperFx extends LinceFileHelper {
 
 
     private Preferences getPreferences() {

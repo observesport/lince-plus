@@ -20,7 +20,7 @@ package com.lince.observer.data.legacy.commands.exportar;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.datos.ControladorArchivos;
 import com.lince.observer.data.legacy.utiles.SeleccionPanel;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -66,7 +66,7 @@ public class ExportarRegistroTheme5 extends Command {
         //File f = PathArchivos.getPathArchivoGuardar(null, null, null, "csv");
 
         Platform.runLater(() -> {
-            File f = LinceFileHelper.openSaveFileDialog("*.csv");
+            File f = LinceDesktopFileHelper.openSaveFileDialog("*.csv");
             if (f != null) {
                 String contenido = Registro.getInstance().exportToTheme5(criterios);
                 ControladorArchivos.getInstance().crearArchivoDeTexto(f, contenido);

@@ -26,7 +26,7 @@ import com.lince.observer.desktop.javafx.JavaFXLoader;
 import com.lince.observer.data.service.SystemService;
 import com.lince.observer.desktop.spring.service.VideoService;
 import com.lince.observer.data.barcode.QRCodeGenerator;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.data.util.SystemNetworkHelper;
 import com.lince.observer.math.service.*;
@@ -130,7 +130,7 @@ public class LinceApp extends AbstractJavaFxApplicationSupport {
         loader.loadFXMLStage();
         rootLayout = (BorderPane) loader.getPane();
         // Try to load last opened person file.
-        LinceFileHelper fileHelper = new LinceFileHelper();
+        LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         File file = fileHelper.getLinceProjectFilePath();
         if (file != null) {
             fileHelper.loadLinceProjectFromFile(file, this);

@@ -20,7 +20,7 @@ package com.lince.observer.data.legacy.commands.exportar;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.datos.ControladorArchivos;
 import com.lince.observer.data.legacy.utiles.SeleccionPanel;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -71,7 +71,7 @@ public class ExportarRegistroSdisGseqEvento extends Command {
 
         //File f = PathArchivos.getPathArchivoGuardar(null, null, null, "sds");
         Platform.runLater(() -> {
-                    File f = LinceFileHelper.openSaveFileDialog("*.sds");
+                    File f = LinceDesktopFileHelper.openSaveFileDialog("*.sds");
                     if (f != null) {
                         String contenido = Registro.getInstance().exportToSdisGseqEvento(criterios);
                         ControladorArchivos.getInstance().crearArchivoDeTexto(f, contenido);

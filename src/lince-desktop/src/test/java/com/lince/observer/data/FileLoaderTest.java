@@ -4,7 +4,7 @@ package com.lince.observer.data;
 import com.lince.observer.data.base.BaseTest;
 import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
-import com.lince.observer.data.base.LinceFileHelperBase;
+import com.lince.observer.data.base.LinceFileHelperFx;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.export.Lince2ThemeExport;
 import org.junit.jupiter.api.AfterAll;
@@ -28,14 +28,14 @@ import java.io.IOException;
  */
 class FileLoaderTest {
     private static final String NAME = "File test";
-    private static LinceFileHelperBase fileLoader = null;
+    private static LinceFileHelperFx fileLoader = null;
     private static ILinceApp linceApp;
     private static final Logger log = LoggerFactory.getLogger(FileLoaderTest.class);
 
     @BeforeAll
     static void init() {
         BaseTest.showInitMessage(NAME);
-        fileLoader = new LinceFileHelperBase();
+        fileLoader = new LinceFileHelperFx();
         linceApp = new EmptyLinceApp();
     }
 

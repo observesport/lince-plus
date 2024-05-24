@@ -43,7 +43,7 @@ class LinceAgreementTest {
      * @param uuids uuids
      */
     private static void setAdapter(UUID... uuids) {
-        LinceFileHelperBase fileLoader = new LinceFileHelperBase();
+        LinceFileHelperFx fileLoader = new LinceFileHelperFx();
         ILinceApp linceApp = new EmptyLinceApp();
         File file = new File(LinceAgreementTest.class
                 .getResource("/multipleObserverExample.xml").getFile());

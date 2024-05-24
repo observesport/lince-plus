@@ -1,6 +1,6 @@
 package com.lince.observer.desktop.component;
 
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.ServerAppParams;
 import com.lince.observer.math.service.DataHubService;
@@ -42,7 +42,7 @@ public class ScheduledTasks {
             try {
                 Date lastSave = dataHubService.getResearchProfile().getSaveDate();
                 Date now = new Date(System.currentTimeMillis());
-                LinceFileHelper helper = new LinceFileHelper();
+                LinceDesktopFileHelper helper = new LinceDesktopFileHelper();
                 File file = helper.getLinceProjectFilePath();
                 if (!file.isDirectory()) {
                     if (lastSave == null) {

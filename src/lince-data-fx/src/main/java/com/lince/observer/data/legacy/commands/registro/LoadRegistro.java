@@ -1,17 +1,17 @@
 /*
  *  Lince - Automatizacion de datos observacionales
  *  Copyright (C) 2010  Brais Gabin Moreira
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,7 +20,7 @@ package com.lince.observer.data.legacy.commands.registro;
 import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
 import com.lince.observer.data.legacy.Command;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.RegistroException;
@@ -47,7 +47,7 @@ public class LoadRegistro extends Command {
         ILinceApp linceApp = new EmptyLinceApp();
         String label = java.util.ResourceBundle.getBundle("i18n.Bundle").getString("REGISTRO DE LINCE")
                 + " (*.rlince)";
-        File f = LinceFileHelper.openSingleFileDialogBasic(linceApp, new MutablePair<>(label, "*.rlince"));
+        File f = LinceDesktopFileHelper.openSingleFileDialogBasic(linceApp, new MutablePair<>(label, "*.rlince"));
         if (f != null) {
             if (f.canRead()) {
                 try {
