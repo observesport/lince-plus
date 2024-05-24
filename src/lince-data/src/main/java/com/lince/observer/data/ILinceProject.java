@@ -8,9 +8,9 @@ import java.io.File;
 import java.util.List;
 
 public interface ILinceProject {
-    public List<Criteria> getCriteriaData();
+    public List<Criteria> getObservationTool();
 
-    public void setCriteriaData(List<Criteria> criteriaData);
+    public void setObservationTool(List<Criteria> criteriaData);
 
     public List<LinceRegisterWrapper> getRegister();
 
@@ -24,4 +24,7 @@ public interface ILinceProject {
 
     public void setVideoPlayList(List<File> videoPlayList);
 
+    public List<String> getYoutubeVideoPlayList();
+
+    public void setYoutubeVideoPlayList(List<String> youtubeVideoPlayList);
 }

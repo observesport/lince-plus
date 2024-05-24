@@ -41,11 +41,11 @@ public class LinceFileProjectWrapper implements ILinceProject {
     @XmlElement(name = "youtubeVideo")
     private List<String> youtubeVideoPlayList = new ArrayList<>();
 
-    public List<Criteria> getCriteriaData() {
+    public List<Criteria> getObservationTool() {
         return criteriaData;
     }
 
-    public void setCriteriaData(List<Criteria> criteriaData) {
+    public void setObservationTool(List<Criteria> criteriaData) {
         this.criteriaData = criteriaData;
     }
 

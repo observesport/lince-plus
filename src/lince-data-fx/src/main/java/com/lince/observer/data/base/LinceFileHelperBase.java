@@ -166,7 +166,7 @@ public class LinceFileHelperBase {
         try {
             readProjectFile(file, linceFileProjectWrapper -> {
                 myLinceApp.getDataHubService().clearData();
-                myLinceApp.getDataHubService().getCriteria().setAll(linceFileProjectWrapper.getCriteriaData());
+                myLinceApp.getDataHubService().getCriteria().setAll(linceFileProjectWrapper.getObservationTool());
                 myLinceApp.getDataHubService().getVideoPlayList().setAll(linceFileProjectWrapper.getVideoPlayList());
                 myLinceApp.getDataHubService().getUserData().setAll(linceFileProjectWrapper.getProfiles());
                 myLinceApp.getDataHubService().setAllDataRegister(linceFileProjectWrapper.getRegister()); //ojo! setAll es clear + addAll
@@ -211,7 +211,7 @@ public class LinceFileHelperBase {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             LinceFileProjectWrapper wrapper = new LinceFileProjectWrapper();
             wrapper.setProfiles(researchProfiles);
-            wrapper.setCriteriaData(criteria);
+            wrapper.setObservationTool(criteria);
             wrapper.setVideoPlayList(videos);
             wrapper.setYoutubeVideoPlayList(youtubeVideos);
             wrapper.setRegister(register);
@@ -268,7 +268,7 @@ public class LinceFileHelperBase {
     public void addBaseProjectInfo(File file, ILinceApp myLinceApp) {
         try {
             readProjectFile(file, projectWrapper -> {
-                myLinceApp.getDataHubService().getCriteria().setAll(projectWrapper.getCriteriaData());
+                myLinceApp.getDataHubService().getCriteria().setAll(projectWrapper.getObservationTool());
                 myLinceApp.getDataHubService().setAllDataRegister(projectWrapper.getRegister());
             });
         } catch (Exception e) {
