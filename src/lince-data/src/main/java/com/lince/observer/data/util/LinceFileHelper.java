@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  * Created by Alberto Soto. 24/5/24
  */
 
-public class FileHelper {
+public class LinceFileHelper {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 

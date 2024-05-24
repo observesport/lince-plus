@@ -1,17 +1,17 @@
 /*
  *  Lince - Automatizacion de datos observacionales
  *  Copyright (C) 2010  Brais Gabin Moreira
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,7 +20,7 @@ package com.lince.observer.data.legacy.commands.exportar;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.datos.ControladorArchivos;
 import com.lince.observer.data.legacy.utiles.SeleccionPanel;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -58,7 +58,7 @@ public class ExportarInstrumentoObservacionalTheme extends Command {
         }
         //File f = PathArchivos.getPathArchivoGuardar(null, null, null, "vvt");
         Platform.runLater(() -> {
-            File f = LinceFileHelper.openSaveFileDialog("*.vvt");
+            File f = LinceDesktopFileHelper.openSaveFileDialog("*.vvt");
             if (f != null) {
                 String contenido = InstrumentoObservacional.getInstance().exportToTheme(criterios);
                 ControladorArchivos.getInstance().crearArchivoDeTexto(f, contenido);

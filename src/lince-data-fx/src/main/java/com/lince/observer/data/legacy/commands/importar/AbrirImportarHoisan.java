@@ -22,7 +22,7 @@ import com.lince.observer.data.base.ILinceApp;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.plugins.HoisanTool;
 import com.lince.observer.data.legacy.utiles.ResourceBundleHelper;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import javax.swing.*;
@@ -45,7 +45,7 @@ public class AbrirImportarHoisan extends Command {
         ILinceApp linceApp = new EmptyLinceApp();
         String label = java.util.ResourceBundle.getBundle("i18n.Bundle").getString("HOISAN")
                 + " (*.mdb)";
-        File f = LinceFileHelper.openSingleFileDialogBasic(linceApp, new MutablePair<>(label, "*.mdb"));
+        File f = LinceDesktopFileHelper.openSingleFileDialogBasic(linceApp, new MutablePair<>(label, "*.mdb"));
 
         HoisanTool hoisanConnector = new HoisanTool();
         hoisanConnector.importFile(f);

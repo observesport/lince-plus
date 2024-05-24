@@ -20,7 +20,7 @@ package com.lince.observer.data.legacy.commands.instrumento;
 import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
 import com.lince.observer.data.legacy.Command;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.scene.control.Alert;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
@@ -55,7 +55,7 @@ public class SaveInstrumentoObservacionalAs extends Command {
         ILinceApp linceApp = new EmptyLinceApp();
         String label = java.util.ResourceBundle.getBundle("i18n.Bundle").getString("lince.tool")
                 + " (*.ilince)";
-        File path = LinceFileHelper.openSaveFileDialogBasic(linceApp, new MutablePair<>(label, "*.ilince"));
+        File path = LinceDesktopFileHelper.openSaveFileDialogBasic(linceApp, new MutablePair<>(label, "*.ilince"));
 
         if (path != null) {
             instrumentoObservacional.setPath(path);

@@ -21,7 +21,7 @@ package com.lince.observer.data.legacy.exportar;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.plugins.HoisanTool;
 import com.lince.observer.data.legacy.utiles.ResourceBundleHelper;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.scene.control.Alert;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class AbrirExportarHoisan extends Command {
 
     @Override
     public void execute() {
-        File file = LinceFileHelper.openSaveFileDialog("*.mdb");
+        File file = LinceDesktopFileHelper.openSaveFileDialog("*.mdb");
         log.warn("Init export to Hoisan file: " + file.getName() + ".");
         HoisanTool hoisan = new HoisanTool();
         hoisan.exportFile(file);

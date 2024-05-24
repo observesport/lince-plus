@@ -20,7 +20,7 @@ package com.lince.observer.data.legacy.commands.registro;
 import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
 import com.lince.observer.data.legacy.Command;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.scene.control.Alert;
 import com.lince.observer.legacy.Registro;
@@ -52,7 +52,7 @@ public class SaveRegistroAs extends Command {
         ILinceApp linceApp = new EmptyLinceApp();
         String label = java.util.ResourceBundle.getBundle("i18n.Bundle").getString("lince.register")
                 + " (*.rlince)";
-        File path = LinceFileHelper.openSaveFileDialogBasic(linceApp, new MutablePair<>(label, "*.rlince"));
+        File path = LinceDesktopFileHelper.openSaveFileDialogBasic(linceApp, new MutablePair<>(label, "*.rlince"));
         if (path != null) {
             registro.setPath(path);
             registro.save();

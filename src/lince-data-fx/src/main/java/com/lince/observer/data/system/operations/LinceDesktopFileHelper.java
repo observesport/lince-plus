@@ -2,7 +2,7 @@ package com.lince.observer.data.system.operations;
 
 import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
-import com.lince.observer.data.base.LinceFileHelperBase;
+import com.lince.observer.data.base.LinceFileHelperFx;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -25,7 +25,7 @@ import java.util.List;
  * <p>
  * Tested on Win and MacOs
  */
-public class LinceFileHelper extends LinceFileHelperBase {
+public class LinceDesktopFileHelper extends LinceFileHelperFx {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
@@ -119,7 +119,7 @@ public class LinceFileHelper extends LinceFileHelperBase {
      * @return fileChooser
      */
     private static FileChooser getFileDialog(ILinceApp myapp, List<Pair<String, String>> parameters) {
-        LinceFileHelper fileHelper = new LinceFileHelper();
+        LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         FileChooser fileChooser = fileHelper.getFileChooser();
         // Set extension filter
         for (Pair<String, String> item : parameters) {

@@ -11,7 +11,7 @@ import com.lince.observer.data.legacy.commands.instrumento.SaveInstrumentoObserv
 import com.lince.observer.data.legacy.commands.registro.LoadRegistro;
 import com.lince.observer.data.legacy.commands.registro.SaveRegistroAs;
 import com.lince.observer.data.legacy.exportar.*;
-import com.lince.observer.data.system.operations.LinceFileHelper;
+import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.ServerAppParams;
 import com.lince.observer.desktop.helper.ServerValuesHelper;
@@ -131,7 +131,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         mainLinceApp.getAnalysisService().getDataRegister().clear();
         mainLinceApp.getCategoryService().clearAll();
         Registro.loadNewInstance();//legacy
-        LinceFileHelper fileHelper = new LinceFileHelper();
+        LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         fileHelper.setLinceProjectPath(null, mainLinceApp);
         JavaFXLogHelper.addLogInfo("Nuevo proyecto");
     }
@@ -143,7 +143,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     private void doOpenLincePlusProject(Consumer<File> f) {
         try {
-            LinceFileHelper fileHelper = new LinceFileHelper();
+            LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
             FileChooser fileChooser = fileHelper.getFileChooser();
 
             // Set extension filter
@@ -165,7 +165,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleOpen() {
         doOpenLincePlusProject(file -> {
-                    LinceFileHelper fileHelper = new LinceFileHelper();
+                    LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
                     fileHelper.loadLinceProjectFromFile(file, mainLinceApp);
                 }
         );
@@ -179,7 +179,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportLincePlusProject() {
         doOpenLincePlusProject(file -> {
-                    LinceFileHelper fileHelper = new LinceFileHelper();
+                    LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
                     fileHelper.addBaseProjectInfo(file, mainLinceApp);
                     dataHubService.reloadResearchProfileDataFromRegister();
                     JavaFXLogHelper.addLogInfo("Se ha cargado el instrumento y la observación del proyecto seleccionado");
@@ -195,7 +195,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportLincePlusObserver() {
         doOpenLincePlusProject(file -> {
-                    LinceFileHelper fileHelper = new LinceFileHelper();
+                    LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
                     fileHelper.addObservations(file, mainLinceApp);
                     JavaFXLogHelper.addLogInfo("Se han importado los datos de observación del proyecto seleccionado");
                 }
@@ -208,7 +208,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleSave() {
-        LinceFileHelper fileHelper = new LinceFileHelper();
+        LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         File file = fileHelper.getLinceProjectFilePath();
         if (file != null) {
             fileHelper.saveLinceProjectToFile(file, mainLinceApp);
@@ -222,7 +222,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleSaveAs() {
-        LinceFileHelper fileHelper = new LinceFileHelper();
+        LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         FileChooser fileChooser = fileHelper.getFileChooser();
         // Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
@@ -265,7 +265,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         for (String type : StringUtils.split(LinceDataConstants.SUPPORTED_VIDEO_FILES, ";")) {
             supportedTypes.add(new MutablePair<>(label + type, type));
         }
-        List<File> fileList = LinceFileHelper.openMultipleFileDialog(mainLinceApp, supportedTypes);
+        List<File> fileList = LinceDesktopFileHelper.openMultipleFileDialog(mainLinceApp, supportedTypes);
         boolean isFirstVideo = true;
         if (CollectionUtils.isNotEmpty(fileList)) {
             StringBuilder urls = new StringBuilder();
@@ -542,7 +542,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportTheme6Register() {
         try {
-            LinceFileHelper fileHelper = new LinceFileHelper();
+            LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
             FileChooser fileChooser = fileHelper.getFileChooser();
             // Set extension filter
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("VTT files (*.vtt)", "*.vtt");
