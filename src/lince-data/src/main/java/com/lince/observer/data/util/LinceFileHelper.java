@@ -58,7 +58,7 @@ public class LinceFileHelper {
      * @param f    Function to execute
      * @return Unmarshalled info
      */
-    protected LinceFileProjectWrapper readProjectFile(File file, Consumer<LinceFileProjectWrapper> f)
+    public LinceFileProjectWrapper readProjectFile(File file, Consumer<LinceFileProjectWrapper> f)
             throws JAXBException {
         JAXBContext context = getXMLContext();
         Unmarshaller um = context.createUnmarshaller();
