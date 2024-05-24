@@ -1,27 +1,16 @@
 package com.lince.observer.data.base;
 
 import com.lince.observer.data.LinceDataConstants;
-import com.lince.observer.data.bean.categories.Category;
-import com.lince.observer.data.bean.categories.Criteria;
-import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
+import com.lince.observer.data.util.FileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -35,8 +24,8 @@ import java.util.prefs.Preferences;
  * <p>
  * Al hacer referencia a la applicacion javafx, tiene que estar en contexto server
  */
-public class LinceFileHelperBase {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+public class LinceFileHelperBase extends FileHelper {
+
 
     private Preferences getPreferences() {
         return Preferences.userNodeForPackage(ILinceApp.class);
@@ -84,23 +73,7 @@ public class LinceFileHelperBase {
         return null;
     }
 
-    /**
-     * Checks modification date on file
-     * Null if it does not exist
-     *
-     * @param file current file
-     * @return Modification date
-     */
-    public Date getLastModifiedDate(File file) {
-        try {
-            if (file != null) {
-                return new Date(Files.readAttributes(file.toPath(), BasicFileAttributes.class).lastModifiedTime().toMillis());
-            }
-        } catch (IOException e) {
-            log.error("opening file ", e);
-        }
-        return null;
-    }
+
 
     /**
      * Sets the file path of the currently loaded file. The path is persisted in
@@ -123,11 +96,6 @@ public class LinceFileHelperBase {
     }
 
 
-    private JAXBContext getXMLContext() throws JAXBException {
-        //LinceFileProjectWrapper.class, Criteria.class, Category.class, ResearchProfile.class
-        return JAXBContext.newInstance(LinceFileProjectWrapper.class, Criteria.class, Category.class);
-    }
-
     /**
      * 2019 - Functional function - DARK ZONE
      * Unmarshalls file, and executes desired code with it
@@ -136,18 +104,10 @@ public class LinceFileHelperBase {
      * @param f    Function to execute
      * @return Unmarshalled info
      */
-    private LinceFileProjectWrapper readProjectFile(File file, Consumer<LinceFileProjectWrapper> f) {
+    @Override
+    protected LinceFileProjectWrapper readProjectFile(File file, Consumer<LinceFileProjectWrapper> f) {
         try {
-            JAXBContext context = getXMLContext();
-            Unmarshaller um = context.createUnmarshaller();
-            // Reading XML from the file and unmarshalling.
-            LinceFileProjectWrapper data = new LinceFileProjectWrapper();
-            if (file.exists() && !file.isDirectory()) {
-                //Por defecto va a la carpeta de usuarios
-                data = (LinceFileProjectWrapper) um.unmarshal(file);
-            }
-            f.accept(data);
-            return data;
+            return super.readProjectFile(file, f);
         } catch (Exception e) { // catches ANY exception
             JavaFXLogHelper.showMessage(Alert.AlertType.ERROR
                     , "Could not load data"
@@ -188,40 +148,7 @@ public class LinceFileHelperBase {
         }
     }
 
-    /**
-     * Save info data as XML
-     *
-     * @param file             file
-     * @param researchProfiles list profiles
-     * @param criteria         criteria data
-     * @param videos           videos
-     * @param youtubeVideos    youtubeVideos
-     * @param register         register
-     * @return same file with data on it
-     */
-    public File saveFile(File file
-            , List<ResearchProfile> researchProfiles
-            , List<Criteria> criteria
-            , List<File> videos
-            , List<String> youtubeVideos
-            , List<LinceRegisterWrapper> register) {
-        try {
-            JAXBContext context = getXMLContext();
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            LinceFileProjectWrapper wrapper = new LinceFileProjectWrapper();
-            wrapper.setProfiles(researchProfiles);
-            wrapper.setObservationTool(criteria);
-            wrapper.setVideoPlayList(videos);
-            wrapper.setYoutubeVideoPlayList(youtubeVideos);
-            wrapper.setRegister(register);
-            // Marshalling and saving XML to the file.
-            m.marshal(wrapper, file);
-        } catch (Exception e) {
-            log.error("Error saving file", e);
-        }
-        return file;
-    }
+
 
     /**
      * Marshall data inside selected file
