@@ -17,7 +17,6 @@ import java.util.UUID;
 /**
  * Created by Alberto Soto. 14/5/24
  */
-//@Service
 public interface AnalysisService {
     Logger log = LoggerFactory.getLogger(AnalysisService.class);
 

@@ -3,16 +3,11 @@ package com.lince.observer.data.service;
 import com.lince.observer.data.common.SessionDataAttributes;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpSession;
-
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SessionServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(SessionServiceTest.class);
 
     @Test
     void testSetSessionDataWithValidInputs() {
