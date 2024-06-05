@@ -1,6 +1,8 @@
 package com.lince.observer.desktop.spring.controller.rest;
 
 import com.lince.observer.data.controller.RenjinController;
+import com.lince.observer.data.service.AnalysisService;
+import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.math.service.RenjinService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -24,9 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class RenjinControllerImpl implements RenjinController {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     protected final RenjinService renjinService;
+    private final AnalysisService analysisService;
+    private final CategoryService categoryService;
 
-    public RenjinControllerImpl(RenjinService renjinService) {
+    public RenjinControllerImpl(RenjinService renjinService, AnalysisService analysisService, CategoryService categoryService) {
         this.renjinService = renjinService;
+        this.analysisService = analysisService;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -48,7 +54,7 @@ public class RenjinControllerImpl implements RenjinController {
                 }
             }
             //renjinService.tryRFile();
-            String output = renjinService.executeRenjin(StringUtils.join(codes));
+            String output = renjinService.executeRenjin(analysisService.getOrderedRegister(), categoryService.getCollection(), categoryService, StringUtils.join(codes));
             return new ResponseEntity<>(output, HttpStatus.OK);
         } catch (Exception e) {
             log.error("renjin:execute/", e);

@@ -4,7 +4,6 @@ import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
-import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.math.RenjinDataAttribute;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +14,6 @@ import org.renjin.sexp.StringVector;
 import org.renjin.sexp.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.script.ScriptEngine;
@@ -23,10 +21,6 @@ import javax.script.ScriptException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +50,6 @@ import java.util.List;
 @Service
 public class RenjinService {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    protected final AnalysisService analysisService;
-    protected final CategoryService categoryService;
     private RenjinScriptEngineFactory factory = null;
 
     /**
@@ -68,12 +60,6 @@ public class RenjinService {
 
     private static final String[] RFiles = {"integration/r-lang/basic-script.r"
             , "integration/r-lang/function-script.r"};
-
-    @Autowired
-    public RenjinService(AnalysisService analysisService, CategoryServiceImpl categoryService) {
-        this.analysisService = analysisService;
-        this.categoryService = categoryService;
-    }
 
     /**
      * Loads renjin, via Lazy init
@@ -94,7 +80,7 @@ public class RenjinService {
      * @param loadContext if context and all data mus be exposed or not
      * @return Valid ScriptEngine for renjin exposed via threads
      */
-    private ScriptEngine getScriptEngine(boolean loadContext) {
+    private ScriptEngine getScriptEngine(boolean loadContext, List<RegisterItem> registerItems, List<CategoryData> categories, CategoryService categoryService) {
         ScriptEngine engine = ENGINE.get();
         if (engine == null) {
             // Create a new ScriptEngine for this thread if one does not exist.
@@ -111,11 +97,9 @@ public class RenjinService {
             HashMap ctx = new HashMap();
             ctx.put("hi", "code");
             ctx.put("x", 4);
-            ctx.put("register", analysisService.getDataRegister());
-            engine.put(RenjinDataAttribute.DATA_MATRIX.getItemLabel()
-                    , getExposedData(true));
-            engine.put(RenjinDataAttribute.DATA_MATRIX_BY_CATEGORY.getItemLabel()
-                    , getExposedData(false));
+            ctx.put("register", registerItems);
+            engine.put(RenjinDataAttribute.DATA_MATRIX.getItemLabel(), getExposedData(true, registerItems, categories, categoryService));
+            engine.put(RenjinDataAttribute.DATA_MATRIX_BY_CATEGORY.getItemLabel(), getExposedData(false, registerItems, categories, categoryService));
             engine.put(RenjinDataAttribute.CONTEXT.getItemLabel(), ctx);
         }
         return engine;
@@ -128,10 +112,10 @@ public class RenjinService {
      * @param concatCategories all categories are join and separated by coma or not
      * @return Lince Data Matrix
      */
-    public StringVector getExposedData(boolean concatCategories) {
+    public StringVector getExposedData(boolean concatCategories, List<RegisterItem> currentData, List<CategoryData> categories, CategoryService categoryService) {
         try {
-            List<RegisterItem> currentData = analysisService.getOrderedRegister();
-            List<CategoryData> categories = categoryService.getCollection();
+//            List<RegisterItem> currentData = analysisService.getOrderedRegister();
+//            List<CategoryData> categories = categoryService.getCollection();
             //videotime, name, frames, categories(concat code with ",")
             StringMatrixBuilder data = null;
             List<String> colNames = new ArrayList<>();
@@ -178,9 +162,9 @@ public class RenjinService {
                             for (int i = 0; i < colNames.size(); i++) {
                                 if (StringUtils.contains(colNames.get(i), relatedData.getKey().getCode())) {
                                     //es el indice correcto añadimos el valor
-                                    if (relatedData.getKey().isInformationNode()){
+                                    if (relatedData.getKey().isInformationNode()) {
                                         data.setValue(currentRow, i, cat.getNodeInformation());
-                                    }else{
+                                    } else {
                                         data.setValue(currentRow, i, cat.getCode());
                                     }
                                 }
@@ -206,6 +190,7 @@ public class RenjinService {
 
     /**
      * Tipo de elemento perfecto para retos
+     *
      * @return
      */
     public Vector getCountExposedData() {
@@ -237,68 +222,69 @@ public class RenjinService {
         return null;
     }
 
+//    /**
+//     * Executes a simple script on console
+//     */
+//    public void tryRService() {
+//        try {
+//            ScriptEngine engine = getScriptEngine(false, null, null, null);
+//            engine.eval("df <- data.frame(x=1:10, y=(1:10)+rnorm(n=10))");
+//            engine.eval("print(df)");
+//            engine.eval("print(lm(y ~ x, df))");
+//        } catch (Exception e) {
+//            log.error("RenjinService", e);
+//        }
+//    }
+
+//    /**
+//     * Loads a simple file with an r script
+//     */
+//    public void tryRFile() {
+//        try {
+//            ScriptEngine engine = getScriptEngine(false, null, null, null);
+//            engine.eval(getFileReader("integration/r-lang/function-script.r"));
+//        } catch (Exception e) {
+//            log.error("RenjinService", e);
+//        }
+//    }
+//
+//
+//    public void tryExecuteFileByLine() {
+//        try {
+//            ScriptEngine engine = getScriptEngine(false, null, null, null);
+//            //ClassLoader classLoader = getClass().getClassLoader();;
+//            //String pat = classLoader.getResource("integration/r-lang/basic-script.r").getPath();
+//            //Stream<String> stream = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("integration/r-lang/basic-script.r"))).lines();
+//            Path path = Paths.get(this.getClass().getClassLoader().getResource("integration/r-lang/basic-script.r").toURI());
+//            for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
+//                /* Replace server uri
+//                if (line.contains("1313131")) {
+//                    newLines.add(line.replace("1313131", "" + System.currentTimeMillis()));
+//                }
+//                */
+//                engine.eval(line);
+//            }
+//        } catch (Exception e) {
+//            log.error("RenjinService", e);
+//        }
+//    }
+
+
     /**
-     * Executes a simple script on console
-     */
-    public void tryRService() {
-        try {
-            ScriptEngine engine = getScriptEngine(false);
-            engine.eval("df <- data.frame(x=1:10, y=(1:10)+rnorm(n=10))");
-            engine.eval("print(df)");
-            engine.eval("print(lm(y ~ x, df))");
-        } catch (Exception e) {
-            log.error("RenjinService", e);
-        }
-
-    }
-
-    /**
-     * Loads a simple file with an r script
-     */
-    public void tryRFile() {
-        try {
-            ScriptEngine engine = getScriptEngine(false);
-            engine.eval(getFileReader("integration/r-lang/function-script.r"));
-        } catch (Exception e) {
-            log.error("RenjinService", e);
-        }
-    }
-
-
-    public void tryExecuteFileByLine() {
-        try {
-            ScriptEngine engine = getScriptEngine(false);
-            //ClassLoader classLoader = getClass().getClassLoader();;
-            //String pat = classLoader.getResource("integration/r-lang/basic-script.r").getPath();
-            //Stream<String> stream = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("integration/r-lang/basic-script.r"))).lines();
-            Path path = Paths.get(this.getClass().getClassLoader().getResource("integration/r-lang/basic-script.r").toURI());
-            for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
-                /* Replace server uri
-                if (line.contains("1313131")) {
-                    newLines.add(line.replace("1313131", "" + System.currentTimeMillis()));
-                }
-                */
-                engine.eval(line);
-            }
-        } catch (Exception e) {
-            log.error("RenjinService", e);
-        }
-    }
-
-
-    /**
-     * Executes renjin commands and returns output
-     * Based on http://docs.renjin.org/en/latest/library/capture.html
+     * Executes Renjin script using the given data and input commands.
      *
-     * @param input Command content
-     * @return console output
+     * @param currentData the list of RegisterItem objects representing the current data
+     * @param categories  the list of CategoryData objects representing the categories
+     * @param input       the array of input commands to be executed in Renjin
+     * @return the output of the executed script as a String
+     * @throws ScriptException if there is an error in the Renjin script
      */
-    public String executeRenjin(String... input) throws ScriptException {
+    public String executeRenjin(List<RegisterItem> currentData, List<CategoryData> categories, CategoryService categoryService, String... input) throws ScriptException {
         String outputTxt;
         //try {
         StringWriter output = new StringWriter();
         StringWriter err = new StringWriter();
-        ScriptEngine engine = getScriptEngine(true);
+        ScriptEngine engine = getScriptEngine(true, currentData, categories, categoryService);
         engine.getContext().setWriter(output);
         engine.getContext().setErrorWriter(err);
         engine.eval("import(java.util.HashMap)");
@@ -313,11 +299,6 @@ public class RenjinService {
             engine.eval(line);
         }
         outputTxt = output.toString();
-        /*} catch (Exception e) {
-            //output.append(Throwables.getStackTraceAsString(e));
-            log.error("RenjinService", e);
-            throw e;
-        }*/
         return outputTxt;
     }
 
