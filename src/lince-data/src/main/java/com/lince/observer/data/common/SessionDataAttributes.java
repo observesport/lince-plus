@@ -18,6 +18,7 @@ public enum SessionDataAttributes implements CgEnum {
     LOCALE("locale"),
     VIDEO_VIEW("video_view"),
     PROFILE("profile"),
+    PROJECT("project"),
     REGISTER("register"),;
 
     private final String parameterName;

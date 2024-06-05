@@ -1,6 +1,8 @@
 package com.lince.observer.data.bean.highcharts;
 
 import org.apache.commons.math3.util.Pair;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,5 +83,50 @@ public class HighChartsWrapper {
 
     public void setySeriesLabels(List<Pair<Integer, String>> ySeriesLabels) {
         this.ySeriesLabels = ySeriesLabels;
+    }
+
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        for (HighChartsSerie serie : getSeries()) {
+            json.put("criteria", serie.getDataBean());
+        }
+        if (!getDrilldown().isEmpty()) {
+            for (HighChartsWrapper wrap : getDrilldown()) {
+                for (HighChartsSerie serie : wrap.getSeries()) {
+                    json.put(serie.getName(), serie.getDataBean());
+                }
+            }
+        }
+        return json;
+//
+//        JSONObject json = new JSONObject();
+//        json.put("title", title);
+//        json.put("subtitle", subtitle);
+//        JSONArray seriesArray = new JSONArray();
+//        for (HighChartsSerie serie : series) {
+//            JSONObject serieJson = new JSONObject();
+//            serieJson.put("name", serie.getName());
+//            serieJson.put("id", serie.getId());
+//            serieJson.put("data", serie.getData());
+//            serieJson.put("dataBean", serie.getDataBean());
+//            serieJson.put("colorByPoint", serie.isColorByPoint());
+//            seriesArray.put(serieJson);
+//        }
+//        json.put("series", seriesArray);
+//        JSONArray drilldownArray = new JSONArray();
+//        for (HighChartsWrapper drilldownItem : drilldown) {
+//            drilldownArray.put(drilldownItem.toJson());
+//        }
+//        json.put("drilldown", drilldownArray);
+//        json.put("xSeriesLabels", xSeriesLabels);
+//        JSONArray ySeriesLabelsArray = new JSONArray();
+//        for (Pair<Integer, String> ySeriesLabel : ySeriesLabels) {
+//            JSONObject ySeriesLabelJson = new JSONObject();
+//            ySeriesLabelJson.put("first", ySeriesLabel.getFirst());
+//            ySeriesLabelJson.put("second", ySeriesLabel.getSecond());
+//            ySeriesLabelsArray.put(ySeriesLabelJson);
+//        }
+//        json.put("ySeriesLabels", ySeriesLabelsArray);
+//        return json;
     }
 }
