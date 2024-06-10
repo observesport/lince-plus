@@ -4,6 +4,7 @@ import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.user.UserProfile;
 import jakarta.xml.bind.annotation.XmlElement;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import java.util.UUID;
  *
  * @author berto (alberto.soto@gmail.com). 27/04/2018
  */
-public class LinceRegisterWrapper {
+public class LinceRegisterWrapper implements Serializable {
 
     private UUID id;
     private List<RegisterItem> registerData = new ArrayList<>();

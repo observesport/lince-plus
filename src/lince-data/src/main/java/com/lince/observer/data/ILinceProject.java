@@ -5,9 +5,10 @@ import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 
-public interface ILinceProject {
+public interface ILinceProject extends Serializable {
     public List<Criteria> getObservationTool();
 
     public void setObservationTool(List<Criteria> criteriaData);

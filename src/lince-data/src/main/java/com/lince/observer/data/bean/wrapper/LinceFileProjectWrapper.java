@@ -6,6 +6,7 @@ import com.lince.observer.data.bean.user.ResearchProfile;
 import jakarta.xml.bind.annotation.*;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "linceProject") //namespace = "http://www.w3.org/2005/Atom",
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LinceFileProjectWrapper implements ILinceProject {
+public class LinceFileProjectWrapper implements ILinceProject, Serializable {
 
     @XmlElementWrapper(name = "criterias")
     @XmlElement(name = "criteria")
