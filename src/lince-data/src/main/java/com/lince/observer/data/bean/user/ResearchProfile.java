@@ -2,6 +2,7 @@ package com.lince.observer.data.bean.user;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.UUID;
  * @author berto (alberto.soto@gmail.com)in 29/02/2016.
  * Description:
  */
-public class ResearchProfile {
+public class ResearchProfile implements Serializable {
 
     private UUID key;
 

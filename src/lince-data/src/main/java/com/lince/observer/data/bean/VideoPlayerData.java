@@ -1,5 +1,6 @@
 package com.lince.observer.data.bean;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.UUID;
 
@@ -9,7 +10,7 @@ import java.util.UUID;
  * @author berto (alberto.soto@gmail.com)in 19/07/2016.
  * Description:
  */
-public class VideoPlayerData {
+public class VideoPlayerData implements Serializable {
     public static final Integer DEFAULT_FRAMES_PER_SECOND = 21;
     public boolean isLocal = false;
     public String id;

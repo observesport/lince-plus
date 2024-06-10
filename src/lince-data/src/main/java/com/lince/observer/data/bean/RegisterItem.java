@@ -5,6 +5,7 @@ import com.lince.observer.data.bean.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +18,7 @@ import java.util.List;
  * @author berto (alberto.soto@gmail.com)in 22/06/2016.
  * Description:
  */
-public class RegisterItem implements Comparable<RegisterItem> {
+public class RegisterItem implements Comparable<RegisterItem>, Serializable {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Integer id;

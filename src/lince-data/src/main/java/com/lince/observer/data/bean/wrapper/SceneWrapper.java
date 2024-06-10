@@ -2,6 +2,7 @@ package com.lince.observer.data.bean.wrapper;
 
 import com.lince.observer.data.bean.categories.Category;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by Alberto Soto Fernandez in 15/03/2017.
  * Description:
  */
-public class SceneWrapper {
+public class SceneWrapper implements Serializable {
     protected Integer id;
     protected Double moment;
     protected String name;

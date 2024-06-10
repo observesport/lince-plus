@@ -2,6 +2,7 @@ package com.lince.observer.data.bean.user;
 
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -9,7 +10,7 @@ import java.util.UUID;
  * Class UserProfile
  * @author berto (alberto.soto@gmail.com). 19/10/2018
  */
-public class UserProfile {
+public class UserProfile implements Serializable {
 
     private UUID key;
     private String userName;
