@@ -40,18 +40,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Criteria> getCriteria() {
+    public List<Criteria> getObservationTool() {
         return dataHubService.getCriteria();
     }
 
     @Override
-    public List<CategoryData> getChildren(Integer id) {
+    public List<CategoryData> getCategoriesByParent(Integer id) {
         CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(dataHubService.getCriteria()));
         return catService.getChildren(id);
     }
 
     @Override
-    public Pair<Criteria, Category> findDataById(Integer id, String code, String name) {
+    public Pair<Criteria, Category> findToolEntryByIdentifier(Integer id, String code, String name) {
         try {
             CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(dataHubService.getCriteria()));
             return catService.findTreeEntryById(id, code, name);
@@ -67,9 +67,9 @@ public class CategoryServiceImpl implements CategoryService {
      * @param data Custom data collection
      */
     @Override
-    public void pushAll(List<Criteria> data) {
-        checkToolIntegrity(data);
-        clearAll();
+    public void saveObservationTool(List<Criteria> data) {
+        checkObservationToolIntegrityWithRegister(data);
+        clearSelectedObservationTool();
         CollectionUtils.addAll(dataHubService.getCriteria(), data.iterator());
         CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(dataHubService.getCriteria()));
         catService.generateID();
@@ -87,7 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param newData nueva herramienta de visualización
      */
     @Override
-    public void checkToolIntegrity(List<Criteria> newData) {
+    public void checkObservationToolIntegrityWithRegister(List<Criteria> newData) {
         //Generamos una lista de criterios y categorias que tenemos anteriormente con un contador de uso
         HashMap<CategoryData, Integer> countTable = new HashMap<>();
         for (Criteria cri : dataHubService.getCriteria()) {
@@ -129,7 +129,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void clearAll() {
+    public void clearSelectedObservationTool() {
         dataHubService.getCriteria().clear();
     }
 

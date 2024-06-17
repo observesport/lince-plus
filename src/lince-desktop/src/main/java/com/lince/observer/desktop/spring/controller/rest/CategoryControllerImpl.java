@@ -88,7 +88,7 @@ public class CategoryControllerImpl implements CategoryController /*extends CgEn
             , @RequestBody DataTableWrapper<Criteria> items) {
         try {
             if (!items.getData().isEmpty()) {
-                categoryService.pushAll(items.getData());
+                categoryService.saveObservationTool(items.getData());
             }
             return new ResponseEntity<>(new DataTableWrapper<>(categoryService.getCollection()), HttpStatus.OK);
         } catch (Exception e) {

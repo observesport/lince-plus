@@ -201,8 +201,8 @@ public class LegacyConverterService {
                         }
                     }
                     if (l.size() > 0) {
-                        categoryService.clearAll();
-                        categoryService.pushAll(l);
+                        categoryService.clearSelectedObservationTool();
+                        categoryService.saveObservationTool(l);
                     }
                 }
             }
@@ -232,7 +232,7 @@ public class LegacyConverterService {
                 for (Map.Entry<Criterio, Categoria> data : entry.getRegistro().entrySet()) {
                     Categoria cat = data.getValue();
                     //Category pairCat = (Category) categoryService.findCategoryByCode(cat.getCodigo());
-                    Pair<Criteria, Category> pairCat = categoryService.findDataById(null, cat.getCodigo(), null);
+                    Pair<Criteria, Category> pairCat = categoryService.findToolEntryByIdentifier(null, cat.getCodigo(), null);
                     //Criteria cri = (Criteria)categoryService.findCategoryByCode(data.getKey());
                     if (pairCat != null && pairCat.getValue() != null) {
                         categories.add(pairCat.getValue());
@@ -241,7 +241,7 @@ public class LegacyConverterService {
                         Criteria aux = Criteria.getRecoveryCriteria();
                         CategoryData tempData = categoryService.findCategoryByCode(aux.getCode());
                         if (tempData == null) {
-                            categoryService.getCriteria().add(aux);
+                            categoryService.getObservationTool().add(aux);
                         }
                     }
 
@@ -342,7 +342,7 @@ public class LegacyConverterService {
             cat.setDescripcion(c.getDescription());
             String code = c.getCode();
             //Criteria parent = (Criteria) categoryService.findCategoryById(c.getParent());
-            Criteria parent = categoryService.findDataById(c.getParent(), null, null).getKey();
+            Criteria parent = categoryService.findToolEntryByIdentifier(c.getParent(), null, null).getKey();
             cat.setParent(getLegacyCriteria(parent));
             if (parent.isInformationNode()) {
                 code += LinceDataConstants.CATEGORY_INFO_SUFIX;
@@ -398,7 +398,7 @@ public class LegacyConverterService {
                 Integer timeID = row.getVideoTimeMilis();
                 Map<Criterio, Categoria> registeredData = new HashMap<>();
                 for (Category c : row.getRegister()) {
-                    Pair<Criteria, Category> dataPair = categoryService.findDataById(c.getParent(), null, null);
+                    Pair<Criteria, Category> dataPair = categoryService.findToolEntryByIdentifier(c.getParent(), null, null);
                     if (dataPair != null && dataPair.getKey() != null) {
                         Criteria parent = dataPair.getKey();
                         //si es nulo, es criterio no es correcto

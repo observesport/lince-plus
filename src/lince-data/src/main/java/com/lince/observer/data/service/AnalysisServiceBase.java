@@ -169,7 +169,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
                     serie.setName(cats.getName());
                     rtn.getSeries().add(serie);
                     //para todos sus categorias
-                    for (CategoryData aux : categoryService.getChildren(cats.getId())) {
+                    for (CategoryData aux : categoryService.getCategoriesByParent(cats.getId())) {
                         Category crit = (Category) aux;
                         rtn.getySeriesLabels().add(new Pair<>(crit.getId(), crit.getCode())); //valor de alias
                     }
@@ -187,7 +187,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
                     boolean hasRelatedRegister = false;
                     for (Category sceneCriteria : sceneData.getRegister()) {
                         //para cada serie asociada, que es una categoria por nombre, miro si tengo o no un registro asociado
-                        Pair<Criteria, Category> relatedData = categoryService.findDataById(null, sceneCriteria.getCode(), null);
+                        Pair<Criteria, Category> relatedData = categoryService.findToolEntryByIdentifier(null, sceneCriteria.getCode(), null);
                         //cada escena tiene que estar añadida por orden
                         //rtn.getSeries().get(sceneIndex); -> aqui no estan las escenas
                         if (relatedData != null) {
