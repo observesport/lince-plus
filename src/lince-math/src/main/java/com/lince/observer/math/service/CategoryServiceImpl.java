@@ -1,7 +1,6 @@
 package com.lince.observer.math.service;
 
 import com.lince.observer.data.LinceQualifier.DesktopQualifier;
-import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
@@ -13,9 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,13 +60,14 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * Pushes the current visualization tool into the register
      *
-     * @param data Custom data collection
+     * @param observationTool Custom observationTool collection
      */
     @Override
-    public void saveObservationTool(List<Criteria> data) {
-        checkObservationToolIntegrityWithRegister(data);
+    public void saveObservationTool(List<Criteria> observationTool) {
+        List<LinceRegisterWrapper> dataRegister = dataHubService.getDataRegister();
+        checkObservationToolIntegrityWithRegister(dataHubService.getCriteria(), observationTool, dataRegister);
         clearSelectedObservationTool();
-        CollectionUtils.addAll(dataHubService.getCriteria(), data.iterator());
+        CollectionUtils.addAll(dataHubService.getCriteria(), observationTool.iterator());
         CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(dataHubService.getCriteria()));
         catService.generateID();
         //if (generateReduceValues){
@@ -78,54 +75,6 @@ public class CategoryServiceImpl implements CategoryService {
         catService.generateCodesFromReductionData();
         //}
         dataHubService.getCriteria().setAll(catService.getLinkedList());
-    }
-
-    /**
-     * Recorre toda la herramienta y borra los elementos que no aparece en la nueva seleccion
-     * Utiliza el método equals sobreescrito, para no tener que tener en cuenta el id.
-     *
-     * @param newData nueva herramienta de visualización
-     */
-    @Override
-    public void checkObservationToolIntegrityWithRegister(List<Criteria> newData) {
-        //Generamos una lista de criterios y categorias que tenemos anteriormente con un contador de uso
-        HashMap<CategoryData, Integer> countTable = new HashMap<>();
-        for (Criteria cri : dataHubService.getCriteria()) {
-            countTable.put(cri, 0);
-            for (Category cat : cri.getInnerCategories()) {
-                countTable.put(cat, 0);
-            }
-        }
-        //Checkeamos cuantas veces surgen en la nueva lista
-        for (Criteria cri : newData) {
-            countTable.forEach((k, v) -> {
-                if (k.equals(cri)) {
-                    countTable.replace(k, v + 1);
-                }
-            });
-            for (Category cat : cri.getInnerCategories()) {
-                countTable.forEach((k, v) -> {
-                    if (k.equals(cat)) {
-                        countTable.replace(k, v + 1);
-                    }
-                });
-            }
-        }
-        //Borramos los registros que tengan contador 0 para criterio o categoría
-        for (LinceRegisterWrapper row : dataHubService.getDataRegister()) {
-            for (RegisterItem reg : row.getRegisterData()) {
-                //para borrar se debe hacer con iterator
-                for (Iterator it = reg.getRegister().iterator(); it.hasNext(); ) {
-                    Category cat = (Category) it.next();
-                    countTable.forEach((k, v) -> {
-                        if (k.equals(cat) && v == 0) {
-                            it.remove();
-                        }
-                    });
-                }
-            }
-        }
-
     }
 
     @Override
