@@ -102,7 +102,7 @@ public class AnalysisServiceImpl extends AnalysisServiceBase implements Analysis
         for (RegisterItem reg : dataHubService.getCurrentDataRegister()) {
             int i = 0;
             for (Category c : reg.getRegister()) {
-                Pair<Criteria, Category> elem = categoryService.findDataById(null, c.getCode(), null);
+                Pair<Criteria, Category> elem = categoryService.findToolEntryByIdentifier(null, c.getCode(), null);
                 if (elem != null) {
                     Category tableValue;
                     if (elem.getValue() != null) {

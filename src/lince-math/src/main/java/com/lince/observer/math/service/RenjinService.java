@@ -156,7 +156,7 @@ public class RenjinService {
                 } else {
                     for (Category cat : reg.getRegister()) {
                         //para cada serie asociada, que es una categoria por nombre, miro si tengo o no un registro asociado
-                        Pair<Criteria, Category> relatedData = categoryService.findDataById(null, cat.getCode(), null);
+                        Pair<Criteria, Category> relatedData = categoryService.findToolEntryByIdentifier(null, cat.getCode(), null);
                         //cada escena tiene que estar añadida por orden
                         if (relatedData != null && relatedData.getKey() != null) {
                             for (int i = 0; i < colNames.size(); i++) {
