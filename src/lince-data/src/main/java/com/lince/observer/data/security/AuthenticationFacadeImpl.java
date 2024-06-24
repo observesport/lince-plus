@@ -1,8 +1,11 @@
 package com.lince.observer.data.security;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.security.Principal;
 
 /**
  * @apiNote https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html
@@ -14,9 +17,15 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade {
     @Override
     public Authentication getAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new IllegalStateException("Authentication not found");
-        }
+        checkAuthentication(authentication);
         return authentication;
     }
+
+    @Override
+    public void checkAuthentication(Principal principal) {
+        if (principal == null || StringUtils.isEmpty(principal.getName())) {
+            throw new IllegalStateException("Authentication not found");
+        }
+    }
+
 }
