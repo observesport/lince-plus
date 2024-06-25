@@ -2,8 +2,6 @@ package com.lince.observer.data.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lince.observer.data.bean.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -19,10 +17,8 @@ import java.util.List;
  * Description:
  */
 public class RegisterItem implements Comparable<RegisterItem>, Serializable {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Integer id;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private Date saveDate;
     private Double videoTime;
     private String videoTimeTxt;
@@ -55,7 +51,6 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
         this.description = description;
     }
 
-
     public RegisterItem() {
         super();
         this.setSaveDate(new Date());
@@ -86,11 +81,7 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
     }
 
     public void setFramesFromTime() {
-        try {
-            this.frames = Math.toIntExact((long) (getVideoTime() * VideoPlayerData.DEFAULT_FRAMES_PER_SECOND));
-        } catch (Exception e) {
-            log.error("Excepción en conversion de frames", e);
-        }
+        this.frames = Math.toIntExact((long) (getVideoTime() * VideoPlayerData.DEFAULT_FRAMES_PER_SECOND));
     }
 
     public RegisterItem(Double videoTime) {
@@ -109,6 +100,7 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
         }
     }
 
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     public Date getSaveDate() {
         return saveDate;
     }
@@ -128,14 +120,10 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
     public void setVideoTime(Double videoTime) {
         this.videoTime = videoTime;
         //this.frames =  videoTime.intValue();//cambiar con el numero de frames por segundo del video
-        try {
-            setFramesFromTime();
-            //TODO 2020: review: valid conversion to secs + min
-            String secondsTxt = LocalTime.MIN.plusSeconds(videoTime.longValue()).toString();
-            setVideoTimeTxt(secondsTxt);
-        } catch (Exception e) {
-            log.error("setVideoTime additional settings error (format time | frames)", e);
-        }
+        setFramesFromTime();
+        //TODO 2020: review: valid conversion to secs + min
+        String secondsTxt = LocalTime.MIN.plusSeconds(videoTime.longValue()).toString();
+        setVideoTimeTxt(secondsTxt);
     }
 
     public List<Category> getRegister() {
@@ -152,20 +140,13 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
      * @param item categoría
      */
     public void pushCategory(Category item) {
-        try {
-            //StringUtils.defaultIfEmpty(item.getCode(), item.getId().toString()),
-            register.add(item);
-        } catch (Exception e) {
-            log.error("pushCategory", e);
-        }
+        register.add(item);
     }
 
     @Override
     public int compareTo(RegisterItem o) {
         return this.videoTime.compareTo(o.videoTime);
-        //return .compareTo(o.videoTime);
     }
-
 
     @Override
     public String toString() {
