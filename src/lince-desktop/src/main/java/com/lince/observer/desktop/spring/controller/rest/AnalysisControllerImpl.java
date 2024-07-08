@@ -50,7 +50,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     @RequestMapping(value = {"/get/","/get"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> getOrderedRegister(Principal principal) {
         try {
-            List<RegisterItem> nodeList = analysisService.getOrderedRegister();
+            List<RegisterItem> nodeList = analysisService.getSortedObservations();
             return new ResponseEntity<>(nodeList, HttpStatus.OK);
         } catch (Exception e) {
             log.error("register:get/", e);
@@ -68,7 +68,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     @RequestMapping(value = "/get/{uuid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> getRegisterById(@PathVariable UUID uuid) {
         try {
-            return new ResponseEntity<>(analysisService.getDataRegisterById(uuid), HttpStatus.OK);
+            return new ResponseEntity<>(analysisService.getObservationById(uuid), HttpStatus.OK);
         } catch (Exception e) {
             log.error("register:get/", e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,12 +80,12 @@ public class AnalysisControllerImpl implements AnalysisController {
     @RequestMapping(value = "/clear", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RegisterItem>> clearRegisterData(HttpServletRequest request, @RequestBody SceneWrapper items) {
         try {
-            if (!analysisService.deleteRegisterById(items.getId())) {
+            if (!analysisService.deleteObservationById(items.getId())) {
                 if (items.getMoment() != null) {
-                    analysisService.deleteMomentInfo(items.getMoment());
+                    analysisService.deleteObservationByMoment(items.getMoment());
                 }
             }
-            List<RegisterItem> nodeList = analysisService.getDataRegister();
+            List<RegisterItem> nodeList = analysisService.getAllObservations();
             return new ResponseEntity<>(nodeList, HttpStatus.OK);
         } catch (Exception e) {
             log.error("register:clear/", e);
@@ -98,7 +98,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     public ResponseEntity<List<RegisterItem>> pushScene(HttpServletRequest request, @RequestBody SceneWrapper items, Principal principal) {
         try {
             Double sceneMoment = items.getMoment();
-            analysisService.pushRegister(sceneMoment, null);
+            analysisService.saveObservation(sceneMoment, null);
             return getOrderedRegister(principal);
         } catch (Exception e) {
             log.error("register:push", e);
@@ -121,7 +121,7 @@ public class AnalysisControllerImpl implements AnalysisController {
             item.setName(items.getName());
             item.setDescription(items.getDescription());
             item.setId(Integer.valueOf(momentID)); //SUPER Error TODO:review urgently
-            analysisService.pushRegister(item);
+            analysisService.saveObservation(item);
         } catch (Exception e) {
             log.error("register:save", e);
 //            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -142,7 +142,7 @@ public class AnalysisControllerImpl implements AnalysisController {
                     scene.setId(items.getId());
                 }
                 scene = analysisService.loadCategoriesByCode(scene, items.getCategories());
-                analysisService.pushRegister(scene);
+                analysisService.saveObservation(scene);
             }
         } catch (Exception e) {
             log.error("register:setMomentData - push scene", e);
@@ -160,7 +160,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     @RequestMapping(value = "/timeStats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HighChartsWrapper> getTimeStats() {
         try {
-            HighChartsWrapper data = analysisService.getRegisterStatsByScene();
+            HighChartsWrapper data = analysisService.getObservationStats();
             data.setTitle("Criterios visualizados");
             data.setSubtitle("Registro de acciones por escenas");
             return new ResponseEntity<>(data, HttpStatus.OK);

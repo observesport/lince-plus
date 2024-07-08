@@ -41,7 +41,7 @@ public class ChartsController {
         try {
             //No serializa!!!
 
-            HighChartsWrapper data = analysisService.getRegisterStatsByScene();
+            HighChartsWrapper data = analysisService.getObservationStats();
             data.setTitle("Criterios visualizados");
             data.setSubtitle("Registro de acciones por escenas");
             //La clase chart me deja controlarlo tb

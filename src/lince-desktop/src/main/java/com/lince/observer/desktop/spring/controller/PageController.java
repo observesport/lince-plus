@@ -4,7 +4,6 @@ import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.service.AnalysisService;
-import com.lince.observer.data.service.ProfileService;
 import com.lince.observer.data.service.SessionService;
 import com.lince.observer.desktop.ServerAppParams;
 import com.lince.observer.desktop.spring.service.VideoService;
@@ -64,7 +63,7 @@ public class PageController {
                 videoService.setLocal(false);
             }
         }
-        List<RegisterItem> register = analysisService.getOrderedRegister();
+        List<RegisterItem> register = analysisService.getSortedObservations();
         //buscamos las categorías para añadirlas correctamente
         String currentVideo = videoService.getVideoUrl();
         String fileName = StringUtils.substringAfterLast(currentVideo, "/");

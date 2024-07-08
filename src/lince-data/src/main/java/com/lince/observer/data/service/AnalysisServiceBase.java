@@ -103,7 +103,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         List<Pair<CategoryData, Double>> globalCounter = new ArrayList<>();
         try {
             for (Criteria cri : tool) {
-                CollectionUtils.addAll(globalCounter, getRegisterVisibility(cri, register));
+                CollectionUtils.addAll(globalCounter, getClusteredObservationsByCriteria(cri, register));
             }
         } catch (Exception e) {
             log.error("global register count", e);
@@ -116,7 +116,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         HighChartsWrapper drillDown = new HighChartsWrapper();
         try {
             //obtenemos datos de contabilización
-            List<Pair<CategoryData, Double>> globalCounter = getAllRegisterVisibility(register);
+            List<Pair<CategoryData, Double>> globalCounter = getObservationRegisterVisibility(register);
             Double total = getTotals(globalCounter);
             //tenemos las categorias sin agrupar, con sus totales
             //Montamos la lista de los padres
@@ -149,12 +149,12 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         return rtn;
     }
     @Override
-    public HighChartsWrapper getRegisterStatsByScene() {
+    public HighChartsWrapper getObservationStats() {
         HighChartsWrapper rtn = new HighChartsWrapper();
         final Pair<Integer, String> EMPTY_SERIES_VALUE = new Pair<>(-1, "Sin definir");
         final String SCENE_LABEL = "Escena";
         try {
-            List<RegisterItem> userSceneData = getOrderedRegister();
+            List<RegisterItem> userSceneData = getSortedObservations();
             //montamos eje X
             for (RegisterItem data : userSceneData) {
                 rtn.getxSeriesLabels().add(String.format("%s (%s seg)", (StringUtils.isEmpty(data.getName()) ? SCENE_LABEL : data.getName()), data.getVideoTimeTxt()));
@@ -238,7 +238,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
     protected Integer generateID() {
         AtomicInteger idGenerator = new AtomicInteger();
         try {
-            for (RegisterItem value : getDataRegister()) {
+            for (RegisterItem value : getAllObservations()) {
                 Integer currentGroupID = value.getId() == null ? -1 : value.getId();
                 if (value.getId() == null) {
                     value.setId(generateID()); //corregimos posible error de ids al recorrer
