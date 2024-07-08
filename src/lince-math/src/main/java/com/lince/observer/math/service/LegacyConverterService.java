@@ -393,7 +393,7 @@ public class LegacyConverterService {
             Registro r = Registro.getInstance();
             //Reutilizamos para obtener datos por uuid. El instrumento DEBE ser el mismo siempre
             List<Category> errors = new ArrayList<>();
-            List<RegisterItem> register = (uuid == null) ? analysisService.getDataRegister() : analysisService.getDataRegisterById(uuid);
+            List<RegisterItem> register = (uuid == null) ? analysisService.getAllObservations() : analysisService.getObservationById(uuid);
             for (RegisterItem row : register) {
                 Integer timeID = row.getVideoTimeMilis();
                 Map<Criterio, Categoria> registeredData = new HashMap<>();

@@ -42,23 +42,23 @@ public class AnalysisServiceImpl extends AnalysisServiceBase implements Analysis
     }
 
     @Override
-    public boolean deleteRegisterById(Integer id) {
+    public boolean deleteObservationById(Integer id) {
         return deleteRegisterById(id, dataHubService.getCurrentDataRegister());
     }
 
     @Override
-    public boolean deleteMomentInfo(Double moment) {
+    public boolean deleteObservationByMoment(Double moment) {
         return deleteMomentInfo(moment, dataHubService.getCurrentDataRegister());
     }
 
     @Override
-    public List<RegisterItem> getDataRegister() {
+    public List<RegisterItem> getAllObservations() {
         ensureDataRegisterConsistency();
         return dataHubService.getCurrentDataRegister();
     }
 
     @Override
-    public List<RegisterItem> getDataRegisterById(UUID uuid) {
+    public List<RegisterItem> getObservationById(UUID uuid) {
         try {
             ensureDataRegisterConsistency();
             return dataHubService.getRegisterById(uuid).getRegisterData();
@@ -68,24 +68,24 @@ public class AnalysisServiceImpl extends AnalysisServiceBase implements Analysis
     }
 
     @Override
-    public List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register) {
+    public List<Pair<CategoryData, Double>> getObservationRegisterVisibility(List<RegisterItem> register) {
         return getAllRegisterVisibility(register, dataHubService.getCriteria());
     }
 
     @Override
     public HighChartsWrapper getRegisterStatsByCategory() {
-        List<RegisterItem> register = getOrderedRegister();
+        List<RegisterItem> register = getSortedObservations();
         List<Criteria> tool = dataHubService.getCriteria();
         return getRegisterStatsByCategory(register, tool);
     }
 
     @Override
-    public boolean pushRegister(Double videoTime, Category... categories) {
+    public boolean saveObservation(Double videoTime, Category... categories) {
         return pushRegister(dataHubService.getCurrentDataRegister(), videoTime, categories);
     }
 
     @Override
-    public boolean pushRegister(RegisterItem item) {
+    public boolean saveObservation(RegisterItem item) {
         return pushRegister(dataHubService.getCurrentDataRegister(), item);
     }
 

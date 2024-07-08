@@ -128,7 +128,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleNew() {
         dataHubService.clearData();
-        mainLinceApp.getAnalysisService().getDataRegister().clear();
+        mainLinceApp.getAnalysisService().getAllObservations().clear();
         mainLinceApp.getCategoryService().clearSelectedObservationTool();
         Registro.loadNewInstance();//legacy
         LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();

@@ -35,11 +35,11 @@ public interface AnalysisService {
         else return null;
     }
 
-    default List<RegisterItem> getOrderedRegister() {
-        return getDataRegister().stream().sorted().toList();
+    default List<RegisterItem> getSortedObservations() {
+        return getAllObservations().stream().sorted().toList();
     }
 
-    default List<Pair<CategoryData, Double>> getRegisterVisibility(Criteria cri, List<RegisterItem> userSceneData) {
+    default List<Pair<CategoryData, Double>> getClusteredObservationsByCriteria(Criteria cri, List<RegisterItem> userSceneData) {
         List<Pair<CategoryData, Double>> rtnValues = new ArrayList<>();
         try {
             if (cri != null) {
@@ -70,24 +70,23 @@ public interface AnalysisService {
         return bean;
     }
 
-    boolean deleteRegisterById(Integer id);
+    boolean deleteObservationById(Integer id);
 
-    boolean deleteMomentInfo(Double moment);
+    boolean deleteObservationByMoment(Double moment);
 
-    List<RegisterItem> getDataRegister();
+    List<RegisterItem> getAllObservations();
 
-    List<RegisterItem> getDataRegisterById(UUID uuid);
+    List<RegisterItem> getObservationById(UUID uuid);
 
-    boolean pushRegister(Double videoTime, Category... categories);
+    boolean saveObservation(Double videoTime, Category... categories);
 
-    boolean pushRegister(RegisterItem item);
+    boolean saveObservation(RegisterItem item);
 
     RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories);
 
-    HighChartsWrapper getRegisterStatsByScene();
+    HighChartsWrapper getObservationStats();
 
     default double getTotals(List<Pair<CategoryData, Double>> data) {
-        //Let's add totals
         double counter = 0;
         for (Pair<CategoryData, Double> item : data) {
             counter += item.getValue();
@@ -95,7 +94,7 @@ public interface AnalysisService {
         return counter;
     }
 
-    List<Pair<CategoryData, Double>> getAllRegisterVisibility(List<RegisterItem> register);
+    List<Pair<CategoryData, Double>> getObservationRegisterVisibility(List<RegisterItem> register);
 
     HighChartsWrapper getRegisterStatsByCategory();
 }

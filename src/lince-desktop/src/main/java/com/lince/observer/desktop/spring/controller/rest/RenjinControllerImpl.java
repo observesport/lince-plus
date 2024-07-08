@@ -54,7 +54,7 @@ public class RenjinControllerImpl implements RenjinController {
                 }
             }
             //renjinService.tryRFile();
-            String output = renjinService.executeRenjin(analysisService.getOrderedRegister(), categoryService.getCollection(), categoryService, StringUtils.join(codes));
+            String output = renjinService.executeRenjin(analysisService.getSortedObservations(), categoryService.getCollection(), categoryService, StringUtils.join(codes));
             return new ResponseEntity<>(output, HttpStatus.OK);
         } catch (Exception e) {
             log.error("renjin:execute/", e);

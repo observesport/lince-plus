@@ -77,7 +77,7 @@ public class ComponentController {
     @RequestMapping("/currentRegisteredDataTable")
     public String currentRegisteredDataTable(Model model) {
         List<CategoryData> data = categoryService.getCollection();
-        List<RegisterItem> register = analysisService.getOrderedRegister();
+        List<RegisterItem> register = analysisService.getSortedObservations();
         model.addAttribute(LinceDataConstants.CTX_CATEGORIES, data);
         model.addAttribute(LinceDataConstants.CTX_VIDEO_REGISTER, register);
         model.addAttribute(LinceDataConstants.CTX_IS_SCENE, false);
@@ -87,7 +87,7 @@ public class ComponentController {
     @RequestMapping("/currentRegisteredScenes")
     public String currentRegisteredScenes(Model model) {
         List<CategoryData> data = categoryService.getCollection();
-        List<RegisterItem> register = analysisService.getOrderedRegister();
+        List<RegisterItem> register = analysisService.getSortedObservations();
         model.addAttribute(LinceDataConstants.CTX_CATEGORIES, data);
         model.addAttribute(LinceDataConstants.CTX_VIDEO_REGISTER, register);
         model.addAttribute(LinceDataConstants.CTX_IS_SCENE, true);
