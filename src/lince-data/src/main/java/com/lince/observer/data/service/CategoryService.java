@@ -21,7 +21,10 @@ public interface CategoryService {
 
     List<CategoryData> getCategoriesByParent(Integer id);
 
+    @Deprecated
     Pair<Criteria, Category> findToolEntryByIdentifier(Integer id, String code, String name);
+
+    Pair<Criteria, Category> findToolEntryByIdentifier(List<Criteria> criteriaList, Integer id, String code, String name);
 
     void saveObservationTool(List<Criteria> data);
 

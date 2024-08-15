@@ -47,9 +47,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Deprecated
     public Pair<Criteria, Category> findToolEntryByIdentifier(Integer id, String code, String name) {
+        return findToolEntryByIdentifier(dataHubService.getCriteria(), id, code, name);
+    }
+
+    @Override
+    public Pair<Criteria, Category> findToolEntryByIdentifier(List<Criteria> criteriaList, Integer id, String code, String name) {
         try {
-            CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(dataHubService.getCriteria()));
+            CategoryServiceOld catService = new CategoryServiceOld(new LinkedList<>(criteriaList));
             return catService.findTreeEntryById(id, code, name);
         } catch (Exception e) {
             log.error("finding criteria by id", e);
