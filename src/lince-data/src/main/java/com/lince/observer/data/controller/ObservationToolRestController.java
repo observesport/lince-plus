@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Created by Alberto Soto. 14/5/24
+ *
+ * TODO Aug'24: Check where this controller is used in the frontend. Should not be String RQ_MAPPING_NAME = "/categories";?
  */
+@Deprecated
 public interface ObservationToolRestController {
     String RQ_MAPPING_NAME = "/rest/categories";
 
