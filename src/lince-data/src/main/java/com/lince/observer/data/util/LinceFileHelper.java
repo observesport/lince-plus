@@ -106,6 +106,22 @@ public class LinceFileHelper {
         }
         return file;
     }
-
+    public void writeProjectFile(File file, LinceFileProjectWrapper linceProject) {
+        try {
+            JAXBContext context = getXMLContext();
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            LinceFileProjectWrapper wrapper = new LinceFileProjectWrapper();
+            wrapper.setProfiles(linceProject.getProfiles());
+            wrapper.setObservationTool(linceProject.getObservationTool());
+            wrapper.setYoutubeVideoPlayList(linceProject.getYoutubeVideoPlayList());
+            wrapper.setRegister(linceProject.getRegister());
+            // Marshalling and saving XML to the file.
+            m.marshal(wrapper, file);
+        } catch (Exception e) {
+            log.error("Error writing project file", e);
+            throw new RuntimeException("Failed to write project file", e);
+        }
+    }
 
 }

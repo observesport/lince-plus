@@ -14,6 +14,9 @@ import java.security.Principal;
  */
 @Component
 public class AuthenticationFacadeImpl implements AuthenticationFacade {
+
+    private static String ANONYMOUS_USER_NAME = "anonymousUser";
+
     @Override
     public Authentication getAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -22,9 +25,9 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade {
     }
 
     @Override
-    public void checkAuthentication(Principal principal) {
-        if (principal == null || StringUtils.isEmpty(principal.getName())) {
-            throw new IllegalStateException("Authentication not found");
+    public void checkAuthentication(Principal principal) throws RuntimeException {
+        if (principal == null || StringUtils.isEmpty(principal.getName()) || StringUtils.equals(ANONYMOUS_USER_NAME, principal.getName())) {
+            throw new RuntimeException("Unauthorized access");
         }
     }
 
