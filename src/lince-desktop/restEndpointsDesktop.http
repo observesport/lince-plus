@@ -1,0 +1,31 @@
+### GET request with environment variables
+// Tip: putting scheme:// + host to {{host}} allows switching schemes between different environments
+#GET {{host}}/datatable/categories
+#Accept: application/json
+
+#### Get endpoint definition
+GET http://localhost:59258/actuator/mappings
+Accept: application/json
+
+#### GET Datatable --> works!!!
+GET http://localhost:59258/datatable/categories
+Accept: application/json
+
+### GET register --> works : Reference is at com.lince.observer.data.controller.AnalysisController
+GET http://localhost:59258/register/get
+Accept: application/json
+
+### GET register --> fails
+GET http://localhost:59258/register/get/
+Accept: application/json
+
+### GET categories -->
+GET http://localhost:59258/categories/get/
+Accept: application/json
+
+### GET categories -->
+GET http://localhost:59258/categories/get
+Accept: application/json
+
+#### Question to search: what has change in spring boot 3 that urls for rest endpoints are strict to do not finish with slash /
+
