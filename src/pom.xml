@@ -22,7 +22,7 @@
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
-        <java.javafx.version>18</java.javafx.version>
+        <java.javafx.version>21.0.2</java.javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <start-class>com.deicos.lince.app.LinceAppFx</start-class>
         <outputFolder>../lince-data/</outputFolder>
