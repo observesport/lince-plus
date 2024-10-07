@@ -50,7 +50,7 @@ if [ $? -eq 0 ]; then
     git add pom.xml
     git commit -m "Update version to $VERSION"
     git push origin main
-else
+else./m
     echo "Deployment failed. Please check the logs for more information."
     exit 1
 fi
