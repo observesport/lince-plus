@@ -59,7 +59,7 @@ public class StatsServiceImpl implements StatsService {
             Registro old2 = legacyConverterService.migrateDataToLegacy(secondRegister);
             Criterio[] criteriaList = InstrumentoObservacional.getInstance().getCriterios();
             List<Object> items = new ArrayList<>();
-            CollectionUtils.addAll(items, criteriaList);
+            CollectionUtils.addAll(items, (Object[]) criteriaList);
             List<Double> kappas = LegacyStatsHelper.getKappaValues(old1, old2, items);
             for (int i = 0; i < kappas.size(); i++) {
                 KeyValue<String, Double> data = new KeyValue<>();
@@ -101,7 +101,7 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public List<AgreementResult> getContingencyMatrix(UUID firstRegister, UUID secondRegister) {
         try {
-            LinceDkproAdapter adapter = getAdapter(firstRegister, secondRegister);
+            LinceDkproAdapter adapter = getAdapter(new UUID[]{firstRegister, secondRegister});
             return adapter.getContingencyMatrix();
         } catch (Exception e) {
             log.error("StatsService for Kappa index via DKpro", e);
