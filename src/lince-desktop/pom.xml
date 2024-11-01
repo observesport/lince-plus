@@ -7,12 +7,15 @@
         <groupId>com.lince.observer</groupId>
         <artifactId>lince-plus-root</artifactId>
         <version>3.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>lince-desktop</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!--        <start-class>com.lince.observer.LinceApiApplication</start-class>-->
+        <start-class>com.lince.observer.desktop.LinceApp</start-class>
+        <javafx.version>17.0.1</javafx.version>
+        <javafx.modulepath>${project.build.directory}/javafx-modules</javafx.modulepath>
         <!--        <tomcat.version>8.0.24</tomcat.version>-->
     </properties>
     <dependencies>
@@ -20,12 +23,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
-<!--        Jakarta is an option but check compatibilities-->
-<!--        https://docs.spring.io/spring-framework/reference/core/beans/standard-annotations.html#beans-standard-annotations-limitations-->
-<!--        <dependency>-->
-<!--            <groupId>jakarta.inject</groupId>-->
-<!--            <artifactId>jakarta.inject-api</artifactId>-->
-<!--        </dependency>-->
+        <!--        Jakarta is an option but check compatibilities-->
+        <!--        https://docs.spring.io/spring-framework/reference/core/beans/standard-annotations.html#beans-standard-annotations-limitations-->
+        <!--        <dependency>-->
+        <!--            <groupId>jakarta.inject</groupId>-->
+        <!--            <artifactId>jakarta.inject-api</artifactId>-->
+        <!--        </dependency>-->
         <!--        Internal dependencies-->
         <dependency>
             <groupId>com.lince.observer</groupId>
@@ -129,10 +132,10 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.8.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springdoc</groupId>-->
-<!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springdoc</groupId>-->
+        <!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -141,6 +144,7 @@
 
     <build>
         <finalName>lince-desktop</finalName>
+        <outputDirectory>${project.build.directory}/classes</outputDirectory>
         <plugins>
             <plugin>
                 <groupId>org.openjfx</groupId>
@@ -155,27 +159,45 @@
                 </executions>
                 <configuration>
                     <mainClass>${start-class}</mainClass>
+<!--                    <mainClass>com.lince.observer.desktop.LinceApp</mainClass>-->
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.1.2</version>
-                <configuration>
-<!--                    <fork>true</fork>-->
-                    <mainClass>${start-class}</mainClass>
-                    <layout>ZIP</layout>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <!--                            <goal>run</goal>-->
-                            <goal>repackage</goal>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                <version>3.1.2</version>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash;                    <fork>true</fork>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <mainClass>${start-class}</mainClass>&ndash;&gt;-->
+<!--                    <mainClass>com.lince.observer.desktop.LinceApp</mainClass>-->
+<!--                    <layout>ZIP</layout>-->
+<!--&lt;!&ndash;                    ,javafx.base,javafx.swing,javafx.graphics&ndash;&gt;-->
+<!--&lt;!&ndash;                    <jvmArguments>&ndash;&gt;-->
+<!--&lt;!&ndash;                        -Xms1024m&ndash;&gt;-->
+<!--&lt;!&ndash;                        -Xmx1024m&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;module-path ${javafx.modulepath}&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-modules=javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.base&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.lang=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.lang.reflect=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.io=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.util=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.util.concurrent=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                        &#45;&#45;add-exports=java.base/sun.nio.ch=ALL-UNNAMED&ndash;&gt;-->
+<!--&lt;!&ndash;                    </jvmArguments>&ndash;&gt;-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            &lt;!&ndash;                            <goal>run</goal>&ndash;&gt;-->
+<!--                            <goal>repackage</goal>-->
+<!--                            &lt;!&ndash; This starts up the program from mvn:    <goal>start</goal>&ndash;&gt;-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -198,27 +220,27 @@
                 </executions>
             </plugin>
             <!-- Maven Shade Plugin for creating an uber jar -->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-shade-plugin</artifactId>-->
-<!--                <version>3.5.1</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>shade</goal>-->
-<!--                        </goals>-->
-<!--&lt;!&ndash;                        <configuration>&ndash;&gt;-->
-<!--&lt;!&ndash;                            <transformers>&ndash;&gt;-->
-<!--&lt;!&ndash;                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">&ndash;&gt;-->
-<!--&lt;!&ndash;                                    <mainClass>com.example.YourMainClass</mainClass>&ndash;&gt;-->
-<!--&lt;!&ndash;                                </transformer>&ndash;&gt;-->
-<!--&lt;!&ndash;                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                            </transformers>&ndash;&gt;-->
-<!--&lt;!&ndash;                        </configuration>&ndash;&gt;-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-shade-plugin</artifactId>-->
+            <!--                <version>3.5.1</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <phase>package</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>shade</goal>-->
+            <!--                        </goals>-->
+            <!--&lt;!&ndash;                        <configuration>&ndash;&gt;-->
+            <!--&lt;!&ndash;                            <transformers>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">&ndash;&gt;-->
+            <!--&lt;!&ndash;                                    <mainClass>com.example.YourMainClass</mainClass>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                </transformer>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;                            </transformers>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        </configuration>&ndash;&gt;-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
             <!-- Install4j Maven Plugin | https://www.ej-technologies.com/resources/install4j/help/doc/cli/maven.html -->
             <plugin>
                 <groupId>com.install4j</groupId>
@@ -227,12 +249,13 @@
                 <executions>
                     <execution>
                         <id>compile-installers</id>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
                         <configuration>
-                            <projectFile>${project.basedir}/../installer/install4j/lince-plus-installer-v3.install4j</projectFile>
+                            <projectFile>${project.basedir}/../installer/install4j/lince-plus-installer-v3.install4j
+                            </projectFile>
                             <release>${project.version}</release>
                             <destination>${project.basedir}/../installer</destination>
                             <variables>
@@ -241,27 +264,21 @@
                                     <value>${project.version}</value>
                                 </property>
                             </variables>
-<!--                            <jreBundle>-->
-<!--&lt;!&ndash;                                <jreBundleURLTemplate>https://example.com/jdk-{version}_{arch}.zip</jreBundleURLTemplate>&ndash;&gt;-->
-<!--&lt;!&ndash;                                <jreBundleURLTemplate>https://cdn.azul.com/zulu/bin/zulu17.32.13-ca-jdk17.0.2-linux_x64.tar.gz</jreBundleURLTemplate>&ndash;&gt;-->
-<!--                                <jreBundleURLTemplate>https://cdn.azul.com/zulu/bin/zulu17.32.13-ca-jdk17.0.2-{arch}.zip</jreBundleURLTemplate>-->
-<!--                                <jdkVersion>17</jdkVersion>-->
-<!--                            </jreBundle>-->
                             <!-- JDK bundles for different platforms -->
-<!--                            <jdks>-->
-<!--                                <jdk>-->
-<!--                                    <path>${project.basedir}/jdks/windows-x64-${jdk.version}</path>-->
-<!--                                    <platform>windows-x64</platform>-->
-<!--                                </jdk>-->
-<!--                                <jdk>-->
-<!--                                    <path>${project.basedir}/jdks/macos-x64-${jdk.version}</path>-->
-<!--                                    <platform>macos-x64</platform>-->
-<!--                                </jdk>-->
-<!--                                <jdk>-->
-<!--                                    <path>${project.basedir}/jdks/macos-aarch64-${jdk.version}</path>-->
-<!--                                    <platform>macos-aarch64</platform>-->
-<!--                                </jdk>-->
-<!--                            </jdks>-->
+                            <!--                            <jdks>-->
+                            <!--                                <jdk>-->
+                            <!--                                    <path>${project.basedir}/jdks/windows-x64-${jdk.version}</path>-->
+                            <!--                                    <platform>windows-x64</platform>-->
+                            <!--                                </jdk>-->
+                            <!--                                <jdk>-->
+                            <!--                                    <path>${project.basedir}/jdks/macos-x64-${jdk.version}</path>-->
+                            <!--                                    <platform>macos-x64</platform>-->
+                            <!--                                </jdk>-->
+                            <!--                                <jdk>-->
+                            <!--                                    <path>${project.basedir}/jdks/macos-aarch64-${jdk.version}</path>-->
+                            <!--                                    <platform>macos-aarch64</platform>-->
+                            <!--                                </jdk>-->
+                            <!--                            </jdks>-->
                         </configuration>
                     </execution>
                 </executions>
