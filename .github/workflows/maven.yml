@@ -15,6 +15,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: cicd
     steps:
       - uses: actions/checkout@v3
 
@@ -25,14 +27,62 @@ jobs:
           distribution: 'zulu'
 
       - name: Download and setup Install4j
-        run: |
-          wget https://download.ej-technologies.com/install4j/install4j_linux_10_0_6.deb
-          sudo dpkg -i install4j_linux_10_0_6.deb
+        run: | 
+          wget https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_9.deb
+          sudo dpkg -i install4j_linux-x64_10_0_9.deb
           echo "INSTALL4J_HOME=/opt/install4j10" >> $GITHUB_ENV
 
-      - name: Build with Maven
-        run: mvn -B package install --file src/pom.xml
+#  ==> Valid
+#      - name: Verify Install4j
+#        run: |
+#          ls -l /opt/install4j10
+#          which install4j || echo "install4j not found in PATH"
+#          echo $INSTALL4J_HOME
+#      - name: Print System Info
+#        run: |
+#          echo "Architecture: $(uname -m)"
+#          echo "Operating System: $(uname -s)"
+#          echo "OS Version: $(uname -r)"
+#          lsb_release -a
+#          dpkg --print-architecture
+#      - name: Check Install4j Setup
+#        run: |
+#          echo "INSTALL4J_HOME: $INSTALL4J_HOME"
+#          ls -l $INSTALL4J_HOME
+#          ls -l $INSTALL4J_HOME/bin
+#          file $INSTALL4J_HOME/bin/install4jc
+#          $INSTALL4J_HOME/bin/install4jc --version
+#          sudo ls -l /opt/install4j10
+#          whoami
+#          groups
+
+      - name: Check INSTALL4J_LICENSE
+        run: |
+          if [ -n "$INSTALL4J_LICENSE" ]; then
+            echo "INSTALL4J_LICENSE is set"
+            echo "Full INSTALL4J_LICENSE value:"
+            echo "$INSTALL4J_LICENSE"
+            echo "Length: ${#INSTALL4J_LICENSE}"
+          else
+            echo "INSTALL4J_LICENSE is not set"
+          fi
         env:
+          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+
+#      - name: Use secret in script
+#        env:
+#          # Reference the secret using secrets context
+#          API_KEY: ${{ secrets.API_KEY }}
+#        run: |
+#          # Example of using the secret in a script
+#          echo "Using API key length: ${#API_KEY}"  # Print length only for security
+#
+      - name: Build with Maven
+        run: |
+          cd src
+          mvn -B package install -DskipTests -DinstallDir="${INSTALL4J_HOME}" -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}"
+        env:
+          INSTALL4J_HOME: "/opt/install4j10"
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
 
       - name: Display output.txt
@@ -65,7 +115,8 @@ jobs:
           servers: '[{"id": "github", "username": "${GITHUB_ACTOR}", "password": "${GITHUB_TOKEN}"}]'
 
       - name: Deploy to GitHub Packages
-        run: mvn deploy -f src/pom.xml
+        run: cd src && mvn deploy
+#        run: mvn deploy -f src/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
