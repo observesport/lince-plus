@@ -53,7 +53,7 @@
         <jdk.version>17.0.9</jdk.version>
         <install4j.version>10.0.6</install4j.version>
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
-        <install4j.home>/Applications/install4j.app</install4j.home>
+        <install4j.home>${env.INSTALL4J_HOME:-/Applications/install4j.app}</install4j.home>
         <jakartaInject.version>2.0.0</jakartaInject.version>
         <junit5.version>5.9.2</junit5.version>
         <jackson.version>2.16.1</jackson.version>
