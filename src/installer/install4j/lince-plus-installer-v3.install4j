@@ -571,7 +571,10 @@ return console.askYesNo(message, true);
       <excludedLaunchers>
         <launcher id="59" />
       </excludedLaunchers>
-      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+13" overrideJdkRelease="true">
+      <exclude>
+        <entry location="lince-os-launcher.sh" />
+      </exclude>
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
         <modules>
           <defaultModules set="all" />
         </modules>
@@ -581,17 +584,17 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle usePack200="false" includedJre="macos-aarch64-17.0.5" />
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
     </macosFolder>
     <macosFolder name="mac-x86" id="271">
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle usePack200="false" includedJre="macos-amd64-17.0.4" />
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-amd64-17.0.4" />
     </macosFolder>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="268" />
+    <mediaSet refId="271" />
   </buildIds>
   <buildOptions verbose="true" />
 </install4j>

@@ -138,6 +138,7 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
+
     <build>
         <finalName>lince-desktop</finalName>
         <plugins>
@@ -185,7 +186,7 @@
                         <configuration>
                             <target>
                                 <copy file="target/lince-desktop.jar"
-                                      tofile="../lince-dist/lince-desktop.jar"/>
+                                      tofile="../installer/install4j/lince-desktop.jar"/>
                                 <!--                                <copy file="target/${project.artifactId}-${project.version}.jar"-->
                                 <!--                                      tofile="../${outputFolder}/${project.artifactId}.${outputExtension}"/>-->
                             </target>
@@ -193,6 +194,75 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Maven Shade Plugin for creating an uber jar -->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-shade-plugin</artifactId>-->
+<!--                <version>3.5.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>shade</goal>-->
+<!--                        </goals>-->
+<!--&lt;!&ndash;                        <configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <transformers>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <mainClass>com.example.YourMainClass</mainClass>&ndash;&gt;-->
+<!--&lt;!&ndash;                                </transformer>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </transformers>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </configuration>&ndash;&gt;-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+            <!-- Install4j Maven Plugin | https://www.ej-technologies.com/resources/install4j/help/doc/cli/maven.html -->
+            <plugin>
+                <groupId>com.install4j</groupId>
+                <artifactId>install4j-maven</artifactId>
+                <version>${install4j.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile-installers</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <projectFile>${project.basedir}/../installer/install4j/lince-plus-installer-v3.install4j</projectFile>
+                            <release>${project.version}</release>
+                            <destination>${project.basedir}/../installer</destination>
+                            <variables>
+                                <property>
+                                    <name>version</name>
+                                    <value>${project.version}</value>
+                                </property>
+                            </variables>
+<!--                            <jreBundle>-->
+<!--&lt;!&ndash;                                <jreBundleURLTemplate>https://example.com/jdk-{version}_{arch}.zip</jreBundleURLTemplate>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <jreBundleURLTemplate>https://cdn.azul.com/zulu/bin/zulu17.32.13-ca-jdk17.0.2-linux_x64.tar.gz</jreBundleURLTemplate>&ndash;&gt;-->
+<!--                                <jreBundleURLTemplate>https://cdn.azul.com/zulu/bin/zulu17.32.13-ca-jdk17.0.2-{arch}.zip</jreBundleURLTemplate>-->
+<!--                                <jdkVersion>17</jdkVersion>-->
+<!--                            </jreBundle>-->
+                            <!-- JDK bundles for different platforms -->
+<!--                            <jdks>-->
+<!--                                <jdk>-->
+<!--                                    <path>${project.basedir}/jdks/windows-x64-${jdk.version}</path>-->
+<!--                                    <platform>windows-x64</platform>-->
+<!--                                </jdk>-->
+<!--                                <jdk>-->
+<!--                                    <path>${project.basedir}/jdks/macos-x64-${jdk.version}</path>-->
+<!--                                    <platform>macos-x64</platform>-->
+<!--                                </jdk>-->
+<!--                                <jdk>-->
+<!--                                    <path>${project.basedir}/jdks/macos-aarch64-${jdk.version}</path>-->
+<!--                                    <platform>macos-aarch64</platform>-->
+<!--                                </jdk>-->
+<!--                            </jdks>-->
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
