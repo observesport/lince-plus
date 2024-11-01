@@ -51,6 +51,16 @@ jobs:
           draft: true
           prerelease: false
 
+      - name: Configure Maven settings
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          servers: '[{"id": "github", "username": "${GITHUB_ACTOR}", "password": "${GITHUB_TOKEN}"}]'
+
+      - name: Deploy to GitHub Packages
+        run: mvn deploy -f src/pom.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload DMG Asset
         uses: actions/upload-release-asset@v1
         env:
