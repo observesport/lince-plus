@@ -16,7 +16,6 @@
         <start-class>com.lince.observer.desktop.LinceApp</start-class>
         <javafx.version>17.0.1</javafx.version>
         <javafx.modulepath>${project.build.directory}/javafx-modules</javafx.modulepath>
-        <!--        <tomcat.version>8.0.24</tomcat.version>-->
     </properties>
     <dependencies>
         <dependency>
@@ -162,42 +161,42 @@
 <!--                    <mainClass>com.lince.observer.desktop.LinceApp</mainClass>-->
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--                <version>3.1.2</version>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash;                    <fork>true</fork>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <mainClass>${start-class}</mainClass>&ndash;&gt;-->
-<!--                    <mainClass>com.lince.observer.desktop.LinceApp</mainClass>-->
-<!--                    <layout>ZIP</layout>-->
-<!--&lt;!&ndash;                    ,javafx.base,javafx.swing,javafx.graphics&ndash;&gt;-->
-<!--&lt;!&ndash;                    <jvmArguments>&ndash;&gt;-->
-<!--&lt;!&ndash;                        -Xms1024m&ndash;&gt;-->
-<!--&lt;!&ndash;                        -Xmx1024m&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;module-path ${javafx.modulepath}&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-modules=javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.base&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.lang=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.lang.reflect=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.io=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.util=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.util.concurrent=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                        &#45;&#45;add-exports=java.base/sun.nio.ch=ALL-UNNAMED&ndash;&gt;-->
-<!--&lt;!&ndash;                    </jvmArguments>&ndash;&gt;-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            &lt;!&ndash;                            <goal>run</goal>&ndash;&gt;-->
-<!--                            <goal>repackage</goal>-->
-<!--                            &lt;!&ndash; This starts up the program from mvn:    <goal>start</goal>&ndash;&gt;-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <!--                    <fork>true</fork>-->
+<!--                    <mainClass>${start-class}</mainClass>-->
+                    <mainClass>com.lince.observer.desktop.LinceApp</mainClass>
+                    <layout>ZIP</layout>
+<!--                    ,javafx.base,javafx.swing,javafx.graphics-->
+                    <!--                        &#45;&#45;module-path ${javafx.modulepath}-->
+                    <jvmArguments>
+                        -Xms1024m
+                        -Xmx1024m
+                        --add-modules=javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.base
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                        --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens=java.base/java.io=ALL-UNNAMED
+                        --add-opens=java.base/java.util=ALL-UNNAMED
+                        --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+                        --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
+                        --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+                        --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
+                        --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+                    </jvmArguments>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!--                            <goal>run</goal>-->
+                            <goal>repackage</goal>
+                            <!-- This starts up the program from mvn:    <goal>start</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>

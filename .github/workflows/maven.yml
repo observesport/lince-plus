@@ -23,13 +23,22 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package install --file src/pom.xml
         env:
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
 
+      - name: Display output.txt
+        run: |
+          if [ -f src/installer/output.txt ]; then
+            echo "Contents of output.txt:"
+            cat src/installer/output.txt
+          else
+            echo "output.txt file not found in src/installer/"
+          fi
+
       - name: Get version
         id: get_version
-        run: echo ::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        run: echo ::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f src/pom.xml)
 
       - name: Create Release Draft
         id: create_release
@@ -48,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./installer/lince-${{ steps.get_version.outputs.VERSION }}.dmg
+          asset_path: ./src/installer/lince-${{ steps.get_version.outputs.VERSION }}.dmg
           asset_name: lince-${{ steps.get_version.outputs.VERSION }}.dmg
           asset_content_type: application/x-apple-diskimage
 
@@ -58,7 +67,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./installer/lince-${{ steps.get_version.outputs.VERSION }}.exe
+          asset_path: ./src/installer/lince-${{ steps.get_version.outputs.VERSION }}.exe
           asset_name: lince-${{ steps.get_version.outputs.VERSION }}.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
