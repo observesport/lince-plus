@@ -26,6 +26,22 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
+      - name: Get version
+        id: get_version
+        run: |
+          FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f src/pom.xml)
+          CLEAN_VERSION=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
+          FILE_VERSION=$(echo $FULL_VERSION | sed 's/-/_/g')
+          echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+          echo "FILE_VERSION=$FILE_VERSION" >> $GITHUB_ENV
+          echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_OUTPUT
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+          echo "FILE_VERSION=$FILE_VERSION" >> $GITHUB_OUTPUT
+          echo "Full project version: $FULL_VERSION"
+          echo "Clean project version: $CLEAN_VERSION"
+          echo "File version: $FILE_VERSION"
+
       - name: Download and setup Install4j
         run: | 
           wget https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_9.deb
@@ -55,28 +71,19 @@ jobs:
 #          sudo ls -l /opt/install4j10
 #          whoami
 #          groups
-
-      - name: Check INSTALL4J_LICENSE
-        run: |
-          if [ -n "$INSTALL4J_LICENSE" ]; then
-            echo "INSTALL4J_LICENSE is set"
-            echo "Full INSTALL4J_LICENSE value:"
-            echo "$INSTALL4J_LICENSE"
-            echo "Length: ${#INSTALL4J_LICENSE}"
-          else
-            echo "INSTALL4J_LICENSE is not set"
-          fi
-        env:
-          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
-
-#      - name: Use secret in script
-#        env:
-#          # Reference the secret using secrets context
-#          API_KEY: ${{ secrets.API_KEY }}
+#      - name: Check INSTALL4J_LICENSE
 #        run: |
-#          # Example of using the secret in a script
-#          echo "Using API key length: ${#API_KEY}"  # Print length only for security
-#
+#          if [ -n "$INSTALL4J_LICENSE" ]; then
+#            echo "INSTALL4J_LICENSE is set"
+#            echo "Full INSTALL4J_LICENSE value:"
+#            echo "$INSTALL4J_LICENSE"
+#            echo "Length: ${#INSTALL4J_LICENSE}"
+#          else
+#            echo "INSTALL4J_LICENSE is not set"
+#          fi
+#        env:
+#          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+
       - name: Build with Maven
         run: |
           cd src
@@ -94,9 +101,10 @@ jobs:
             echo "output.txt file not found in src/installer/"
           fi
 
-      - name: Get version
-        id: get_version
-        run: echo ::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f src/pom.xml)
+#      - name: List installer directory contents
+#        run: |
+#          echo "Contents of src/installer:"
+#          ls -l src/installer/
 
       - name: Create Release Draft
         id: create_release
@@ -115,30 +123,78 @@ jobs:
           servers: '[{"id": "github", "username": "${GITHUB_ACTOR}", "password": "${GITHUB_TOKEN}"}]'
 
       - name: Deploy to GitHub Packages
-        run: cd src && mvn deploy
-#        run: mvn deploy -f src/pom.xml
+        run: cd src && mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload DMG Asset
+
+      - name: Check for Windows EXE
+        run: |
+          EXE_PATH="./src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe"
+          if [ -f "$EXE_PATH" ]; then
+            echo "Windows EXE file found: $EXE_PATH"
+          else
+            echo "Error: Windows EXE file not found: $EXE_PATH"
+            ls -R ./src/installer/
+            exit 1
+          fi
+
+      - name: Upload Windows EXE Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/installer/lince-${{ steps.get_version.outputs.VERSION }}.dmg
-          asset_name: lince-${{ steps.get_version.outputs.VERSION }}.dmg
-          asset_content_type: application/x-apple-diskimage
-
-      - name: Upload EXE Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/installer/lince-${{ steps.get_version.outputs.VERSION }}.exe
-          asset_name: lince-${{ steps.get_version.outputs.VERSION }}.exe
+          asset_path: ./src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+          asset_name: lince-plus_windows-x64_${{ env.CLEAN_VERSION }}_Windows.exe
           asset_content_type: application/vnd.microsoft.portable-executable
+
+#   broken   - name: Upload Windows EXE Asset
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+##                                                         './src/installer/lince-plus_windows-x64_3.1_Windows.exe'
+##          asset_path: ./src/installer/lince-plus_windows-x64_3_1-SNAPSHOT_Windows.exe
+##          Error: ENOENT: no such file or directory, stat './src/installer/lince-plus_windows-x64_3.1-SNAPSHOT_Windows.exe'
+#          asset_path: ./src/installer/lince-plus_windows-x64_${{ steps.get_version.outputs.VERSION }}_Windows.exe
+#          asset_name: lince-plus_windows-x64_${{ steps.get_version.outputs.VERSION }}_Windows.exe
+##          asset_path: ./src/installer/lince-plus_windows-x64_${{ steps.clean_version.outputs.VERSION }}_Windows.exe
+##          asset_name: lince-plus_windows-x64_${{ steps.clean_version.outputs.VERSION }}_Windows.exe
+#          asset_content_type: application/vnd.microsoft.portable-executable
+
+#  working    - name: Upload Windows EXE Asset
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./src/installer/lince-plus_windows-x64_3_1-SNAPSHOT_Windows.exe
+#          asset_name: lince-plus_windows-x64_3_1-SNAPSHOT_Windows.exe
+##          asset_path: ./src/installer/lince-plus_windows-x64_${{ steps.get_version.outputs.VERSION }}_Windows.exe
+##          asset_name: lince-plus_windows-x64_${{ steps.get_version.outputs.VERSION }}_Windows.exe
+#          asset_content_type: application/vnd.microsoft.portable-executable
+
+#      - name: Upload macOS ARM DMG Asset
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./src/installer/lince-plus_macos_${{ steps.get_version.outputs.VERSION }}_mac-arm.dmg
+#          asset_name: lince-plus_macos_${{ steps.get_version.outputs.VERSION }}_mac-arm.dmg
+#          asset_content_type: application/x-apple-diskimage
+#
+#      - name: Upload macOS x86 DMG Asset
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./src/installer/lince-plus_macos_${{ steps.get_version.outputs.VERSION }}_mac-x86.dmg
+#          asset_name: lince-plus_macos_${{ steps.get_version.outputs.VERSION }}_mac-x86.dmg
+#          asset_content_type: application/x-apple-diskimage
 
 #      - name: Upload Release Asset
 #        uses: actions/upload-release-asset@v1
