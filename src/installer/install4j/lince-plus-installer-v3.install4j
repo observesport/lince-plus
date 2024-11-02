@@ -242,6 +242,7 @@ return console.askOkCancel(message, true);
               <action id="17" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="quit" errorMessage="${i18n:FileCorrupted}" />
               <action id="18" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
+                  <property name="addUninstaller" type="boolean" value="true" />
                   <property name="uninstallerMenuName" type="string">${i18n:UninstallerMenuEntry(${compiler:sys.fullName})}</property>
                 </serializedBean>
                 <condition>!context.getBooleanVariable("sys.programGroupDisabled")</condition>
@@ -583,15 +584,16 @@ return console.askYesNo(message, true);
     <macosFolder name="mac-arm" id="268" architecture="aarch64">
       <exclude>
         <entry location="lince-launcher.bat" />
+        <entry location="lince-os-launcher" />
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
     </macosFolder>
-    <macosFolder name="mac-x86" id="271">
+    <macosArchive name="mac-x86" id="271">
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-amd64-17.0.4" />
-    </macosFolder>
+    </macosArchive>
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="271" />
