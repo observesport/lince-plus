@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <start-class>com.lince.observer.desktop.LinceApp</start-class>
+        <start-class>com.lince.observer.desktop.LinceAppFx</start-class>
         <javafx.version>17.0.1</javafx.version>
         <javafx.modulepath>${project.build.directory}/javafx-modules</javafx.modulepath>
     </properties>
@@ -146,6 +146,21 @@
         <outputDirectory>${project.build.directory}/classes</outputDirectory>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${start-class}</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Add-Exports>javafx.graphics/com.sun.javafx.application=ALL-UNNAMED javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</Add-Exports>
+                            <Add-Opens>javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</Add-Opens>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${javafx.maven.plugin.version}</version>
@@ -167,24 +182,27 @@
                 <version>3.1.2</version>
                 <configuration>
                     <!--                    <fork>true</fork>-->
-<!--                    <mainClass>${start-class}</mainClass>-->
-                    <mainClass>com.lince.observer.desktop.LinceApp</mainClass>
+                    <mainClass>${start-class}</mainClass>
+<!--                    <mainClass>com.lince.observer.desktop.LinceAppFx</mainClass>-->
                     <layout>ZIP</layout>
 <!--                    ,javafx.base,javafx.swing,javafx.graphics-->
                     <!--                        &#45;&#45;module-path ${javafx.modulepath}-->
                     <jvmArguments>
-                        -Xms1024m
-                        -Xmx1024m
-                        --add-modules=javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.base
-                        --add-opens=java.base/java.lang=ALL-UNNAMED
-                        --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
                         --add-opens=java.base/java.io=ALL-UNNAMED
-                        --add-opens=java.base/java.util=ALL-UNNAMED
-                        --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
-                        --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
+                        --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+                        --add-opens=javafx.base/com.sun.javafx.collections=javafx.web
+                        --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED
+                        --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
+                        --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED
+                        --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED
+                        --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED
+                        --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
                         --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
-                        --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
-                        --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+                        --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+                        --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+                        --add-modules=ALL-MODULE-PATH
+                        --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
                     </jvmArguments>
                 </configuration>
                 <executions>
@@ -263,21 +281,6 @@
                                     <value>${project.version}</value>
                                 </property>
                             </variables>
-                            <!-- JDK bundles for different platforms -->
-                            <!--                            <jdks>-->
-                            <!--                                <jdk>-->
-                            <!--                                    <path>${project.basedir}/jdks/windows-x64-${jdk.version}</path>-->
-                            <!--                                    <platform>windows-x64</platform>-->
-                            <!--                                </jdk>-->
-                            <!--                                <jdk>-->
-                            <!--                                    <path>${project.basedir}/jdks/macos-x64-${jdk.version}</path>-->
-                            <!--                                    <platform>macos-x64</platform>-->
-                            <!--                                </jdk>-->
-                            <!--                                <jdk>-->
-                            <!--                                    <path>${project.basedir}/jdks/macos-aarch64-${jdk.version}</path>-->
-                            <!--                                    <platform>macos-aarch64</platform>-->
-                            <!--                                </jdk>-->
-                            <!--                            </jdks>-->
                         </configuration>
                     </execution>
                 </executions>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.9" transformSequenceNumber="10">
-  <directoryPresets config="./lince-os-launcher.sh" />
+  <directoryPresets config="./branding" />
   <application name="Lince Plus" applicationId="4785-3010-4021-2113" mediaDir="../" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_${compiler:sys.mediaName}" shortName="lince-plus" publisher="Alberto Soto Fernández" publisherWeb="https://observesport.github.io/lince-plus/" version="3.0.0" allPathsRelative="true" backupOnSave="true" macVolumeId="8d23f0db178522b3" javaMinVersion="17" jdkMode="jdk" jdkName="JDK 17.0">
-    <jreBundles jdkProviderId="Zulu" release="17/17.0.13">
+    <jreBundles jdkProviderId="Liberica" release="17/17.0.13+12">
       <modules>
         <defaultModules set="all" />
       </modules>
@@ -26,96 +26,29 @@
     </entries>
   </files>
   <launchers>
-    <launcher name="${compiler:sys.shortName}" id="59">
-      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory=".${launcher:sys.launcherDirectory}" singleInstance="true" />
-      <java mainClass="org.springframework.boot.loader.JarLauncher" vmParameters="-verbose &quot;-Dappdir={installer:sys:installationDir}&quot;" arguments="--add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAME --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED --add-exports=java.base/sun.nio.ch=ALL-UNNAMED">
+    <launcher name="${compiler:sys.shortName}" id="59" useCustomMacosExecutableName="true" customMacosExecutableName="${compiler:sys.fullName}">
+      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory=".${launcher:sys.launcherDirectory}" singleInstance="true">
+        <versionInfo include="true" fileDescription="${compiler:sys.version}" legalCopyright="Soto-Fernández, A., Camerino, O., Iglesias, X. et al. LINCE PLUS software for systematic observational studies in sports and health. Behav Res 54, 1263–1271 (2022). https://doi.org/10.3758/s13428-021-01642-1" internalName="${compiler:sys.fullName}" />
+      </executable>
+      <java mainClass="org.springframework.boot.loader.JarLauncher" vmParameters="-verbose &quot;-Dappdir={installer:sys:installationDir}&quot; --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=javafx.web --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-modules=ALL-MODULE-PATH --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web">
         <classPath>
           <archive location="lince-desktop.jar" />
         </classPath>
       </java>
-      <vmOptionsFile mode="content">
-        <content># Enter one VM parameter per line
-
--Duser.language=en
--Duser.country=US
--Dfile.encoding=UTF-8
--Xms128M
--Xmx756M
--Djava.awt.headless=false
--Dsun.java2d.metal=true
--Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
---add-opens
-java.base/sun.nio.ch=ALL-UNNAMED
---add-opens
-java.base/java.io=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.util=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx.logging=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.prism=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.glass.utils=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.font=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx.event=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx.reflect=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx.beans=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx.collections=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx.binding=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.iio=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.prism.paint=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.scenario.effect=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.text=ALL-UNNAMED
---add-opens
-javafx.base/com.sun.javafx.collections=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.scenario.effect.impl.prism=ALL-UNNAMED
---add-exports
-javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
---add-opens
-javafx.base/com.sun.javafx.collections=javafx.web
---add-opens
-javafx.controls/javafx.scene.control=ALL-UNNAMED
---add-exports
-javafx.base/com.sun.javafx.property=ALL-UNNAMED
---add-exports
-javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+      <vmOptionsFile mode="content" overwriteMode="1">
+        <content>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens=java.base/java.io=ALL-UNNAMED
+--add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+--add-opens=javafx.base/com.sun.javafx.collections=javafx.web
+--add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED
+--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
+--add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED
+--add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED
+--add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED
+--add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
+--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+--add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
 --add-modules=ALL-MODULE-PATH
 --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web</content>
       </vmOptionsFile>
@@ -126,7 +59,7 @@ javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
   </launchers>
   <installerGui>
     <applications>
-      <application id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" actionElevationType="elevated">
+      <application id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication">
         <startup>
           <screen id="1" beanClass="com.install4j.runtime.beans.screens.StartupScreen" rollbackBarrierExitCode="0">
             <actions>
@@ -237,6 +170,23 @@ return console.askOkCancel(message, true);
               </formComponent>
             </formComponents>
           </screen>
+          <screen id="277" beanClass="com.install4j.runtime.beans.screens.AdditionalConfirmationsScreen" rollbackBarrierExitCode="0">
+            <formComponents>
+              <formComponent id="278" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetBottom="10">
+                <serializedBean>
+                  <property name="labelText" type="string">${form:confirmationMessage}</property>
+                </serializedBean>
+                <visibilityScript>!context.isConsole()</visibilityScript>
+              </formComponent>
+              <formComponent name="Add a desktop link" id="279" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                <serializedBean>
+                  <property name="checkboxText" type="string">${i18n:CreateDesktopIcon}</property>
+                  <property name="initiallySelected" type="boolean" value="true" />
+                  <property name="variableName" type="string">createDesktopLinkAction</property>
+                </serializedBean>
+              </formComponent>
+            </formComponents>
+          </screen>
           <screen id="15" beanClass="com.install4j.runtime.beans.screens.InstallationScreen" rollbackBarrier="true" rollbackBarrierExitCode="0">
             <actions>
               <action id="17" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="quit" errorMessage="${i18n:FileCorrupted}" />
@@ -252,6 +202,18 @@ return console.askOkCancel(message, true);
                   <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
                 </serializedBean>
               </action>
+              <action id="272" beanClass="com.install4j.runtime.beans.actions.desktop.CreateStartMenuEntryAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="entryName" type="string">${installer:sys.programGroupName}</property>
+                  <property name="file">
+                    <object class="java.io.File">
+                      <string>${compiler:sys.shortName}</string>
+                    </object>
+                  </property>
+                  <property name="programGroupName" type="string">${compiler:sys.fullName}</property>
+                </serializedBean>
+                <condition>!context.getBooleanVariable("sys.programGroupDisabled")</condition>
+              </action>
             </actions>
             <formComponents>
               <formComponent id="16" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent">
@@ -262,10 +224,36 @@ return console.askOkCancel(message, true);
             </formComponents>
           </screen>
           <screen id="20" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" styleId="41" rollbackBarrierExitCode="0" finishScreen="true">
+            <actions>
+              <action id="281" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" actionElevationType="none" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="launcherId" type="string">59</property>
+                </serializedBean>
+                <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended())</condition>
+              </action>
+              <action id="283" beanClass="com.install4j.runtime.beans.actions.desktop.CreateDesktopLinkAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="file">
+                    <object class="java.io.File">
+                      <string>${compiler:sys.shortName}</string>
+                    </object>
+                  </property>
+                  <property name="name" type="string">${compiler:sys.fullName}</property>
+                </serializedBean>
+                <condition>context.getBooleanVariable("createDesktopLinkAction")</condition>
+              </action>
+            </actions>
             <formComponents>
               <formComponent id="21" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetBottom="10">
                 <serializedBean>
                   <property name="labelText" type="string">${form:finishedMessage}</property>
+                </serializedBean>
+              </formComponent>
+              <formComponent name="Execute launcher" id="282" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                <serializedBean>
+                  <property name="checkboxText" type="string">${i18n:RunEntryExec("${compiler:sys.fullName}")}</property>
+                  <property name="initiallySelected" type="boolean" value="true" />
+                  <property name="variableName" type="string">executeLauncherAction</property>
                 </serializedBean>
               </formComponent>
             </formComponents>
@@ -569,9 +557,6 @@ return console.askYesNo(message, true);
   </installerGui>
   <mediaSets>
     <windows name="Windows" id="60" architecture="64">
-      <excludedLaunchers>
-        <launcher id="59" />
-      </excludedLaunchers>
       <exclude>
         <entry location="lince-os-launcher.sh" />
       </exclude>
@@ -588,11 +573,11 @@ return console.askYesNo(message, true);
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
     </macosFolder>
-    <macosArchive name="mac-x86" id="271">
+    <macosArchive name="mac-x86" id="271" launcherId="59">
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-amd64-17.0.4" />
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" overrideJdkRelease="true" includedJre="macos-amd64-17.0.4" />
     </macosArchive>
   </mediaSets>
   <buildIds buildAll="false">

@@ -51,6 +51,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <jdk.version>17.0.9</jdk.version>
+        <java.javafx.version>17.0.12</java.javafx.version>
         <install4j.version>10.0.6</install4j.version>
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
@@ -61,7 +62,6 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <springdoc-openapi.version>2.1.0</springdoc-openapi.version>
         <testcontainers.version>1.19.6</testcontainers.version>
-        <java.javafx.version>18</java.javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <dkpro.version>2.2.1</dkpro.version>
         <snakeYaml.version>2.2</snakeYaml.version>
