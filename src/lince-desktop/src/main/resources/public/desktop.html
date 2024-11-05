@@ -243,6 +243,11 @@
 
     gtag('js', new Date());
     gtag('config', 'G-PGTBMEJ65G');
+    // Custom event for Lince-desktop startup
+    gtag('event', 'lince_desktop_startup', {
+        'event_category': 'Application',
+        'event_label': 'Lince Desktop Started'
+    });
 </script>
 <script>
     document.getElementById('currentYear').textContent = new Date().getFullYear();
