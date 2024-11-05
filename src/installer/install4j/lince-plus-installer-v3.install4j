@@ -592,6 +592,7 @@ return console.askYesNo(message, true);
         <launcher id="336" />
       </excludedLaunchers>
       <exclude>
+        <entry location="lince-launcher.bat" />
         <entry location="lince-os-launcher.sh" />
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
@@ -606,7 +607,7 @@ return console.askYesNo(message, true);
       </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
-        <entry location="lince-os-launcher" />
+        <entry location="lince-os-launcher.sh" />
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
     </macosFolder>
@@ -616,6 +617,7 @@ return console.askYesNo(message, true);
       </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
+        <entry location="lince-os-launcher.sh" />
       </exclude>
       <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
     </macosFolder>
