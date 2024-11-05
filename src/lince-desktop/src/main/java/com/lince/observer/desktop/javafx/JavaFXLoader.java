@@ -1,9 +1,12 @@
 package com.lince.observer.desktop.javafx;
 
+import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.LinceApp;
 import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -11,14 +14,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
  * lince-scientific-base
- * 
+ *
  *
  * @author berto (alberto.soto@gmail.com)in 23/02/2017.
  * Description:
@@ -134,9 +136,18 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
     }
 
 
-    public static void exit() {
-        System.exit(0);
-    }
+    public static void exit(LinceApp mainLinceApp) {
+        try {
+            // Perform cleanup operations
+            mainLinceApp.getDataHubService().clearData();
 
+            // Exit the application
+            Platform.exit();
+            System.exit(0);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(JavaFXLoader.class).error("Error during application exit", e);
+            JavaFXLogHelper.showMessage(Alert.AlertType.ERROR, "Exit Error", "An error occurred while trying to exit the application.");
+        }
+    }
 
 }

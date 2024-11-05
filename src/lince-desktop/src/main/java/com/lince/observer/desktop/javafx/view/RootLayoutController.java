@@ -335,7 +335,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExit() {
-        JavaFXLoader.exit();
+        JavaFXLoader.exit(getMainLinceApp());
     }
 
 
@@ -662,25 +662,19 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             closeConfirmation.setHeaderText(i18n("exit"));
             closeConfirmation.initModality(Modality.APPLICATION_MODAL);
             closeConfirmation.initOwner(primaryStage);
-            // normally, you would just use the default alert positioning,
-            // but for this simple sample the main stage is small,
-            // so explicitly position the alert so that the main window can still be seen.
+
             closeConfirmation.setX(primaryStage.getX() + (primaryStage.getWidth() / 2 - 150));
             closeConfirmation.setY(primaryStage.getY() + (primaryStage.getHeight() / 2 - 100));
-            Optional<ButtonType> closeResponse = closeConfirmation.showAndWait();
-            if (!ButtonType.OK.equals(closeResponse.get())) {
-                //stop();
-                closeResponse.notify();
-                event.consume();
-            } else {
-                handleSaveAs();
-                //stop();
-                closeResponse.notify();
-                event.consume();
-            }
-        } catch (Exception e) {
-            log.info("onClose Exception");
-        }
 
+            closeConfirmation.showAndWait().ifPresent(buttonType -> {
+                if (buttonType == ButtonType.OK) {
+                    handleSaveAs();
+                }
+                JavaFXLoader.exit(getMainLinceApp());
+            });
+        } catch (Exception e) {
+            log.error("Error during close operation", e);
+            JavaFXLoader.exit(getMainLinceApp()); // Ensure application shuts down even if there's an error
+        }
     };
 }
