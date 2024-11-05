@@ -56,6 +56,37 @@
         <file path="./branding/icon-256.png" />
       </iconImageFiles>
     </launcher>
+    <launcher name="${compiler:sys.shortName}-macIntel" id="336" useCustomMacosExecutableName="true" customMacosExecutableName="${compiler:sys.fullName}">
+      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory=".${launcher:sys.launcherDirectory}" singleInstance="true">
+        <versionInfo include="true" fileDescription="${compiler:sys.version}" legalCopyright="Soto-Fernández, A., Camerino, O., Iglesias, X. et al. LINCE PLUS software for systematic observational studies in sports and health. Behav Res 54, 1263–1271 (2022). https://doi.org/10.3758/s13428-021-01642-1" internalName="${compiler:sys.fullName}" />
+      </executable>
+      <java mainClass="org.springframework.boot.loader.JarLauncher" vmParameters="-verbose -Djavafx.platform=mac &quot;-Dappdir={installer:sys:installationDir}&quot; --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-modules=ALL-MODULE-PATH --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web --add-exports=javafx.graphics/com.sun.glass.ui.mac=ALL-UNNAMED">
+        <classPath>
+          <archive location="lince-desktop.jar" />
+        </classPath>
+      </java>
+      <vmOptionsFile mode="content" overwriteMode="1">
+        <content>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens=java.base/java.io=ALL-UNNAMED
+--add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+--add-opens=javafx.base/com.sun.javafx.collections=javafx.web
+--add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED
+--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
+--add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED
+--add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED
+--add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED
+--add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
+--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+--add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+--add-modules=ALL-MODULE-PATH
+--add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
+--add-exports=javafx.graphics/com.sun.glass.ui.mac=ALL-UNNAMED</content>
+      </vmOptionsFile>
+      <iconImageFiles>
+        <file path="./branding/icon-256.png" />
+      </iconImageFiles>
+    </launcher>
   </launchers>
   <installerGui>
     <applications>
@@ -557,6 +588,9 @@ return console.askYesNo(message, true);
   </installerGui>
   <mediaSets>
     <windows name="Windows" id="60" architecture="64">
+      <excludedLaunchers>
+        <launcher id="336" />
+      </excludedLaunchers>
       <exclude>
         <entry location="lince-os-launcher.sh" />
       </exclude>
@@ -567,21 +601,27 @@ return console.askYesNo(message, true);
       </jreBundle>
     </windows>
     <macosFolder name="mac-arm" id="268" architecture="aarch64">
+      <excludedLaunchers>
+        <launcher id="336" />
+      </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
         <entry location="lince-os-launcher" />
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
     </macosFolder>
-    <macosArchive name="mac-x86" id="271" launcherId="59">
+    <macosFolder name="mac-x86" id="317">
+      <excludedLaunchers>
+        <launcher id="59" />
+      </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" overrideJdkRelease="true" includedJre="macos-amd64-17.0.4" />
-    </macosArchive>
+      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" overrideJdkRelease="true" />
+    </macosFolder>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="271" />
+    <mediaSet refId="317" />
   </buildIds>
   <buildOptions verbose="true" />
 </install4j>

@@ -50,8 +50,10 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <jdk.version>17.0.9</jdk.version>
-        <java.javafx.version>17.0.12</java.javafx.version>
+        <!--        <jdk.version>17.0.9</jdk.version> deprecated -->
+        <!--        https://github.com/openjdk/jfx/blob/jfx23/doc-files/release-notes-20.md-->
+        <!--        For compatibility with mac os catalina : version 16-->
+        <javafx.version>16</javafx.version>
         <install4j.version>10.0.6</install4j.version>
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
@@ -325,44 +327,44 @@
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
                 <type>pom</type>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.openjfx/javafx -->
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-controls</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-fxml</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-base</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-graphics</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-web</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-swing</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-media</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
 
         </dependencies>

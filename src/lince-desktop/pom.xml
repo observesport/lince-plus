@@ -14,8 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.lince.observer.desktop.LinceAppFx</start-class>
-        <javafx.version>17.0.1</javafx.version>
-        <javafx.modulepath>${project.build.directory}/javafx-modules</javafx.modulepath>
+<!--        <javafx.modulepath>${project.build.directory}/javafx-modules</javafx.modulepath>-->
     </properties>
     <dependencies>
         <dependency>
