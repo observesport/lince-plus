@@ -617,7 +617,7 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" overrideJdkRelease="true" />
+      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
     </macosFolder>
   </mediaSets>
   <buildIds buildAll="false">
