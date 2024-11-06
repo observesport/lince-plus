@@ -346,7 +346,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
 
     private String i18n(String key, String... args) {
-        return getMainLinceApp().getMessage(key, args);
+        return getMainLinceApp().getMessage(key, (Object[]) args);
     }
 
     /**
