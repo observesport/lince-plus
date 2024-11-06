@@ -31,21 +31,21 @@ import java.util.List;
  * Created by Alberto Soto Fernandez in 10/08/2017.
  * Description:
  * <p>
- * http://docs.renjin.org/en/latest/library/execution-context.html
+`` * {@link <a href="http://docs.renjin.org/en/latest/library/execution-context.html">Renjin Execution Context</a>}
  * <p>
  * Include packages:
- * http://docs.renjin.org/en/latest/library/using-packages.html
- * http://packages.renjin.org/packages
+ * {@link <a href="http://docs.renjin.org/en/latest/library/using-packages.html">...</a> Using Packages}
+ * {@link <a href="http://packages.renjin.org/packages">...</a> Renjin Packages}
  * <p>
  * <p>
  * JSON PACKAGE TO INCLUDE:
  * =======================
- * https://cran.r-project.org/web/packages/jsonlite/vignettes/json-apis.html
- * http://packages.renjin.org/package/org.renjin.cran/jsonlite
- * https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf
+ * {@link <a href="https://cran.r-project.org/web/packages/jsonlite/vignettes/json-apis.html">JSON APIs</a> }
+ * {@link <a href="http://packages.renjin.org/package/org.renjin.cran/jsonlite">jsonlite Package</a> }
+ * {@link <a href="https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf">jsonlite PDF</a> }
  * <p>
  * Encryption
- * https://www.guardsquare.com/en/proguard
+ * {@link <a href="https://www.guardsquare.com/en/proguard">ProGuard</a> }
  */
 @Service
 public class RenjinService {

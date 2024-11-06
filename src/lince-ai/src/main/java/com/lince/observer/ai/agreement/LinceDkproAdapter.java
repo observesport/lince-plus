@@ -38,7 +38,7 @@ public class LinceDkproAdapter {
 
 
     public LinceDkproAdapter(List<LinceRegisterWrapper> registers, List<Criteria> criterias) {
-        this(registers, criterias, null);
+        this(registers, criterias, (UUID[]) null);
     }
 
     public LinceDkproAdapter(List<LinceRegisterWrapper> registers, List<Criteria> criterias, UUID... selectedRegisters) {

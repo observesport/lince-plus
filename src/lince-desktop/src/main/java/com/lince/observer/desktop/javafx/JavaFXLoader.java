@@ -1,9 +1,13 @@
 package com.lince.observer.desktop.javafx;
 
+import com.lince.observer.data.util.UTF8Control;
+import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.LinceApp;
 import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -11,14 +15,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
  * lince-scientific-base
- * 
+ *
  *
  * @author berto (alberto.soto@gmail.com)in 23/02/2017.
  * Description:
@@ -58,7 +61,7 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
             loader.setLocation(this.mainLinceApp.getClass().getResource(location));
             this.pane = loader.load();
         } catch (Exception e) {
-            log.error(this.getClass().getEnclosingMethod().toString(), e);
+            log.error("Error in JavaFXLoader constructor", e);
         }
     }
 
@@ -68,18 +71,28 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
      */
     public Locale getLocale() {
         if (this.locale == null) {
-//            this.locale = new Locale(System.getProperty("user.language"), System.getProperty("user.country"));
-            this.locale = new Locale(System.getProperty("user.language"));
+            try {
+                String language = System.getProperty("user.language");
+                String country = System.getProperty("user.country");
+                if (language != null && country != null) {
+                    this.locale = new Locale(language, country);
+                } else {
+                    this.locale = Locale.getDefault();
+                }
+            } catch (Exception e) {
+                log.warn("Error getting system locale, falling back to default", e);
+                this.locale = Locale.getDefault();
+            }
         }
         return this.locale;
-//        return Locale.getDefault();
     }
+
     public ResourceBundle getLocalizedResourceBundle(){
         try {
             Locale locale = getLocale();
-            return ResourceBundle.getBundle("messages", locale);
+            return ResourceBundle.getBundle("messages", locale, new UTF8Control());
         }catch (Exception e){
-            return ResourceBundle.getBundle("messages", Locale.ENGLISH);
+            return ResourceBundle.getBundle("messages", Locale.ENGLISH, new UTF8Control());
         }
     }
     /**
@@ -134,9 +147,18 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
     }
 
 
-    public static void exit() {
-        System.exit(0);
-    }
+    public static void exit(LinceApp mainLinceApp) {
+        try {
+            // Perform cleanup operations
+            mainLinceApp.getDataHubService().clearData();
 
+            // Exit the application
+            Platform.exit();
+            System.exit(0);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(JavaFXLoader.class).error("Error during application exit", e);
+            JavaFXLogHelper.showMessage(Alert.AlertType.ERROR, "Exit Error", "An error occurred while trying to exit the application.");
+        }
+    }
 
 }

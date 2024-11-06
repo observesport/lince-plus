@@ -3,6 +3,7 @@ package com.lince.observer.desktop.spring.controller.rest;
 import com.lince.observer.data.bean.agreement.AgreementResult;
 import com.lince.observer.data.bean.KeyValue;
 import com.lince.observer.data.bean.RegisterItem;
+import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.wrapper.SceneWrapper;
 import com.lince.observer.data.bean.highcharts.HighChartsSerie;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
@@ -98,7 +99,7 @@ public class AnalysisControllerImpl implements AnalysisController {
     public ResponseEntity<List<RegisterItem>> pushScene(HttpServletRequest request, @RequestBody SceneWrapper items, Principal principal) {
         try {
             Double sceneMoment = items.getMoment();
-            analysisService.saveObservation(sceneMoment, null);
+            analysisService.saveObservation(sceneMoment, (Category []) null);
             return getOrderedRegister(principal);
         } catch (Exception e) {
             log.error("register:push", e);

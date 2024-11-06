@@ -1,0 +1,143 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches:
+      - '**'  # This will match any branch
+  pull_request:
+    branches:
+      - '**'  # This will match any branch
+#  push:
+#    branches: [ main ]
+#  pull_request:
+#    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+
+      - name: Get version
+        id: get_version
+        run: |
+          FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f src/pom.xml)
+          CLEAN_VERSION=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
+          FILE_VERSION=$(echo $FULL_VERSION | sed 's/\./_/')
+          echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+          echo "FILE_VERSION=$FILE_VERSION" >> $GITHUB_ENV
+          echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_OUTPUT
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+          echo "FILE_VERSION=$FILE_VERSION" >> $GITHUB_OUTPUT
+          echo "Full project version: $FULL_VERSION"
+          echo "Clean project version: $CLEAN_VERSION"
+          echo "File version: $FILE_VERSION"
+
+      - name: Download and setup Install4j
+        run: | 
+          wget https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_9.deb
+          sudo dpkg -i install4j_linux-x64_10_0_9.deb
+          echo "INSTALL4J_HOME=/opt/install4j10" >> $GITHUB_ENV
+
+      - name: Build with Maven
+        run: |
+          cd src
+          mvn -B package install -DskipTests -DinstallDir="${INSTALL4J_HOME}" -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}"
+        env:
+          INSTALL4J_HOME: "/opt/install4j10"
+          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+
+      - name: Display output.txt
+        run: |
+          if [ -f src/installer/output.txt ]; then
+            echo "Contents of output.txt:"
+            cat src/installer/output.txt
+          else
+            echo "output.txt file not found in src/installer/"
+          fi
+
+      - name: Create Release Draft
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { data: release } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${process.env.FULL_VERSION}`,
+              name: `Release ${process.env.FULL_VERSION}`,
+              draft: true,
+              prerelease: false
+            });
+            console.log(`Created release: ${release.html_url}`);
+
+      - name: Configure Maven settings
+        uses: s4u/maven-settings-action@v2.8.0
+        with:
+          servers: '[{"id": "github", "username": "${GITHUB_ACTOR}", "password": "${GITHUB_TOKEN}"}]'
+
+      - name: Deploy to GitHub Packages
+        run: cd src && mvn deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for Installer Files
+        run: |
+          EXE_PATH="./src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe"
+          DMG_ARM_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg"
+          DMG_X86_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-x86.dmg"
+          
+          MISSING_FILES=0
+          
+          if [ -f "$EXE_PATH" ]; then
+            echo "Windows EXE file found: $EXE_PATH"
+          else
+            echo "Error: Windows EXE file not found: $EXE_PATH"
+            MISSING_FILES=$((MISSING_FILES+1))
+          fi
+          
+          if [ -f "$DMG_ARM_PATH" ]; then
+            echo "macOS ARM DMG file found: $DMG_ARM_PATH"
+          else
+            echo "Error: macOS ARM DMG file not found: $DMG_ARM_PATH"
+            MISSING_FILES=$((MISSING_FILES+1))
+          fi
+          
+          if [ -f "$DMG_X86_PATH" ]; then
+            echo "macOS x86 DMG file found: $DMG_X86_PATH"
+          else
+            echo "Error: macOS x86 DMG file not found: $DMG_X86_PATH"
+            MISSING_FILES=$((MISSING_FILES+1))
+          fi
+          
+          if [ $MISSING_FILES -gt 0 ]; then
+            echo "Error: $MISSING_FILES installer file(s) are missing."
+            ls -R ./src/installer/
+            exit 1
+          fi
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.FULL_VERSION }}
+          name: Release ${{ env.FULL_VERSION }}
+          draft: true
+          prerelease: false
+          files: |
+            ./src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg      

@@ -150,7 +150,7 @@
 <!-- END CONTAINER -->
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
-    <div class="page-footer-inner"> 2022 &copy; Lince PLUS observation tool by Alberto Soto Fernández.
+    <div class="page-footer-inner"> <span id="currentYear"></span> &copy; LINCE PLUS observation tool by Alberto Soto Fernández.
     </div>
     <div class="scroll-to-top">
         <i class="icon-arrow-up"></i>
@@ -243,6 +243,14 @@
 
     gtag('js', new Date());
     gtag('config', 'G-PGTBMEJ65G');
+    // Custom event for Lince-desktop startup
+    gtag('event', 'lince_desktop_startup', {
+        'event_category': 'Application',
+        'event_label': 'Lince Desktop Started'
+    });
+</script>
+<script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
 </script>
 </body>
 </html>

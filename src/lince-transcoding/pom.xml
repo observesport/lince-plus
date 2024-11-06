@@ -6,6 +6,7 @@
         <artifactId>lince-plus-root</artifactId>
         <groupId>com.lince.observer</groupId>
         <version>3.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>lince-transcoding</artifactId>

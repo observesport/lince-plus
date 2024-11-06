@@ -9,3 +9,4 @@ target
 *.jar
 
 /out/
+/src/installer/install4j/deprecated/
