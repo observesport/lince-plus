@@ -21,7 +21,7 @@ public class I18nMessageProvider {
     }
 
     public String getMessage(String label) {
-        return getMessage(label, null);
+        return getMessage(label, (Object[]) null);
     }
 
     public String getMessage(String label, Object... msgParameters) {

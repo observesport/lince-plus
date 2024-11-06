@@ -1,8 +1,12 @@
 package com.lince.observer.data.legacy.utiles;
 
+import com.lince.observer.data.util.UTF8Control;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Created by deicos on 08/06/2015.
@@ -26,10 +30,11 @@ public class ResourceBundleHelper {
     public static String getI18NLabel(String bundle, String key) {
         try {
             if (StringUtils.isNotEmpty(bundle) && StringUtils.isNotEmpty(key)) {
-                return java.util.ResourceBundle.getBundle(bundle).getString(key);
+                ResourceBundle resourceBundle = ResourceBundle.getBundle(bundle, Locale.getDefault(), new UTF8Control());
+                return new String(resourceBundle.getString(key).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             }
         } catch (Exception e) {
-            log.error("I18n Message",e);
+            log.error("I18n Message", e);
         }
         return key;
     }

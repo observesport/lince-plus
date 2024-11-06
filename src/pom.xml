@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.lince.observer</groupId>
     <artifactId>lince-plus-root</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>lince plus</name>
     <description>Lince-Observer project for Spring Boot</description>
@@ -32,6 +32,12 @@
             <url>https://nexus.bedatadriven.com/content/groups/public/</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>ej-technologies</id>
+            <url>https://maven.ej-technologies.com/repository</url>
+        </pluginRepository>
+    </pluginRepositories>
     <distributionManagement>
         <repository>
             <id>github</id>
@@ -40,10 +46,17 @@
         </repository>
     </distributionManagement>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <keycloak.version>22.0.1</keycloak.version>
+        <!--        <jdk.version>17.0.9</jdk.version> deprecated -->
+        <!--        https://github.com/openjdk/jfx/blob/jfx23/doc-files/release-notes-20.md-->
+        <!--        For compatibility with mac os catalina : version 16-->
+        <javafx.version>16</javafx.version>
+        <install4j.version>10.0.6</install4j.version>
+        <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
+        <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
         <jakartaInject.version>2.0.0</jakartaInject.version>
         <junit5.version>5.9.2</junit5.version>
         <jackson.version>2.16.1</jackson.version>
@@ -51,7 +64,6 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <springdoc-openapi.version>2.1.0</springdoc-openapi.version>
         <testcontainers.version>1.19.6</testcontainers.version>
-        <java.javafx.version>18</java.javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <dkpro.version>2.2.1</dkpro.version>
         <snakeYaml.version>2.2</snakeYaml.version>
@@ -127,18 +139,6 @@
                 <groupId>jakarta.inject</groupId>
                 <artifactId>jakarta.inject-api</artifactId>
                 <version>${jakartaInject.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.keycloak.bom</groupId>
-                <artifactId>keycloak-adapter-bom</artifactId>
-                <version>${keycloak.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.keycloak</groupId>
-                <artifactId>keycloak-admin-client</artifactId>
-                <version>${keycloak.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mapstruct</groupId>
@@ -327,44 +327,44 @@
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
                 <type>pom</type>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.openjfx/javafx -->
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-controls</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-fxml</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-base</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-graphics</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-web</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-swing</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-media</artifactId>
-                <version>${java.javafx.version}</version>
+                <version>${javafx.version}</version>
             </dependency>
 
         </dependencies>

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * .math.service
+ * com.lince.observer.math.service
  * Class StatsService
  * 14/03/2019
  *

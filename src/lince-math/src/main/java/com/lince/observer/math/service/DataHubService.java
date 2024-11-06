@@ -8,7 +8,7 @@ import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.common.SessionDataAttributes;
 import com.lince.observer.data.service.SessionService;
 import com.lince.observer.math.AppParams;
-import com.lince.observer.math.LinceWebContextHolder;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +35,12 @@ public class DataHubService extends DataHubServiceBase {
 
     private final SessionService sessionService;
 
+    private final HttpServletRequest httpServletRequest;
+
     @Autowired
-    public DataHubService(SessionService sessionService) {
+    public DataHubService(SessionService sessionService, HttpServletRequest httpServletRequest) {
         this.sessionService = sessionService;
+        this.httpServletRequest = httpServletRequest;
     }
 
 
@@ -83,7 +86,8 @@ public class DataHubService extends DataHubServiceBase {
     protected LinceRegisterWrapper getSessionRegister() {
         try {
             //Too messy passsing httpSession object everywhere. Let's get it in another way
-            HttpSession httpSession = LinceWebContextHolder.get().getSession();
+            //HttpSession httpSession = LinceWebContextHolder.get().getSession();
+            HttpSession httpSession = httpServletRequest.getSession();
             List<LinceRegisterWrapper> dataRegister = getDataRegister();
             UUID defaultKeyRegister = dataRegister.get(0).getId();
             // Let's get or set a default context register

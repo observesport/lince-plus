@@ -23,13 +23,13 @@ import java.util.Locale;
  *
  * @author berto (alberto.soto@gmail.com). 09/03/2019
  * @author 应卓(yingzhor @ gmail.com)
- * https://stackoverflow.com/questions/1629211/how-do-i-get-the-session-object-in-spring
+ * @see <a href="https://stackoverflow.com/questions/1629211/how-do-i-get-the-session-object-in-spring">How do I get the session object in Spring?</a>
  */
 public class LinceWebContextHolder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LinceWebContextHolder.class);
 
-    private static LinceWebContextHolder INSTANCE = new LinceWebContextHolder();
+    private static final LinceWebContextHolder INSTANCE = new LinceWebContextHolder();
 
     public static LinceWebContextHolder get() {
         return INSTANCE;

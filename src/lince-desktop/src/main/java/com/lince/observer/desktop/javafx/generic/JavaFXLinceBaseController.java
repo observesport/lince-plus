@@ -1,8 +1,5 @@
 package com.lince.observer.desktop.javafx.generic;
 
-//import com.lince.observer.lince.app.LinceApp;
-//import com.lince.observer.lince.app.javafx.JavaFXLoader;
-//import com.lince.observer.lince.data.util.JavaFXLogHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.LinceApp;
 import com.lince.observer.desktop.javafx.JavaFXLoader;
@@ -51,7 +48,7 @@ public abstract class JavaFXLinceBaseController {
      */
     @FXML
     private void handleExit() {
-        JavaFXLoader.exit();
+        JavaFXLoader.exit(getMainLinceApp());
     }
 
 

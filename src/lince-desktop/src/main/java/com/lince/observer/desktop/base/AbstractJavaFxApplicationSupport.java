@@ -149,9 +149,8 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
         };
     }
 
-
     public String getMessage(String label) {
-        return i18nMessageProvider.getMessage(label, null);
+        return i18nMessageProvider.getMessage(label, (Object[]) null);
     }
 
     public String getMessage(String label, Object... msgParameters) {
