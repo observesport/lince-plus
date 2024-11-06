@@ -1,5 +1,6 @@
 package com.lince.observer.desktop.javafx;
 
+import com.lince.observer.data.util.UTF8Control;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.LinceApp;
 import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
@@ -60,7 +61,7 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
             loader.setLocation(this.mainLinceApp.getClass().getResource(location));
             this.pane = loader.load();
         } catch (Exception e) {
-            log.error(this.getClass().getEnclosingMethod().toString(), e);
+            log.error("Error in JavaFXLoader constructor", e);
         }
     }
 
@@ -70,18 +71,28 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
      */
     public Locale getLocale() {
         if (this.locale == null) {
-//            this.locale = new Locale(System.getProperty("user.language"), System.getProperty("user.country"));
-            this.locale = new Locale(System.getProperty("user.language"));
+            try {
+                String language = System.getProperty("user.language");
+                String country = System.getProperty("user.country");
+                if (language != null && country != null) {
+                    this.locale = new Locale(language, country);
+                } else {
+                    this.locale = Locale.getDefault();
+                }
+            } catch (Exception e) {
+                log.warn("Error getting system locale, falling back to default", e);
+                this.locale = Locale.getDefault();
+            }
         }
         return this.locale;
-//        return Locale.getDefault();
     }
+
     public ResourceBundle getLocalizedResourceBundle(){
         try {
             Locale locale = getLocale();
-            return ResourceBundle.getBundle("messages", locale);
+            return ResourceBundle.getBundle("messages", locale, new UTF8Control());
         }catch (Exception e){
-            return ResourceBundle.getBundle("messages", Locale.ENGLISH);
+            return ResourceBundle.getBundle("messages", Locale.ENGLISH, new UTF8Control());
         }
     }
     /**

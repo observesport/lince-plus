@@ -74,10 +74,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     @FXML
     private void initialize() {
-        // Initialize the person table with the two columns.
         log.info("--            Init RootLayoutController               --");
         logArea.setItems(JavaFXLogHelper.getFxLog());
-        //htmlContext.setPromptText("PUM");
     }
 
     public void lazyInit() {

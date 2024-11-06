@@ -1,14 +1,12 @@
 package com.lince.observer.data.legacy.utiles;
 
+import com.lince.observer.data.util.UTF8Control;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.PropertyResourceBundle;
-import java.io.InputStreamReader;
-import java.io.IOException;
 
 /**
  * Created by deicos on 08/06/2015.
@@ -39,17 +37,5 @@ public class ResourceBundleHelper {
             log.error("I18n Message", e);
         }
         return key;
-    }
-
-    private static class UTF8Control extends ResourceBundle.Control {
-        @Override
-        public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-                throws IllegalAccessException, InstantiationException, IOException {
-            String bundleName = toBundleName(baseName, locale);
-            String resourceName = toResourceName(bundleName, "properties");
-            try (InputStreamReader reader = new InputStreamReader(loader.getResourceAsStream(resourceName), StandardCharsets.UTF_8)) {
-                return new PropertyResourceBundle(reader);
-            }
-        }
     }
 }
