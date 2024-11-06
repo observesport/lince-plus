@@ -66,15 +66,19 @@ jobs:
           fi
 
       - name: Create Release Draft
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/github-script@v6
         with:
-          tag_name: v${{ steps.get_version.outputs.FULL_VERSION }}
-          release_name: Release ${{ steps.get_version.outputs.FULL_VERSION }}
-          draft: true
-          prerelease: false
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { data: release } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${process.env.FULL_VERSION}`,
+              name: `Release ${process.env.FULL_VERSION}`,
+              draft: true,
+              prerelease: false
+            });
+            console.log(`Created release: ${release.html_url}`);
 
       - name: Configure Maven settings
         uses: s4u/maven-settings-action@v2.8.0
