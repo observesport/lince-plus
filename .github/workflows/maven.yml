@@ -121,74 +121,16 @@ jobs:
             exit 1
           fi
 
-      - name: Upload Windows EXE Asset
-        uses: actions/upload-release-asset@v1
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
-          asset_name: lince-plus_windows-x64_${{ env.CLEAN_VERSION }}_Windows.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
-
-      - name: Upload macOS ARM DMG Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
-          asset_name: lince-plus_macos_${{ env.CLEAN_VERSION }}_mac-arm.dmg
-          asset_content_type: application/x-apple-diskimage
-
-      - name: Upload macOS x86 DMG Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
-          asset_name: lince-plus_macos_${{ env.CLEAN_VERSION }}_mac-x86.dmg
-          asset_content_type: application/x-apple-diskimage
-
-#      - name: Create Source Archives
-#        run: |
-#          mkdir -p temp_src
-#          cp -r src/*/src temp_src/
-#          cp src/pom.xml temp_src/
-#          find src -name "pom.xml" -maxdepth 2 -exec cp --parents {} temp_src/ \;
-#          cd temp_src
-#          zip -r ../lince-plus_${{ env.CLEAN_VERSION }}_source.zip . -x '*.git*'
-#          tar --exclude='./.git' -czf ../lince-plus_${{ env.CLEAN_VERSION }}_source.tar.gz .
-#          cd ..
-#          rm -rf temp_src
-#
-#      - name: Upload Source ZIP Asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./lince-plus_${{ env.CLEAN_VERSION }}_source.zip
-#          asset_name: lince-plus_${{ env.CLEAN_VERSION }}_source.zip
-#          asset_content_type: application/zip
-#
-#      - name: Upload Source TAR.GZ Asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./lince-plus_${{ env.CLEAN_VERSION }}_source.tar.gz
-#          asset_name: lince-plus_${{ env.CLEAN_VERSION }}_source.tar.gz
-#          asset_content_type: application/gzip
-
-#      - name: Upload Release Asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./target/*.jar
-#          asset_name: lince-${{ steps.get_version.outputs.VERSION }}.jar
-#          asset_content_type: application/java-archive
+          tag_name: v${{ env.FULL_VERSION }}
+          name: Release ${{ env.FULL_VERSION }}
+          draft: true
+          prerelease: false
+          files: |
+            ./src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg      
