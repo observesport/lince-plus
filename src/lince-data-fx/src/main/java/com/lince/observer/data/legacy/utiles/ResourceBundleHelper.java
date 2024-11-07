@@ -28,14 +28,19 @@ public class ResourceBundleHelper {
      * @return
      */
     public static String getI18NLabel(String bundle, String key) {
+        if (StringUtils.isEmpty(bundle) || StringUtils.isEmpty(key)) {
+            return key;
+        }
+
         try {
-            if (StringUtils.isNotEmpty(bundle) && StringUtils.isNotEmpty(key)) {
-                ResourceBundle resourceBundle = ResourceBundle.getBundle(bundle, Locale.getDefault(), new UTF8Control());
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(bundle, Locale.getDefault(), new UTF8Control());
+            if (resourceBundle.containsKey(key)) {
                 return new String(resourceBundle.getString(key).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             }
         } catch (Exception e) {
-            log.error("I18n Message", e);
+            log.error("Error retrieving I18n message for key: {}", key, e);
         }
+
         return key;
     }
 }

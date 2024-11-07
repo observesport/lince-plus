@@ -1,0 +1,121 @@
+Yes, you can modify your GitHub Actions workflow to prompt for a version input and then perform a Maven release based on that input. Here's how you can modify your workflow to achieve this:
+
+1. First, we'll use GitHub Actions' `workflow_dispatch` event to manually trigger the workflow and provide the version input.
+
+2. Then, we'll use this input to set the version with Maven and create a release.
+
+Here's a modified version of your workflow that implements this:
+
+**File: /Users/berto/src/lince/lince-plus-public/.github/workflows/maven.yml**
+```yaml
+name: Java CI with Maven
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version (e.g., 1.2.3)'
+        required: true
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Set Release Version
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          cd src
+          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:commit
+
+      - name: Get version
+        id: get_version
+        run: |
+          FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f src/pom.xml)
+          CLEAN_VERSION=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
+          FILE_VERSION=$(echo $FULL_VERSION | sed 's/\./_/')
+          echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+          echo "FILE_VERSION=$FILE_VERSION" >> $GITHUB_ENV
+          echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_OUTPUT
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+          echo "FILE_VERSION=$FILE_VERSION" >> $GITHUB_OUTPUT
+          echo "Full project version: $FULL_VERSION"
+          echo "Clean project version: $CLEAN_VERSION"
+          echo "File version: $FILE_VERSION"
+
+      # ... Rest of your existing workflow ...
+
+      - name: Commit and Push Changes
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git add .
+          git commit -m "Release version ${{ github.event.inputs.release_version }}"
+          git push
+
+      - name: Create Release Draft
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { data: release } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${process.env.FULL_VERSION}`,
+              name: `Release ${process.env.FULL_VERSION}`,
+              draft: true,
+              prerelease: false
+            });
+            console.log(`Created release: ${release.html_url}`);
+
+      # ... Rest of your existing workflow ...
+```
+
+This modified workflow does the following:
+
+1. It adds a `workflow_dispatch` event, which allows you to manually trigger the workflow from the GitHub Actions UI.
+
+2. It includes an input parameter `release_version` that you can specify when manually triggering the workflow.
+
+3. It adds a new step "Set Release Version" that uses the `mvn versions:set` command to update the project version based on the input.
+
+4. It adds a step to commit and push the version change.
+
+5. The release creation step is now conditional, only running when the workflow is manually triggered.
+
+To use this:
+
+1. Go to the "Actions" tab in your GitHub repository.
+2. Select this workflow.
+3. Click "Run workflow".
+4. Enter the desired release version when prompted.
+5. Run the workflow.
+
+This will set the new version, create the release assets, and create a draft release with those assets. You can then review and publish the release manually from the GitHub releases page.
+
+Remember to adjust the versioning in your `pom.xml` files after the release if needed (e.g., setting the next development version).

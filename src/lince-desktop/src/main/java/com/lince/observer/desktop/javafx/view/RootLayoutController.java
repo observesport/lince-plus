@@ -4,6 +4,7 @@ import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.bean.user.UserProfile;
 import com.lince.observer.data.export.Lince2ThemeExport;
+import com.lince.observer.data.javafx.CsvExportComponent;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.commands.importar.AbrirImportarHoisan;
 import com.lince.observer.data.legacy.commands.instrumento.LoadInstrumentoObservacional;
@@ -26,6 +27,7 @@ import com.lince.observer.transcoding.TranscodingProvider;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
@@ -432,6 +434,34 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void doExport(Command cmd, JPanel panel, String key, String label) {
         doDataIntegration(cmd, panel, key, label, true);
     }
+    /**
+     * Handles the export process for JavaFX components
+     *
+     * @param component JavaFX component to display
+     * @param key i18n key
+     * @param label i18n addon
+     */
+    private void doExportFX(javafx.scene.Node component, String key, String label) {
+        String i18n = getMainLinceApp().getMessage(key, label);
+        try {
+            Registro.loadNewInstance();
+            ensureCompatibility(true, true); // pasamos registro seleccionado
+
+            Stage stage = new Stage();
+            stage.setTitle(i18n);
+            Pane root = new Pane();
+            root.getChildren().add(component);
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(mainLinceApp.getPrimaryStage());
+            stage.showAndWait();
+
+            JavaFXLogHelper.addLogInfo(i18n);
+        } catch (Exception e) {
+            JavaFXLogHelper.addLogError(i18n, e);
+        }
+    }
 
     /**
      * data Integration to Import issues
@@ -588,8 +618,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportExcel() {
-        ensureCompatibility(true);//pasamos instrumento
-        doExport(null, new ExportarCsvPanel(), "panel_export_custom", "Excel");
+        ensureCompatibility(true);
+        doExportFX(new CsvExportComponent(), "panel_export_custom", "Excel");
     }
 
     /***
