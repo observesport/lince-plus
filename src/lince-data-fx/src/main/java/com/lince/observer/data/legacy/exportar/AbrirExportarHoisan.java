@@ -49,12 +49,19 @@ public class AbrirExportarHoisan extends Command {
     @Override
     public void execute() {
         File file = LinceDesktopFileHelper.openSaveFileDialog("*.mdb");
+        if (file == null) {
+            log.warn("No file selected for Hoisan export.");
+            JavaFXLogHelper.showMessage(Alert.AlertType.WARNING,
+                    "Hoisan Export",
+                    "No file was selected. Export cancelled.");
+            return;
+        }
+
         log.warn("Init export to Hoisan file: " + file.getName() + ".");
         HoisanTool hoisan = new HoisanTool();
         hoisan.exportFile(file);
-        JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION
-                , "Hoisan"
-                , "File saved ");
-
+        JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
+                "Hoisan",
+                "File saved successfully.");
     }
 }

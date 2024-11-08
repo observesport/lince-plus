@@ -4,7 +4,7 @@ import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.bean.user.UserProfile;
 import com.lince.observer.data.export.Lince2ThemeExport;
-import com.lince.observer.data.javafx.CsvExportComponent;
+import com.lince.observer.data.javafx.*;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.commands.importar.AbrirImportarHoisan;
 import com.lince.observer.data.legacy.commands.instrumento.LoadInstrumentoObservacional;
@@ -609,7 +609,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportSAS() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarSasPanel(), "panel_export_custom", "SAS");
+        doExportFX(new SasExportComponent(), "panel_export_custom", "SAS");
     }
 
     /***
@@ -629,7 +629,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportSDISGSEQEstado() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarSdisGseqEstadoPanel(), "panel_export_custom", "SDIS Seq por estados");
+        doExportFX( new RegistroSdisGseqEstadoExport(), "panel_export_custom", "SDIS Seq por estados");
     }
 
     /***
@@ -639,7 +639,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportSDISGSEQEvent() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarSdisGseqEventoPanel(), "panel_export_custom", "SDIS Seq por eventos");
+        doExportFX( new RegistroSdisGseqEventExport(), "panel_export_custom", "SDIS Seq por eventos");
     }
 
     /***
@@ -649,7 +649,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportSDISGSEQTimeEvent() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarSdisGseqEventoConTiempoPanel(), "panel_export_custom", "SDIS Seq por eventos y tiempo");
+        doExportFX(new RegistroSdisGseqTimedEventExport(), "panel_export_custom", "SDIS Seq por eventos y tiempo");
     }
 
     /***
@@ -659,7 +659,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportSDISGSEQInterval() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarSdisGseqIntervaloPanel(), "panel_export_custom", "SDIS Seq por intérvalos");
+        doExportFX(new RegistroSdisGseqIntervalExport(), "panel_export_custom", "SDIS Seq por intérvalos");
     }
 
     /***
@@ -669,7 +669,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportSDISGSEQMultiEvent() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarSdisGseqMultieventoPanel(), "panel_export_custom", "SDIS Seq por eventos múltiples");
+        doExportFX(new RegistroSdisGseqMultieventExport(), "panel_export_custom", "SDIS Seq por eventos múltiples");
     }
 
     private EventHandler<WindowEvent> confirmCloseEventHandler = event -> {
