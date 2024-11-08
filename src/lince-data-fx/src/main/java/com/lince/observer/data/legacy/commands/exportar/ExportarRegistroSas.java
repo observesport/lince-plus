@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * @author Brais
  */
+@Deprecated
 public class ExportarRegistroSas extends Command {
 
     private SeleccionPanel seleccionPanel;

@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * @author Brais
  */
+@Deprecated
 public class ExportarRegistroSdisGseqEstado extends Command {
 
     private SeleccionPanel seleccionPanel;
