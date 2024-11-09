@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.lince.observer</groupId>
     <artifactId>lince-plus-root</artifactId>
-    <version>3.3-SNAPSHOT</version>
+    <version>3.2.1</version>
     <packaging>pom</packaging>
     <name>lince plus</name>
     <description>Lince-Observer project for Spring Boot</description>
