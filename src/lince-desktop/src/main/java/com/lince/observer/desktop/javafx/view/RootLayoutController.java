@@ -558,48 +558,23 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
     /***
-     * Valid export to theme 6.
-     * Opens a legacy dialog with all previous Lince behaviour
-     */
-    @FXML
-    private void handleExportTheme6() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarTheme6Panel(), "panel_export_custom", "Theme 6");
-    }
-
-    @FXML
-    private void handleExportTheme6Register() {
-        try {
-            LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
-            FileChooser fileChooser = fileHelper.getFileChooser();
-            // Set extension filter
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("VTT files (*.vtt)", "*.vtt");
-            fileChooser.getExtensionFilters().add(extFilter);
-            // Show save file dialog
-            File file = fileChooser.showSaveDialog(mainLinceApp.getPrimaryStage());
-            Lince2ThemeExport tsv = new Lince2ThemeExport(mainLinceApp.getDataHubService().getCurrentDataRegister());
-            if (file != null) {
-                // Make sure it has the correct extension
-                if (!file.getPath().endsWith(".vtt")) {
-                    file = new File(file.getPath() + ".vtt");
-                }
-                FileWriter fileWriter = new FileWriter(file);
-                tsv.createFile(fileWriter);
-            }
-            JavaFXLogHelper.addLogInfo("Exporting Theme file was ok");
-        } catch (Exception e) {
-            JavaFXLogHelper.addLogError("Exporting Theme file content", e);
-        }
-    }
-
-    /***
      * Valid export to theme 5.
      * Opens a legacy dialog with all previous Lince behaviour
      */
     @FXML
     private void handleExportTheme5() {
         ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(null, new ExportarTheme5Panel(), "panel_export_custom", "Theme 5");
+        doExportFX(new Theme5ExportComponent(), "panel_export_custom", "Theme 5");
+    }
+
+    /***
+     * Valid export to theme 6.
+     * Opens a legacy dialog with all previous Lince behaviour
+     */
+    @FXML
+    private void handleExportTheme6() {
+        ensureCompatibility(true);
+        doExportFX(new Theme6ExportComponent(), "panel_export_custom", "Theme 6");
     }
 
     /***
