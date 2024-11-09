@@ -34,7 +34,7 @@ jobs:
         run: |
           FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f src/pom.xml)
           CLEAN_VERSION=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
-          FILE_VERSION=$(echo $FULL_VERSION | sed 's/\./_/')
+          FILE_VERSION=$(echo $CLEAN_VERSION | sed 's/\./_/g')
           echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
           echo "FILE_VERSION=$FILE_VERSION" >> $GITHUB_ENV
@@ -95,9 +95,9 @@ jobs:
 
       - name: Check for Installer Files
         run: |
-          EXE_PATH="./src/installer/lince-plus_windows-x64_${CLEAN_VERSION}_Windows.exe"
-          DMG_ARM_PATH="./src/installer/lince-plus_macos_${CLEAN_VERSION}_mac-arm.dmg"
-          DMG_X86_PATH="./src/installer/lince-plus_macos_${CLEAN_VERSION}_mac-x86.dmg"
+          EXE_PATH="./src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe"
+          DMG_ARM_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg"
+          DMG_X86_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-x86.dmg"
           
           MISSING_FILES=0
           
@@ -138,6 +138,6 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            ./src/installer/lince-plus_windows-x64_${{ env.CLEAN_VERSION }}_Windows.exe
-            ./src/installer/lince-plus_macos_${{ env.CLEAN_VERSION }}_mac-arm.dmg
-            ./src/installer/lince-plus_macos_${{ env.CLEAN_VERSION }}_mac-x86.dmg  
+            ./src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
