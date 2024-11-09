@@ -34,6 +34,6 @@ public class RegistroSdisGseqEstadoExport extends GenericExportComponent {
     }
 
     private void executeSdisGseqEstadoExport(SelectionPanelComponent selectionPanelComponent) {
-        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqEstado);
+        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqEstado, getFileExtension());
     }
 }

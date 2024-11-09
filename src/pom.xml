@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.lince.observer</groupId>
     <artifactId>lince-plus-root</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>lince plus</name>
     <description>Lince-Observer project for Spring Boot</description>
@@ -253,6 +253,21 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit5.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- Mockito for mocking in tests -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>4.5.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Mockito extension for JUnit Jupiter -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>4.5.1</version>
                 <scope>test</scope>
             </dependency>
             <!--            MATH        -->

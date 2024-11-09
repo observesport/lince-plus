@@ -35,6 +35,6 @@ public class RegistroSdisGseqTimedEventExport extends GenericExportComponent {
         return "GSEQ";
     }
     private void executeSdisGseqEstadoExport(SelectionPanelComponent selectionPanelComponent) {
-        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqEventoConTiempo);
+        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqEventoConTiempo, getFileExtension());
     }
 }

@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * @author Brais
  */
+@Deprecated
 public class ExportarRegistroTheme5 extends Command {
 
     private SeleccionPanel seleccionPanel;

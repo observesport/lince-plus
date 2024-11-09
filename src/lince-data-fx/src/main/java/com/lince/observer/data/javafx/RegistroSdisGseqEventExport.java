@@ -25,6 +25,7 @@ public class RegistroSdisGseqEventExport extends GenericExportComponent {
     protected List<Object> getSelectionItems() {
         return Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
     }
+
     @Override
     String getFileExtension() {
         return "*.sds";
@@ -34,7 +35,8 @@ public class RegistroSdisGseqEventExport extends GenericExportComponent {
     String getExportTitle() {
         return "GSEQ";
     }
+
     private void executeSdisGseqEstadoExport(SelectionPanelComponent selectionPanelComponent) {
-        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqEvento);
+        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqEvento, getFileExtension());
     }
 }

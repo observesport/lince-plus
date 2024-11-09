@@ -29,6 +29,7 @@ public class RegistroSdisGseqIntervalExport extends GenericExportComponent {
     protected List<Object> getSelectionItems() {
         return Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
     }
+
     @Override
     String getFileExtension() {
         return "*.sds";
@@ -38,7 +39,8 @@ public class RegistroSdisGseqIntervalExport extends GenericExportComponent {
     String getExportTitle() {
         return "GSEQ";
     }
+
     private void executeSdisGseqEstadoExport(SelectionPanelComponent selectionPanelComponent) {
-        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqIntervalo);
+        executeExport(selectionPanelComponent, Registro.getInstance()::exportToSdisGseqIntervalo, getFileExtension());
     }
 }

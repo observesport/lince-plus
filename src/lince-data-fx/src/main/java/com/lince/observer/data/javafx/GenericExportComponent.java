@@ -53,7 +53,8 @@ public abstract class GenericExportComponent extends BorderPane {
     abstract String getExportTitle();
 
     protected void executeExport(SelectionPanelComponent selectionPanelComponent,
-                                 ExportFunction exportFunction) {
+                                 ExportFunction exportFunction,
+                                 String fileExtension) {
         List<Criterio> selectedData = selectionPanelComponent.getSelectedElements().stream()
                 .filter(obj -> obj instanceof Criterio)
                 .map(obj -> (Criterio) obj)
@@ -74,7 +75,7 @@ public abstract class GenericExportComponent extends BorderPane {
         }
 
         Platform.runLater(() -> {
-            File file = LinceDesktopFileHelper.openSaveFileDialog(getFileExtension());
+            File file = LinceDesktopFileHelper.openSaveFileDialog(fileExtension);
             if (file != null) {
                 String content = exportFunction.apply(selectedData);
                 boolean success = writeContentToFile(file, content);
@@ -90,6 +91,7 @@ public abstract class GenericExportComponent extends BorderPane {
             }
         });
     }
+
     protected boolean writeContentToFile(File file, String content) {
         try {
             java.nio.file.Files.write(file.toPath(), content.getBytes());
