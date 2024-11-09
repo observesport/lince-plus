@@ -255,6 +255,21 @@
                 <version>${junit5.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!-- Mockito for mocking in tests -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>4.5.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Mockito extension for JUnit Jupiter -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>4.5.1</version>
+                <scope>test</scope>
+            </dependency>
             <!--            MATH        -->
             <dependency>
                 <groupId>org.dkpro.statistics</groupId>
