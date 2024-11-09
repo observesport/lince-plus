@@ -1,9 +1,5 @@
 {
-  "version": "2.1.0-RELEASE",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v2.1.0",
-  "message": ["Instalacion recomendada con mejoras significativas",
-    "Nuevo reproductor",
-    "Mejoras multi-idioma",
-    "AI Studio",
-    "Reproduccion Youtube"]
+  "version": "3.2.3",
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v3.2.3",
+  "message": ["Instalacion recomendada con mejoras significativas a nivel interno"]
 }

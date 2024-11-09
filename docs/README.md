@@ -23,34 +23,69 @@ Please, if any use or scientific research is done through this application, cite
 
 ### Supported languages
 
-Our software it's build on a multilanguage base. Status for it:
-- Spanish: 100%
-- English: 80%. Next release will publish 100%.
-- Deutsch & Catalan will be available soon
+Our software it's build on a multilanguage base: Spanish, English, German and Catalan
 
 ### System requirements
 
-- LINCE PLUS works in any computer (x64) and has been tested with Win10 and MacOS
-- Any version needs, at least, java 1.8 preconfigured on your system. LINCE PLUS will install it automatically.
+- LINCE PLUS works in any computer (x64) and has been tested with Win10 and MacOS ARM and chipset intel
+- We do not have license as it needs a fee and it's free software.
 
 ## Download 
 
-### Current version 2.1.0 RELEASE
+https://github.com/observesport/lince-plus/releases/tag/v3.2.3
 
-Important note: 
-- Some Mac computers based on intel can't start this version. Please, use version 1.3.2 100% compatible with you intel computer. Version 2.1 can be installed as an update optionally.
-- ES: Algunos ordenadores Mac con chipset intel, no funciona adecuadamente con la version 2. Instala la version 1.3.2. Opcionalmente puedes instalar la 2.1 encima y funcionara.
+### Current version 3.2.3
 
-Known issues:
-- [Mac intel fresh installation](https://github.com/observesport/lince-plus/issues/61)
-- [Excel exportation](https://github.com/observesport/lince-plus/issues/62)
+Lince Plus 3.2.3 Release Notes
 
-Supported OS Systems:
-- Windows x64
-- MacOS x64
-- MacOS ARM
+#### Overview
+
+This release focuses on modernizing the technology stack, improving installation reliability, and enhancing cloud compatibility to better support enterprise deployments.
+
+#### Major Changes
+
+**Framework Updates**
+
+- JDK17
+- Upgraded to Spring Boot version 3.2.3
+- Enhanced dependency injection system to support Lince Cloud extensions
+- Improved cloud-native compatibility for containerized deployments
+
+**Installation Improvements**
+
+- New automated installer package generated through CI/CD pipeline
+- Fixed installation issues on macOS systems
+- Resolved permission handling during setup
+- Improved application registration process
+- Addressed Windows-specific installation problems
+- Fixed path resolution conflicts
+- Enhanced registry management
+- Corrected service installation procedures
+
+**Cloud Integration**
+
+- Added cloud-native configuration options
+- Implemented extensible dependency injection framework for Lince Cloud
+- Enhanced service discovery capabilities
+- Improved container orchestration support
+
+> Installation Instructions
+
+The new installer package can be downloaded from the official Lince repository. For detailed installation steps, please refer to the updated documentation.
+
+**System Requirements**
+
+- macOS 10.15 or later
+- Windows 10/11 or Windows Server 2019/2022
+- 4GB RAM minimum
+- 2GB available disk space
+
+> Known Issues
+
+On Windows systems with restricted user permissions, manual elevation may be required during installation
+macOS users should ensure Terminal has full disk access enabled in System Preferences
   
-[Download it here](https://github.com/observesport/lince-plus/releases/tag/v2.1.0)
+[Download it here](https://github.com/observesport/lince-plus/releases/tag/v3.2.3)
 
 ## Documentation
 
@@ -60,6 +95,8 @@ Supported OS Systems:
 - Check our installation and use guide at our wiki, under development, on our [wiki](https://github.com/observesport/lince-plus/wiki)
 
 ### Previous versions
+
+- [2.1.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.1.0)
 - [2.0.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.0.0)
 - [1.3.2 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)
 - [1.3.1 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.1)
