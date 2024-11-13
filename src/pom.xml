@@ -53,7 +53,7 @@
         <!--        <jdk.version>17.0.9</jdk.version> deprecated -->
         <!--        https://github.com/openjdk/jfx/blob/jfx23/doc-files/release-notes-20.md-->
         <!--        For compatibility with mac os catalina : version 16-->
-        <javafx.version>16</javafx.version>
+        <javafx.version>17.0.10</javafx.version>
         <install4j.version>10.0.6</install4j.version>
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
