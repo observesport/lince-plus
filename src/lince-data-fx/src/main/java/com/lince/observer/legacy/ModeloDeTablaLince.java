@@ -17,7 +17,7 @@
  */
 package com.lince.observer.legacy;
 
-import com.lince.observer.data.legacy.utiles.Tiempo;
+import com.lince.observer.data.util.TimeCalculations;
 import com.lince.observer.legacy.instrumentoObservacional.Categoria;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
@@ -35,6 +35,7 @@ public class ModeloDeTablaLince extends AbstractTableModel {
     public List<FilaRegistro> datosVariables;
     protected NodoInformacion datosMixtos[];
     protected Criterio datos[];
+    TimeCalculations timeCalculations = new TimeCalculations();
 
     public ModeloDeTablaLince() {
     }
@@ -82,7 +83,7 @@ public class ModeloDeTablaLince extends AbstractTableModel {
         FilaRegistro fila = datosVariables.get(rowIndex);
         switch (col) {
             case 0:
-                return Tiempo.formatSimpleMiliseconds(fila.getMilis());
+                return timeCalculations.formatTimeWithOptionalHours(fila.getMilis());
             case 1:
                 return fila.getRegisterFrameValue();
             default:

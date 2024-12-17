@@ -518,7 +518,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
                     if (StringUtils.equals(LinceDataConstants.COL_TFRAMES, columna.toString())) {
                         f[i] = frActual.getRegisterFrameValue() + "";
                     } else if (StringUtils.equals(LinceDataConstants.COL_TSEGUNDOS, columna.toString())) {
-                        f[i] = Tiempo.formatCompletMiliseconds(frActual.getMilis());
+                        f[i] = timeCalculations.formatTimeWithAllComponents(frActual.getMilis());
                     } else if (StringUtils.equals(LinceDataConstants.COL_TMILISEGUNDOS, columna.toString())) {
                         f[i] = frActual.getMilis() + "";
                     } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_FR, columna.toString()) && frAnterior != null) {
@@ -527,7 +527,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
                         f[i] = "";
                     } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_SEC, columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
-                        fila[i] = Tiempo.formatCompletMiliseconds(frActual.getMilis() - frAnterior.getMilis());
+                        fila[i] = timeCalculations.formatTimeWithAllComponents(frActual.getMilis() - frAnterior.getMilis());
                         f[i] = "";
                     } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_MS, columna.toString()) && frAnterior != null) {
                         String fila[] = tabla.get(tabla.size() - 1);
