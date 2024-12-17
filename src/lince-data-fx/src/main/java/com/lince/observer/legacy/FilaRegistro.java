@@ -22,11 +22,11 @@ import com.lince.observer.legacy.instrumentoObservacional.Categoria;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import com.lince.observer.legacy.instrumentoObservacional.NodoInformacion;
+import com.lince.observer.data.util.TimeCalculations;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Brais
@@ -37,20 +37,35 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
     private int milis;
     private Map<Criterio, Categoria> registro;
     private Map<NodoInformacion, String> datosMixtos;
+    private double fps;
+    TimeCalculations timeCalculations = new TimeCalculations();
 
-    public static FilaRegistro getFilaRegistroCorrecta(FilaRegistro filaRegistroAntigua, List<LegacyToolException> exceptions) {
-        Criterio criteriosActuales[] = InstrumentoObservacional.getInstance().getCriterios();
-        NodoInformacion mixtosActuales[] = InstrumentoObservacional.getInstance().getDatosMixtos();
-        Map<Criterio, Categoria> mapRegistro = filaRegistroAntigua.registro;
-        Set<Criterio> setDeKeys = mapRegistro.keySet();
-        Map<NodoInformacion, String> mapDatosMixtos = filaRegistroAntigua.datosMixtos;
-        Set<NodoInformacion> setDeKeysDatosMixtos = mapDatosMixtos.keySet();
+    public FilaRegistro(int milis, Map<Criterio, Categoria> categoriasSeleccionadas, Map<NodoInformacion, String> datosMixtos, Double fps) {
+        this.milis = milis;
+        this.registro = categoriasSeleccionadas;
+        this.datosMixtos = datosMixtos;
+        this.fps = fps != null? fps : 0.0;
+    }
 
-        Map<Criterio, Categoria> registroActual = new HashMap<Criterio, Categoria>(mapRegistro.size());
-        Map<NodoInformacion, String> datosMixtosActuales = new HashMap<NodoInformacion, String>();
+    @Deprecated
+    public FilaRegistro(int milis, Map<Criterio, Categoria> registro) {
+        this(milis, registro, new HashMap<>(), null);
+    }
 
+    @Deprecated
+    public FilaRegistro(int milis, Map<Criterio, Categoria> registro, Map<NodoInformacion, String> datosMixtos) {
+        this(milis, registro, datosMixtos, null);
+    }
+
+    public FilaRegistro getFilaRegistroCorrecta(List<LegacyToolException> exceptions) {
+        Criterio[] criteriosActuales = InstrumentoObservacional.getInstance().getCriterios();
+        NodoInformacion[] mixtosActuales = InstrumentoObservacional.getInstance().getDatosMixtos();
+        Set<Criterio> setDeKeys = this.registro.keySet();
+        Set<NodoInformacion> setDeKeysDatosMixtos = this.datosMixtos.keySet();
+        Map<Criterio, Categoria> registroActual = new HashMap<>(this.registro.size());
+        Map<NodoInformacion, String> datosMixtosActuales = new HashMap<>();
         for (Criterio criterio : setDeKeys) {
-            Categoria categoria = mapRegistro.get(criterio);
+            Categoria categoria = this.registro.get(criterio);
             if (categoria != null) {
                 for (Criterio criterioActual : criteriosActuales) {
                     if (criterio.getNombre().equalsIgnoreCase(criterioActual.getNombre())) {
@@ -58,22 +73,7 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
                         if (categoriaActual != null) {
                             registroActual.put(criterioActual, categoriaActual);
                         } else {
-                            String message = ResourceBundle.getBundle("i18n.Bundle").getString("CATEGORIA ")
-                                    + categoria.getNombre()
-                                    + ResourceBundle.getBundle("i18n.Bundle").getString(" CON CODIGO ")
-                                    + categoria.getCodigo()
-                                    + ResourceBundle.getBundle("i18n.Bundle").getString(" NO ENCONTRADA.");
-                            AtomicBoolean found = new AtomicBoolean(false);
-                            exceptions.forEach(s -> {
-                                if (StringUtils.contains(s.getMessage(), message)) {
-                                    found.set(true);
-                                }
-                            });
-                            if (!found.get()) {
-                                LegacyToolException e = new LegacyToolException(message);
-                                e.setCategoria(categoria);
-                                exceptions.add(e);
-                            }
+                            addExceptionIfNotExists(exceptions, categoria);
                         }
                         break;
                     }
@@ -82,11 +82,11 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
         }
 
         for (NodoInformacion nodoInformacion : setDeKeysDatosMixtos) {
-            String string = mapDatosMixtos.get(nodoInformacion);
+            String string = this.datosMixtos.get(nodoInformacion);
             if (string != null) {
                 for (NodoInformacion nodoInformacionActual : mixtosActuales) {
                     if (nodoInformacion.getNombre().equalsIgnoreCase(nodoInformacionActual.getNombre())) {
-                        String stringActual = mapDatosMixtos.get(nodoInformacion);
+                        String stringActual = this.datosMixtos.get(nodoInformacion);
                         if (stringActual != null) {
                             datosMixtosActuales.put(nodoInformacionActual, stringActual);
                         }
@@ -96,35 +96,28 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
             }
         }
 
-        FilaRegistro filaRegistroActual = new FilaRegistro(filaRegistroAntigua.milis, registroActual, datosMixtosActuales);
-        return filaRegistroActual;
+        return new FilaRegistro(this.milis, registroActual, datosMixtosActuales, this.fps);
     }
 
-    /**
-     * @param milis
-     * @param registro
-     * @deprecated Existe solo por compatibilidad con archivos de registro guardados
-     * con versiones anteriores: XMLEncoder
-     */
-    @Deprecated
-    public FilaRegistro(int milis, Map<Criterio, Categoria> registro) {
-        this.milis = milis;
-        this.registro = registro;
-        this.datosMixtos = new HashMap<NodoInformacion, String>();
-    }
+    private void addExceptionIfNotExists(List<LegacyToolException> exceptions, Categoria categoria) {
+        String message = ResourceBundle.getBundle("i18n.Bundle").getString("CATEGORIA ")
+                + categoria.getNombre()
+                + ResourceBundle.getBundle("i18n.Bundle").getString(" CON CODIGO ")
+                + categoria.getCodigo()
+                + ResourceBundle.getBundle("i18n.Bundle").getString(" NO ENCONTRADA.");
 
-    public FilaRegistro(int milis, Map<Criterio, Categoria> registro, Map<NodoInformacion, String> datosMixtos) {
-        this.milis = milis;
-        this.registro = registro;
-        this.datosMixtos = datosMixtos;
+        boolean found = exceptions.stream()
+                .anyMatch(e -> StringUtils.contains(e.getMessage(), message));
+
+        if (!found) {
+            LegacyToolException e = new LegacyToolException(message);
+            e.setCategoria(categoria);
+            exceptions.add(e);
+        }
     }
 
     public int getMilis() {
         return milis;
-    }
-
-    public void setMilis(int milis) {
-        this.milis = milis;
     }
 
     /**
@@ -163,8 +156,8 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
         datosMixtos.put(nodoInformacion, string);
     }
 
-    public int getFrames() {
-        return milis / 40;
+    public int getRegisterFrameValue() {
+       return timeCalculations.convertMsToFPS(milis, this.fps);
     }
 
     /**
@@ -174,15 +167,12 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
         return registro;
     }
 
-    /**
-     * @return
-     */
-    public Map<NodoInformacion, String> getDatosMixtos() {
-        return datosMixtos;
-    }
-
     @Override
     public int compareTo(FilaRegistro o) {
         return this.milis - o.milis;
+    }
+
+    public double getFps() {
+        return fps;
     }
 }

@@ -84,7 +84,7 @@ public class ModeloDeTablaLince extends AbstractTableModel {
             case 0:
                 return Tiempo.formatSimpleMiliseconds(fila.getMilis());
             case 1:
-                return fila.getFrames();
+                return fila.getRegisterFrameValue();
             default:
                 if (col - 2 < datos.length) {
                     Categoria categoria = fila.getCategoria(datos[col - 2]);

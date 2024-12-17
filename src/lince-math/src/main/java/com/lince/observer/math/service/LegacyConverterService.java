@@ -226,8 +226,8 @@ public class LegacyConverterService {
                 register.setSaveDate(new Date());
                 register.setVideoTime((double) (entry.getMilis() / 1000));
                 register.setDescription(StringUtils.EMPTY);
-                register.setName("f." + entry.getFrames());
-                register.setFrames(entry.getFrames());
+                register.setName("f." + entry.getRegisterFrameValue());
+                register.setFrames(entry.getRegisterFrameValue());
                 List<Category> categories = new ArrayList<>();
                 for (Map.Entry<Criterio, Categoria> data : entry.getRegistro().entrySet()) {
                     Categoria cat = data.getValue();
