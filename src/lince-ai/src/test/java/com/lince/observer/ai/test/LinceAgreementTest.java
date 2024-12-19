@@ -1,10 +1,10 @@
 package com.lince.observer.ai.test;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.bean.agreement.AgreementResult;
 import com.lince.observer.ai.agreement.LinceDkproAdapter;
-import com.lince.observer.data.base.*;
+import com.lince.observer.data.component.LinceFileImporter;
 import org.dkpro.statistics.agreement.coding.CodingAnnotationStudy;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,6 @@ class LinceAgreementTest {
 
     @BeforeAll
     static void init() {
-        BaseTest.showInitMessage(NAME);
         setAdapter();
     }
 
@@ -43,26 +42,23 @@ class LinceAgreementTest {
      * @param uuids uuids
      */
     private static void setAdapter(UUID... uuids) {
-        LinceFileHelperFx fileLoader = new LinceFileHelperFx();
-        ILinceApp linceApp = new EmptyLinceApp();
+        LinceFileImporter fileImporter = new LinceFileImporter();
         File file = new File(LinceAgreementTest.class
                 .getResource("/multipleObserverExample.xml").getFile());
-        fileLoader.loadLinceProjectFromFile(file, linceApp);
-        DataHubServiceBase data = linceApp.getDataHubService();
-        adapter = new LinceDkproAdapter(data.getDataRegister(), data.getCriteria(), uuids);
-    }
-
-    @AfterAll
-    static void end() {
-        BaseTest.showFinishMessage(NAME);
+        ILinceProject linceProject = fileImporter.importLinceProject(file);
+        if (linceProject != null) {
+            adapter = new LinceDkproAdapter(linceProject.getRegister(), linceProject.getObservationTool(), uuids);
+        } else {
+            throw new RuntimeException("Failed to import Lince project from file: " + file.getAbsolutePath());
+        }
     }
 
     @Test
     void getStudiesFromProject() {
         List<CodingAnnotationStudy> studies = adapter.getStudies();
         for (CodingAnnotationStudy std : studies) {
-            log.info(String.format("Studio -obs %s -tamaño %s -items %s \n %s"
-                    , std.getRaterCount(), std.getUnitCount(), std.getItemCount(), std.getItems().toString()));
+            log.info(String.format("Studio -obs %s -tamaño %s -items %s %n %s",
+                    std.getRaterCount(), std.getUnitCount(), std.getItemCount(), std.getItems().toString()));
         }
         log.info("check value");
         Assertions.assertEquals("UNI1", studies.get(0).getItem(0).getUnit(0).getCategory());
@@ -70,7 +66,7 @@ class LinceAgreementTest {
 
     private void printResults(List<AgreementResult> l) {
         for (AgreementResult std : l) {
-            log.info(String.format("Criterio %s - analisis %s: valor %s \n Desacuerdo observado %s - esperado %s"
+            log.info(String.format("Criterio %s - analisis %s: valor %s %n Desacuerdo observado %s - esperado %s"
                     , std.getCriteria().getName(), std.getType().toString(), std.getAgreement()
                     , std.getObservedDisagreement(), std.getExpectedDisagreement()));
         }
@@ -80,24 +76,24 @@ class LinceAgreementTest {
     void getKappas() {
         List<AgreementResult> l = adapter.calculateKappaIndex();
         printResults(l);
-        // Let's fuck the system
         setAdapter(UUID.fromString("d336e1e4-549d-4980-899b-bda0930c0952")
                 , UUID.fromString("a62b15b3-4cf0-4dd9-8b1b-748fd5a778b3"));
         List<AgreementResult> l2 = adapter.calculateKappaIndex();
         Assertions.assertEquals(l.get(0).getAgreement(), l2.get(0).getAgreement());
-        //clear adapter to original values
         setAdapter();
     }
 
     @Test
-    void getPercentage() {
+    void getPercentageAgreement() {
         List<AgreementResult> l = adapter.calculatePercentageAgreement();
         printResults(l);
+        Assertions.assertFalse(l.isEmpty(), "Percentage agreement results should not be empty");
     }
 
     @Test
-    void getKrippendorf() {
+    void getKrippendorfAgreement() {
         List<AgreementResult> l1 = adapter.calculateKrippendorfAlphaAgreement();
         printResults(l1);
+        Assertions.assertFalse(l1.isEmpty(), "Krippendorf's Alpha results should not be empty");
     }
 }

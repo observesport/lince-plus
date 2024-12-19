@@ -147,7 +147,7 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
     }
 
     public int getRegisterFrameValue() {
-       return timeCalculations.convertMsToFPS(milis, this.fps);
+       return (int) timeCalculations.convertMsToFPS(milis, this.fps);
     }
 
     /**

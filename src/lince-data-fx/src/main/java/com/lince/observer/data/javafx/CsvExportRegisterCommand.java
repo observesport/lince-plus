@@ -1,5 +1,7 @@
 package com.lince.observer.data.javafx;
 
+import com.lince.observer.data.ILinceProject;
+import com.lince.observer.data.component.LinceCsvExporter;
 import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.legacy.Registro;
@@ -20,10 +22,12 @@ public class CsvExportRegisterCommand {
     private static final Logger log = LoggerFactory.getLogger(CsvExportRegisterCommand.class);
     private final SelectionPanelComponent selectionPanelComponent;
     private final boolean isWithComma;
+    private final ILinceProject linceProject;
 
-    public CsvExportRegisterCommand(SelectionPanelComponent selectionPanelComponent, boolean isWithComma) {
+    public CsvExportRegisterCommand(SelectionPanelComponent selectionPanelComponent, boolean isWithComma, ILinceProject linceProject) {
         this.selectionPanelComponent = selectionPanelComponent;
         this.isWithComma = isWithComma;
+        this.linceProject = linceProject;
     }
 
     public void execute() {
@@ -45,7 +49,9 @@ public class CsvExportRegisterCommand {
         Platform.runLater(() -> {
             File file = LinceDesktopFileHelper.openSaveFileDialog("*.csv");
             if (file != null) {
-                String content = Registro.getInstance().exportToCsv(selectedData, isWithComma);
+                LinceCsvExporter csvExporter = new LinceCsvExporter();
+                csvExporter.setUseCsvComma(isWithComma);
+                String content = csvExporter.executeFormatConversion(linceProject, selectedData.stream().map(Object::toString).toList());
                 boolean success = writeContentToFile(file, content);
                 if (success) {
                     JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,

@@ -1,9 +1,10 @@
 package com.lince.observer.desktop.javafx.view;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.bean.user.UserProfile;
-import com.lince.observer.data.export.Lince2ThemeExport;
+import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
 import com.lince.observer.data.javafx.*;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.legacy.commands.importar.AbrirImportarHoisan;
@@ -44,7 +45,6 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FileWriter;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -65,7 +65,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     protected TranscodingProvider transcodingProvider = null;
 
     @FXML
-    private ListView logArea;
+    private ListView<String> logArea;
 
     @FXML
     private ListView<String> videoPlaylistView;
@@ -103,9 +103,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 editItem.textProperty().bind(Bindings.format("Eliminar de la lista"));
                 editItem.setOnAction(event -> {
                     String item = cell.getItem();
-                    System.out.println(item);
                     dataHubService.removeVideoItemByIdentifier(item);
-                    //                        JavaFXLogHelper.addLogInfo("Eliminado del proyecto el video " + file.getName());
                 });
                 contextMenu.getItems().addAll(editItem);
                 cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) ->
@@ -139,7 +137,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     /**
      * Functional Code for opening a lince project
      *
-     * @param f
+     * @param f Consumer that accepts a File object
      */
     private void doOpenLincePlusProject(Consumer<File> f) {
         try {
@@ -434,12 +432,13 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void doExport(Command cmd, JPanel panel, String key, String label) {
         doDataIntegration(cmd, panel, key, label, true);
     }
+
     /**
      * Handles the export process for JavaFX components
      *
      * @param component JavaFX component to display
-     * @param key i18n key
-     * @param label i18n addon
+     * @param key       i18n key
+     * @param label     i18n addon
      */
     private void doExportFX(javafx.scene.Node component, String key, String label) {
         String i18n = getMainLinceApp().getMessage(key, label);
@@ -594,7 +593,28 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleExportExcel() {
         ensureCompatibility(true);
-        doExportFX(new CsvExportComponent(), "panel_export_custom", "Excel");
+        CsvExportComponent csvExportComponent = new CustomCsvExportComponent();
+        doExportFX(csvExportComponent, "panel_export_custom", "Excel");
+    }
+
+    private class CustomCsvExportComponent extends CsvExportComponent {
+
+        @Override
+        protected List<Object> getSelectionItems() {
+            setLinceProject(getCurrentProjectDetails());
+            return super.getSelectionItems();
+        }
+    }
+
+
+    public ILinceProject getCurrentProjectDetails() {
+        ILinceProject linceProject = new LinceFileProjectWrapper();
+        linceProject.setProfiles(dataHubService.getUserData());
+        linceProject.setRegister(dataHubService.getDataRegister());
+        linceProject.setObservationTool(dataHubService.getCriteria());
+        linceProject.setVideoPlayList(dataHubService.getVideoPlayList());
+        linceProject.setYoutubeVideoPlayList(dataHubService.getYoutubeVideoPlayList());
+        return linceProject;
     }
 
     /***
@@ -647,7 +667,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         doExportFX(new RegistroSdisGseqMultieventExport(), "panel_export_custom", "SDIS Seq por eventos múltiples");
     }
 
-    private EventHandler<WindowEvent> confirmCloseEventHandler = event -> {
+    private final EventHandler<WindowEvent> confirmCloseEventHandler = event -> {
         try {
             Stage primaryStage = getMainLinceApp().getPrimaryStage();
             Alert closeConfirmation = new Alert(

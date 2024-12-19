@@ -17,8 +17,6 @@ public class HomeController extends JavaFXLinceBaseController {
 
     @FXML
     private void initialize() {
-        // Initialize the person table with the two columns.
-        //webComponent.getEngine().load("https://www.oracle.com/products/index.html");
         log.info("--            Init Webcomponent               --");
     }
 

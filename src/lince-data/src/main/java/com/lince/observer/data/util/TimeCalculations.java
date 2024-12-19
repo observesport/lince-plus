@@ -17,11 +17,11 @@ public class TimeCalculations {
      * @param fps The frames per second rate. If 0 or negative, 25 FPS is used as default.
      * @return The number of frames corresponding to the given milliseconds and FPS.
      */
-    public int convertMsToFPS(int ms, double fps) {
+    public long convertMsToFPS(long ms, double fps) {
         if (fps <= 0) {
             return ms / 40; //conversion to 25 fps by default
         }
-        return (int) Math.round(ms * fps / 1000);
+        return Math.round(ms * fps / 1000);
     }
 
     /**

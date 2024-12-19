@@ -48,7 +48,7 @@
         <!-- inner data-->
         <dependency>
             <groupId>com.lince.observer</groupId>
-            <artifactId>lince-data-fx</artifactId>
+            <artifactId>lince-data</artifactId>
         </dependency>
         <!-- stats ready module -->
         <dependency>
