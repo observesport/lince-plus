@@ -13,12 +13,19 @@ import java.util.Optional;
 public interface ILinceFileExporter {
 
     default Double getFps(ILinceProject linceProject) {
-        return Optional.ofNullable(linceProject)
-                .map(ILinceProject::getProfiles)
-                .filter(profiles -> !profiles.isEmpty())
-                .flatMap(profiles -> profiles.stream().findFirst())
-                .map(profile -> Double.valueOf(profile.getFps()))
-                .orElse(LinceDataConstants.DEFAULT_FPS);
+        try {
+            return Optional.ofNullable(linceProject)
+                    .map(ILinceProject::getProfiles)
+                    .filter(profiles -> !profiles.isEmpty())
+                    .flatMap(profiles -> profiles.stream().findFirst())
+                    .map(profile -> {
+                        double fps = profile.getFps();
+                        return fps > 0 ? fps : LinceDataConstants.DEFAULT_FPS;
+                    })
+                    .orElse(LinceDataConstants.DEFAULT_FPS);
+        } catch (Exception e) {
+            return LinceDataConstants.DEFAULT_FPS;
+        }
     }
 
     String getFileFormat();
