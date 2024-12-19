@@ -47,16 +47,6 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
         this.fps = fps != null? fps : 0.0;
     }
 
-    @Deprecated
-    public FilaRegistro(int milis, Map<Criterio, Categoria> registro) {
-        this(milis, registro, new HashMap<>(), null);
-    }
-
-    @Deprecated
-    public FilaRegistro(int milis, Map<Criterio, Categoria> registro, Map<NodoInformacion, String> datosMixtos) {
-        this(milis, registro, datosMixtos, null);
-    }
-
     public FilaRegistro getFilaRegistroCorrecta(List<LegacyToolException> exceptions) {
         Criterio[] criteriosActuales = InstrumentoObservacional.getInstance().getCriterios();
         NodoInformacion[] mixtosActuales = InstrumentoObservacional.getInstance().getDatosMixtos();

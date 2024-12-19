@@ -36,8 +36,6 @@ public class DataHubServiceBase {
      * - https://www.codejava.net/java-core/concurrency/java-concurrent-collection-copyonwritearraylist-examples
      */
     protected static List<LinceRegisterWrapper> dataRegister = new CopyOnWriteArrayList<>();
-            //Collections.synchronizedList(new ArrayList<>());
-            //FXCollections.observableArrayList();
     protected static ObservableList<Criteria> criteria = FXCollections.observableArrayList();
     protected static ObservableList<ResearchProfile> userData = FXCollections.observableArrayList();
     protected static ObservableList<File> videoPlayList = FXCollections.observableArrayList();
@@ -65,22 +63,17 @@ public class DataHubServiceBase {
 
     /**
      * Adds new observations checking if does not exists in the previous register
-     * TODO 2019 check
      *
      * @param newItems
      */
     public void addDataRegister(List<LinceRegisterWrapper> newItems) {
         List<LinceRegisterWrapper> baseItems = getDataRegister();
-        //for (LinceRegisterWrapper oldReg:baseItems) {
         for (LinceRegisterWrapper newReg : newItems) {
-            //if(oldRegs.getId().equals(newReg.getId())){
             newReg.setId(UUID.randomUUID());
             newReg.getUserProfile().setKey(UUID.randomUUID());
             newReg.getUserProfile().setRegisterCode(newReg.getId());
             addObserver(newReg.getUserProfile());
-            //}
         }
-        //}
         baseItems.addAll(newItems);
     }
 
@@ -90,10 +83,8 @@ public class DataHubServiceBase {
     public void addObserver(UserProfile profile) {
         boolean hasAdd = false;
         for (ResearchProfile project : getUserData()) {
-            //boolean isFound = false;
             for (UserProfile user : project.getUserProfiles()) {
                 if (user.getKey().equals(profile.getKey())) {
-                    //isFound = true;
                     profile.setKey(UUID.randomUUID());
                 }
             }
@@ -124,7 +115,6 @@ public class DataHubServiceBase {
                 getUserData().add(new ResearchProfile());
             }
             profile = getUserData().get(0);
-            //check registers and create research info asociate to it
             if (profile.getUserProfiles() == null) {
                 profile.setUserProfiles(new ArrayList<>());
             }
@@ -196,7 +186,6 @@ public class DataHubServiceBase {
             if (register == null) {
                 //save set
                 register = getDataRegister().get(0);
-                //log.info("Data register for session - returning first register by default");
             }
         } catch (Exception e) {
             log.error("on session data access", e);
