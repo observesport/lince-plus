@@ -1,7 +1,7 @@
 package com.lince.observer.desktop.spring.controller;
 
 import com.lince.observer.data.LinceDataConstants;
-import com.lince.observer.data.barcode.QRCodeGenerator;
+import com.lince.observer.data.util.QRCodeGenerator;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.service.CategoryService;
