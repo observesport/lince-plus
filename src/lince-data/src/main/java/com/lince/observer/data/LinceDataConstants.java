@@ -38,4 +38,6 @@ public class LinceDataConstants {
     public static final String COL_TMILISEGUNDOS = "TMilisegundos";
     public static final String COL_DURACION_MS = "DuracionMiliseg";
 
+    public static final double DEFAULT_FPS = 25.0;
+
 }

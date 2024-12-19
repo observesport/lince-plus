@@ -50,6 +50,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     private transient boolean necesarySave;
     private transient File path;
     TimeCalculations timeCalculations = new TimeCalculations();
+    private static double FPS = LinceDataConstants.DEFAULT_FPS;
 
     public static void loadNewInstance() {
         cambiarInstancia(new Registro());
@@ -626,7 +627,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
 
 
     public void addRow(int milis, Map<Criterio, Categoria> categoriasSeleccionadas, Map<NodoInformacion, String> datosMixtos) {
-        FilaRegistro filaRegistro = new FilaRegistro(milis, categoriasSeleccionadas, datosMixtos);
+        FilaRegistro filaRegistro = new FilaRegistro(milis, categoriasSeleccionadas, datosMixtos, FPS);
         datosVariables.add(filaRegistro);
         Collections.sort(datosVariables);
         int indice = datosVariables.lastIndexOf(filaRegistro);
@@ -634,4 +635,9 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         necesarioSave();
         getTableModelListeners();
     }
+
+    public static void setFps(double fps) {
+        FPS = fps;
+    }
+
 }
