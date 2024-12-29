@@ -8,9 +8,9 @@ on:
 #    branches:
 #      - '**'  # This will match any branch
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 jobs:
   build:
