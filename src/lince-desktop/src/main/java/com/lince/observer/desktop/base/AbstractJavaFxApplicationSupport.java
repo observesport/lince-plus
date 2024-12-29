@@ -25,6 +25,7 @@ import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +42,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 public abstract class AbstractJavaFxApplicationSupport extends Application implements ILinceApp {
 
-    private static String[] savedArgs;
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
-
+    //    private static String[] savedArgs;
+    protected final Logger log = LoggerFactory.getLogger(AbstractJavaFxApplicationSupport.class);
     protected Stage primaryStage;
+    protected BorderPane rootLayout;
+
 
     public BorderPane getRootLayout() {
         return rootLayout;
@@ -59,30 +60,33 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
         this.primaryStage = primaryStage;
     }
 
-    protected BorderPane rootLayout;
     protected ConfigurableApplicationContext applicationContext;
 
 
-    public ApplicationContext getContext() {
-        return context;
-    }
+    public abstract ApplicationContext getContext();
 
-    @Autowired
-    protected ApplicationContext context;
-    @Autowired
-    protected Environment environment;
-    @Autowired
-    protected SystemService systemService;
-    @Autowired
-    protected I18nMessageProvider i18nMessageProvider;
+    public abstract Environment getEnvironment();
+
+    public abstract SystemService getSystemService();
+
+    public abstract I18nMessageProvider getI18nMessageProvider();
+    //@Autowired
+    //protected ApplicationContext context;
+    //@Autowired
+    //protected Environment environment;
+    //@Autowired
+    //protected SystemService systemService;
+    //@Autowired
+    //protected I18nMessageProvider i18nMessageProvider;
 
 
-    @Override
+
+/*    @Override
     public void init() throws Exception {
         System.setProperty("java.awt.headless", "false"); //there was a headless error on swing parts (legacy components)
         applicationContext = SpringApplication.run(getClass(), savedArgs);
         applicationContext.getAutowireCapableBeanFactory().autowireBean(this);
-    }
+    }*/
 
     public abstract void initRootLayout();
 
@@ -115,7 +119,7 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
 
     protected static void launchApp(Class<? extends AbstractJavaFxApplicationSupport> appClass, String[] args) {
 
-        AbstractJavaFxApplicationSupport.savedArgs = args;
+//        AbstractJavaFxApplicationSupport.savedArgs = args;
 //        https://stackoverflow.com/questions/59656908/problem-with-javafx-intellij-setting-when-try-to-use-launcherimpl-for-preloader
         System.setProperty("javafx.preloader", AppPreloader.class.getName());
         //Application.launch(appClass, args);
@@ -124,11 +128,20 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
     }
 
     public Integer getCurrentPort() {
-        return systemService.getCurrentPort();
+        if (getSystemService() != null) {
+            return getSystemService().getCurrentPort();
+        } else {
+            return null;
+        }
     }
 
     public String getServerURL() {
-        return ServerValuesHelper.getServerURL(context, getCurrentPort());
+        try {
+            return ServerValuesHelper.getServerURL(getContext(), getCurrentPort());
+        } catch (Exception e) {
+            log.error("getting server URL", e);
+            return StringUtils.EMPTY;
+        }
     }
 
     /**
@@ -150,10 +163,10 @@ public abstract class AbstractJavaFxApplicationSupport extends Application imple
     }
 
     public String getMessage(String label) {
-        return i18nMessageProvider.getMessage(label, (Object[]) null);
+        return getI18nMessageProvider().getMessage(label, (Object[]) null);
     }
 
     public String getMessage(String label, Object... msgParameters) {
-        return i18nMessageProvider.getMessage(label, msgParameters);
+        return getI18nMessageProvider().getMessage(label, msgParameters);
     }
 }

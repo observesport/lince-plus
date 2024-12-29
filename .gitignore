@@ -10,3 +10,4 @@ target
 
 /out/
 /src/installer/install4j/deprecated/
+/exclude/

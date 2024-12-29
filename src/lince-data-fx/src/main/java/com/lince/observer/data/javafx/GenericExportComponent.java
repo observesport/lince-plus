@@ -1,5 +1,6 @@
 package com.lince.observer.data.javafx;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.legacy.utiles.ResourceBundleHelper;
 import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
@@ -23,8 +24,18 @@ import java.util.stream.Collectors;
  */
 public abstract class GenericExportComponent extends BorderPane {
     private static final Logger log = LoggerFactory.getLogger(GenericExportComponent.class);
-    public GenericExportComponent() {
+    ILinceProject linceProject = null;
+
+    protected GenericExportComponent() {
         initComponents();
+    }
+
+    public ILinceProject getLinceProject() {
+        return linceProject;
+    }
+
+    public void setLinceProject(ILinceProject linceProject) {
+        this.linceProject = linceProject;
     }
 
     void initComponents() {
@@ -56,9 +67,9 @@ public abstract class GenericExportComponent extends BorderPane {
                                  ExportFunction exportFunction,
                                  String fileExtension) {
         List<Criterio> selectedData = selectionPanelComponent.getSelectedElements().stream()
-                .filter(obj -> obj instanceof Criterio)
-                .map(obj -> (Criterio) obj)
-                .collect(Collectors.toList());
+                .filter(Criterio.class::isInstance)
+                .map(Criterio.class::cast)
+                .toList();
 
         if (selectedData.isEmpty()) {
             JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,

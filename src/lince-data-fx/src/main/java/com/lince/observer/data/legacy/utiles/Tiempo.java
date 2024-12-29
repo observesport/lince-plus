@@ -23,31 +23,6 @@ package com.lince.observer.data.legacy.utiles;
  */
 public class Tiempo {
 
-    public static String formatSimpleMiliseconds(long milis) {
-        String formatOther = String.format("%%0%dd", 2);
-        long milisec = milis % 1000;
-        String sMilisec;
-        if (milisec < 10) {
-            sMilisec = "00" + milisec;
-        } else if (milisec < 100) {
-            sMilisec = "0" + milisec;
-        } else {
-            sMilisec = "" + milisec;
-        }
-        milis /= 1000;
-        long seconds = milis % 60;
-        milis /= 60;
-        long minutes = milis % 60;
-        long hours = milis / 60;
-        String ret;
-        if (hours == 0) {
-            ret = minutes + ":" + String.format(formatOther, seconds) + "." + sMilisec;
-        } else {
-            ret = hours + ":" + String.format(formatOther, minutes) + ":" + String.format(formatOther, seconds) + "." + sMilisec;
-        }
-        return ret;
-    }
-
     public static String formatSimpleSeconds(long milis) {
         String formatOther = String.format("%%0%dd", 2);
         milis = milis / 1000;
@@ -64,22 +39,4 @@ public class Tiempo {
         return ret;
     }
 
-    public static String formatCompletMiliseconds(long milis) {
-        long milisec = milis % 1000;
-        String sMilisec;
-        if (milisec < 10) {
-            sMilisec = "00" + milisec;
-        } else if (milisec < 100) {
-            sMilisec = "0" + milisec;
-        } else {
-            sMilisec = "" + milisec;
-        }
-        milis /= 1000;
-        long seconds = milis % 60;
-        milis /= 60;
-        long minutes = milis % 60;
-        long hours = milis / 60;
-        //TODO 2020: WTF!!! Antes pasaba una coma y eso hace que rompa la generación del CSV!
-        return hours + ":" + minutes + ":" + seconds + "." + sMilisec;
-    }
 }

@@ -2,6 +2,7 @@ package com.lince.observer.data.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lince.observer.data.bean.categories.Category;
+import com.lince.observer.data.util.TimeCalculations;
 
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -26,6 +27,8 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
     protected String description;
     private Integer frames = null;
     private List<Category> register = new ArrayList<>();
+    TimeCalculations timeCalculations = new TimeCalculations();
+
 
     public String getVideoTimeTxt() {
         return videoTimeTxt;
@@ -114,14 +117,12 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
     }
 
     public Integer getVideoTimeMilis() {
-        return Math.toIntExact(getVideoTime().longValue() * 1000);
+        return timeCalculations.getVideoTimeMilis(videoTime);
     }
 
     public void setVideoTime(Double videoTime) {
         this.videoTime = videoTime;
-        //this.frames =  videoTime.intValue();//cambiar con el numero de frames por segundo del video
         setFramesFromTime();
-        //TODO 2020: review: valid conversion to secs + min
         String secondsTxt = LocalTime.MIN.plusSeconds(videoTime.longValue()).toString();
         setVideoTimeTxt(secondsTxt);
     }

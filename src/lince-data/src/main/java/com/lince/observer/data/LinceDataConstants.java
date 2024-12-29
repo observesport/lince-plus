@@ -31,11 +31,52 @@ public class LinceDataConstants {
     public static final String CTX_TIME="time";
     public static final String CTX_LINCE_VERSION = "lince_version";
 
+    public enum ColumnType {
+        EVENT_TIME_FRAMES("TFrames"),
+        EVENT_TIME_SECONDS("TSegundos"),
+        EVENT_TIME_MS("TMilisegundos"),
+        EVENT_DURATION_FRAMES("DuracionFr"),
+        EVENT_DURATION_SECONDS("DuracionSeg"),
+        EVENT_DURATION_MS("DuracionMiliseg");
+
+        private final String value;
+
+        ColumnType(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static ColumnType fromValue(String value) {
+            for (ColumnType type : values()) {
+                if (type.getValue().equals(value)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant with value: " + value);
+        }
+    }
+
+    @Deprecated
     public static final String COL_TFRAMES = "TFrames";
+    @Deprecated
     public static final String COL_DURACION_FR = "DuracionFr";
+    @Deprecated
     public static final String COL_TSEGUNDOS = "TSegundos";
+    @Deprecated
     public static final String COL_DURACION_SEC = "DuracionSeg";
+    @Deprecated
     public static final String COL_TMILISEGUNDOS = "TMilisegundos";
+    @Deprecated
     public static final String COL_DURACION_MS = "DuracionMiliseg";
+
+    public static final double DEFAULT_FPS = 25.0;
 
 }
