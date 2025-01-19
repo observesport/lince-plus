@@ -50,7 +50,7 @@ public class TimeCalculations {
 
     private String formatMilliseconds(long milis, boolean omitHoursIfZero) {
         long millisecond = milis % 1000;
-        String secondsValue = String.format("%03d", millisecond);
+        String millisecondsValue = String.format("%03d", millisecond);
         milis /= 1000;
         long seconds = milis % 60;
         milis /= 60;
@@ -58,9 +58,9 @@ public class TimeCalculations {
         long hours = milis / 60;
 
         if (omitHoursIfZero && hours == 0) {
-            return String.format("%d:%02d.%s", minutes, seconds, secondsValue);
+            return String.format("%02d:%02d.%s", minutes, seconds, millisecondsValue);
         } else {
-            return String.format("%d:%02d:%02d.%s", hours, minutes, seconds, secondsValue);
+            return String.format("%02d:%02d:%02d.%s", hours, minutes, seconds, millisecondsValue);
         }
     }
 }
