@@ -6,6 +6,7 @@ import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.highcharts.HighChartsSerieBean;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
+import com.lince.observer.data.bean.wrapper.SceneWrapper;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,8 @@ public interface AnalysisService {
 
     boolean saveObservation(RegisterItem item);
 
+    boolean saveObservation(SceneWrapper sceneWrapper);
+
     RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories);
 
     HighChartsWrapper getObservationStats();
@@ -97,4 +100,5 @@ public interface AnalysisService {
     List<Pair<CategoryData, Double>> getObservationRegisterVisibility(List<RegisterItem> register);
 
     HighChartsWrapper getRegisterStatsByCategory();
+
 }

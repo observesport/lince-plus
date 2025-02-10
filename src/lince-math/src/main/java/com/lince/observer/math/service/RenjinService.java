@@ -138,7 +138,7 @@ public class RenjinService {
             data.setColNames(colNames);
             int currentRow = 0;
             for (RegisterItem reg : currentData) {
-                data.setValue(currentRow, 0, reg.getVideoTimeMilis());
+                data.setValue(currentRow, 0, reg.getVideoTimeMillis());
                 data.setValue(currentRow, 1, reg.getName());
                 data.setValue(currentRow, 2, reg.getFrames());
                 if (concatCategories) {

@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import com.lince.observer.data.legacy.utiles.ResourceBundleHelper;
 import org.slf4j.Logger;
@@ -23,11 +24,13 @@ public class CsvExportRegisterCommand {
     private final SelectionPanelComponent selectionPanelComponent;
     private final boolean isWithComma;
     private final ILinceProject linceProject;
+    private final UUID researchUUID;
 
-    public CsvExportRegisterCommand(SelectionPanelComponent selectionPanelComponent, boolean isWithComma, ILinceProject linceProject) {
+    public CsvExportRegisterCommand(SelectionPanelComponent selectionPanelComponent, boolean isWithComma, ILinceProject linceProject, UUID researchUUID) {
         this.selectionPanelComponent = selectionPanelComponent;
         this.isWithComma = isWithComma;
         this.linceProject = linceProject;
+        this.researchUUID = researchUUID;
     }
 
     public void execute() {
@@ -39,18 +42,12 @@ public class CsvExportRegisterCommand {
             return;
         }
 
-        if (Registro.getInstance().getRowCount() == 0) {
-            JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
-                    ResourceBundleHelper.getI18NLabel("LINCE"),
-                    ResourceBundleHelper.getI18NLabel("CURRENT_REGISTER_HAS_NO_ROWS"));
-            return;
-        }
-
         Platform.runLater(() -> {
             File file = LinceDesktopFileHelper.openSaveFileDialog("*.csv");
             if (file != null) {
                 LinceCsvExporter csvExporter = new LinceCsvExporter();
                 csvExporter.setUseCsvComma(isWithComma);
+                csvExporter.setResearchUUID(researchUUID);
                 String content = csvExporter.executeFormatConversion(linceProject, selectedData.stream().map(Object::toString).toList());
                 boolean success = writeContentToFile(file, content);
                 if (success) {

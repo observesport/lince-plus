@@ -114,48 +114,44 @@ public class AnalysisControllerImpl implements AnalysisController {
                                                         @PathVariable String momentID,
                                                         @RequestBody SceneWrapper items,
                                                         Principal principal) {
-        try {
-            RegisterItem item = new RegisterItem();
-            if (items.getMoment() != null) {
-                item.setVideoTime(items.getMoment());
-            }
-            item.setName(items.getName());
-            item.setDescription(items.getDescription());
-            item.setId(Integer.valueOf(momentID)); //SUPER Error TODO:review urgently
-            analysisService.saveObservation(item);
-        } catch (Exception e) {
-            log.error("register:save", e);
-//            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return getOrderedRegister(principal);
+        throw new UnsupportedOperationException("This method is deprecated and should not be used.");
+//        // TODO solve fps value from here > Move to service, where we can retrieve the right fps value
+//        try {
+//            RegisterItem item = new RegisterItem();
+//            if (items.getMoment() != null) {
+//                item.setVideoTime(items.getMoment());
+//            }
+//            item.setName(items.getName());
+//            item.setDescription(items.getDescription());
+//            /*
+//            the code should be reviewed to ensure:
+//                - The correct type is used for the ID (UUID or Integer)
+//                - The ID is generated or assigned in a consistent manner
+//                - Any potential exceptions are handled appropriately
+//                The semantic meaning of momentID is clarified and used correctly
+//             */
+//            item.setId(Integer.valueOf(momentID)); //SUPER Error TODO:review urgently
+//            analysisService.saveObservation(item);
+//        } catch (Exception e) {
+//            log.error("register:save", e);
+////            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return getOrderedRegister(principal);
     }
 
     @Override
     @RequestMapping(value = {"/setMomentData","/setMomentData/"}, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Accept=*")
     public ResponseEntity<List<RegisterItem>> saveScene(HttpServletRequest request,
-                                                        @RequestBody SceneWrapper items,
+                                                        @RequestBody SceneWrapper sceneWrapper,
                                                         Principal principal) {
-        try {
-            if (items.getMoment() != null) {
-                RegisterItem scene = new RegisterItem();
-                scene.setVideoTime(items.getMoment());
-                if (items.getId() != null){
-                    scene.setId(items.getId());
-                }
-                scene = analysisService.loadCategoriesByCode(scene, items.getCategories());
-                analysisService.saveObservation(scene);
-            }
-        } catch (Exception e) {
-            log.error("register:setMomentData - push scene", e);
-//            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR); BREAKS rendering
-        }
+        analysisService.saveObservation(sceneWrapper);
         return getOrderedRegister(principal);
     }
 
     /**
      * Stats for time visualization chart
      *
-     * @return
+     * @return ResponseEntity containing a JSON string with pie chart statistics
      */
     @Override
     @RequestMapping(value = "/timeStats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

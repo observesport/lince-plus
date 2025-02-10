@@ -5,18 +5,19 @@ import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.UUID;
 
 /**
  * Created by Alberto Soto. 8/11/24
  */
 public class RegistroSdisGseqIntervalExport extends GenericExportComponent {
+
+    public RegistroSdisGseqIntervalExport(UUID observerId) {
+        super(observerId);
+    }
 
     @Override
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {

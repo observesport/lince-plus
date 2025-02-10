@@ -164,12 +164,15 @@ public class LegacyConverterService {
                     crit.setId(id);
                 }
                 crit.setCode(getValidCode(c, l));
-                //crit.setCode(UUID.fromString(crit.getName()).toString());
                 crit.setDescription(c.getDescripcion());
                 LinkedList<Category> innerCategories = new LinkedList<>();
-                int catId = 1;//very important! if not, children id will be parent id when 0
+                int catId = 1;
                 for (Categoria cat : c.getCategoriasHijo()) {
-                    innerCategories.add(getCategoryFromLegacy(crit, cat, id * 10 + catId));
+                    if (id != null) {
+                        innerCategories.add(getCategoryFromLegacy(crit, cat, id * 10 + catId));
+                    } else {
+                        innerCategories.add(getCategoryFromLegacy(crit, cat, null));
+                    }
                     catId++;
                 }
                 crit.setInnerCategories(innerCategories);
@@ -178,7 +181,7 @@ public class LegacyConverterService {
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
         }
-        return null;//new Criteria();
+        return null;
     }
 
     /**
@@ -200,7 +203,7 @@ public class LegacyConverterService {
                             id++;
                         }
                     }
-                    if (l.size() > 0) {
+                    if (!l.isEmpty()) {
                         categoryService.clearSelectedObservationTool();
                         categoryService.saveObservationTool(l);
                     }
@@ -221,10 +224,9 @@ public class LegacyConverterService {
             int id = 1;
             List<RegisterItem> lst = new ArrayList<>();
             for (FilaRegistro entry : r.datosVariables) {
-                RegisterItem register = new RegisterItem();
+                RegisterItem register = new RegisterItem((double) (entry.getMilis() / 1000));
                 register.setId(id);
                 register.setSaveDate(new Date());
-                register.setVideoTime((double) (entry.getMilis() / 1000));
                 register.setDescription(StringUtils.EMPTY);
                 register.setName("f." + entry.getRegisterFrameValue());
                 register.setFrames(entry.getRegisterFrameValue());
@@ -237,6 +239,7 @@ public class LegacyConverterService {
                     if (pairCat != null && pairCat.getValue() != null) {
                         categories.add(pairCat.getValue());
                     } else {
+                        assert pairCat != null;
                         log.error("criterio no valido" + pairCat.getValue().toString());
                         Criteria aux = Criteria.getRecoveryCriteria();
                         CategoryData tempData = categoryService.findCategoryByCode(aux.getCode());
@@ -246,13 +249,13 @@ public class LegacyConverterService {
                     }
 
                 }
-                if (categories.size() > 0) {
+                if (!categories.isEmpty()) {
                     register.setRegister(categories);
                 }
                 lst.add(register);
                 id++;
             }
-            if (lst.size() > 0) {
+            if (!lst.isEmpty()) {
                 saveRegisterForNewUser("Lince v1 observer", lst);
             }
         } catch (Exception e) {
@@ -298,23 +301,21 @@ public class LegacyConverterService {
      * Based on HoisanTool::import
      */
     private void migrateDataToLegacyInstrument() {
-
         InstrumentoObservacional.loadNewInstance();
         InstrumentoObservacional i = InstrumentoObservacional.getInstance();
         RootInstrumentoObservacional root = (RootInstrumentoObservacional) i.getModel().getRoot();
         DefaultMutableTreeNode variable = (DefaultMutableTreeNode) root.getChildAt(2);
-        for (CategoryData c : categoryService.getCollection()) {
+        for (Criteria c : categoryService.getObservationTool()) {
             try {
-                Criteria criteria = (Criteria) c;
-                String criteriaName = criteria.getName();
-                String criteriaDescription = criteria.getDescription();
+                String criteriaName = c.getName();
+                String criteriaDescription = c.getDescription();
                 InstrumentoObservacional.getInstance().addHijo(variable, criteriaName);
                 Criterio[] cs = i.getCriterios();
                 Criterio criterio = cs[cs.length - 1];
                 criterio.setDescripcion(criteriaDescription);
-                criterio.setPersistente(criteria.isPersistence());
+                criterio.setPersistente(c.isPersistence());
                 //insert internal Categories
-                addCategoriesToLegacyCriteria(criterio, criteria);
+                addCategoriesToLegacyCriteria(criterio, c);
             } catch (Exception e) {
                 log.error(getClass().getEnclosingMethod().toString(), e);
             }
@@ -395,7 +396,7 @@ public class LegacyConverterService {
             List<Category> errors = new ArrayList<>();
             List<RegisterItem> register = (uuid == null) ? analysisService.getAllObservations() : analysisService.getObservationById(uuid);
             for (RegisterItem row : register) {
-                Integer timeID = row.getVideoTimeMilis();
+                Integer timeID = row.getVideoTimeMillis();
                 Map<Criterio, Categoria> registeredData = new HashMap<>();
                 for (Category c : row.getRegister()) {
                     Pair<Criteria, Category> dataPair = categoryService.findToolEntryByIdentifier(c.getParent(), null, null);

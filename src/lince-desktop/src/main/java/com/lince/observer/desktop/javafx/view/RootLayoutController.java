@@ -48,6 +48,7 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The controller for the root layout. The root layout provides the basic
@@ -353,27 +354,22 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      * Common method on exports and imports to legacy features
      */
 
-    private void ensureCompatibility(boolean isExport) {
-        ensureCompatibility(isExport, false);
-    }
-
-    private void ensureCompatibility(boolean isExport, boolean checkMultipleObservers) {
+    private Optional<UUID> ensureCompatibility(boolean isExport) {
         try {
             Registro.getInstance();
             InstrumentoObservacional.getInstance();
             LegacyConverterService converter = getMainLinceApp().getLegacyConverterService();
             if (isExport) {
-                UUID uuid = null;
-                if (checkMultipleObservers) {
-                    uuid = getResearchSelection();
-                }
+                UUID uuid = getResearchSelection();
                 converter.migrateDataToLegacy(uuid);
+                return Optional.ofNullable(uuid);
             } else {
                 converter.migrateDataFromLegacy();
             }
         } catch (Exception e) {
             JavaFXLogHelper.addLogError("Compatibility issue", e);
         }
+        return Optional.empty();
     }
 
 
@@ -388,37 +384,43 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             List<ResearchProfile> researchers = getMainLinceApp().getProfileService().getAllResearchInfo();
             if (researchers.isEmpty()) {
                 return null;
-            } else {
-                Map<UUID, ButtonType> uuids = new HashMap<>();
-                for (ResearchProfile user : researchers) {
-                    for (UserProfile researcher : user.getUserProfiles()) {
-                        uuids.put(researcher.getRegisterCode(), new ButtonType(StringUtils.defaultIfEmpty(researcher.getUserName(), "Sin definir")));
-                    }
-                }
-                if (uuids.size() < 2) {
-                    return null;
-                }
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle(i18n("select_observer"));
-                alert.setHeaderText(i18n("select_observer.header"));
-                alert.setContentText(i18n("select_observer.content"));
-                ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                uuids.put(null, buttonTypeCancel);
-                alert.getButtonTypes().setAll(uuids.values());
-                Optional<ButtonType> result = alert.showAndWait();
-                String choice = result.get().getText();
-                if (StringUtils.isNotEmpty(choice) && !StringUtils.equals(choice, "Cancel")) {
-                    for (Map.Entry<UUID, ButtonType> entry : uuids.entrySet()) {
-                        if (StringUtils.equals(choice, entry.getValue().getText())) {
-                            return entry.getKey();
-                        }
-                    }
-                }
             }
+            List<UserProfile> allUserProfiles = researchers.stream()
+                    .flatMap(profile -> profile.getUserProfiles().stream())
+                    .toList();
+
+            if (allUserProfiles.size() <= 1) {
+                return allUserProfiles.isEmpty() ? null : allUserProfiles.get(0).getRegisterCode();
+            }
+            Map<UUID, String> uuidToNameMap = allUserProfiles.stream()
+                    .collect(Collectors.toMap(
+                            UserProfile::getRegisterCode,
+                            profile -> StringUtils.defaultIfEmpty(profile.getUserName(), "Sin definir")
+                    ));
+
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle(i18n("select_observer"));
+            alert.setHeaderText(i18n("select_observer.header"));
+            alert.setContentText(i18n("select_observer.content"));
+
+            Map<ButtonType, UUID> buttonToUuidMap = uuidToNameMap.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            entry -> new ButtonType(entry.getValue()),
+                            Map.Entry::getKey
+                    ));
+
+            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            buttonToUuidMap.put(cancelButton, null);
+
+            alert.getButtonTypes().setAll(buttonToUuidMap.keySet());
+
+            return alert.showAndWait()
+                    .map(buttonToUuidMap::get)
+                    .orElseGet(() -> allUserProfiles.get(0).getRegisterCode());
         } catch (Exception e) {
+            JavaFXLogHelper.addLogError("Error in getResearchSelection", e);
             return null;
         }
-        return null;
     }
 
     /**
@@ -444,8 +446,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
             Registro.loadNewInstance();
-            ensureCompatibility(true, true); // pasamos registro seleccionado
-
+//            ensureCompatibility(true); this makes the panel shown 2 times
             Stage stage = new Stage();
             stage.setTitle(i18n);
             Pane root = new Pane();
@@ -487,7 +488,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
             Registro.loadNewInstance();
-            ensureCompatibility(isExport, isExport); //pasamos registro seleccionado
+            ensureCompatibility(isExport);
             if (cmd != null) {
                 cmd.execute();
             } else {
@@ -562,8 +563,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportTheme5() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX(new Theme5ExportComponent(), "panel_export_custom", "Theme 5");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        projectId.ifPresent(id -> doExportFX(new Theme5ExportComponent(projectId.get()), "panel_export_custom", "Theme 5"));
     }
 
     /***
@@ -572,8 +573,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportTheme6() {
-        ensureCompatibility(true);
-        doExportFX(new Theme6ExportComponent(), "panel_export_custom", "Theme 6");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        projectId.ifPresent(id -> doExportFX(new Theme6ExportComponent(projectId.get()), "panel_export_custom", "Theme 6"));
     }
 
     /***
@@ -582,8 +583,10 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSAS() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX(new SasExportComponent(), "panel_export_custom", "SAS");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        projectId.ifPresent(id ->
+                doExportFX(new SasExportComponent(projectId.get()), "panel_export_custom", "SAS")
+        );
     }
 
     /***
@@ -592,12 +595,14 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportExcel() {
-        ensureCompatibility(true);
-        CsvExportComponent csvExportComponent = new CustomCsvExportComponent();
-        doExportFX(csvExportComponent, "panel_export_custom", "Excel");
+        doExportFX(new CustomCsvExportComponent(getResearchSelection()), "panel_export_custom", "Excel");
     }
 
     private class CustomCsvExportComponent extends CsvExportComponent {
+
+        protected CustomCsvExportComponent(UUID observerId) {
+            super(observerId);
+        }
 
         @Override
         protected List<Object> getSelectionItems() {
@@ -623,8 +628,10 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQEstado() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX( new RegistroSdisGseqEstadoExport(), "panel_export_custom", "SDIS Seq por estados");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        projectId.ifPresent(id ->
+                doExportFX(new RegistroSdisGseqEstadoExport(projectId.get()), "panel_export_custom", "SDIS Seq por estados")
+        );
     }
 
     /***
@@ -633,8 +640,10 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQEvent() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX( new RegistroSdisGseqEventExport(), "panel_export_custom", "SDIS Seq por eventos");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        projectId.ifPresent(id ->
+                doExportFX(new RegistroSdisGseqEventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos")
+        );
     }
 
     /***
@@ -643,8 +652,10 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQTimeEvent() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX(new RegistroSdisGseqTimedEventExport(), "panel_export_custom", "SDIS Seq por eventos y tiempo");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        projectId.ifPresent(id ->
+                doExportFX(new RegistroSdisGseqTimedEventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos y tiempo")
+        );
     }
 
     /***
@@ -653,8 +664,10 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQInterval() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX(new RegistroSdisGseqIntervalExport(), "panel_export_custom", "SDIS Seq por intérvalos");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        projectId.ifPresent(id ->
+                doExportFX(new RegistroSdisGseqIntervalExport(projectId.get()), "panel_export_custom", "SDIS Seq por intérvalos")
+        );
     }
 
     /***
@@ -663,8 +676,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQMultiEvent() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX(new RegistroSdisGseqMultieventExport(), "panel_export_custom", "SDIS Seq por eventos múltiples");
+        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        doExportFX(new RegistroSdisGseqMultieventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos múltiples");
     }
 
     private final EventHandler<WindowEvent> confirmCloseEventHandler = event -> {
