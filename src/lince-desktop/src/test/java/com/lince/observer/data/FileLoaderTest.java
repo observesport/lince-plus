@@ -1,13 +1,11 @@
 package com.lince.observer.data;
 
 
-import com.lince.observer.data.base.BaseTest;
 import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
 import com.lince.observer.data.base.LinceFileHelperFx;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.export.Lince2ThemeExport;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,25 +22,23 @@ import java.io.IOException;
  *
  * @author berto (alberto.soto@gmail.com)
  *
- * TODO asf24: Move to lince-desktop module and resolve javafx dependencies. They need to be out!
  */
 class FileLoaderTest {
-    private static final String NAME = "File test";
     private static LinceFileHelperFx fileLoader = null;
     private static ILinceApp linceApp;
     private static final Logger log = LoggerFactory.getLogger(FileLoaderTest.class);
 
     @BeforeAll
     static void init() {
-        BaseTest.showInitMessage(NAME);
+//        BaseTest.showInitMessage(NAME);
         fileLoader = new LinceFileHelperFx();
         linceApp = new EmptyLinceApp();
     }
-
+/*
     @AfterAll
     static void end() {
         BaseTest.showFinishMessage(NAME);
-    }
+    }*/
 
     @Test
     void loadFileTest() {
@@ -53,7 +49,7 @@ class FileLoaderTest {
         } catch (Exception e) {
             log.error("mek", e);
         }
-        BaseTest.showMessage("Fichero cargado");
+//        BaseTest.showMessage("Fichero cargado");
     }
 
     /**

@@ -8,8 +8,13 @@ import javafx.scene.control.Button;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class RegistroSdisGseqEstadoExport extends GenericExportComponent {
+
+    public RegistroSdisGseqEstadoExport(UUID observerId) {
+        super(observerId);
+    }
 
     @Override
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {

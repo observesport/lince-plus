@@ -1,58 +1,52 @@
 package com.lince.observer.data.javafx;
 
-import com.lince.observer.data.LinceDataConstants;
+import com.lince.observer.data.component.ILinceFileExporter;
+import com.lince.observer.data.component.LinceCsvExporter;
 import com.lince.observer.data.legacy.utiles.ResourceBundleHelper;
-import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Alberto Soto. 7/11/24
+ *
+ * @see LinceCsvExporter
  */
 public class CsvExportComponent extends GenericExportComponent {
+
+    protected CsvExportComponent(UUID observerId) {
+        super(observerId);
+    }
 
     @Override
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {
         Button btnExportWithComma = new Button(ResourceBundleHelper.getI18NLabel("EXPORT_CSV_COMMA"));
-        btnExportWithComma.setOnAction(e -> new CsvExportRegisterCommand(selectionPanelComponent, true).execute());
+        btnExportWithComma.setOnAction(e -> new CsvExportRegisterCommand(selectionPanelComponent, true, getLinceProject(), getResearchUUID()).execute());
         Button btnExportWithSemicolon = new Button(ResourceBundleHelper.getI18NLabel("EXPORT_CSV_SEMICOLON"));
-        btnExportWithSemicolon.setOnAction(e -> new CsvExportRegisterCommand(selectionPanelComponent, false).execute());
+        btnExportWithSemicolon.setOnAction(e -> new CsvExportRegisterCommand(selectionPanelComponent, false, getLinceProject(), getResearchUUID()).execute());
         return Arrays.asList(btnExportWithComma, btnExportWithSemicolon);
     }
 
     @Override
     protected List<Object> getSelectionItems() {
-        List<String> otros = Arrays.asList(
-                LinceDataConstants.COL_TFRAMES, LinceDataConstants.COL_DURACION_FR,
-                LinceDataConstants.COL_TSEGUNDOS, LinceDataConstants.COL_DURACION_SEC,
-                LinceDataConstants.COL_TMILISEGUNDOS, LinceDataConstants.COL_DURACION_MS
-        );
-        List<Object> criterios = Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
-        List<Object> datosMixtos = Arrays.asList(InstrumentoObservacional.getInstance().getDatosMixtos());
-        List<Object> datosFijos = Arrays.asList(InstrumentoObservacional.getInstance().getDatosFijos());
-        List<Object> lista = new ArrayList<>();
-        lista.addAll(otros);
-        lista.addAll(criterios);
-        lista.addAll(datosMixtos);
-        lista.addAll(datosFijos);
-        return lista;
+        if (linceProject == null) {
+            throw new IllegalStateException("LinceProject is null");
+        }
+        ILinceFileExporter linceCsvExporter = new LinceCsvExporter();
+        return new ArrayList<>(linceCsvExporter.getDefaultColumnDefinitions(linceProject));
     }
 
     @Override
     String getFileExtension() {
-        return "";
+        return "csv";
     }
 
     @Override
     String getExportTitle() {
-        return "";
+        return "Csv file";
     }
 }

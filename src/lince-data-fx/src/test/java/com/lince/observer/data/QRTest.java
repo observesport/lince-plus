@@ -1,6 +1,6 @@
 package com.lince.observer.data;
 
-import com.lince.observer.data.barcode.QRCodeGenerator;
+import com.lince.observer.data.util.QRCodeGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

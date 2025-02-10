@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.lince.observer</groupId>
         <artifactId>lince-plus-root</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>lince-desktop</artifactId>
@@ -16,6 +16,49 @@
         <start-class>com.lince.observer.desktop.LinceAppFx</start-class>
 <!--        <javafx.modulepath>${project.build.directory}/javafx-modules</javafx.modulepath>-->
     </properties>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- ... other plugins ... -->
+                    <plugin>
+                        <groupId>com.install4j</groupId>
+                        <artifactId>install4j-maven</artifactId>
+                        <version>${install4j.version}</version>
+                        <executions>
+                            <execution>
+                                <id>compile-installers</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <projectFile>${project.basedir}/../installer/install4j/lince-plus-installer-v3.install4j
+                                    </projectFile>
+                                    <release>${project.version}</release>
+                                    <destination>${project.basedir}/../installer</destination>
+                                    <variables>
+                                        <property>
+                                            <name>version</name>
+                                            <value>${project.version}</value>
+                                        </property>
+                                    </variables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>local</id>
+            <!-- This profile doesn't include the Install4j plugin -->
+        </profile>
+    </profiles>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -143,10 +186,6 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.8.0</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.springdoc</groupId>-->
-        <!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -271,7 +310,8 @@
             <!--                </executions>-->
             <!--            </plugin>-->
             <!-- Install4j Maven Plugin | https://www.ej-technologies.com/resources/install4j/help/doc/cli/maven.html -->
-            <plugin>
+          <!--Moved to profile execution-->
+           <!-- <plugin>
                 <groupId>com.install4j</groupId>
                 <artifactId>install4j-maven</artifactId>
                 <version>${install4j.version}</version>
@@ -296,7 +336,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
         <resources>
             <!-- copy fxml and css resources -->
@@ -329,7 +369,7 @@
                     <include>**/*.*</include>
                 </includes>
                 <excludes>
-                    <exclude></exclude>
+                    <exclude/>
                 </excludes>
             </resource>
         </resources>

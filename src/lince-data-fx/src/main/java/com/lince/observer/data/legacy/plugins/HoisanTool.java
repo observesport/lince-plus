@@ -163,8 +163,8 @@ public class HoisanTool {
             Date date = new Date();
             for (FilaRegistro entry : registro.datosVariables) {
                 try {
-                    tTiempos.addRow(Column.AUTO_NUMBER, entry.getFrames(), entry.getMilis(), entry.getFrames() + 1, entry.getMilis() + 1, fileuri, tipoDato, date.toString(), "00:00:01", 0);
-                    Integer id = findFieldWithValue(tTiempos, entry.getFrames(), HoisanVars.TIME_INITIAL_FRAME, HoisanVars.TIME_ID);
+                    tTiempos.addRow(Column.AUTO_NUMBER, entry.getRegisterFrameValue(), entry.getMilis(), entry.getRegisterFrameValue() + 1, entry.getMilis() + 1, fileuri, tipoDato, date.toString(), "00:00:01", 0);
+                    Integer id = findFieldWithValue(tTiempos, entry.getRegisterFrameValue(), HoisanVars.TIME_INITIAL_FRAME, HoisanVars.TIME_ID);
                     //db.flush();
                     this.timeMap.put(entry, id);
                     storeObservationDataItem(db, tTiemposCategoria, entry, id);

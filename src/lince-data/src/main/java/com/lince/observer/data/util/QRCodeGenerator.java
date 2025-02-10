@@ -1,4 +1,4 @@
-package com.lince.observer.data.barcode;
+package com.lince.observer.data.util;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;

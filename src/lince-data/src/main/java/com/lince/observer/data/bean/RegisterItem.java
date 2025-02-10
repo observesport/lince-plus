@@ -2,6 +2,7 @@ package com.lince.observer.data.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lince.observer.data.bean.categories.Category;
+import com.lince.observer.data.util.TimeCalculations;
 
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -24,8 +25,16 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
     private String videoTimeTxt;
     protected String name;
     protected String description;
+    //    At 30 fps, this limit would be reached after about 828 days of video.
+    //    At 60 fps, it would be reached after about 414 days.
     private Integer frames = null;
     private List<Category> register = new ArrayList<>();
+    TimeCalculations timeCalculations = new TimeCalculations();
+
+    public RegisterItem() {
+        super();
+        this.setSaveDate(new Date());
+    }
 
     public String getVideoTimeTxt() {
         return videoTimeTxt;
@@ -51,11 +60,6 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
         this.description = description;
     }
 
-    public RegisterItem() {
-        super();
-        this.setSaveDate(new Date());
-    }
-
     public Integer getId() {
         return id;
     }
@@ -65,30 +69,22 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
     }
 
     public Integer getFrames() {
-        if (frames == null) {
-            setFramesFromTime();
-        }
         return frames;
     }
 
     /**
      * Only use for migration purposes
      *
-     * @param frames
+     * @param frames The number of frames to set
      */
     public void setFrames(Integer frames) {
         this.frames = frames;
-    }
-
-    public void setFramesFromTime() {
-        this.frames = Math.toIntExact((long) (getVideoTime() * VideoPlayerData.DEFAULT_FRAMES_PER_SECOND));
     }
 
     public RegisterItem(Double videoTime) {
         this();
         this.setSaveDate(new Date());
         this.setVideoTime(videoTime);
-
     }
 
     public RegisterItem(Double videoTime, Category... categories) {
@@ -113,17 +109,13 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
         return videoTime;
     }
 
-    public Integer getVideoTimeMilis() {
-        return Math.toIntExact(getVideoTime().longValue() * 1000);
+    public Integer getVideoTimeMillis() {
+        return timeCalculations.getVideoTimeMillis(videoTime);
     }
 
     public void setVideoTime(Double videoTime) {
         this.videoTime = videoTime;
-        //this.frames =  videoTime.intValue();//cambiar con el numero de frames por segundo del video
-        setFramesFromTime();
-        //TODO 2020: review: valid conversion to secs + min
-        String secondsTxt = LocalTime.MIN.plusSeconds(videoTime.longValue()).toString();
-        setVideoTimeTxt(secondsTxt);
+        setVideoTimeTxt(LocalTime.MIN.plusSeconds(videoTime.longValue()).toString());
     }
 
     public List<Category> getRegister() {

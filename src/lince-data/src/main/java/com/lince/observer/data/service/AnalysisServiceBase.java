@@ -7,6 +7,8 @@ import com.lince.observer.data.bean.categories.CategoryInformation;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.highcharts.HighChartsSerie;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
+import com.lince.observer.data.bean.wrapper.SceneWrapper;
+import com.lince.observer.data.util.TimeCalculations;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -26,8 +28,13 @@ import java.util.stream.Stream;
 public abstract class AnalysisServiceBase implements AnalysisService {
 
     private final CategoryService categoryService;
-    protected AnalysisServiceBase(CategoryService categoryService){
+    private final ProfileService profileService;
+    private final TimeCalculations timeCalculations;
+
+    protected AnalysisServiceBase(CategoryService categoryService, ProfileService profileService) {
         this.categoryService = categoryService;
+        this.profileService = profileService;
+        this.timeCalculations = new TimeCalculations();
     }
 
     protected boolean deleteRegisterById(Integer id, List<RegisterItem> registerList) {
@@ -44,6 +51,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         }
         return false;
     }
+
     protected boolean deleteMomentInfo(Double moment, List<RegisterItem> registerList) {
         boolean isDeleted = false;
         try {
@@ -61,6 +69,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         }
         return isDeleted;
     }
+
     protected boolean pushRegister(List<RegisterItem> registerList, RegisterItem item) {
         try {
             Optional<RegisterItem> registerItem = registerList.stream()
@@ -148,6 +157,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         }
         return rtn;
     }
+
     @Override
     public HighChartsWrapper getObservationStats() {
         HighChartsWrapper rtn = new HighChartsWrapper();
@@ -212,6 +222,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         }
         return rtn;
     }
+
     @Override
     public RegisterItem loadCategoriesByCode(RegisterItem scene, List<Category> categories) {
         if (CollectionUtils.isNotEmpty(categories)) {
@@ -251,5 +262,32 @@ public abstract class AnalysisServiceBase implements AnalysisService {
             log.error("generateId", e);
         }
         return idGenerator.incrementAndGet();
+    }
+
+    public boolean saveObservation(SceneWrapper sceneWrapper) {
+        try {
+            if (sceneWrapper.getMoment() != null) {
+                RegisterItem scene = new RegisterItem();
+                scene.setVideoTime(sceneWrapper.getMoment());
+                if (sceneWrapper.getId() != null) {
+                    scene.setId(sceneWrapper.getId());
+                }
+                if (StringUtils.isNotEmpty(sceneWrapper.getName())) {
+                    scene.setName(sceneWrapper.getName());
+                }
+                if (StringUtils.isNotEmpty(sceneWrapper.getDescription())) {
+                    scene.setDescription(sceneWrapper.getDescription());
+                }
+                scene.setFrames(Optional.ofNullable(sceneWrapper.getMoment())
+                        .map(moment -> timeCalculations.convertMsToFrames(moment.longValue(),
+                                profileService.getCurrentFPSValue()))
+                        .orElse(null));
+                scene = loadCategoriesByCode(scene, sceneWrapper.getCategories());
+                return saveObservation(scene);
+            }
+        } catch (Exception e) {
+            log.error("register:setMomentData - push scene", e);
+        }
+        return false;
     }
 }

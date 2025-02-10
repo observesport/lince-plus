@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 /**
@@ -21,6 +22,10 @@ import java.util.stream.Stream;
  */
 public class SasExportComponent extends GenericExportComponent {
     private static final Logger log = LoggerFactory.getLogger(SasExportComponent.class);
+
+    public SasExportComponent(UUID observerId) {
+        super(observerId);
+    }
 
     @Override
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {
