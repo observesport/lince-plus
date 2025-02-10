@@ -10,6 +10,7 @@ import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
 import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.AnalysisServiceBase;
 import com.lince.observer.data.service.CategoryService;
+import com.lince.observer.data.service.ProfileService;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,8 @@ public class AnalysisServiceImpl extends AnalysisServiceBase implements Analysis
     private final DataHubService dataHubService;
 
     @Autowired
-    public AnalysisServiceImpl(@DesktopQualifier CategoryService categoryService, DataHubService dataHubService) {
-        super(categoryService);
+    public AnalysisServiceImpl(@DesktopQualifier CategoryService categoryService, @DesktopQualifier ProfileService profileService, DataHubService dataHubService) {
+        super(categoryService, profileService);
         this.categoryService = categoryService;
         this.dataHubService = dataHubService;
     }
@@ -117,7 +118,6 @@ public class AnalysisServiceImpl extends AnalysisServiceBase implements Analysis
             }
         }
     }
-
 
 
 }

@@ -43,11 +43,6 @@ public class DataHubService extends DataHubServiceBase {
         this.httpServletRequest = httpServletRequest;
     }
 
-
-//    public void setDataRegister( List<LinceRegisterWrapper> dataRegister) {
-//        DataHubService.dataRegister = dataRegister;
-//    }
-
     public void setVideoPlayList(List<File> items) {
         setDataCollection(DataHubService.videoPlayList, items);
     }
@@ -63,9 +58,7 @@ public class DataHubService extends DataHubServiceBase {
 
     public void addVideoItem(File file, Optional<Integer> fps) {
         getVideoPlayList().add(file);
-        if (fps.isPresent()) {
-            getResearchProfile().setFps(fps.get());
-        }
+        fps.ifPresent(integer -> getResearchProfile().setFps(integer));
         updateUserPlayList();
     }
 

@@ -5,8 +5,11 @@ package com.lince.observer.data.util;
  */
 public class TimeCalculations {
 
-    public Integer getVideoTimeMilis(Double videoTime) {
-        return Math.toIntExact(Math.round(videoTime * 1000));
+    public static final double DEFAULT_FPS = 25.0;
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+
+    public Integer getVideoTimeMillis(Double videoTime) {
+        return Math.toIntExact(Math.round(videoTime * MILLISECONDS_PER_SECOND));
     }
 
     /**
@@ -19,9 +22,13 @@ public class TimeCalculations {
      */
     public long convertMsToFPS(long ms, double fps) {
         if (fps <= 0) {
-            return ms / 40; //conversion to 25 fps by default
+            return Math.round(ms * DEFAULT_FPS / MILLISECONDS_PER_SECOND); // Default to 25 fps
         }
-        return Math.round(ms * fps / 1000);
+        return Math.round(ms * fps / MILLISECONDS_PER_SECOND);
+    }
+
+    public int convertMsToFrames(long ms, double fps) {
+        return Math.toIntExact(convertMsToFPS(ms, fps));
     }
 
     /**
@@ -49,18 +56,18 @@ public class TimeCalculations {
     }
 
     private String formatMilliseconds(long milis, boolean omitHoursIfZero) {
-        long millisecond = milis % 1000;
-        String secondsValue = String.format("%03d", millisecond);
-        milis /= 1000;
+        long millisecond = milis % MILLISECONDS_PER_SECOND;
+        String millisecondsValue = String.format("%03d", millisecond);
+        milis /= MILLISECONDS_PER_SECOND;
         long seconds = milis % 60;
         milis /= 60;
         long minutes = milis % 60;
         long hours = milis / 60;
 
         if (omitHoursIfZero && hours == 0) {
-            return String.format("%d:%02d.%s", minutes, seconds, secondsValue);
+            return String.format("%02d:%02d.%s", minutes, seconds, millisecondsValue);
         } else {
-            return String.format("%d:%02d:%02d.%s", hours, minutes, seconds, secondsValue);
+            return String.format("%02d:%02d:%02d.%s", hours, minutes, seconds, millisecondsValue);
         }
     }
 }

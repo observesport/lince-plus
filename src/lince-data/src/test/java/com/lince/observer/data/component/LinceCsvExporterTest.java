@@ -200,8 +200,8 @@ class LinceCsvExporterTest {
         assertEquals(selectedColumns.size(), headerList.size(), "Header should contain only selected columns");
         assertTrue(headerList.containsAll(selectedColumns), "Header should contain all selected columns");
 
-        // Check data rows
-        for (int i = 1; i < lines.length; i++) {
+        // Check data rows, avoiding first two rows (header and timestamp)
+        for (int i = 2; i < lines.length; i++) {
             String[] columns = lines[i].split(LinceDataConstants.CSV_CHAR_SEPARATOR_COMMA);
             assertEquals(selectedColumns.size(), columns.length, "Each row should have the same number of columns as selected");
         }

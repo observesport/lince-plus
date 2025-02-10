@@ -5,12 +5,14 @@ import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.Criteria;
+import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.util.TimeCalculations;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -22,6 +24,7 @@ public class LinceCsvExporter implements ILinceFileExporter {
     private boolean isComma = true;
     TimeCalculations timeCalculations = new TimeCalculations();
     private static final String LINE_SEPARATOR = System.lineSeparator(); //= "\r\n"; //System.lineSeparator()
+    private UUID researchUUID;
 
     @Override
     public List<String> getDefaultColumnDefinitions(ILinceProject linceProject) {
@@ -35,6 +38,10 @@ public class LinceCsvExporter implements ILinceFileExporter {
         ));
         linceProject.getObservationTool().stream().map(Criteria::getCode).forEach(columns::add);
         return columns;
+    }
+
+    public void setResearchUUID(UUID researchUUID) {
+        this.researchUUID = researchUUID;
     }
 
     @Override
@@ -60,27 +67,47 @@ public class LinceCsvExporter implements ILinceFileExporter {
     public String executeFormatConversion(ILinceProject linceProject, List<String> columnDefinitions) {
         Double fps = getFps(linceProject);
         StringBuilder content = new StringBuilder(createCsvHeader(columnDefinitions));
-        // TODO 2025: Introduce support for multiple observers here
-        List<RegisterItem> registers = linceProject.getRegister().get(0).getRegisterData();
-        RegisterItem[] previousRegister = {null}; // Use an array to hold the previous register
-        registers.forEach(register -> {
-            String[] row = columnDefinitions.stream().map(column -> {
-                if (Arrays.stream(LinceDataConstants.ColumnType.values())
-                        .anyMatch(type -> type.toString().equals(column))) {
-                    return handleStringColumn(column, register, previousRegister[0], fps);
-                } else {
-                    Criteria criteria = linceProject.getObservationTool().stream()
-                            .filter(c -> c.getCode().equals(column))
-                            .findFirst()
-                            .orElse(null);
-                    return criteria != null ? handleCriteriaColumn(criteria, register) : StringUtils.EMPTY;
-                }
-            }).toArray(String[]::new);
+        List<RegisterItem> selectedRegisters = getSelectedRegisters(linceProject);
 
+        if (!selectedRegisters.isEmpty()) {
+            RegisterItem zeroRegister = new RegisterItem(0.0);
+            String[] firstRow = generateRow(columnDefinitions, zeroRegister, selectedRegisters.get(0), fps, linceProject);
+            content.append(String.join(getSeparatorValue(), firstRow)).append(LINE_SEPARATOR);
+        }
+
+        for (int i = 0; i < selectedRegisters.size(); i++) {
+            RegisterItem currentRegister = selectedRegisters.get(i);
+            RegisterItem nextRegister = (i < selectedRegisters.size() - 1) ? selectedRegisters.get(i + 1) : null;
+            String[] row = generateRow(columnDefinitions, currentRegister, nextRegister, fps, linceProject);
             content.append(String.join(getSeparatorValue(), row)).append(LINE_SEPARATOR);
-            previousRegister[0] = register; // Update the previous register
-        });
+        }
         return content.toString();
+    }
+
+    private String[] generateRow(List<String> columnDefinitions, RegisterItem register, RegisterItem previousRegister, Double fps, ILinceProject linceProject) {
+        return columnDefinitions.stream().map(column -> {
+            if (Arrays.stream(LinceDataConstants.ColumnType.values())
+                    .anyMatch(type -> type.toString().equals(column))) {
+                return handleStringColumn(column, register, previousRegister, fps);
+            } else {
+                Criteria criteria = linceProject.getObservationTool().stream()
+                        .filter(c -> c.getCode().equals(column))
+                        .findFirst()
+                        .orElse(null);
+                return criteria != null ? handleCriteriaColumn(criteria, register) : StringUtils.EMPTY;
+            }
+        }).toArray(String[]::new);
+    }
+
+    private List<RegisterItem> getSelectedRegisters(ILinceProject linceProject) {
+        if (researchUUID != null) {
+            return linceProject.getRegister().stream()
+                    .filter(register -> register.getId().equals(researchUUID))
+                    .findFirst()
+                    .map(LinceRegisterWrapper::getRegisterData)
+                    .orElse(linceProject.getRegister().get(0).getRegisterData());
+        }
+        return linceProject.getRegister().get(0).getRegisterData();
     }
 
     public String handleCriteriaColumn(Criteria criteria, RegisterItem registerItem) {
@@ -100,14 +127,14 @@ public class LinceCsvExporter implements ILinceFileExporter {
         }
     }
 
-    public String handleStringColumn(String column, RegisterItem register, RegisterItem previousRegister, Double fps) {
+    public String handleStringColumn(String column, RegisterItem register, RegisterItem nextRegister, Double fps) {
         try {
             LinceDataConstants.ColumnType columnType = LinceDataConstants.ColumnType.fromValue(column);
-            long eventDurationMs = register.getVideoTimeMilis() - (previousRegister != null ? (long) previousRegister.getVideoTimeMilis() : 0L);
+            long eventDurationMs = (nextRegister != null ? (long) nextRegister.getVideoTimeMillis() : register.getVideoTimeMillis()) - register.getVideoTimeMillis();
             return switch (columnType) {
-                case EVENT_TIME_FRAMES -> String.valueOf(register.getFrames());
-                case EVENT_TIME_SECONDS -> timeCalculations.formatTimeWithAllComponents(register.getVideoTimeMilis());
-                case EVENT_TIME_MS -> String.valueOf(register.getVideoTimeMilis());
+                case EVENT_TIME_FRAMES -> String.valueOf(timeCalculations.convertMsToFPS(register.getVideoTimeMillis(), fps));
+                case EVENT_TIME_SECONDS -> timeCalculations.formatTimeWithAllComponents(register.getVideoTimeMillis());
+                case EVENT_TIME_MS -> String.valueOf(register.getVideoTimeMillis());
                 case EVENT_DURATION_FRAMES -> String.valueOf(timeCalculations.convertMsToFPS(eventDurationMs, fps));
                 case EVENT_DURATION_SECONDS -> timeCalculations.formatTimeWithAllComponents(eventDurationMs);
                 case EVENT_DURATION_MS -> String.valueOf(eventDurationMs);

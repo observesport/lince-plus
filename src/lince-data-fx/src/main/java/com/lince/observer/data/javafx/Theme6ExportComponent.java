@@ -1,27 +1,22 @@
 package com.lince.observer.data.javafx;
 
-import com.lince.observer.data.legacy.commands.exportar.ExportarInstrumentoObservacionalTheme;
-import com.lince.observer.data.legacy.commands.exportar.ExportarRegistroTheme6;
-import com.lince.observer.data.legacy.datos.ControladorArchivos;
 import com.lince.observer.data.legacy.utiles.ResourceBundleHelper;
-import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
-import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.legacy.Registro;
-import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 /**
  * Created by Alberto Soto. 8/11/24
  */
 public class Theme6ExportComponent extends GenericExportComponent {
+    public Theme6ExportComponent(UUID observerId) {
+        super(observerId);
+    }
 
     /*
     File f = LinceDesktopFileHelper.openSaveFileDialog("*.csv");
