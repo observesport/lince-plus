@@ -51,13 +51,10 @@
             <Menu mnemonicParsing="false" text="%desktop.option.video.visualize">
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#handleOpenBrowser" text="%desktop.option.video.visualize.open" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleNgrokStart" text="%desktop.option.browser.ngrok.open" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleNgrokStop" text="%desktop.option.browser.ngrok.close" />
                </items>
             </Menu>
-         <!-- <Menu mnemonicParsing="false" text="Estadisticas" visible="false">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleShowBirthdayStatistics" text="Ver estadisticas" />
-            </items>
-          </Menu>-->
             <Menu mnemonicParsing="false" text="%desktop.option.data">
                <items>
                   <Menu mnemonicParsing="false" text="%desktop.option.data.import">

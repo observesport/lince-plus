@@ -16,6 +16,7 @@
 package com.lince.observer.desktop;
 
 
+import com.github.alexdlaird.ngrok.NgrokClient;
 import com.lince.observer.data.base.ILinceApp;
 import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
@@ -31,6 +32,7 @@ import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
 import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.data.util.SystemNetworkHelper;
+import com.lince.observer.desktop.spring.service.ExternalLinkService;
 import com.lince.observer.math.service.*;
 import com.lince.observer.transcoding.TranscodingProvider;
 import com.sun.javafx.application.LauncherImpl;
@@ -101,6 +103,8 @@ public class LinceApp extends Application implements ILinceApp {
     protected Environment environment;
     @Autowired
     protected I18nMessageProvider i18nMessageProvider;
+    @Autowired
+    protected ExternalLinkService externalLinkService;
 
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(LinceApp.class, args);
@@ -143,6 +147,10 @@ public class LinceApp extends Application implements ILinceApp {
                 registry.addMapping("/**");
             }
         };
+    }
+
+    public ExternalLinkService getExternalLinkService() {
+        return externalLinkService;
     }
 
     public LegacyConverterService getLegacyConverterService() {
