@@ -20,6 +20,7 @@ import com.lince.observer.desktop.helper.ServerValuesHelper;
 import com.lince.observer.desktop.javafx.JavaFXLoader;
 import com.lince.observer.desktop.javafx.components.JavaFXBrowser;
 import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
+import com.lince.observer.desktop.spring.service.ExternalLinkService;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import com.lince.observer.math.service.DataHubService;
@@ -30,7 +31,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -47,7 +50,10 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javafx.geometry.Insets;
 
 /**
  * The controller for the root layout. The root layout provides the basic
@@ -61,6 +67,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     @Autowired
     protected DataHubService dataHubService;
+
+    @Autowired
+    protected ExternalLinkService externalLinkService;
 
     protected TranscodingProvider transcodingProvider = null;
 
@@ -359,6 +368,46 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         ServerValuesHelper.openLANLinceBrowser(url, false);
     }
 
+    @FXML
+    private void handleNgrokStart() {
+        if (externalLinkService == null) {
+            try {
+                externalLinkService = getMainLinceApp().getExternalLinkService();
+            } catch (Exception e) {
+                JavaFXLogHelper.showMessage(AlertType.ERROR, "Ngrok Service Error",
+                        "Failed to initialize Ngrok service. Please check your configuration.");
+                JavaFXLogHelper.addLogError("Failed to initialize Ngrok service", e);
+                return;
+            }
+        }
+
+        if (externalLinkService == null) {
+            JavaFXLogHelper.showMessage(AlertType.ERROR, "Ngrok Service Error",
+                    "Ngrok service is not available. Please check your configuration.");
+            return;
+        }
+
+        Map<String, String> configParams = externalLinkService.getConfigurationParameters();
+        Map<String, String> userInputs = new HashMap<>();
+
+        boolean allInputsProvided = showConfigurationDialog(configParams, userInputs);
+
+        if (allInputsProvided) {
+            externalLinkService.configureService(userInputs);
+            String externalLink = externalLinkService.generateLink(getMainLinceApp().getCurrentPort());
+            JavaFXLogHelper.addLogInfo("Ngrok located at " + externalLink);
+            JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Started", "External link: " + externalLink);
+        } else {
+            JavaFXLogHelper.showMessage(AlertType.WARNING, "Ngrok Configuration", "Ngrok configuration was cancelled or incomplete.");
+        }
+    }
+
+
+
+    @FXML
+    private void handleNgrokStop() {
+       externalLinkService.disconnect();
+    }
 
     private String i18n(String key, String... args) {
         return getMainLinceApp().getMessage(key, (Object[]) args);
@@ -728,4 +777,82 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             JavaFXLoader.exit(getMainLinceApp()); // Ensure application shuts down even if there's an error
         }
     };
+
+    private boolean showConfigurationDialog(Map<String, String> configParams, Map<String, String> userInputs) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Ngrok Configuration");
+        dialog.setHeaderText("Please provide the required configuration parameters:");
+
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        ButtonType openButtonType = new ButtonType("Open External Link", ButtonBar.ButtonData.LEFT);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, openButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(5);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        String configMessage = externalLinkService.getConfigurationMessage();
+        TextArea messageArea = new TextArea(configMessage);
+        messageArea.setWrapText(true);
+        messageArea.setEditable(false);
+        messageArea.setFocusTraversable(false);
+        messageArea.setMaxWidth(Double.MAX_VALUE);
+        messageArea.setMaxHeight(Double.MAX_VALUE);
+        messageArea.setStyle("-fx-font-size: 12px; -fx-text-fill: #333333; -fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0;");
+        messageArea.setPrefRowCount(7);
+
+        GridPane.setVgrow(messageArea, Priority.ALWAYS);
+        GridPane.setMargin(messageArea, new Insets(0, 0, 20, 0));
+        grid.add(messageArea, 0, 0, 2, 1);
+        Map<String, TextField> textFields = new HashMap<>();
+
+        int row = 1;
+        for (Map.Entry<String, String> entry : configParams.entrySet()) {
+            String key = entry.getKey();
+            String description = entry.getValue();
+
+            Label label = new Label(description + ":");
+            TextField textField = new TextField();
+            textFields.put(key, textField);
+
+            grid.add(label, 0, row);
+            grid.add(textField, 1, row);
+            row++;
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        while (true) {
+            Optional<ButtonType> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                if (result.get() == okButtonType) {
+                    for (Map.Entry<String, TextField> entry : textFields.entrySet()) {
+                        String key = entry.getKey();
+                        String value = entry.getValue().getText().trim();
+                        if (!value.isEmpty()) {
+                            userInputs.put(key, value);
+                        }
+                    }
+                    return userInputs.size() == configParams.size();
+                } else if (result.get() == openButtonType) {
+                    Pattern pattern = Pattern.compile("https://[^\\s]+");
+                    Matcher matcher = pattern.matcher(configMessage);
+                    if (matcher.find()) {
+                        String externalUrl = matcher.group();
+                        ServerValuesHelper.openLANLinceBrowser(externalUrl, false);
+                    } else {
+                        JavaFXLogHelper.showMessage(AlertType.ERROR, "Error", "No external URL found in the configuration message.");
+                    }
+                    // Continue the loop to keep the dialog open
+                } else {
+                    // Cancel button was pressed
+                    return false;
+                }
+            } else {
+                // Dialog was closed without pressing any button
+                return false;
+            }
+        }
+    }
 }
