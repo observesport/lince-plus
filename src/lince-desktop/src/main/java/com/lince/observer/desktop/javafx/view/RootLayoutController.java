@@ -23,7 +23,6 @@ import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import com.lince.observer.math.service.DataHubService;
-import com.lince.observer.math.service.LegacyConverterService;
 import com.lince.observer.transcoding.TranscodingProvider;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
@@ -351,25 +350,22 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
     /**
-     * Common method on exports and imports to legacy features
+     * Ensures data compatibility for export operations by migrating current data to legacy format.
+     * This method initializes legacy instances and performs the migration process.
+     *
+     * @return Optional containing the selected research UUID if successful, empty Optional otherwise
      */
+    private Optional<UUID> ensureExportCompatibility() {
+        UUID researchId = getResearchSelection();
+        return getMainLinceApp().getLegacyConverterService().ensureExportCompatibility(researchId);
+    }
 
-    private Optional<UUID> ensureCompatibility(boolean isExport) {
-        try {
-            Registro.getInstance();
-            InstrumentoObservacional.getInstance();
-            LegacyConverterService converter = getMainLinceApp().getLegacyConverterService();
-            if (isExport) {
-                UUID uuid = getResearchSelection();
-                converter.migrateDataToLegacy(uuid);
-                return Optional.ofNullable(uuid);
-            } else {
-                converter.migrateDataFromLegacy();
-            }
-        } catch (Exception e) {
-            JavaFXLogHelper.addLogError("Compatibility issue", e);
-        }
-        return Optional.empty();
+    /**
+     * Ensures data compatibility for import operations by migrating legacy data to current format.
+     * This method initializes legacy instances and performs the migration process.
+     */
+    private void ensureImportCompatibility() {
+        getMainLinceApp().getLegacyConverterService().ensureImportCompatibility();
     }
 
 
@@ -488,7 +484,11 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
             Registro.loadNewInstance();
-            ensureCompatibility(isExport);
+            if (isExport) {
+                ensureExportCompatibility();
+            } else {
+                ensureImportCompatibility();
+            }
             if (cmd != null) {
                 cmd.execute();
             } else {
@@ -496,7 +496,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             }
             if (!isExport) {
                 //solo es el caso de Hoisan y de ficheros de carga
-                ensureCompatibility(false);
+                ensureImportCompatibility();
             }
             JavaFXLogHelper.addLogInfo(i18n);
         } catch (Exception e) {
@@ -509,7 +509,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportRegisterLince1() {
-        ensureCompatibility(true);//para importar tenemos que migrar el instrumento!
+        ensureImportCompatibility();//para importar tenemos que migrar el instrumento!
         doImport(new LoadRegistro(), null, "panel_import_custom", i18n("import.lince-1.register"));
     }
 
@@ -527,7 +527,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportRegisterLince1() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         doExport(new SaveRegistroAs(), null, "panel_export_custom", i18n("import.lince-1.register"));
     }
 
@@ -536,7 +536,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportToolLince1() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         doExport(new SaveInstrumentoObservacionalAs(), null, "panel_export_custom", i18n("import.lince-1.observationTool"));
     }
 
@@ -553,7 +553,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportHoisan() {
-        ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         doExport(new AbrirExportarHoisan(), null, "panel_export_custom", "Hoisan");
     }
 
@@ -563,7 +563,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportTheme5() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         projectId.ifPresent(id -> doExportFX(new Theme5ExportComponent(projectId.get()), "panel_export_custom", "Theme 5"));
     }
 
@@ -573,7 +573,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportTheme6() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         projectId.ifPresent(id -> doExportFX(new Theme6ExportComponent(projectId.get()), "panel_export_custom", "Theme 6"));
     }
 
@@ -583,7 +583,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSAS() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         projectId.ifPresent(id ->
                 doExportFX(new SasExportComponent(projectId.get()), "panel_export_custom", "SAS")
         );
@@ -628,7 +628,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQEstado() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         projectId.ifPresent(id ->
                 doExportFX(new RegistroSdisGseqEstadoExport(projectId.get()), "panel_export_custom", "SDIS Seq por estados")
         );
@@ -640,7 +640,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQEvent() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         projectId.ifPresent(id ->
                 doExportFX(new RegistroSdisGseqEventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos")
         );
@@ -652,7 +652,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQTimeEvent() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         projectId.ifPresent(id ->
                 doExportFX(new RegistroSdisGseqTimedEventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos y tiempo")
         );
@@ -664,7 +664,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQInterval() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         projectId.ifPresent(id ->
                 doExportFX(new RegistroSdisGseqIntervalExport(projectId.get()), "panel_export_custom", "SDIS Seq por intérvalos")
         );
@@ -676,7 +676,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportSDISGSEQMultiEvent() {
-        Optional<UUID> projectId = ensureCompatibility(true);//el new panel ya hace copia de contenido y necesita los datos legacy
+        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
         doExportFX(new RegistroSdisGseqMultieventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos múltiples");
     }
 

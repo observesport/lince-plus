@@ -58,7 +58,7 @@ jobs:
       - name: Build with Maven
         run: |
           cd src
-          mvn -B package install -DskipTests -DinstallDir="${INSTALL4J_HOME}" -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}"
+          mvn -B package install --update-snapshots -DskipTests -DinstallDir="${INSTALL4J_HOME}" -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}"
         env:
           INSTALL4J_HOME: "/opt/install4j10"
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}

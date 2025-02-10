@@ -28,6 +28,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -59,7 +60,7 @@ public class InstrumentoObservacional implements TreeModelListener {
         observable.notifyObservers("new");
     }
 
-    public static void loadInstance(File f) {
+    public static void loadInstance(File f) throws IOException {
         try {
             RootInstrumentoObservacional arbol = (RootInstrumentoObservacional) ControladorArchivos.getInstance().cargar(f);
             instance = new InstrumentoObservacional(arbol, f);

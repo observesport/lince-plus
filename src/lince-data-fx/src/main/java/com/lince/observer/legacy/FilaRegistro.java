@@ -29,6 +29,8 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
+ * Moved from lince.modelo.FilaRegistro
+ *
  * @author Brais
  * @author berto
  */
@@ -44,7 +46,11 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
         this.milis = milis;
         this.registro = categoriasSeleccionadas;
         this.datosMixtos = datosMixtos;
-        this.fps = fps != null? fps : 0.0;
+        this.fps = fps != null? fps : TimeCalculations.DEFAULT_FPS;
+    }
+
+    public FilaRegistro(Integer milis, HashMap<Criterio, Categoria> categoriasSeleccionadas, HashMap<NodoInformacion, String> datosMixtos) {
+        this(milis, categoriasSeleccionadas, datosMixtos, 0.0);
     }
 
     public FilaRegistro getFilaRegistroCorrecta(List<LegacyToolException> exceptions) {

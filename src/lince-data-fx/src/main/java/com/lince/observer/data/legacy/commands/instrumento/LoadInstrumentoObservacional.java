@@ -27,6 +27,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Brais
@@ -49,7 +50,11 @@ public class LoadInstrumentoObservacional extends Command {
         File f = LinceDesktopFileHelper.openSingleFileDialogBasic(linceApp, new MutablePair<>(label, "*.ilince"));
         if (f != null) {
             if (f.canRead()) {
-                InstrumentoObservacional.loadInstance(f);
+                try {
+                    InstrumentoObservacional.loadInstance(f);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 Registro.loadNewInstance();
             } else {
                 JOptionPane.showMessageDialog(null, java.util.ResourceBundle.getBundle("i18n.Bundle").getString("EL ARCHIVO ") + f.getName() + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" NO EXISTE."), java.util.ResourceBundle.getBundle("i18n.Bundle").getString("LINCE"), JOptionPane.INFORMATION_MESSAGE);

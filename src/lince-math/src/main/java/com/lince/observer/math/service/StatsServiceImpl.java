@@ -55,8 +55,8 @@ public class StatsServiceImpl implements StatsService {
     public List<KeyValue<String, Double>> calculateLegacyKappa(UUID firstRegister, UUID secondRegister) {
         try {
             List<KeyValue<String, Double>> response = new ArrayList<>();
-            Registro old1 = legacyConverterService.migrateDataToLegacy(firstRegister);
-            Registro old2 = legacyConverterService.migrateDataToLegacy(secondRegister);
+            Registro old1 = legacyConverterService.migrateRegisterToLegacy(firstRegister);
+            Registro old2 = legacyConverterService.migrateRegisterToLegacy(secondRegister);
             Criterio[] criteriaList = InstrumentoObservacional.getInstance().getCriterios();
             List<Object> items = new ArrayList<>();
             CollectionUtils.addAll(items, criteriaList);
