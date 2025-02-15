@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by Alberto Soto. 11/2/25
@@ -17,7 +19,7 @@ import java.util.function.Function;
 @Service
 @LinceQualifier.DesktopQualifier
 public class NgrokLinkService implements ExternalLinkService {
-
+    private final Map<String, String> configurationValues = new HashMap<>();
     private final NgrokConfig ngrokConfig;
     private static final String NGROK_TOKEN = "ngrok_token";
 
@@ -42,9 +44,11 @@ public class NgrokLinkService implements ExternalLinkService {
     public String generateLink(int port) {
         ngrokConfig.setToken(getParameter(NGROK_TOKEN));
         ngrokConfig.startNgrok(port);
-        String publicUrl = ngrokConfig.getPublicUrl();
-        log.info("Generated Ngrok link: {}", publicUrl);
-        return publicUrl;
+        Optional<String> publicUrl = ngrokConfig.getPublicUrl();
+        if (publicUrl.isPresent()) {
+            log.info("Generated Ngrok link: {}", publicUrl);
+        }
+        return publicUrl.orElse(StringUtils.EMPTY);
     }
 
     @Override
@@ -54,13 +58,45 @@ public class NgrokLinkService implements ExternalLinkService {
     }
 
     @Override
+    public Map<String, String> getConfiguration() {
+        Map<String, String> validKeys = getConfigurationParameters();
+        return configurationValues.entrySet().stream()
+                .filter(entry -> validKeys.containsKey(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    @Override
+    public void setConfiguration(Map<String, String> parameters) {
+        Map<String, String> validKeys = getConfigurationParameters();
+        configurationValues.clear();
+        parameters.entrySet().stream()
+                .filter(entry -> validKeys.containsKey(entry.getKey()))
+                .forEach(entry -> configurationValues.put(entry.getKey(), entry.getValue()));
+    }
+
+    @Override
+    public void setParameter(String key, String value) {
+        if (getConfigurationParameters().containsKey(key)) {
+            configurationValues.put(key, value);
+        }
+    }
+
+    @Override
+    public String getParameter(String key) {
+        if (getConfigurationParameters().containsKey(key)) {
+            return configurationValues.get(key);
+        }
+        return null;
+    }
+
+    @Override
     public boolean isConnected() {
-        return StringUtils.isNotBlank(ngrokConfig.getPublicUrl()) && !ngrokConfig.getPublicUrl().equalsIgnoreCase("Ngrok tunnel not established");
+        return StringUtils.isNotEmpty(getExternalLink());
     }
 
     @Override
     public String getExternalLink() {
-        return ngrokConfig.getPublicUrl();
+        return ngrokConfig.getPublicUrl().orElse(StringUtils.EMPTY);
     }
 
     @Override
@@ -73,4 +109,7 @@ public class NgrokLinkService implements ExternalLinkService {
                 + "4. Paste the token in the 'Ngrok Authentication Token' field in the configuration settings";
     }
 
+    public void clearConfiguration() {
+        configurationValues.clear();
+    }
 }
