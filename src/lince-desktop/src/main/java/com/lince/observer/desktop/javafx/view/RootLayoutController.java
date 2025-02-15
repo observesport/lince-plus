@@ -26,12 +26,15 @@ import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacion
 import com.lince.observer.math.service.DataHubService;
 import com.lince.observer.transcoding.TranscodingProvider;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
@@ -53,6 +56,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import javafx.geometry.Insets;
 
 /**
@@ -80,6 +84,14 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private ListView<String> videoPlaylistView;
 
     @FXML
+    private MenuItem ngrokStartMenuItem;
+
+    @FXML
+    private MenuItem ngrokStopMenuItem;
+
+    private BooleanProperty ngrokRunning = new SimpleBooleanProperty(false);
+
+    @FXML
     private Pane pane;
 
 
@@ -87,6 +99,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void initialize() {
         log.info("--            Init RootLayoutController               --");
         logArea.setItems(JavaFXLogHelper.getFxLog());
+        ngrokStartMenuItem.visibleProperty().bind(ngrokRunning.not());
+        ngrokStopMenuItem.visibleProperty().bind(ngrokRunning);
     }
 
     public void lazyInit() {
@@ -391,22 +405,26 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         Map<String, String> userInputs = new HashMap<>();
 
         boolean allInputsProvided = showConfigurationDialog(configParams, userInputs);
-
+        JavaFXLogHelper.addLogInfo("User inputs: " + userInputs);
         if (allInputsProvided) {
             externalLinkService.configureService(userInputs);
             String externalLink = externalLinkService.generateLink(getMainLinceApp().getCurrentPort());
-            JavaFXLogHelper.addLogInfo("Ngrok located at " + externalLink);
-            JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Started", "External link: " + externalLink);
+            if (!StringUtils.isEmpty(externalLink)) {
+                JavaFXLogHelper.addLogInfo("Ngrok located at " + externalLink);
+                JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Started", "External link: " + externalLink);
+            }
+            ngrokRunning.set(externalLinkService.isConnected());
         } else {
             JavaFXLogHelper.showMessage(AlertType.WARNING, "Ngrok Configuration", "Ngrok configuration was cancelled or incomplete.");
         }
     }
 
 
-
     @FXML
     private void handleNgrokStop() {
-       externalLinkService.disconnect();
+        externalLinkService.disconnect();
+        ngrokRunning.set(false);
+        JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Stopped", "Ngrok service has been stopped.");
     }
 
     private String i18n(String key, String... args) {
@@ -783,31 +801,31 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         dialog.setTitle("Ngrok Configuration");
         dialog.setHeaderText("Please provide the required configuration parameters:");
 
-        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        ButtonType openButtonType = new ButtonType("Open External Link", ButtonBar.ButtonData.LEFT);
-        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, openButtonType, ButtonType.CANCEL);
-
         GridPane grid = new GridPane();
         grid.setHgap(10);
-        grid.setVgap(5);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 20, 10, 10));
 
         String configMessage = externalLinkService.getConfigurationMessage();
-        TextArea messageArea = new TextArea(configMessage);
-        messageArea.setWrapText(true);
-        messageArea.setEditable(false);
-        messageArea.setFocusTraversable(false);
-        messageArea.setMaxWidth(Double.MAX_VALUE);
-        messageArea.setMaxHeight(Double.MAX_VALUE);
-        messageArea.setStyle("-fx-font-size: 12px; -fx-text-fill: #333333; -fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0;");
-        messageArea.setPrefRowCount(7);
+        Label messageLabel = new Label(configMessage);
+        messageLabel.setWrapText(true);
 
-        GridPane.setVgrow(messageArea, Priority.ALWAYS);
-        GridPane.setMargin(messageArea, new Insets(0, 0, 20, 0));
-        grid.add(messageArea, 0, 0, 2, 1);
+        Button openBrowserButton = new Button("Open Browser");
+        openBrowserButton.setOnAction(e -> {
+            Pattern pattern = Pattern.compile("https://[^\\s]+");
+            Matcher matcher = pattern.matcher(configMessage);
+            if (matcher.find()) {
+                String externalUrl = matcher.group();
+                ServerValuesHelper.openLANLinceBrowser(externalUrl, false);
+            } else {
+                JavaFXLogHelper.showMessage(AlertType.ERROR, "Error", "No external URL found in the configuration message.");
+            }
+        });
+        grid.add(messageLabel, 0, 0);
+        GridPane.setColumnSpan(messageLabel, GridPane.REMAINING);
+        grid.addRow(1, openBrowserButton);
         Map<String, TextField> textFields = new HashMap<>();
-
-        int row = 1;
+        int row = 2;
         for (Map.Entry<String, String> entry : configParams.entrySet()) {
             String key = entry.getKey();
             String description = entry.getValue();
@@ -815,44 +833,24 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             Label label = new Label(description + ":");
             TextField textField = new TextField();
             textFields.put(key, textField);
-
-            grid.add(label, 0, row);
-            grid.add(textField, 1, row);
+            grid.addRow(row, label, textField);
             row++;
         }
 
         dialog.getDialogPane().setContent(grid);
 
-        while (true) {
-            Optional<ButtonType> result = dialog.showAndWait();
-            if (result.isPresent()) {
-                if (result.get() == okButtonType) {
-                    for (Map.Entry<String, TextField> entry : textFields.entrySet()) {
-                        String key = entry.getKey();
-                        String value = entry.getValue().getText().trim();
-                        if (!value.isEmpty()) {
-                            userInputs.put(key, value);
-                        }
-                    }
-                    return userInputs.size() == configParams.size();
-                } else if (result.get() == openButtonType) {
-                    Pattern pattern = Pattern.compile("https://[^\\s]+");
-                    Matcher matcher = pattern.matcher(configMessage);
-                    if (matcher.find()) {
-                        String externalUrl = matcher.group();
-                        ServerValuesHelper.openLANLinceBrowser(externalUrl, false);
-                    } else {
-                        JavaFXLogHelper.showMessage(AlertType.ERROR, "Error", "No external URL found in the configuration message.");
-                    }
-                    // Continue the loop to keep the dialog open
-                } else {
-                    // Cancel button was pressed
-                    return false;
-                }
-            } else {
-                // Dialog was closed without pressing any button
-                return false;
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == okButtonType) {
+            for (Map.Entry<String, TextField> entry : textFields.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue().getText();
+                userInputs.put(key, value);
             }
+            return true;
         }
+        return false;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class NgrokConfig {
@@ -59,11 +60,13 @@ public class NgrokConfig {
             log.info("=============================================================");
         } catch (Exception e) {
             log.error("Failed to start ngrok: ", e);
+            closeNgrok();
         }
     }
 
-    public String getPublicUrl() {
-        return tunnel != null ? tunnel.getPublicUrl() : "Ngrok tunnel not established";
+    public Optional<String> getPublicUrl() {
+        return Optional.ofNullable(tunnel)
+                .map(Tunnel::getPublicUrl);
     }
 
     @PreDestroy

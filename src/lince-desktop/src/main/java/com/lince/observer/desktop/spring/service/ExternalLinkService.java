@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -13,8 +12,6 @@ import java.util.stream.Collectors;
  */
 public interface ExternalLinkService {
     Logger log = LoggerFactory.getLogger(ExternalLinkService.class);
-
-    Map<String, String> parameters = new ConcurrentHashMap<>();
 
     /**
      * Generates an external link.
@@ -37,8 +34,7 @@ public interface ExternalLinkService {
         Map<String, String> filteredParameters = parameters.entrySet().stream()
                 .filter(entry -> allowedKeys.contains(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        ExternalLinkService.parameters.putAll(filteredParameters);
+        setConfiguration(filteredParameters);
         log.info("External link service configured with {} parameters", filteredParameters.size());
 
         if (filteredParameters.size() < parameters.size()) {
@@ -52,28 +48,11 @@ public interface ExternalLinkService {
      */
     void disconnect();
 
-    /**
-     * Sets a configuration parameter.
-     *
-     * @param key The parameter key.
-     * @param value The parameter value.
-     */
-    default void setParameter(String key, String value) {
-        parameters.put(key, value);
-        log.debug("Parameter set: {} = {}", key, value);
-    }
 
-    /**
-     * Gets a configuration parameter.
-     *
-     * @param key The parameter key.
-     * @return The parameter value, or null if not found.
-     */
-    default String getParameter(String key) {
-        String value = parameters.get(key);
-        log.debug("Parameter get: {} = {}", key, value);
-        return value;
-    }
+    Map<String, String> getConfiguration();
+    void setConfiguration(Map<String, String> parameters);
+    void setParameter(String key, String value);
+    String getParameter(String key);
 
     /**
      * Checks if the service is currently connected.
