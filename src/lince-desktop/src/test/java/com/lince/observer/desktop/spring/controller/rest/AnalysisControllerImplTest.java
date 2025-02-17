@@ -1,9 +1,17 @@
 package com.lince.observer.desktop.spring.controller.rest;
 
+import com.lince.observer.data.bean.RegisterItem;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import java.security.Principal;
+
 import com.lince.observer.data.bean.highcharts.HighChartsSerieBean;
 import com.lince.observer.data.bean.highcharts.HighChartsWrapper;
 import com.lince.observer.data.bean.highcharts.HighChartsSerie;
+import com.lince.observer.data.bean.wrapper.SceneWrapper;
 import com.lince.observer.data.service.AnalysisService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +23,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
-import static org.mockito.Mockito.when;
+
+import static org.mockito.Mockito.*;
 
 class AnalysisControllerImplTest {
     @Mock
@@ -29,6 +39,29 @@ class AnalysisControllerImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
+
+
+    @Test
+    void testPushScene() {
+        // Arrange
+        SceneWrapper sceneWrapper = new SceneWrapper();
+        sceneWrapper.setMoment(10.5);
+        List<RegisterItem> mockRegisterItems = List.of(new RegisterItem());
+        when(analysisService.saveObservation(eq(10.5), any())).thenReturn(true);
+        when(analysisService.getSortedObservations()).thenReturn(mockRegisterItems);
+
+        Principal mockPrincipal = mock(Principal.class);
+
+        // Act
+        ResponseEntity<List<RegisterItem>> response = analysisController.pushScene(mock(HttpServletRequest.class), sceneWrapper, mockPrincipal);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockRegisterItems, response.getBody());
+        verify(analysisService).saveObservation(eq(10.5), any());
+        verify(analysisService).getSortedObservations();
+    }
+
 
     @Test
     void testGetPieStats() {
@@ -94,54 +127,6 @@ class AnalysisControllerImplTest {
         assertEquals("subValue", drilldownObject.getString("drilldown"));
     }
 
-//    @Test
-//    void testGetPieStats_WithDrilldownData() {
-//        // Arrange
-//        HighChartsWrapper mockData = new HighChartsWrapper();
-//        HighChartsSerie mockSerie = new HighChartsSerie();
-//        mockSerie.setDataBean(new JSONObject("{\"mainCriteria\":\"value\"}"));
-//        mockData.setSeries(List.of(mockSerie));
-//
-//        HighChartsWrapper mockDrilldown = new HighChartsWrapper();
-//        HighChartsSerie mockDrilldownSerie = new HighChartsSerie();
-//        mockDrilldownSerie.setName("DrilldownCategory");
-//        mockDrilldownSerie.setDataBean(new JSONObject("{\"subCriteria\":\"subValue\"}"));
-//        mockDrilldown.setSeries(List.of(mockDrilldownSerie));
-//        mockData.setDrilldown(List.of(mockDrilldown));
-//
-//        when(analysisService.getRegisterStatsByCategory()).thenReturn(mockData);
-//
-//        // Act
-//        ResponseEntity<String> response = analysisController.getPieStats();
-//
-//        // Assert
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        JSONObject jsonResponse = new JSONObject(response.getBody());
-//        assertTrue(jsonResponse.has("criteria"));
-//        assertTrue(jsonResponse.has("DrilldownCategory"));
-//        assertEquals("{\"mainCriteria\":\"value\"}", jsonResponse.getJSONObject("criteria").toString());
-//        assertEquals("{\"subCriteria\":\"subValue\"}", jsonResponse.getJSONObject("DrilldownCategory").toString());
-//    }
-//
-//    @Test
-//    void testGetPieStats_WithSeriesData() {
-//        // Arrange
-//        HighChartsWrapper mockData = new HighChartsWrapper();
-//        HighChartsSerie mockSerie = new HighChartsSerie();
-//        mockSerie.setDataBean(new JSONObject("{\"key\":\"value\"}"));
-//        mockData.setSeries(List.of(mockSerie));
-//
-//        when(analysisService.getRegisterStatsByCategory()).thenReturn(mockData);
-//
-//        // Act
-//        ResponseEntity<String> response = analysisController.getPieStats();
-//
-//        // Assert
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        JSONObject jsonResponse = new JSONObject(response.getBody());
-//        assertTrue(jsonResponse.has("criteria"));
-//        assertEquals("{\"key\":\"value\"}", jsonResponse.getJSONObject("criteria").toString());
-//    }
 
 
 }

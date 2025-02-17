@@ -24,8 +24,8 @@ public interface AnalysisService {
     /**
      * Normaliza el momento de sistema a dos decimales
      *
-     * @param moment
-     * @return
+     * @param moment The system moment to normalize
+     * @return The normalized system moment rounded to two decimal places
      */
     default Double convertSysMoment(Double moment) {
         return Math.round(moment * 100.0) / 100.0;

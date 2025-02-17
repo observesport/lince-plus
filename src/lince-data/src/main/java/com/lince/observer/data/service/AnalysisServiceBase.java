@@ -250,7 +250,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         AtomicInteger idGenerator = new AtomicInteger();
         try {
             for (RegisterItem value : getAllObservations()) {
-                Integer currentGroupID = value.getId() == null ? -1 : value.getId();
+                int currentGroupID = value.getId() == null ? -1 : value.getId();
                 if (value.getId() == null) {
                     value.setId(generateID()); //corregimos posible error de ids al recorrer
                 }
@@ -268,21 +268,15 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         try {
             if (sceneWrapper.getMoment() != null) {
                 RegisterItem scene = new RegisterItem();
-                scene.setVideoTime(sceneWrapper.getMoment());
                 if (sceneWrapper.getId() != null) {
                     scene.setId(sceneWrapper.getId());
                 }
-                if (StringUtils.isNotEmpty(sceneWrapper.getName())) {
-                    scene.setName(sceneWrapper.getName());
-                }
-                if (StringUtils.isNotEmpty(sceneWrapper.getDescription())) {
-                    scene.setDescription(sceneWrapper.getDescription());
-                }
-                scene.setFrames(Optional.ofNullable(sceneWrapper.getMoment())
-                        .map(moment -> timeCalculations.convertMsToFrames(moment.longValue(),
-                                profileService.getCurrentFPSValue()))
-                        .orElse(null));
+                scene.setVideoTime(sceneWrapper.getMoment());
+                scene.setFrames(timeCalculations.convertMsToFrames(scene.getVideoTimeMillis(), profileService.getCurrentFPSValue()));
+                scene.setName(sceneWrapper.getName());
+                scene.setDescription(sceneWrapper.getDescription());
                 scene = loadCategoriesByCode(scene, sceneWrapper.getCategories());
+                scene.setSaveDate(new Date());
                 return saveObservation(scene);
             }
         } catch (Exception e) {
