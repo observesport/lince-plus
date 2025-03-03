@@ -8,6 +8,7 @@ import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.user.UserProfile;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
+import com.lince.observer.data.component.PackageAwareXMLSerializer;
 import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.data.util.JavaFXLogHelper;
@@ -17,6 +18,8 @@ import com.lince.observer.legacy.instrumentoObservacional.Categoria;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import com.lince.observer.legacy.instrumentoObservacional.RootInstrumentoObservacional;
+
+import java.io.InputStream;
 import javafx.collections.FXCollections;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
@@ -26,6 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.*;
+
+/**
+ * Container for legacy migration results
+ */
+record LegacyMigrationResult(
+    Registro register,
+    InstrumentoObservacional instrument
+) {}
 
 /**
  * lince-scientific-desktop
@@ -53,6 +64,52 @@ public class LegacyConverterService {
     }
 
     /**
+     * Initializes the required legacy instances for data migration.
+     *
+     * @param forceClean if true, forces creation of new instances
+     */
+    public void initializeLegacyInstances(boolean forceClean) {
+        if (!forceClean) {
+            Registro.getInstance();
+            InstrumentoObservacional.getInstance();
+        } else {
+            Registro.loadNewInstance();
+            InstrumentoObservacional.loadNewInstance();
+        }
+    }
+
+    /**
+     * Ensures data compatibility for export operations by migrating current data to legacy format.
+     * This method initializes legacy instances and performs the migration process.
+     *
+     * @param researchId the UUID of the research to migrate
+     * @return Optional containing the research UUID if successful, empty Optional otherwise
+     */
+    public Optional<UUID> ensureExportCompatibility(UUID researchId) {
+        try {
+            initializeLegacyInstances(true);
+            migrateDataToLegacy(researchId);
+            return Optional.ofNullable(researchId);
+        } catch (Exception e) {
+            JavaFXLogHelper.addLogError("Failed to ensure export compatibility", e);
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Ensures data compatibility for import operations by migrating legacy data to current format.
+     * This method initializes legacy instances and performs the migration process.
+     */
+    public void ensureImportCompatibility() {
+        try {
+            initializeLegacyInstances(false);
+            migrateDataFromLegacy();
+        } catch (Exception e) {
+            JavaFXLogHelper.addLogError("Failed to ensure import compatibility", e);
+        }
+    }
+
+    /**
      * Loads into the system loaded legacy data
      */
     public void migrateDataFromLegacy() {
@@ -61,17 +118,23 @@ public class LegacyConverterService {
     }
 
     /**
-     * Migrates current structure to Legacy data for export in legacy module
+     * Migrates both register and instrument data to legacy format
+     * @param registerId UUID of the register to migrate
+     * @return LegacyMigrationResult containing both migrated register and instrument
      */
-    @Deprecated
-    public Registro migrateDataToLegacy() {
-        migrateDataToLegacyInstrument();
-        return migrateDataToLegacyRegister(true, null);
+    public LegacyMigrationResult migrateDataToLegacy(UUID registerId) {
+        InstrumentoObservacional instrument = migrateDataToLegacyInstrument();
+        Registro register = migrateDataToLegacyRegister(true, registerId);
+        return new LegacyMigrationResult(register, instrument);
     }
 
-    public Registro migrateDataToLegacy(UUID registerId) {
-        migrateDataToLegacyInstrument();
-        return migrateDataToLegacyRegister(true, registerId);
+    /**
+     * Legacy compatibility method that migrates only register data
+     * @param registerId UUID of the register to migrate
+     * @return migrated Registro
+     */
+    public Registro migrateRegisterToLegacy(UUID registerId) {
+        return migrateDataToLegacy(registerId).register();
     }
 
     /**
@@ -188,6 +251,38 @@ public class LegacyConverterService {
      * Clears the internal categoryService filling it with the contents of the instrumento observacional
      * from legacy structure
      */
+    public InstrumentoObservacional migrateDataFromLegacyInstrument(InputStream inputStream) {
+        try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(inputStream)) {
+            Object obj = decoder.readObject();
+            if (obj instanceof RootInstrumentoObservacional) {
+                RootInstrumentoObservacional root = (RootInstrumentoObservacional) obj;
+                InstrumentoObservacional i = new InstrumentoObservacional(root, null);
+                if (i != null) {
+                    Criterio[] criterios = i.getCriterios();
+                    if (criterios != null && criterios.length > 0) {
+                        List<Criteria> l = new ArrayList<>();
+                        int id = 1;//si fuera 0 en js se evalua a false y no se puede abrir (flipa)
+                        for (Criterio c : i.getCriterios()) {
+                            Criteria aux = getCriteriaFromLegacy(c, id, l);
+                            if (aux != null) {
+                                l.add(aux);
+                                id++;
+                            }
+                        }
+                        if (!l.isEmpty()) {
+                            categoryService.clearSelectedObservationTool();
+                            categoryService.saveObservationTool(l);
+                        }
+                    }
+                }
+                return i;
+            }
+        } catch (Exception e) {
+            log.error("Error migrating legacy instrument", e);
+        }
+        return null;
+    }
+
     private void migrateDataFromLegacyInstrument() {
         try {
             InstrumentoObservacional i = InstrumentoObservacional.getInstance();
@@ -212,7 +307,6 @@ public class LegacyConverterService {
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
         }
-
     }
 
     /**
@@ -221,47 +315,78 @@ public class LegacyConverterService {
     private void migrateDataFromLegacyRegister() {
         try {
             Registro r = Registro.getInstance();
-            int id = 1;
-            List<RegisterItem> lst = new ArrayList<>();
-            for (FilaRegistro entry : r.datosVariables) {
-                RegisterItem register = new RegisterItem((double) (entry.getMilis() / 1000));
-                register.setId(id);
-                register.setSaveDate(new Date());
-                register.setDescription(StringUtils.EMPTY);
-                register.setName("f." + entry.getRegisterFrameValue());
-                register.setFrames(entry.getRegisterFrameValue());
-                List<Category> categories = new ArrayList<>();
-                for (Map.Entry<Criterio, Categoria> data : entry.getRegistro().entrySet()) {
-                    Categoria cat = data.getValue();
-                    //Category pairCat = (Category) categoryService.findCategoryByCode(cat.getCodigo());
-                    Pair<Criteria, Category> pairCat = categoryService.findToolEntryByIdentifier(null, cat.getCodigo(), null);
-                    //Criteria cri = (Criteria)categoryService.findCategoryByCode(data.getKey());
-                    if (pairCat != null && pairCat.getValue() != null) {
-                        categories.add(pairCat.getValue());
-                    } else {
-                        assert pairCat != null;
-                        log.error("criterio no valido" + pairCat.getValue().toString());
-                        Criteria aux = Criteria.getRecoveryCriteria();
-                        CategoryData tempData = categoryService.findCategoryByCode(aux.getCode());
-                        if (tempData == null) {
-                            categoryService.getObservationTool().add(aux);
-                        }
-                    }
-
-                }
-                if (!categories.isEmpty()) {
-                    register.setRegister(categories);
-                }
-                lst.add(register);
-                id++;
-            }
-            if (!lst.isEmpty()) {
-                saveRegisterForNewUser("Lince v1 observer", lst);
-            }
+            processRegisterData(r);
         } catch (Exception e) {
             log.error(getClass().getEnclosingMethod().toString(), e);
         }
+    }
 
+    public Registro migrateDataFromLegacyRegister(InputStream inputStream) {
+        try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(inputStream)) {
+            Object obj = decoder.readObject();
+            if (obj instanceof HashMap) {
+                HashMap<String, Object> data = (HashMap<String, Object>) obj;
+                if (data.containsKey("datosVariables") && data.get("datosVariables") instanceof ArrayList) {
+                    Registro registro = Registro.getInstance();
+                    registro.datosVariables = (ArrayList<FilaRegistro>) data.get("datosVariables");
+                    processRegisterData(registro);
+                    return registro;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error migrating legacy register", e);
+        }
+        return null;
+    }
+
+    private void processRegisterData(Registro r) {
+        if (r == null || r.datosVariables == null) {
+            return;
+        }
+
+        int id = 1;
+        List<RegisterItem> lst = new ArrayList<>();
+        for (FilaRegistro entry : r.datosVariables) {
+            RegisterItem register = new RegisterItem((double) (entry.getMilis() / 1000));
+            register.setId(id);
+            register.setSaveDate(new Date());
+            register.setDescription(StringUtils.EMPTY);
+            register.setName("f." + entry.getRegisterFrameValue());
+            register.setFrames(entry.getRegisterFrameValue());
+            List<Category> categories = new ArrayList<>();
+            for (Map.Entry<Criterio, Categoria> data : entry.getRegistro().entrySet()) {
+                try {
+                    Categoria cat = data.getValue();
+                    if (cat != null) {
+                        Pair<Criteria, Category> pairCat = categoryService.findToolEntryByIdentifier(null, cat.getCodigo(), null);
+                        if (pairCat != null && pairCat.getValue() != null) {
+                            categories.add(pairCat.getValue());
+                        } else {
+                            log.warn("Category not found for code: " + cat.getCodigo() + ". Using recovery criteria.");
+                            Criteria aux = Criteria.getRecoveryCriteria();
+                            CategoryData tempData = categoryService.findCategoryByCode(aux.getCode());
+                            if (tempData == null) {
+                                categoryService.getObservationTool().add(aux);
+                            }
+                            Pair<Criteria, Category> recoveryPair = categoryService.findToolEntryByIdentifier(null, aux.getCode(), null);
+                            if (recoveryPair != null && recoveryPair.getValue() != null) {
+                                categories.add(recoveryPair.getValue());
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Error processing category: " + e.getMessage());
+                }
+            }
+            if (!categories.isEmpty()) {
+                register.setRegister(categories);
+            }
+            lst.add(register);
+            id++;
+        }
+        if (!lst.isEmpty()) {
+            saveRegisterForNewUser("Lince v1 observer", lst);
+        }
     }
 
     /**
@@ -300,7 +425,7 @@ public class LegacyConverterService {
      * Adding items is done by reference, which justifies using an unique method for it.
      * Based on HoisanTool::import
      */
-    private void migrateDataToLegacyInstrument() {
+    public InstrumentoObservacional migrateDataToLegacyInstrument() {
         InstrumentoObservacional.loadNewInstance();
         InstrumentoObservacional i = InstrumentoObservacional.getInstance();
         RootInstrumentoObservacional root = (RootInstrumentoObservacional) i.getModel().getRoot();
@@ -320,6 +445,7 @@ public class LegacyConverterService {
                 log.error(getClass().getEnclosingMethod().toString(), e);
             }
         }
+        return i;
     }
 
 
@@ -388,7 +514,7 @@ public class LegacyConverterService {
      *
      * @param doCriteriaInstrumentSearch bool
      */
-    private Registro migrateDataToLegacyRegister(boolean doCriteriaInstrumentSearch, UUID uuid) {
+    public Registro migrateDataToLegacyRegister(boolean doCriteriaInstrumentSearch, UUID uuid) {
         try {
             Registro.loadNewInstance();
             Registro r = Registro.getInstance();
@@ -430,8 +556,7 @@ public class LegacyConverterService {
                 String msg = String.format("Su registro tiene inconsistencias, normalmente causadas \n" +
                         "por modificaciones del instrumento, eliminando parámetros que se han utilizado. \n Por favor, " +
                         "corrije las observaciones de las siguientes categorías: \n %s", categories);
-                JavaFXLogHelper.showMessageDialog("Registro inconsistente", msg);
-                JavaFXLogHelper.addLogError(msg, new NullPointerException());
+                log.error("Registro inconsistente: {}", msg);
             }
             return r;
         } catch (Exception e) {

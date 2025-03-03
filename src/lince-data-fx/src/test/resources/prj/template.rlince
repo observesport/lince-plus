@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="17.0.13" class="java.beans.XMLDecoder">
+ <object class="java.util.HashMap">
+  <void method="put">
+   <string>datosEstaticos</string>
+   <object class="java.util.HashMap"/>
+  </void>
+  <void method="put">
+   <string>datosVariables</string>
+   <object class="java.util.ArrayList">
+    <void method="add">
+     <object class="lince.modelo.FilaRegistro">
+      <int>571138</int>
+      <object class="java.util.HashMap">
+       <void method="put">
+        <object class="lince.modelo.InstrumentoObservacional.Criterio" id="Criterio0">
+         <void method="add">
+          <object class="lince.modelo.InstrumentoObservacional.Categoria">
+           <void property="codigo">
+            <string>CAT10-11</string>
+           </void>
+           <void property="descripcion">
+            <null/>
+           </void>
+           <void property="nombre">
+            <string>cat10-11</string>
+           </void>
+          </object>
+         </void>
+         <void method="add">
+          <object class="lince.modelo.InstrumentoObservacional.Categoria" id="Categoria0">
+           <void property="codigo">
+            <string>CAT10-12</string>
+           </void>
+           <void property="descripcion">
+            <null/>
+           </void>
+           <void property="nombre">
+            <string>cat10-12</string>
+           </void>
+           <void property="codigo">
+            <string>CAT10-12</string>
+           </void>
+           <void property="descripcion">
+            <null/>
+           </void>
+           <void property="nombre">
+            <string>cat10-12</string>
+           </void>
+          </object>
+         </void>
+         <void property="descripcion">
+          <null/>
+         </void>
+         <void property="nombre">
+          <string>cri10</string>
+         </void>
+         <void property="persistente">
+          <boolean>true</boolean>
+         </void>
+        </object>
+        <object idref="Categoria0"/>
+       </void>
+       <void method="put">
+        <object class="lince.modelo.InstrumentoObservacional.Criterio" id="Criterio1">
+         <void method="add">
+          <object class="lince.modelo.InstrumentoObservacional.Categoria" id="Categoria1">
+           <void property="codigo">
+            <string>CAT0-1</string>
+           </void>
+           <void property="descripcion">
+            <null/>
+           </void>
+           <void property="nombre">
+            <string>cat0-1</string>
+           </void>
+           <void property="codigo">
+            <string>CAT0-1</string>
+           </void>
+           <void property="descripcion">
+            <null/>
+           </void>
+           <void property="nombre">
+            <string>cat0-1</string>
+           </void>
+          </object>
+         </void>
+         <void method="add">
+          <object class="lince.modelo.InstrumentoObservacional.Categoria" id="Categoria2">
+           <void property="codigo">
+            <string>CAT0-2</string>
+           </void>
+           <void property="descripcion">
+            <null/>
+           </void>
+           <void property="nombre">
+            <string>cat0-2</string>
+           </void>
+          </object>
+         </void>
+         <void method="add">
+          <object class="lince.modelo.InstrumentoObservacional.Categoria" id="Categoria3">
+           <void property="codigo">
+            <string>CAT0-3</string>
+           </void>
+           <void property="descripcion">
+            <null/>
+           </void>
+           <void property="nombre">
+            <string>cat0-3</string>
+           </void>
+          </object>
+         </void>
+         <void property="descripcion">
+          <null/>
+         </void>
+         <void property="nombre">
+          <string>cri0</string>
+         </void>
+        </object>
+        <object idref="Categoria1"/>
+       </void>
+      </object>
+      <null/>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.FilaRegistro">
+      <int>575531</int>
+      <object class="java.util.HashMap">
+       <void method="put">
+        <object idref="Criterio0"/>
+        <object idref="Categoria0"/>
+       </void>
+       <void method="put">
+        <object class="lince.modelo.InstrumentoObservacional.Criterio">
+         <void property="descripcion">
+          <null/>
+         </void>
+         <void property="nombre">
+          <string>cri20</string>
+         </void>
+        </object>
+        <object class="lince.modelo.InstrumentoObservacional.Categoria">
+         <void property="codigo">
+          <string>CRI20-DATA</string>
+         </void>
+         <void property="descripcion">
+          <string>other</string>
+         </void>
+         <void property="nombre">
+          <string>cri20</string>
+         </void>
+        </object>
+       </void>
+       <void method="put">
+        <object idref="Criterio1"/>
+        <object idref="Categoria2"/>
+       </void>
+      </object>
+      <null/>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.FilaRegistro">
+      <int>580827</int>
+      <object class="java.util.HashMap">
+       <void method="put">
+        <object idref="Criterio0"/>
+        <object idref="Categoria0"/>
+       </void>
+       <void method="put">
+        <object idref="Criterio1"/>
+        <object idref="Categoria3"/>
+       </void>
+       <void method="put">
+        <object class="lince.modelo.InstrumentoObservacional.Criterio">
+         <void property="descripcion">
+          <null/>
+         </void>
+         <void property="nombre">
+          <string>cri20</string>
+         </void>
+        </object>
+        <object class="lince.modelo.InstrumentoObservacional.Categoria">
+         <void property="codigo">
+          <string>CRI20-DATA</string>
+         </void>
+         <void property="descripcion">
+          <string>test</string>
+         </void>
+         <void property="nombre">
+          <string>cri20</string>
+         </void>
+        </object>
+       </void>
+      </object>
+      <null/>
+     </object>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <string>criterios</string>
+   <array class="lince.modelo.InstrumentoObservacional.Criterio" length="3">
+    <void index="0">
+     <object idref="Criterio1"/>
+    </void>
+    <void index="1">
+     <object idref="Criterio0"/>
+    </void>
+    <void index="2">
+     <object class="lince.modelo.InstrumentoObservacional.Criterio">
+      <void property="descripcion">
+       <null/>
+      </void>
+      <void property="nombre">
+       <string>cri20</string>
+      </void>
+     </object>
+    </void>
+   </array>
+  </void>
+  <void method="put">
+   <string>nombreInstrumentoObservacional</string>
+   <string>New Observational I.</string>
+  </void>
+ </object>
