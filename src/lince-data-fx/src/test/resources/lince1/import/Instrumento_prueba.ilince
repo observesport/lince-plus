@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_441" class="java.beans.XMLDecoder">
+ <object class="lince.modelo.InstrumentoObservacional.RootInstrumentoObservacional">
+  <void method="add">
+   <object class="javax.swing.tree.DefaultMutableTreeNode">
+    <void property="userObject">
+     <string>Fijos</string>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.NodoInformacion">
+      <void property="nombre">
+       <string>NOMRE DE LA NADADORA</string>
+      </void>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.NodoInformacion">
+      <void property="nombre">
+       <string>CAMPEONATO</string>
+      </void>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.NodoInformacion">
+      <void property="nombre">
+       <string>RUTINA </string>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="javax.swing.tree.DefaultMutableTreeNode">
+    <void property="userObject">
+     <string>Mixtos</string>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="javax.swing.tree.DefaultMutableTreeNode">
+    <void property="userObject">
+     <string>Variables</string>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.Criterio">
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>ESPERA</string>
+        </void>
+        <void property="descripcion">
+         <string>Tiempo previo al desplazamiento pre rutina, en el que la nadadora se encuentra preparada en la zona de salida.</string>
+        </void>
+        <void property="nombre">
+         <string>ESPERA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>DPRE RUTINA</string>
+        </void>
+        <void property="descripcion">
+         <string>Desplazamiento que realiza la nadadora desde la zona de salida hasta el punto donde iniciará la rutina. Empieza con el primer movimiento de desplazamiento y finaliza en el instante en que la nadadora deja de avanzar.</string>
+        </void>
+        <void property="nombre">
+         <string>DESPLAZAMIENTO PRE RUTINA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>PREPARACIÓN</string>
+        </void>
+        <void property="descripcion">
+         <string>Se inicia en el momento en el que la nadadora deja de avanzar y termina cuando empieza el acompañamiento musical. </string>
+        </void>
+        <void property="nombre">
+         <string>PREPARACIÓN</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>RUTINA</string>
+        </void>
+        <void property="descripcion">
+         <string>Desde el momento en que se inicia la música, hasta que ésta finaliza.</string>
+        </void>
+        <void property="nombre">
+         <string>RUTINA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>DPOST RUTINA</string>
+        </void>
+        <void property="descripcion">
+         <string>Engloba desde el momento en el que termina el acompañamiento musical hasta que la nadadora apoya los dos pies en la playa de la piscina. </string>
+        </void>
+        <void property="nombre">
+         <string>DESPLAZAMIENTO POST RUTINA</string>
+        </void>
+       </object>
+      </void>
+      <void property="descripcion">
+       <string>MOMENTO DE LA COMPETICIÓN EN EL QUE SE ENCUENTRA LA NADADORA</string>
+      </void>
+      <void property="nombre">
+       <string>FASE DE LA RUTINA</string>
+      </void>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.Criterio">
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>PLAYA</string>
+        </void>
+        <void property="descripcion">
+         <string>La nadadora está en contacto con el suelo.</string>
+        </void>
+        <void property="nombre">
+         <string>PLAYA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>AEREA</string>
+        </void>
+        <void property="descripcion">
+         <string>Momentos de salto o suspensión fuera del agua. Ninguna parte del cuerpo está en contacto con el suelo o con el agua. </string>
+        </void>
+        <void property="nombre">
+         <string>AEREA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>ACUÁTICA</string>
+        </void>
+        <void property="descripcion">
+         <string>Desde el momento en que la cara (boca) de la nadadora sale del agua, hasta que vuelve a quedar sumergida. Se valorará el primer frame en el que aparezca la nadadora con la boca fuera del agua, hasta que desaparezca. </string>
+        </void>
+        <void property="nombre">
+         <string>ACUÁTICA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>SUBACUÁTICA</string>
+        </void>
+        <void property="descripcion">
+         <string>Desde el momento en que la cara (boca) de la nadadora entra en el agua, hasta que vuelve a salir. Primer frame en el que se vea la boca de la nadadora dentro del agua. </string>
+        </void>
+        <void property="nombre">
+         <string>SUBACUÁTICA</string>
+        </void>
+       </object>
+      </void>
+      <void property="descripcion">
+       <string>MOMENTO RESPIRATORIO EN EL QUE SE ENCUENTRA LA NADADORA</string>
+      </void>
+      <void property="nombre">
+       <string>FASE RESPIRATORIA</string>
+      </void>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.Criterio">
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>SUPERIOR</string>
+        </void>
+        <void property="descripcion">
+         <string>La cabeza permanece por encima de las caderas en relación al suelo (independientemente de la posición de las piernas). </string>
+        </void>
+        <void property="nombre">
+         <string>SUPERIOR</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>INFERIOR</string>
+        </void>
+        <void property="descripcion">
+         <string>La cabeza permanece por debajo de las caderas en relación al suelo. El tronco se encuentra en una posición invertida. </string>
+        </void>
+        <void property="nombre">
+         <string>INFERIOR</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>HORIZONTAL</string>
+        </void>
+        <void property="descripcion">
+         <string>La cabeza se encuentra a la altura de las caderas o muslos, máximo a la altura de las rodillas. La referencia que tomaremos será la posición horizontal del tronco, que puede llegar a tener una ligera inclinación. Para que se considere posición horizontal, esta inclinación no puede situar la cabeza por encima de las rodillas, en ese caso pasaría a ser superior. </string>
+        </void>
+        <void property="nombre">
+         <string>HORIZONTAL</string>
+        </void>
+       </object>
+      </void>
+      <void property="descripcion">
+       <string>SITUACIÓN CORPORAL ESPACIAL</string>
+      </void>
+      <void property="nombre">
+       <string>POSICIÓN DEL CUERPO</string>
+      </void>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.Criterio">
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>0</string>
+        </void>
+        <void property="descripcion">
+         <string>No hay inmersión. Todo el cuerpo de la nadadora está fuera del agua. </string>
+        </void>
+        <void property="nombre">
+         <string>NO HAY INMERSIÓN</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void method="add">
+         <object class="lince.modelo.InstrumentoObservacional.Categoria">
+          <void property="codigo">
+           <string>BAJA SUP</string>
+          </void>
+          <void property="descripcion">
+           <string>Posición corporal superior. La parte del cuerpo inmersa empieza en la línea del pubis, hasta el último contacto de la nadadora con el agua. Es decir, las extremidades inferiores están en inmersión.  </string>
+          </void>
+          <void property="nombre">
+           <string>SUPERIOR</string>
+          </void>
+         </object>
+        </void>
+        <void method="add">
+         <object class="lince.modelo.InstrumentoObservacional.Categoria">
+          <void property="codigo">
+           <string>BAJA INF</string>
+          </void>
+          <void property="descripcion">
+           <string>Posición corporal inferior. La parte inmersa empieza en la línea del pubis y finaliza con el último contacto de la nadadora con el agua. Es decir, las dos piernas están elevadas sobre la superficie del agua o paralelas a la superficie del agua, pero el tronco se encuentra inmerso hasta la línea de pubis como nivel máximo.</string>
+          </void>
+          <void property="nombre">
+           <string>INFERIOR</string>
+          </void>
+         </object>
+        </void>
+        <void method="add">
+         <object class="lince.modelo.InstrumentoObservacional.Categoria">
+          <void property="codigo">
+           <string>BAJA HORIZ</string>
+          </void>
+          <void property="descripcion">
+           <string>En posición horizontal lateral nunca habrá un nivel bajo de inmersión. En posición horizontal supina: cuando las dos piernas estén fuera del agua y la línea de la superficie del agua quede por debajo de la línea de pubis o glútea. Posición horizontal prono: cuando las dos extremidades están fuera del agua, y la línea de pubis o glútea está por encima de la superficie del agua. Las dos piernas están completamente fuera del agua.</string>
+          </void>
+          <void property="nombre">
+           <string>HORIZONTAL</string>
+          </void>
+         </object>
+        </void>
+        <void property="codigo">
+         <string>BAJA</string>
+        </void>
+        <void property="descripcion">
+         <string>UN ALTO PORCENTAJE DEL CUERPO DE LA NADADORA PERMANECE FUERA DEL AGUA.</string>
+        </void>
+        <void property="nombre">
+         <string>BAJA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void method="add">
+         <object class="lince.modelo.InstrumentoObservacional.Categoria">
+          <void property="codigo">
+           <string>ALTA SUP</string>
+          </void>
+          <void property="descripcion">
+           <string>Todo aquello que no incluye la categoría BAJO – SUPERIOR.</string>
+          </void>
+          <void property="nombre">
+           <string>SUPERIOR</string>
+          </void>
+         </object>
+        </void>
+        <void method="add">
+         <object class="lince.modelo.InstrumentoObservacional.Categoria">
+          <void property="codigo">
+           <string>ALTA INF</string>
+          </void>
+          <void property="descripcion">
+           <string>Todo aquello que no incluye la categoría BAJO – INFERIOR.</string>
+          </void>
+          <void property="nombre">
+           <string>INFERIOR</string>
+          </void>
+         </object>
+        </void>
+        <void method="add">
+         <object class="lince.modelo.InstrumentoObservacional.Categoria">
+          <void property="codigo">
+           <string>ALTA HORIZ</string>
+          </void>
+          <void property="descripcion">
+           <string>Todo aquello que no incluye la categoría BAJO – HORIZONTAL.</string>
+          </void>
+          <void property="nombre">
+           <string>HORIZONTAL</string>
+          </void>
+         </object>
+        </void>
+        <void property="codigo">
+         <string>ALTA</string>
+        </void>
+        <void property="descripcion">
+         <string>UN ALTO PORCENTAJE DE LA NADADORA PERMANECE SUMERGIDO.</string>
+        </void>
+        <void property="nombre">
+         <string>ALTA</string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>100</string>
+        </void>
+        <void property="descripcion">
+         <string>Todo el cuerpo está dentro del agua</string>
+        </void>
+        <void property="nombre">
+         <string>TOTAL</string>
+        </void>
+       </object>
+      </void>
+      <void property="descripcion">
+       <string>PORCENTAJE DEL CUERPO DE LA NADADORA QUE PERMANECE SUMERGIDO. </string>
+      </void>
+      <void property="nombre">
+       <string>NIVEL DE INMERSIÓN</string>
+      </void>
+     </object>
+    </void>
+    <void method="add">
+     <object class="lince.modelo.InstrumentoObservacional.Criterio">
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>CARA DENTRO</string>
+        </void>
+        <void property="descripcion">
+         <string>Inmersión completa de la cara. Barbilla – frente.</string>
+        </void>
+        <void property="nombre">
+         <string>CARA DENTRO </string>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="lince.modelo.InstrumentoObservacional.Categoria">
+        <void property="codigo">
+         <string>CARA FUERA</string>
+        </void>
+        <void property="descripcion">
+         <string>Cara parcial o completamente fuera del agua.</string>
+        </void>
+        <void property="nombre">
+         <string>CARA FUERA</string>
+        </void>
+       </object>
+      </void>
+      <void property="nombre">
+       <string>REFLEJO DE INMERSIÓN</string>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+  <void property="ano">
+   <string>2011</string>
+  </void>
+  <void property="autor">
+   <string>SYNCHRO PROJECT</string>
+  </void>
+  <void property="nombre">
+   <string>ESTUDIO ESTRUCTURAL NATACIÓN SINCRONIZADA</string>
+  </void>
+ </object>
+</java>

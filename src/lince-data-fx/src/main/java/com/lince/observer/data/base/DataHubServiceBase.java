@@ -1,5 +1,6 @@
 package com.lince.observer.data.base;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.user.ResearchProfile;
@@ -41,6 +42,32 @@ public class DataHubServiceBase {
     protected static ObservableList<File> videoPlayList = FXCollections.observableArrayList();
     protected static ObservableList<String> youtubeVideoPlayList = FXCollections.observableArrayList();
     protected static ObservableList<String> userPlayList = FXCollections.observableArrayList();
+
+
+    public void setLinceProject(ILinceProject project) {
+        if (project == null) {
+            log.warn(">> setLinceProject(): Received null project");
+            return;
+        }
+        log.info(">> setLinceProject(): Loading project data");
+        if (project.getProfiles() != null) {
+            setDataCollection(userData, project.getProfiles());
+        }
+        if (project.getObservationTool() != null) {
+            setDataCollection(criteria, project.getObservationTool());
+        }
+        if (project.getRegister() != null) {
+            setAllDataRegister(project.getRegister());
+        }
+        if (project.getVideoPlayList() != null) {
+            setDataCollection(videoPlayList, project.getVideoPlayList());
+        }
+        if (project.getYoutubeVideoPlayList() != null) {
+            setDataCollection(youtubeVideoPlayList, project.getYoutubeVideoPlayList());
+        }
+        updateUserPlayList();
+        log.info(">> setLinceProject(): Project data loaded successfully");
+    }
 
     public List<LinceRegisterWrapper> getDataRegister() {
         if (dataRegister == null || dataRegister.isEmpty()) {

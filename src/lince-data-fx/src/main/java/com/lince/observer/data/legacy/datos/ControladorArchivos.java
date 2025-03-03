@@ -1,28 +1,25 @@
 /*
  *  Lince - Automatizacion de datos observacionales
  *  Copyright (C) 2011  Brais Gabin Moreira
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.lince.observer.data.legacy.datos;
 
+import com.lince.observer.data.component.PackageAwareXMLSerializer;
 import com.lince.observer.data.legacy.utiles.PathArchivos;
-import com.lince.observer.legacy.FilaRegistro;
 
-import java.beans.DefaultPersistenceDelegate;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
@@ -47,19 +44,39 @@ public class ControladorArchivos {
     }
 
     public void guardar(File path, Object datos) throws FileNotFoundException {
-        XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(path)));
-        e.setPersistenceDelegate(FilaRegistro.class, new DefaultPersistenceDelegate(new String[]{"milis", "registro", "datosMixtos"}));
-        e.writeObject(datos);
-        e.close();
+//        deprecated part
+//        XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(path)));
+//        e.setPersistenceDelegate(FilaRegistro.class, new DefaultPersistenceDelegate(new String[]{"milis", "registro", "datosMixtos"}));
+//        e.writeObject(datos);
+//        e.close();
+        try {
+            PackageAwareXMLSerializer.encodeToFile(datos, path);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
-    public Object cargar(File path) throws FileNotFoundException {
-        Object obj = null;
-        XMLDecoder d = new XMLDecoder(new BufferedInputStream(new FileInputStream(path)));
-        obj = d.readObject();
-        d.close();
+    public Object cargar(File path) throws IOException {
+        if (path == null || !path.exists()) {
+            throw new FileNotFoundException("File does not exist: " + (path != null ? path.getAbsolutePath() : "null"));
+        }
 
-        return obj;
+        if (!path.isFile()) {
+            throw new IOException("Path is not a file: " + path.getAbsolutePath());
+        }
+        try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(new BufferedInputStream(new FileInputStream(path)))) {
+            Object result = decoder.readObject();
+            if (result == null) {
+                throw new IOException("Failed to read object from file: " + path.getAbsolutePath());
+            }
+            return result;
+        } catch (FileNotFoundException e) {
+            throw new IOException("File not found or cannot be read: " + path.getAbsolutePath(), e);
+        } catch (IOException e) {
+            throw new IOException("Error reading from file: " + path.getAbsolutePath(), e);
+        } catch (Exception e) {
+            throw new IOException("Unexpected error while reading file: " + path.getAbsolutePath(), e);
+        }
     }
 
     public void guardarSerializable(File path, Serializable datos) throws IOException {

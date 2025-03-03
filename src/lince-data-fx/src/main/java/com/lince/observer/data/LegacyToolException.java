@@ -19,6 +19,11 @@ public class LegacyToolException extends Exception {
         this.message=message;
     }
 
+    public LegacyToolException(String message, Throwable cause) {
+        super(message, cause);
+        this.message=message;
+    }
+
     @Override
     public String toString() {
         return message;
