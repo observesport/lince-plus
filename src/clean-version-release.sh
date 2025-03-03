@@ -168,7 +168,8 @@ delete_packages() {
     echo "Checking for packages with version $version"
 
     local api_response
-    api_response=$(gh api --header "Accept: application/vnd.github.v3+json" "repos/$REPO_OWNER/$REPO_NAME/packages/maven/com.lince.observer/versions" 2>&1) || {
+    echo "Fetching package versions..."
+    api_response=$(gh api --header "Accept: application/vnd.github.v3+json" "repos/$REPO_OWNER/$REPO_NAME/packages/maven/lince-plus-root/versions" 2>&1) || {
         error_msg=$api_response
         if [[ $error_msg == *"Not Found"* ]]; then
             echo "Error: No packages found or no access to packages."
@@ -180,7 +181,16 @@ delete_packages() {
         return 1
     }
 
-    local package_ids=$(echo "$api_response" | jq -r ".[] | select(.metadata.container.tags[] | contains(\"$version\")) | .id")
+    echo "API Response for packages: $api_response"
+    # Try to match exact version or version with classifier
+    local package_ids=$(echo "$api_response" | jq -r ".[] | select(.metadata.package_version==\"$version\") | .id")
+
+    if [ -z "$package_ids" ]; then
+        # If no exact match, try to find packages containing the version
+        package_ids=$(echo "$api_response" | jq -r ".[] | select(.metadata.package_version | contains(\"$version\")) | .id")
+    fi
+
+    echo "Found package IDs: $package_ids"
 
     if [ -z "$package_ids" ]; then
         echo "No packages found for version $version"
@@ -190,7 +200,7 @@ delete_packages() {
     local failed=0
     for package_id in $package_ids; do
         echo "Deleting package version with ID $package_id"
-        delete_response=$(gh api --header "Accept: application/vnd.github.v3+json" -X DELETE "repos/$REPO_OWNER/$REPO_NAME/packages/maven/com.lince.observer/versions/$package_id" 2>&1) || {
+        delete_response=$(gh api --header "Accept: application/vnd.github.v3+json" -X DELETE "repos/$REPO_OWNER/$REPO_NAME/packages/maven/lince-plus-root/versions/$package_id" 2>&1) || {
             error_msg=$delete_response
             if [[ $error_msg == *"Not Found"* ]]; then
                 echo "Warning: Package version $package_id not found. It might have been already deleted."
@@ -313,12 +323,15 @@ elif [ $check_status -eq 0 ]; then
     fi
 else
     echo "No draft release found for version $version_to_clean"
-    read -p "Do you want to clean up artifacts only for version $version_to_clean? (y/n) " -n 1 -r
+    read -p "Do you want to clean up artifacts and packages for version $version_to_clean? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
         if ! clean_artifacts "$version_to_clean"; then
             echo "Warning: Failed to clean up some artifacts"
+        fi
+        if ! delete_packages "$version_to_clean"; then
+            echo "Warning: Failed to delete some packages"
         fi
         echo "Cleanup process completed"
     else
