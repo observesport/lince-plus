@@ -32,13 +32,26 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download 
 
-https://github.com/observesport/lince-plus/releases/tag/v3.2.3
+https://github.com/observesport/lince-plus/releases/tag/v3.2.4
 
-### Current version 3.2.3
+### Current version 3.2.4
 
-Lince Plus 3.2.3 Release Notes
+Lince Plus 3.2.4 Release Notes
 
 #### Overview
+
+Recommended update as it solves a critical issue during export:
+
+Update to Spring 3.3.9 
+Solves exportation error and generates a new environment for excel Decoupled behaviour on registration:
+User selection on excel export without converting to legacy lince
+Sets frame value with current project settings, not using default FPS
+When selecting a video it sets automatically the FPS of the project
+Exportation introduces revisited conversion for FPS calculation and scene duration
+New flow for lince v1.4 import/export
+Significative improvements on unit testing
+
+### Version 3.2.3 Release notes
 
 This release focuses on modernizing the technology stack, improving installation reliability, and enhancing cloud compatibility to better support enterprise deployments.
 
@@ -85,7 +98,7 @@ The new installer package can be downloaded from the official Lince repository. 
 On Windows systems with restricted user permissions, manual elevation may be required during installation
 macOS users should ensure Terminal has full disk access enabled in System Preferences
   
-[Download it here](https://github.com/observesport/lince-plus/releases/tag/v3.2.3)
+[Download it here](https://github.com/observesport/lince-plus/releases/tag/v3.2.4)
 
 ## Documentation
 
@@ -96,6 +109,7 @@ macOS users should ensure Terminal has full disk access enabled in System Prefer
 
 ### Previous versions
 
+- [3.2.3 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.3)
 - [2.1.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.1.0)
 - [2.0.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.0.0)
 - [1.3.2 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v1.3.2)
