@@ -42,14 +42,14 @@ Lince Plus 3.2.4 Release Notes
 
 Recommended update as it solves a critical issue during export:
 
-Update to Spring 3.3.9 
-Solves exportation error and generates a new environment for excel Decoupled behaviour on registration:
-User selection on excel export without converting to legacy lince
-Sets frame value with current project settings, not using default FPS
-When selecting a video it sets automatically the FPS of the project
-Exportation introduces revisited conversion for FPS calculation and scene duration
-New flow for lince v1.4 import/export
-Significative improvements on unit testing
+- Update to Spring 3.3.9
+- Solves exportation error and generates a new environment for excel Decoupled behaviour on registration:
+- User selection on excel export without converting to legacy lince
+- Sets frame value with current project settings, not using default FPS
+- When selecting a video it sets automatically the FPS of the project
+- Exportation introduces revisited conversion for FPS calculation and scene duration
+- New flow for lince v1.4 import/export
+- Significative improvements on unit testing
 
 ### Version 3.2.3 Release notes
 
