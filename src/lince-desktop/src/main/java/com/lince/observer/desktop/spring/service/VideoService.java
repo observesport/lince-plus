@@ -3,6 +3,7 @@ package com.lince.observer.desktop.spring.service;
 import static  com.lince.observer.desktop.ServerAppParams.*;
 import com.lince.observer.data.LinceQualifier.DesktopQualifier;
 import  com.lince.observer.data.bean.VideoPlayerData;
+import com.lince.observer.data.bean.VideoPlayerDataImpl;
 import  com.lince.observer.data.util.JavaFXLogHelper;
 import  com.lince.observer.math.service.DataHubService;
 import com.lince.observer.desktop.helper.ServerValuesHelper;
@@ -47,7 +48,7 @@ import java.util.*;
 public class VideoService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static VideoPlayerData videoPlayerData = new VideoPlayerData();
+    private static VideoPlayerData videoPlayerData = new VideoPlayerDataImpl();
 
     @Qualifier("webApplicationContext")
     @Autowired
@@ -159,7 +160,7 @@ public class VideoService {
         List<VideoPlayerData> rtn = new ArrayList<>();
         try {
             for (Map.Entry<String, String> elem : this.getPlaylistData().entrySet()) {
-                VideoPlayerData aux = new VideoPlayerData();
+                VideoPlayerData aux = new VideoPlayerDataImpl();
                 if (StringUtils.equals(elem.getValue(), YOUTUBE_VIDEO_TYPE)){
                     aux.setUrl(elem.getKey());
                 }else{

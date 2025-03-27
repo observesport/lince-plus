@@ -2,75 +2,34 @@ package com.lince.observer.data.bean;
 
 import java.io.Serializable;
 import java.nio.file.Path;
-import java.util.UUID;
 
 /**
- * lince-scientific-desktop
- * com.lince.observer.data
- * @author berto (alberto.soto@gmail.com)in 19/07/2016.
- * Description:
+ * Created by Alberto Soto. 27/3/25
  */
-public class VideoPlayerData implements Serializable {
-    public static final Integer DEFAULT_FRAMES_PER_SECOND = 21;
-    public boolean isLocal = false;
-    public String id;
-    public String url;
-    public Path path;
-    public Double time;
-    public Double speed;
+public interface VideoPlayerData extends Serializable {
+    Integer DEFAULT_FRAMES_PER_SECOND = 21;
 
-    public String encoding;
+    String getEncoding();
 
-    public String getEncoding() {
-        return encoding;
-    }
+    void setEncoding(String encoding);
 
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
+    Path getPath();
 
-    public VideoPlayerData(){
-        this.id = UUID.randomUUID().toString();
-    }
+    void setPath(Path path);
 
+    String getUrl();
 
-    public Path getPath() {
-        return path;
-    }
+    void setUrl(String url);
 
-    public void setPath(Path path) {
-        this.path = path;
-    }
+    Double getTime();
 
-    public String getUrl() {
-        return url;
-    }
+    void setTime(Double time);
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    Double getSpeed();
 
-    public Double getTime() {
-        return time;
-    }
+    void setSpeed(Double speed);
 
-    public void setTime(Double time) {
-        this.time = time;
-    }
+    boolean isLocal();
 
-    public Double getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(Double speed) {
-        this.speed = speed;
-    }
-
-    public boolean isLocal() {
-        return isLocal;
-    }
-
-    public void setLocal(boolean local) {
-        isLocal = local;
-    }
+    void setLocal(boolean local);
 }
