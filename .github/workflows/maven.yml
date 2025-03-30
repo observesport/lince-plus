@@ -8,13 +8,7 @@ on:
 #    branches:
 #      - '**'  # This will match any branch
   push:
-    branches: [ master ]
-#  pull_request:
-#    branches: [ master ]
-#  push:
-#    branches: [ master, develop ]
-#  pull_request:
-#    branches: [ master, develop ]
+    branches: [ master, develop ]
 
 jobs:
   build:
@@ -73,6 +67,7 @@ jobs:
           fi
 
       - name: Create Release Draft
+        if: github.ref == 'refs/heads/master' && !contains(env.FULL_VERSION, 'SNAPSHOT')
         uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -98,34 +93,35 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for Installer Files
+        if: github.ref == 'refs/heads/master' && !contains(env.FULL_VERSION, 'SNAPSHOT')
         run: |
           EXE_PATH="./src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe"
           DMG_ARM_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg"
           DMG_X86_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-x86.dmg"
-          
+
           MISSING_FILES=0
-          
+
           if [ -f "$EXE_PATH" ]; then
             echo "Windows EXE file found: $EXE_PATH"
           else
             echo "Error: Windows EXE file not found: $EXE_PATH"
             MISSING_FILES=$((MISSING_FILES+1))
           fi
-          
+
           if [ -f "$DMG_ARM_PATH" ]; then
             echo "macOS ARM DMG file found: $DMG_ARM_PATH"
           else
             echo "Error: macOS ARM DMG file not found: $DMG_ARM_PATH"
             MISSING_FILES=$((MISSING_FILES+1))
           fi
-          
+
           if [ -f "$DMG_X86_PATH" ]; then
             echo "macOS x86 DMG file found: $DMG_X86_PATH"
           else
             echo "Error: macOS x86 DMG file not found: $DMG_X86_PATH"
             MISSING_FILES=$((MISSING_FILES+1))
           fi
-          
+
           if [ $MISSING_FILES -gt 0 ]; then
             echo "Error: $MISSING_FILES installer file(s) are missing."
             ls -R ./src/installer/
@@ -133,6 +129,7 @@ jobs:
           fi
 
       - name: Upload Release Assets
+        if: github.ref == 'refs/heads/master' && !contains(env.FULL_VERSION, 'SNAPSHOT')
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

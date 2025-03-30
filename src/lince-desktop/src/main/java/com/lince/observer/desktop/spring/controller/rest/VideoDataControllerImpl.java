@@ -1,5 +1,6 @@
 package com.lince.observer.desktop.spring.controller.rest;
 
+import com.lince.observer.data.bean.VideoPlayerDataImpl;
 import com.lince.observer.data.controller.VideoDataController;
 import com.lince.observer.desktop.spring.service.VideoService;
 import com.lince.observer.data.bean.VideoPlayerData;
@@ -60,7 +61,7 @@ public class VideoDataControllerImpl implements VideoDataController {
             return new ResponseEntity<>(videoService.getVideoPlayerData(), HttpStatus.OK);
         } catch (Exception e) {
             log.error(getActionName() + ":get/", e);
-            return new ResponseEntity<>(new VideoPlayerData(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new VideoPlayerDataImpl(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -87,7 +88,7 @@ public class VideoDataControllerImpl implements VideoDataController {
             return new ResponseEntity<>(videoService.getVideoPlayerData(), HttpStatus.OK);
         } catch (Exception e) {
             log.error(getActionName() + "/set", e);
-            return new ResponseEntity<>(new VideoPlayerData(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new VideoPlayerDataImpl(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

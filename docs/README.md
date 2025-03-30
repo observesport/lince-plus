@@ -124,6 +124,11 @@ macOS users should ensure Terminal has full disk access enabled in System Prefer
 - [1.0.1 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi)
 - [1.0.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi)
 
+### Old Lince
+
+This version only works for windows
+
+[Lince_1.4](Lince_1.4.exe)
 
 ### Important: MacOS users
 
