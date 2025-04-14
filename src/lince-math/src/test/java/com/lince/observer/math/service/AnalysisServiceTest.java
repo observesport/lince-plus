@@ -30,7 +30,6 @@ import static org.mockito.Mockito.*;
 /**
  * Created by Alberto Soto. 17/2/25
  *
- *     TODO uncomment tests
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = LinceServiceTestConfig.class)
@@ -46,6 +45,7 @@ class AnalysisServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        analysisService.getAllObservations().clear();
     }
 
 
@@ -109,10 +109,46 @@ class AnalysisServiceTest {
     @Test
     void testSaveObservationWithSceneWrapper() {
         SceneWrapper sceneWrapper = mock(SceneWrapper.class);
-
         boolean result = analysisService.saveObservation(sceneWrapper);
-
         assertTrue(result);
+    }
+
+    /**
+     * Tests moment generation keeps all information and labelling is valid
+     */
+    @Test
+    void testSceneWrapperToSaveObservationHoldsValidTime() {
+        double timeValue = 20.371392;
+        SceneWrapper sceneWrapper = new SceneWrapper();
+        sceneWrapper.setMoment(timeValue);
+        boolean result = analysisService.saveObservation(sceneWrapper);
+        assertTrue(result);
+
+        List<RegisterItem> observations = analysisService.getAllObservations();
+        assertFalse(observations.isEmpty(), "No observations were saved");
+        assertTrue(observations.get(0).getVideoTime().equals(timeValue),
+                "Video time doesn't match the expected value");
+        assertEquals("00:00:20.371", observations.get(0).getVideoTimeTxt());
+    }
+
+
+    /**
+     * Tests that 2 registers on same exact time and one additional on another moment generates 2 registers.
+     */
+    @Test
+    void testTimeCollisionsOnSameSecondHoldsValidInformation() {
+        Double timeValue = 20.371392;
+        SceneWrapper sceneWrapper = new SceneWrapper();
+        sceneWrapper.setMoment(timeValue);
+        boolean result = analysisService.saveObservation(sceneWrapper);
+        assertTrue(result);
+        sceneWrapper = new SceneWrapper();
+        sceneWrapper.setMoment(timeValue );
+        analysisService.saveObservation(sceneWrapper);
+        sceneWrapper = new SceneWrapper();
+        sceneWrapper.setMoment(timeValue + 0.05 ); //still same second
+        analysisService.saveObservation(sceneWrapper);
+        assertEquals(2, analysisService.getAllObservations().size());
     }
 
 

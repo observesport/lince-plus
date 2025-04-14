@@ -73,8 +73,8 @@ public abstract class AnalysisServiceBase implements AnalysisService {
     protected boolean pushRegister(List<RegisterItem> registerList, RegisterItem item) {
         try {
             Optional<RegisterItem> registerItem = registerList.stream()
-                    .filter(p -> p.getId().equals(item.getId()) && NumberUtils.compare(p.getVideoTime().longValue(), item.getVideoTime().longValue()) == 0
-                            || NumberUtils.compare(p.getVideoTime().longValue(), item.getVideoTime().longValue()) == 0
+                    .filter(p -> p.getId().equals(item.getId()) && p.getVideoTime().equals(item.getVideoTime())
+                            || p.getVideoTime().equals(item.getVideoTime())
                             || (p.getSaveDate() != null && p.getSaveDate().equals(item.getSaveDate())))
                     .findFirst();
             if (registerItem.isPresent()) {

@@ -1,6 +1,7 @@
 package com.lince.observer.data.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.util.TimeCalculations;
 
@@ -115,7 +116,8 @@ public class RegisterItem implements Comparable<RegisterItem>, Serializable {
 
     public void setVideoTime(Double videoTime) {
         this.videoTime = videoTime;
-        setVideoTimeTxt(LocalTime.MIN.plusSeconds(videoTime.longValue()).toString());
+        setVideoTimeTxt(timeCalculations.formatTimeWithAllComponents(
+                timeCalculations.getVideoTimeMillis(videoTime)));
     }
 
     public List<Category> getRegister() {

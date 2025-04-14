@@ -6,6 +6,7 @@ package com.lince.observer.data;
  * @author berto (alberto.soto@gmail.com). 27/04/2018
  */
 public class LinceDataConstants {
+    public static final int MS_LABELLING_DECIMAL_CONVERSION = 1000;
     public static final String CSV_CHAR_SEPARATOR_COMMA =",";//;
     public static final String CSV_CHAR_SEPARATOR_SEMICOLON =";";
     public static final String CATEGORY_PREFIX = "cat";
