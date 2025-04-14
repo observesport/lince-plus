@@ -38,6 +38,16 @@
                 <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </repository>
+        <repository>
+            <id>bedatadriven-repo</id>
+            <name>bedatadriven public repositories</name>
+            <url>https://nexus.bedatadriven.com/content/repositories/public/</url>
+        </repository>
+        <repository>
+            <id>renjin-packages</id>
+            <name>Renjin Maven Central mirror</name>
+            <url>https://packages.renjin.org/maven/</url>
+        </repository>
     </repositories>
     <dependencies>
         <!-- base de spring boot -->
