@@ -15,18 +15,26 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: cicd
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     permissions:
       contents: write
       packages: write
     steps:
       - uses: actions/checkout@v3
-
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'liberica'
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'liberica'
-
+          server-id: github  # This maps to the server ID in the settings.xml
+          server-username: ${{ github.repository_owner }}  # Use repository owner as username
+          server-password: ${{secrets.GITHUB_TOKEN}}
       - name: Get version
         id: get_version
         run: |
