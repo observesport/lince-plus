@@ -48,6 +48,11 @@
             <name>Renjin Maven Central mirror</name>
             <url>https://packages.renjin.org/maven/</url>
         </repository>
+        <repository>
+            <id>github</id>
+            <name>GitHub observesport Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/observesport/lince-plus</url>
+        </repository>
     </repositories>
     <dependencies>
         <!-- base de spring boot -->
