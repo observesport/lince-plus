@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.renjin.cran</groupId>
+  <artifactId>digest</artifactId>
+  <version>0.6.14-b4</version>
+  <description>Implementation of a function 'digest()' for the creation of hash digests of arbitrary R objects (using the 'md5', 'sha-1', 'sha-256', 'crc32', 'xxhash' and 'murmurhash' algorithms) permitting easy comparison of R language objects, as well as a function 'hmac()' to create hash-based message authentication code. Please note that this package is not meant to be deployed for cryptographic purposes for which more comprehensive (and widely tested) libraries such as 'OpenSSL' should be used.</description>
+  <url>http://dirk.eddelbuettel.com/code/digest.html</url>
+  <licenses>
+    <license>
+      <name>GPL (>= 2)</name>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Dirk Eddelbuettel</name>
+      <email>edd@debian.org</email>
+    </developer>
+    <developer>
+      <name>Jarek Tuszynski</name>
+    </developer>
+    <developer>
+      <name>Henrik Bengtsson</name>
+    </developer>
+    <developer>
+      <name>Simon Urbanek</name>
+    </developer>
+    <developer>
+      <name>Mario Frasca</name>
+    </developer>
+    <developer>
+      <name>Bryan Lewis</name>
+    </developer>
+    <developer>
+      <name>Murray Stokely</name>
+    </developer>
+    <developer>
+      <name>Hannes Muehleisen</name>
+    </developer>
+    <developer>
+      <name>Duncan Murdoch</name>
+    </developer>
+    <developer>
+      <name>Jim Hester</name>
+    </developer>
+    <developer>
+      <name>Wush Wu</name>
+    </developer>
+    <developer>
+      <name>Qiang Kou</name>
+    </developer>
+    <developer>
+      <name>Thierry Onkelinx</name>
+    </developer>
+    <developer>
+      <name>Michel Lang and Viliam Simko.</name>
+    </developer>
+  </developers>
+  <distributionManagement>
+    <repository>
+      <id>renjin-packages</id>
+      <name>Renjin CI Repository</name>
+      <url>https://nexus.bedatadriven.com/content/repositories/renjin-packages</url>
+    </repository>
+  </distributionManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>methods</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>parallel</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>datasets</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>stats</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>splines</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>grDevices</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>tcltk</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>stats4</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>tools</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>utils</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>grid</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>graphics</artifactId>
+      <version>0.9.2588</version>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin</groupId>
+      <artifactId>compiler</artifactId>
+      <version>0.9.2588</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.renjin.cran</groupId>
+      <artifactId>knitr</artifactId>
+      <version>1.18-b1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>digest</artifactId>
+          <groupId>org.renjin.cran</groupId>
+        </exclusion>
+      </exclusions>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>bedatadriven-public</id>
+      <url>https://nexus.bedatadriven.com/content/groups/public/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>bedatadriven-public</id>
+      <url>https://nexus.bedatadriven.com/content/groups/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.renjin</groupId>
+        <artifactId>renjin-maven-plugin</artifactId>
+        <version>0.9.2588</version>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>gnur-compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>renjin-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <timeoutInSeconds>30</timeoutInSeconds>
+              <testSourceDirectory>${basedir}/tests</testSourceDirectory>
+              <defaultPackages>
+                <package>methods</package>
+                <package>stats</package>
+                <package>utils</package>
+                <package>grDevices</package>
+                <package>graphics</package>
+                <package>datasets</package>
+              </defaultPackages>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
