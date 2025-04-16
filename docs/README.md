@@ -32,13 +32,14 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download 
 
-[https://github.com/observesport/lince-plus/releases/tag/v3.2.4](https://github.com/observesport/lince-plus/releases/tag/v3.2.4)
+[https://github.com/observesport/lince-plus/releases/tag/v3.2.4](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
 
-### Current version 3.2.4
+### Current version 3.2.5
 
-Lince Plus 3.2.4 Release Notes
+Solves slow motion episode saving
+https://github.com/observesport/lince-plus/issues/90
 
-#### Overview
+#### Lince Plus 3.2.4 Release Notes
 
 Recommended update as it solves a critical issue during export:
 
