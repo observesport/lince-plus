@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lince-plus-root</artifactId>
         <groupId>com.lince.observer</groupId>
-        <version>3.2.5-SNAPSHOT</version>
+        <version>3.2.5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -37,6 +37,21 @@
                 <updatePolicy>never</updatePolicy>
                 <checksumPolicy>fail</checksumPolicy>
             </snapshots>
+        </repository>
+        <repository>
+            <id>bedatadriven-repo</id>
+            <name>bedatadriven public repositories</name>
+            <url>https://nexus.bedatadriven.com/content/repositories/public/</url>
+        </repository>
+        <repository>
+            <id>renjin-packages</id>
+            <name>Renjin Maven Central mirror</name>
+            <url>https://packages.renjin.org/maven/</url>
+        </repository>
+        <repository>
+            <id>github</id>
+            <name>GitHub observesport Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/observesport/lince-plus</url>
         </repository>
     </repositories>
     <dependencies>

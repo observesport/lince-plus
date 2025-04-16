@@ -7,6 +7,7 @@ target
 /src/lince-transcoding/howto.md
 /MSIFileRunAsAdmin.zip
 *.jar
+!src/lib/**/*.jar
 
 /out/
 /src/installer/install4j/deprecated/

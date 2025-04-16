@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.lince.observer</groupId>
     <artifactId>lince-plus-root</artifactId>
-    <version>3.2.5-SNAPSHOT</version>
+    <version>3.2.5</version>
     <packaging>pom</packaging>
     <name>Lince Plus</name>
     <description>Lince-Observer project for Spring Boot</description>
@@ -30,6 +30,21 @@
             <id>bedatadriven</id>
             <name>bedatadriven public repo</name>
             <url>https://nexus.bedatadriven.com/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>bedatadriven-repo</id>
+            <name>bedatadriven public repositories</name>
+            <url>https://nexus.bedatadriven.com/content/repositories/public/</url>
+        </repository>
+        <repository>
+            <id>renjin-packages</id>
+            <name>Renjin Maven Central mirror</name>
+            <url>https://packages.renjin.org/maven/</url>
+        </repository>
+        <repository>
+            <id>github</id>
+            <name>GitHub observesport Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/observesport/lince-plus</url>
         </repository>
     </repositories>
     <pluginRepositories>
