@@ -32,9 +32,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'liberica'
-          server-id: github  # This maps to the server ID in the settings.xml
-          server-username: ${{ github.repository_owner }}  # Use repository owner as username
-          server-password: ${{secrets.GITHUB_TOKEN}}
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
       - name: Get version
         id: get_version
         run: |
@@ -56,6 +57,29 @@ jobs:
           wget https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_9.deb
           sudo dpkg -i install4j_linux-x64_10_0_9.deb
           echo "INSTALL4J_HOME=/opt/install4j10" >> $GITHUB_ENV
+
+      # Add a step to verify Maven settings before building
+      - name: Verify Maven Settings
+        run: |
+          mkdir -p ~/.m2
+          if [ -f ~/.m2/settings.xml ]; then
+            echo "Maven settings file exists:"
+            cat ~/.m2/settings.xml
+          else
+            echo "Maven settings file does not exist. Creating one..."
+            echo "<settings>
+              <servers>
+                <server>
+                  <id>github</id>
+                  <username>${GITHUB_ACTOR}</username>
+                  <password>${GITHUB_TOKEN}</password>
+                </server>
+              </servers>
+            </settings>" > ~/.m2/settings.xml
+            echo "Created Maven settings file."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build with Maven
         run: |
@@ -90,10 +114,10 @@ jobs:
             });
             console.log(`Created release: ${release.html_url}`);
 
-      - name: Configure Maven settings
-        uses: s4u/maven-settings-action@v2.8.0
-        with:
-          servers: '[{"id": "github", "username": "${GITHUB_ACTOR}", "password": "${GITHUB_TOKEN}"}]'
+#      - name: Configure Maven settings
+#        uses: s4u/maven-settings-action@v2.8.0
+#        with:
+#          servers: '[{"id": "github", "username": "${GITHUB_ACTOR}", "password": "${GITHUB_TOKEN}"}]'
 
       - name: Deploy to GitHub Packages
         run: cd src && mvn deploy -DskipTests
