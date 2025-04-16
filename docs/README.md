@@ -32,7 +32,7 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download 
 
-[https://github.com/observesport/lince-plus/releases/tag/v3.2.4](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
+[https://github.com/observesport/lince-plus/releases/tag/v3.2.5](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
 
 ### Current version 3.2.5
 
