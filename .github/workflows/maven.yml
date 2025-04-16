@@ -120,6 +120,7 @@ jobs:
 #          servers: '[{"id": "github", "username": "${GITHUB_ACTOR}", "password": "${GITHUB_TOKEN}"}]'
 
       - name: Deploy to GitHub Packages
+        if: github.ref == 'refs/heads/master' && !contains(env.FULL_VERSION, 'SNAPSHOT')
         run: cd src && mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
