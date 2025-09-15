@@ -80,6 +80,7 @@
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <springdoc-openapi.version>2.1.0</springdoc-openapi.version>
+        <spring.cloud-aws.version>3.1.0</spring.cloud-aws.version>
         <testcontainers.version>1.19.6</testcontainers.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <dkpro.version>2.2.1</dkpro.version>
@@ -148,7 +149,7 @@
             <dependency>
                 <groupId>io.awspring.cloud</groupId>
                 <artifactId>spring-cloud-aws-dependencies</artifactId>
-                <version>3.1.0</version>
+                <version>${spring.cloud-aws.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
