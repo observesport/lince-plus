@@ -35,7 +35,8 @@ public interface SessionController {
             , produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<HashMap<String, String>> setSessionData(HttpServletRequest rq, HttpSession httpSession
             , @PathVariable String key
-            , @PathVariable String value);
+            , @PathVariable String value
+            , Principal principal);
 
     @RequestMapping(value = "/getProjectInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<String> getMiniInfo(HttpServletRequest rq);
