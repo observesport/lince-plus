@@ -133,8 +133,9 @@ public class LinceFileHelperFx extends LinceFileHelper {
                 myLinceApp.getDataHubService().getYoutubeVideoPlayList().setAll(linceFileProjectWrapper.getYoutubeVideoPlayList());
                 myLinceApp.getDataHubService().updateUserPlayList();
             });
-            boolean isEmptyApp = myLinceApp instanceof EmptyLinceApp;
-            if (!isEmptyApp && !file.isDirectory()) {
+            // Only save file path if we have a proper UI stage (not in test scenarios)
+            boolean hasValidStage = myLinceApp.getPrimaryStage() != null;
+            if (hasValidStage && !file.isDirectory()) {
                 // Save the file path to the registry.
                 setLinceProjectPath(file, myLinceApp);
                 JavaFXLogHelper.addLogInfo("Cargado fichero " + file.getName());

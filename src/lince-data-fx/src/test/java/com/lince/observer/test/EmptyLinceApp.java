@@ -1,5 +1,7 @@
-package com.lince.observer.data.base;
+package com.lince.observer.test;
 
+import com.lince.observer.data.base.DataHubServiceBase;
+import com.lince.observer.data.base.ILinceApp;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 

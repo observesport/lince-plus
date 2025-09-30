@@ -208,7 +208,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void handleSave() {
         LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         File file = fileHelper.getLinceProjectFilePath();
-        if (file != null) {
+        if (file != null && !file.isDirectory()) {
             fileHelper.saveLinceProjectToFile(file, mainLinceApp);
         } else {
             handleSaveAs();

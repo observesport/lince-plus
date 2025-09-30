@@ -81,6 +81,13 @@
         </dependency>
         <dependency>
             <groupId>com.lince.observer</groupId>
+            <artifactId>lince-data-fx</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.lince.observer</groupId>
             <artifactId>lince-ai</artifactId>
         </dependency>
         <dependency>
