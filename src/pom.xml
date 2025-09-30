@@ -75,7 +75,7 @@
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
         <jakartaInject.version>2.0.0</jakartaInject.version>
-        <junit5.version>5.9.2</junit5.version>
+        <junit5.version>5.12.2</junit5.version>
         <jackson.version>2.16.1</jackson.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
