@@ -111,7 +111,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 );
                 return cell;
             });
-            JavaFXBrowser browser = new JavaFXBrowser(getMainLinceApp().getServerURL() + "/desktop.html");
+            JavaFXBrowser browser = new JavaFXBrowser(getMainLinceApp().getServerURL() + "/deprecated/desktop.html");
             pane.getChildren().add(browser);
 
         } catch (Exception e) {
@@ -208,7 +208,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void handleSave() {
         LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         File file = fileHelper.getLinceProjectFilePath();
-        if (file != null) {
+        if (file != null && !file.isDirectory()) {
             fileHelper.saveLinceProjectToFile(file, mainLinceApp);
         } else {
             handleSaveAs();
@@ -337,9 +337,24 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
 
+//    /**
+//     * Opens the deprecated (legacy) frontend in the browser.
+//     * This method opens /deprecated/index.html which contains the old React app.
+//     */
+//    @FXML
+//    private void handleOpenBrowserDeprecated() {
+//        String url = mainLinceApp.getServerURL() + "/deprecated/index.html";
+//        JavaFXLogHelper.addLogInfo(i18n("open_browser", url));
+//        ServerValuesHelper.openLANLinceBrowser(url, false);
+//    }
+
+    /**
+     * Opens the new frontend in the browser.
+     * This method opens /index.html which contains the new React app.
+     */
     @FXML
     private void handleOpenBrowser() {
-        String url = mainLinceApp.getServerURL();
+        String url = mainLinceApp.getServerURL() + "/index.html";
         JavaFXLogHelper.addLogInfo(i18n("open_browser", url));
         ServerValuesHelper.openLANLinceBrowser(url, false);
     }

@@ -144,13 +144,14 @@ public class SessionControllerImpl extends BaseRestControllerWrapper implements 
             , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HashMap<String, String>> setSessionData(HttpServletRequest rq, HttpSession httpSession
             , @PathVariable String key
-            , @PathVariable String value) {
+            , @PathVariable String value
+            , Principal principal) {
         Function<Tuple<String, String>, String> func = data -> {
             boolean isSet = service.setSessionData(httpSession, SessionDataAttributes.castString(data.key), data.value);
             return isSet ? data.toString() : "ERROR";
         };
         executeResponseItem(new Tuple<>(key, value), func);
-        return getAllSessionData(rq, httpSession, authenticationFacade.getAuthentication());
+        return getAllSessionData(rq, httpSession, principal);
     }
 
     @Override

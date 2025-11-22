@@ -1,7 +1,7 @@
 package com.lince.observer.data.system.operations;
 
-import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
+import com.lince.observer.data.base.ILinceAppProvider;
 import com.lince.observer.data.base.LinceFileHelperFx;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
@@ -27,6 +27,7 @@ import java.util.List;
  */
 public class LinceDesktopFileHelper extends LinceFileHelperFx {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     /**
      * Get a file chooser depending on previous project openings
@@ -105,7 +106,7 @@ public class LinceDesktopFileHelper extends LinceFileHelperFx {
      * @return selected file
      */
     public static File openSaveFileDialog(String extension) {
-        ILinceApp linceApp = new EmptyLinceApp();
+        ILinceApp linceApp = ILinceAppProvider.getInstance();
         List<Pair<String, String>> types = new ArrayList<>();
         types.add(new MutablePair<>(extension, extension));
         return openSaveFileDialog(linceApp, types);

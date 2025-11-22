@@ -1,7 +1,6 @@
 package com.lince.observer.data;
 
 
-import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
 import com.lince.observer.data.base.LinceFileHelperFx;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
@@ -30,9 +29,8 @@ class FileLoaderTest {
 
     @BeforeAll
     static void init() {
-//        BaseTest.showInitMessage(NAME);
         fileLoader = new LinceFileHelperFx();
-        linceApp = new EmptyLinceApp();
+        linceApp = new com.lince.observer.test.EmptyLinceApp();
     }
 /*
     @AfterAll

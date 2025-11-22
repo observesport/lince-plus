@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.lince.observer</groupId>
         <artifactId>lince-plus-root</artifactId>
-        <version>3.2.5</version>
+        <version>4.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>lince-desktop</artifactId>
@@ -78,6 +78,13 @@
         <dependency>
             <groupId>com.lince.observer</groupId>
             <artifactId>lince-data-fx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lince.observer</groupId>
+            <artifactId>lince-data-fx</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.lince.observer</groupId>

@@ -17,8 +17,8 @@
  */
 package com.lince.observer.data.legacy.commands.instrumento;
 
-import com.lince.observer.data.base.EmptyLinceApp;
 import com.lince.observer.data.base.ILinceApp;
+import com.lince.observer.data.base.ILinceAppProvider;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
@@ -44,7 +44,7 @@ public class LoadInstrumentoObservacional extends Command {
 
     @Override
     public void execute() {
-        ILinceApp linceApp = new EmptyLinceApp();
+        ILinceApp linceApp = ILinceAppProvider.getInstance();
         String label = java.util.ResourceBundle.getBundle("i18n.Bundle").getString("INSTRUMENTO OBSERVACIONAL DE LINCE")
                 + " (*.ilince)";
         File f = LinceDesktopFileHelper.openSingleFileDialogBasic(linceApp, new MutablePair<>(label, "*.ilince"));

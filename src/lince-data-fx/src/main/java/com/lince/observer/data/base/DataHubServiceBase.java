@@ -174,8 +174,37 @@ public class DataHubServiceBase {
         FxCollectionHelper.setObservableList(collection, item);
     }
 
+    /**
+     * Stores the currently selected register UUID for desktop/non-HTTP session contexts
+     */
+    private static UUID currentRegisterUuid = null;
+
+    /**
+     * Gets the current session register.
+     * Override this in subclasses that have HTTP session support (e.g., DataHubService in lince-math).
+     * For desktop contexts, uses in-memory storage.
+     *
+     * @return the currently selected register or null if not set
+     */
     protected LinceRegisterWrapper getSessionRegister() {
+        if (currentRegisterUuid != null) {
+            return getRegisterById(currentRegisterUuid);
+        }
         return null;
+    }
+
+    /**
+     * Sets the current register for desktop/non-HTTP session contexts
+     *
+     * @param register the register to set as current
+     */
+    public void setCurrentRegister(LinceRegisterWrapper register) {
+        if (register != null) {
+            currentRegisterUuid = register.getId();
+            log.debug("Set current register to: {}", currentRegisterUuid);
+        } else {
+            currentRegisterUuid = null;
+        }
     }
 
     /**
