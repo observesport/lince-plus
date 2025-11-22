@@ -1,0 +1,1 @@
+import{ag as r,a_ as d,c0 as e}from"./index-b2960181.js";const o=()=>r.jsxs(r.Fragment,{children:[r.jsx(d,{pageName:"RStudio"}),r.jsx("div",{className:"overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark",children:r.jsx(e,{})})]});export{o as default};

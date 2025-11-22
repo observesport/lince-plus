@@ -1,0 +1,1 @@
+import{ag as s,a_ as e,ap as r,b$ as a}from"./index-b2960181.js";const t=()=>s.jsxs(s.Fragment,{children:[s.jsx(e,{pageName:s.jsx(r,{id:"results"})}),s.jsx("div",{className:"overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark",children:s.jsx(a,{})})]});export{t as default};

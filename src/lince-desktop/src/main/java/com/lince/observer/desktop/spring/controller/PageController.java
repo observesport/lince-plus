@@ -125,13 +125,13 @@ public class PageController {
     public String index(HttpServletRequest request, HttpSession session, Model model) {
         addCommonSettings(request, session, model);
         addVideoConstants(session, model, null);
-        return "/index.html";
+        return "redirect:/deprecated/index.html";
     }
 
     @RequestMapping("/desktop")
     public String desktop(HttpServletRequest request, HttpSession session, Model model) {
         addCommonSettings(request, session, model);
-        return "/index.html";
+        return "redirect:/deprecated/index.html";
     }
 
     @RequestMapping("/videoPlayerOpenBrowser")
