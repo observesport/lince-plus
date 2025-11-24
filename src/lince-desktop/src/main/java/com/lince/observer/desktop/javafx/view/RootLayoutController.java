@@ -354,7 +354,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleOpenBrowser() {
-        String url = mainLinceApp.getServerURL() + "/index.html";
+        String url = mainLinceApp.getServerURL();// + "/index.html";
         JavaFXLogHelper.addLogInfo(i18n("open_browser", url));
         ServerValuesHelper.openLANLinceBrowser(url, false);
     }
