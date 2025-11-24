@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -144,7 +143,7 @@ public class ProfileServiceImpl implements ProfileService {
         dataHubService.getDataRegister().forEach(aux -> {
             boolean isFound = false;
             for (UserProfile user : data.getUserProfiles()) {
-                if (aux.getUserProfile().getKey().equals(user.getKey())) {
+                if (aux.getUserProfile() != null && aux.getUserProfile().getKey().equals(user.getKey())) {
                     isFound = true;
                 }
             }
@@ -152,19 +151,9 @@ public class ProfileServiceImpl implements ProfileService {
                 deleteList.add(aux);
             }
         });
-        //Let's avoid concurrent modification with iterator
-        for (Iterator<LinceRegisterWrapper> it = dataHubService.getDataRegister().iterator(); it.hasNext(); ) {
-            LinceRegisterWrapper aux = it.next();
-            boolean isFound = false;
-            for (LinceRegisterWrapper wrapper : deleteList) {
-                if (wrapper.equals(aux)) {
-                    isFound = true;
-                }
-            }
-            if (isFound) {
-                it.remove();
-            }
-        }
+        // Remove all items in deleteList from dataRegister
+        // Using removeAll() works correctly with CopyOnWriteArrayList
+        dataHubService.getDataRegister().removeAll(deleteList);
     }
 
     /**
