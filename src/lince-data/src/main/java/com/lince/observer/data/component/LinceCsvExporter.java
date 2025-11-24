@@ -100,14 +100,20 @@ public class LinceCsvExporter implements ILinceFileExporter {
     }
 
     private List<RegisterItem> getSelectedRegisters(ILinceProject linceProject) {
+        List<RegisterItem> registerData;
         if (researchUUID != null) {
-            return linceProject.getRegister().stream()
+            registerData = linceProject.getRegister().stream()
                     .filter(register -> register.getId().equals(researchUUID))
                     .findFirst()
                     .map(LinceRegisterWrapper::getRegisterData)
                     .orElse(linceProject.getRegister().get(0).getRegisterData());
+        } else {
+            registerData = linceProject.getRegister().get(0).getRegisterData();
         }
-        return linceProject.getRegister().get(0).getRegisterData();
+        // Sort RegisterItems by videoTime (RegisterItem implements Comparable based on videoTime)
+        return registerData.stream()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public String handleCriteriaColumn(Criteria criteria, RegisterItem registerItem) {
