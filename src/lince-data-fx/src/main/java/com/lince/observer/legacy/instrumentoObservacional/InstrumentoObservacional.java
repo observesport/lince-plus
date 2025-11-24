@@ -40,6 +40,9 @@ import java.util.logging.Logger;
  */
 public class InstrumentoObservacional implements TreeModelListener {
 
+    // Line ending constants
+    private static final String LINE_SEPARATOR = "\r\n";
+
     private static InstrumentoObservacional instance = null;
     private static Observable observable = new MyObservable();
     private RootInstrumentoObservacional raiz;
@@ -182,17 +185,61 @@ public class InstrumentoObservacional implements TreeModelListener {
         return raiz.getNombre();
     }
 
+    /**
+     * Export variable declarations for GSEQ Interval format
+     * Format: "  fullname = code" (one per line, indented)
+     */
     public String exportToSdisGseq(List<Criterio> criterios) {
         String contenido = "";
+        // Generate variable declarations in format: "  fullname = code"
         for (Criterio criterio : criterios) {
-            contenido += "\r\n($" + criterio.getNombre() + " ="; //FIXME hay que quitar espacios y seguro que mas cosas
+            List<Categoria> categorias = criterio.getCategoriasHoja();
+            for (Categoria categoria : categorias) {
+                String code = categoria.getCodigo();
+
+                // Try to use description if available, otherwise use name, or construct from criterion + code
+                String fullName;
+                if (categoria.getDescripcion() != null && !categoria.getDescripcion().isEmpty()) {
+                    fullName = categoria.getDescripcion().replaceAll("\\s+", "").toLowerCase();
+                } else if (categoria.getNombre() != null && !categoria.getNombre().isEmpty()) {
+                    fullName = categoria.getNombre().replaceAll("\\s+", "").toLowerCase();
+                } else {
+                    // Fallback: use criterion name + code
+                    fullName = criterio.getNombre().replaceAll("\\s+", "").toLowerCase() + code.toLowerCase();
+                }
+
+                // Format: two spaces, full name, equals, code
+                contenido += "  " + fullName + " = " + code + "\r\n";
+            }
+        }
+        // Add metadata line placeholder
+        contenido += "* Metadata;\r\n";
+        return contenido;
+    }
+
+    /**
+     * Export variable declarations for GSEQ Event/Multievent/Timed/State formats
+     * Format: "($CriterionName = code1 code2 ...)" (grouped by criterion)
+     */
+    public String exportToSdisGseqOldFormat(List<Criterio> criterios) {
+        String contenido = LINE_SEPARATOR;
+        int criterioCount = criterios.size();
+        int index = 0;
+        for (Criterio criterio : criterios) {
+            contenido += "($" + criterio.getNombre() + " =";
             List<Categoria> categorias = criterio.getCategoriasHoja();
             for (Categoria categoria : categorias) {
                 contenido += " " + categoria.getCodigo();
             }
-            contenido += ")";
+            // Last declaration ends with ");", others with just ")"
+            index++;
+            if (index == criterioCount) {
+                contenido += ");" + LINE_SEPARATOR;
+            } else {
+                contenido += ")" + LINE_SEPARATOR;
+            }
         }
-        return contenido + ";\r\n";
+        return contenido + LINE_SEPARATOR;
     }
 
     public String exportToTheme(List<Criterio> criterios) {

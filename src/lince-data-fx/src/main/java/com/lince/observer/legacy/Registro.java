@@ -46,6 +46,11 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     static final String CRITERIOS = "criterios";
     static final String DATOS_FIJOS = "datosEstaticos";
     static final String DATOS_VARIABLES = "datosVariables";
+
+    // Line ending constants
+    private static final String LINE_SEPARATOR = "\r\n";
+    private static final String SEQUENCE_END = "/";
+
     private final TimeCalculations timeCalculations = new TimeCalculations();
 
     private static Registro instance = new Registro(); //asd 2017: to avoid null pointer exception
@@ -267,36 +272,70 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     }
 
     public String exportToSdisGseqEvento(List<Criterio> criterios) {
-        String contenido = "Event\r\n";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseq(criterios);
+        String contenido = "Event";
+        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
         contenido += exportRegistroSdisGseqEvento(criterios);
         return contenido;
     }
 
     public String exportToSdisGseqMultievento(List<Criterio> criterios) {
-        String contenido = "Multievent\r\n";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseq(criterios);
+        String contenido = "Multievent";
+        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
         contenido += exportRegistroSdisGseqMultivento(criterios);
         return contenido;
     }
 
     public String exportToSdisGseqEventoConTiempo(List<Criterio> criterios) {
-        String contenido = "Timed\r\n";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseq(criterios);
+        String contenido = "Timed";
+        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
         contenido += exportRegistroSdisGseqEventoConTiempo(criterios);
         return contenido;
     }
 
     public String exportToSdisGseqIntervalo(List<Criterio> criterios) {
-        String contenido = "Interval\r\n";
+        // Calculate interval duration from observations
+        int intervalSeconds = calculateIntervalDuration();
+        String contenido = "Interval=" + intervalSeconds + "'\r\n";
         contenido += InstrumentoObservacional.getInstance().exportToSdisGseq(criterios);
         contenido += exportRegistroSdisGseqIntervalo(criterios);
         return contenido;
     }
 
+    /**
+     * Calculates the average interval duration between observations in seconds
+     */
+    private int calculateIntervalDuration() {
+        if (datosVariables == null || datosVariables.size() < 2) {
+            return 10; // Default to 10 seconds if insufficient data
+        }
+
+        // Calculate average time difference between consecutive observations
+        long totalDiff = 0;
+        int count = 0;
+
+        for (int i = 1; i < datosVariables.size(); i++) {
+            int diff = datosVariables.get(i).getMilis() - datosVariables.get(i - 1).getMilis();
+            if (diff > 0) { // Only count positive differences
+                totalDiff += diff;
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            return 10; // Default to 10 seconds
+        }
+
+        // Convert milliseconds to seconds and round
+        int avgIntervalMs = (int) (totalDiff / count);
+        int avgIntervalSeconds = (avgIntervalMs + 500) / 1000; // Round to nearest second
+
+        // Return at least 1 second
+        return Math.max(1, avgIntervalSeconds);
+    }
+
     public String exportToSdisGseqEstado(List<Criterio> criterios) {
-        String contenido = "State\r\n";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseq(criterios);
+        String contenido = "State";
+        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
         contenido += exportRegistroSdisGseqState(criterios);
         return contenido;
     }
@@ -316,18 +355,35 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     private String exportRegistroSdisGseqMultivento(List<Criterio> criterios) {
         String contenido = "";
 
-        boolean isFirst = true;
+        if (datosVariables.isEmpty()) {
+            return contenido + SEQUENCE_END + LINE_SEPARATOR;
+        }
+
+        // First pass: collect all non-empty observations
+        List<String> observations = new ArrayList<>();
         for (FilaRegistro filaRegistro : datosVariables) {
             String cont = exportFila(criterios, filaRegistro, " ");
-
-            if (isFirst) {
-                contenido += "\r\n" + cont;
-                isFirst = false;
-            } else {
-                contenido += ".\r\n" + cont;
+            if (!cont.isEmpty()) {
+                observations.add(cont);
             }
         }
-        contenido += "/\r\n";
+
+        // Second pass: output with correct separators
+        int lastObservationIndex = observations.size() - 1;
+        for (int i = 0; i < observations.size(); i++) {
+            contenido += observations.get(i);
+
+            // Add appropriate ending: period for non-last, semicolon for last
+            if (i == lastObservationIndex) {
+                contenido += ";";
+            } else {
+                contenido += "." + LINE_SEPARATOR;
+            }
+        }
+
+        // End with forward slash
+        contenido += SEQUENCE_END + LINE_SEPARATOR + LINE_SEPARATOR;
+
         return contenido;
     }
 
@@ -366,28 +422,41 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     private String exportRegistroSdisGseqIntervalo(List<Criterio> criterios) {
         String contenido = "";
 
-        FilaRegistro filaAnterior = null;
-        int tiempoAnterior = -1;
+        if (datosVariables.isEmpty()) {
+            return contenido + "/\r\n";
+        }
+
+        // Start with empty line and session marker (placeholder for now)
+        contenido += "\r\n<S01>\r\n";
+
+        int tiempoAnterior = 0;
         boolean isFirst = true;
+
         for (FilaRegistro filaRegistro : datosVariables) {
             String cont = exportFila(criterios, filaRegistro, " ");
 
-            // Si la anterior es diferente de null toca terminar la lina anterior.
-            if (filaAnterior != null) {
-                contenido += "*" + (filaRegistro.getMilis() - tiempoAnterior);
+            // Skip empty observations
+            if (cont.isEmpty()) {
+                continue;
             }
 
-            if (isFirst) {
-                contenido += "\r\n" + cont;
-                isFirst = false;
-            } else {
-                contenido += ",\r\n" + cont;
+            // Calculate time interval from previous observation (or from start for first one)
+            int tiempoActual = filaRegistro.getMilis();
+            int intervalo = tiempoActual - tiempoAnterior;
+
+            if (!isFirst) {
+                contenido += ",";
             }
 
-            filaAnterior = filaRegistro;
-            tiempoAnterior = filaRegistro.getMilis();
+            // Add timing before the data
+            contenido += "*" + intervalo + "," + cont;
+
+            isFirst = false;
+            tiempoAnterior = tiempoActual;
         }
-        contenido += "/\r\n";
+
+        // Add session end marker with placeholder metadata
+        contenido += "\r\n\r\n(Session)/\r\n";
 
         return contenido;
     }
