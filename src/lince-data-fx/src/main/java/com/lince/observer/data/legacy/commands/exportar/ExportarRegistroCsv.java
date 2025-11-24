@@ -1,5 +1,5 @@
 /*
- *  Lince - Automatizacion de datos observacionales
+ *  LINCE PLUS - Automatizacion de datos observacionales. Inherited from legacy Lince 1.2.
  *  Copyright (C) 2011  Brais Gabin Moreira
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * @author Brais
+ * @author Alberto Soto-Fernandez
  */
 @Deprecated
 public class ExportarRegistroCsv extends Command {
