@@ -1,6 +1,6 @@
 /*
- *  Lince - Automatizacion de datos observacionales
- *  Copyright (C) 2010  Brais Gabin Moreira
+ *  LINCE PLUS - Automatizacion de datos observacionales. Inherited from legacy Lince 1.2.
+ *  Copyright (C) 2025  Alberto Soto-Fernandez
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * @author Brais
+ * @author Alberto Soto-Fernandez
  */
 @Deprecated
 public class ExportarRegistroSdisGseqEvento extends Command {

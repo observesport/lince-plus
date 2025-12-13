@@ -213,5 +213,82 @@ class LinceCsvExporterTest {
                 "Result should not contain excluded column: " + LinceDataConstants.ColumnType.EVENT_DURATION_SECONDS);
     }
 
+    @Test
+    void testExportSingleObserverOrderedByTime() {
+        // Arrange
+        testLinceProject = loadProjectFromResources(TEST_PROJECT_MULTIPLE_RESOURCE);
+        assertNotNull(testLinceProject, "Test project should not be null");
+
+        // Act - Export first observer's data (default behavior)
+        String result = csvExporter.executeFormatConversion(testLinceProject);
+
+        // Assert
+        assertNotNull(result, "Result should not be null");
+        String[] lines = result.split("\r\n|\n");
+        assertTrue(lines.length > 1, "Result should have header and data rows");
+
+        // Verify that the time values are sorted in ascending order
+        // Skip first two lines (header and zero time row)
+        double previousTime = -1.0;
+        for (int i = 2; i < lines.length; i++) {
+            String[] columns = lines[i].split(LinceDataConstants.CSV_CHAR_SEPARATOR_COMMA);
+            if (columns.length > 2) {
+                // Parse time from TSegundos column (index 2)
+                String timeStr = columns[2];
+                if (!timeStr.isEmpty()) {
+                    // Convert time format "MM:SS" or "HH:MM:SS" to seconds
+                    String[] timeParts = timeStr.split(":");
+                    double timeInSeconds = 0;
+                    if (timeParts.length == 2) {
+                        timeInSeconds = Integer.parseInt(timeParts[0]) * 60 +
+                                       Double.parseDouble(timeParts[1]);
+                    } else if (timeParts.length == 3) {
+                        timeInSeconds = Integer.parseInt(timeParts[0]) * 3600 +
+                                       Integer.parseInt(timeParts[1]) * 60 +
+                                       Double.parseDouble(timeParts[2]);
+                    }
+                    assertTrue(timeInSeconds >= previousTime,
+                            String.format("Time at row %d (%s = %.2f) should be >= previous time (%.2f)",
+                                    i, timeStr, timeInSeconds, previousTime));
+                    previousTime = timeInSeconds;
+                }
+            }
+        }
+
+        // Verify that only one observer's data is exported
+        int dataRowCount = lines.length - 2;
+        int expectedRowCount = testLinceProject.getRegister().get(0).getRegisterData().size();
+        assertEquals(expectedRowCount, dataRowCount,
+                "Export should contain only the first observer's register items");
+    }
+
+    @Test
+    void testExportSpecificObserverByUUID() {
+        // Arrange
+        testLinceProject = loadProjectFromResources(TEST_PROJECT_MULTIPLE_RESOURCE);
+        assertNotNull(testLinceProject, "Test project should not be null");
+        assertTrue(testLinceProject.getRegister().size() > 1,
+                "Test project should have multiple observers for this test");
+
+        // Get the UUID of the second observer to verify we can select a specific one
+        java.util.UUID secondObserverId = testLinceProject.getRegister().get(1).getId();
+        csvExporter.setResearchUUID(secondObserverId);
+
+        // Act - Export only the second observer's data
+        String result = csvExporter.executeFormatConversion(testLinceProject);
+
+        // Assert
+        assertNotNull(result, "Result should not be null");
+        String[] lines = result.split("\r\n|\n");
+        assertTrue(lines.length > 1, "Result should have header and data rows");
+
+        // Count data rows (excluding header and zero time row)
+        int dataRowCount = lines.length - 2;
+        int expectedRowCount = testLinceProject.getRegister().get(1).getRegisterData().size();
+
+        assertEquals(expectedRowCount, dataRowCount,
+                "Export should contain only the register items from the selected observer");
+    }
+
 
 }

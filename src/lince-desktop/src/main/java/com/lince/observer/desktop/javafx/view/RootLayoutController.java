@@ -20,17 +20,23 @@ import com.lince.observer.desktop.helper.ServerValuesHelper;
 import com.lince.observer.desktop.javafx.JavaFXLoader;
 import com.lince.observer.desktop.javafx.components.JavaFXBrowser;
 import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
+import com.lince.observer.desktop.spring.service.ExternalLinkService;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import com.lince.observer.math.service.DataHubService;
 import com.lince.observer.transcoding.TranscodingProvider;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -47,7 +53,11 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javafx.geometry.Insets;
 
 /**
  * The controller for the root layout. The root layout provides the basic
@@ -62,6 +72,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @Autowired
     protected DataHubService dataHubService;
 
+    @Autowired
+    protected ExternalLinkService externalLinkService;
+
     protected TranscodingProvider transcodingProvider = null;
 
     @FXML
@@ -71,6 +84,14 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private ListView<String> videoPlaylistView;
 
     @FXML
+    private MenuItem ngrokStartMenuItem;
+
+    @FXML
+    private MenuItem ngrokStopMenuItem;
+
+    private BooleanProperty ngrokRunning = new SimpleBooleanProperty(false);
+
+    @FXML
     private Pane pane;
 
 
@@ -78,6 +99,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void initialize() {
         log.info("--            Init RootLayoutController               --");
         logArea.setItems(JavaFXLogHelper.getFxLog());
+        ngrokStartMenuItem.visibleProperty().bind(ngrokRunning.not());
+        ngrokStopMenuItem.visibleProperty().bind(ngrokRunning);
     }
 
     public void lazyInit() {
@@ -354,11 +377,55 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleOpenBrowser() {
-        String url = mainLinceApp.getServerURL() + "/index.html";
+        String url = mainLinceApp.getServerURL();// + "/index.html";
         JavaFXLogHelper.addLogInfo(i18n("open_browser", url));
         ServerValuesHelper.openLANLinceBrowser(url, false);
     }
 
+    @FXML
+    private void handleNgrokStart() {
+        if (externalLinkService == null) {
+            try {
+                externalLinkService = getMainLinceApp().getExternalLinkService();
+            } catch (Exception e) {
+                JavaFXLogHelper.showMessage(AlertType.ERROR, "Ngrok Service Error",
+                        "Failed to initialize Ngrok service. Please check your configuration.");
+                JavaFXLogHelper.addLogError("Failed to initialize Ngrok service", e);
+                return;
+            }
+        }
+
+        if (externalLinkService == null) {
+            JavaFXLogHelper.showMessage(AlertType.ERROR, "Ngrok Service Error",
+                    "Ngrok service is not available. Please check your configuration.");
+            return;
+        }
+
+        Map<String, String> configParams = externalLinkService.getConfigurationParameters();
+        Map<String, String> userInputs = new HashMap<>();
+
+        boolean allInputsProvided = showConfigurationDialog(configParams, userInputs);
+        JavaFXLogHelper.addLogInfo("User inputs: " + userInputs);
+        if (allInputsProvided) {
+            externalLinkService.configureService(userInputs);
+            String externalLink = externalLinkService.generateLink(getMainLinceApp().getCurrentPort());
+            if (!StringUtils.isEmpty(externalLink)) {
+                JavaFXLogHelper.addLogInfo("Ngrok located at " + externalLink);
+                JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Started", "External link: " + externalLink);
+            }
+            ngrokRunning.set(externalLinkService.isConnected());
+        } else {
+            JavaFXLogHelper.showMessage(AlertType.WARNING, "Ngrok Configuration", "Ngrok configuration was cancelled or incomplete.");
+        }
+    }
+
+
+    @FXML
+    private void handleNgrokStop() {
+        externalLinkService.disconnect();
+        ngrokRunning.set(false);
+        JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Stopped", "Ngrok service has been stopped.");
+    }
 
     private String i18n(String key, String... args) {
         return getMainLinceApp().getMessage(key, (Object[]) args);
@@ -728,4 +795,62 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             JavaFXLoader.exit(getMainLinceApp()); // Ensure application shuts down even if there's an error
         }
     };
+
+    private boolean showConfigurationDialog(Map<String, String> configParams, Map<String, String> userInputs) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Ngrok Configuration");
+        dialog.setHeaderText("Please provide the required configuration parameters:");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 20, 10, 10));
+
+        String configMessage = externalLinkService.getConfigurationMessage();
+        Label messageLabel = new Label(configMessage);
+        messageLabel.setWrapText(true);
+
+        Button openBrowserButton = new Button("Open Browser");
+        openBrowserButton.setOnAction(e -> {
+            Pattern pattern = Pattern.compile("https://[^\\s]+");
+            Matcher matcher = pattern.matcher(configMessage);
+            if (matcher.find()) {
+                String externalUrl = matcher.group();
+                ServerValuesHelper.openLANLinceBrowser(externalUrl, false);
+            } else {
+                JavaFXLogHelper.showMessage(AlertType.ERROR, "Error", "No external URL found in the configuration message.");
+            }
+        });
+        grid.add(messageLabel, 0, 0);
+        GridPane.setColumnSpan(messageLabel, GridPane.REMAINING);
+        grid.addRow(1, openBrowserButton);
+        Map<String, TextField> textFields = new HashMap<>();
+        int row = 2;
+        for (Map.Entry<String, String> entry : configParams.entrySet()) {
+            String key = entry.getKey();
+            String description = entry.getValue();
+
+            Label label = new Label(description + ":");
+            TextField textField = new TextField();
+            textFields.put(key, textField);
+            grid.addRow(row, label, textField);
+            row++;
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == okButtonType) {
+            for (Map.Entry<String, TextField> entry : textFields.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue().getText();
+                userInputs.put(key, value);
+            }
+            return true;
+        }
+        return false;
+    }
 }

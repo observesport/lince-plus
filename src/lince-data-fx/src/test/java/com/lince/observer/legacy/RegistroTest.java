@@ -2,6 +2,7 @@ package com.lince.observer.legacy;
 
 
 import com.lince.observer.data.LegacyToolException;
+import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,10 +19,23 @@ import static org.junit.jupiter.api.Assertions.*;
 class RegistroTest {
 
     private List<LegacyToolException> exceptions;
+    private Registro registro;
+    private List<Criterio> criterios;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         exceptions = new ArrayList<>();
+
+        // Load test files for export tests
+        File linceRegister = new File(getClass().getResource("/lince1/import/Registro_prueba.rlince").getFile());
+        File linceInstrument = new File(getClass().getResource("/lince1/import/Instrumento_prueba.ilince").getFile());
+
+        InstrumentoObservacional.loadInstance(linceInstrument);
+        registro = Registro.cargarRegistro(linceRegister, exceptions);
+
+        if (registro != null) {
+            criterios = Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
+        }
     }
 
     @Test

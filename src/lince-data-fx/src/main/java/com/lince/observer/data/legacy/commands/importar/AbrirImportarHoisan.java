@@ -1,5 +1,5 @@
 /*
- *  Lince - Automatizacion de datos observacionales
+ *  LINCE PLUS - Automatizacion de datos observacionales. Inherited from legacy Lince 1.2.
  *  Copyright (C) 2011  Brais Gabin Moreira
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import javax.swing.*;
 import java.io.File;
 
 /**
- * @author Brais
+ * @author Alberto Soto-Fernandez
  */
 public class AbrirImportarHoisan extends Command {
     private static final String IMPORT_HOISAN_COMMAND_ID = "AbrirImportarHoisan";

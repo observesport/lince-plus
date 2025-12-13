@@ -1,0 +1,37 @@
+Multievent
+
+($Paso = PP RS PT AR1 MR E PE)
+($Adaptacion = A NA)
+($Exito = L NL);
+
+
+RS A.
+PT A.
+AR1 A.
+PE A.
+L;
+
+RS A.
+PT A.
+NL;
+
+RS A.
+PT A.
+AR1 A.
+PE A.
+L;
+
+RS A.
+PT A.
+AR1 A.
+E A.
+PE A.
+L;
+
+RS A.
+PT A.
+AR1 A.
+E A.
+PE A.
+L/
+
