@@ -121,17 +121,17 @@ public class PageController {
         }
     }
 
-    @RequestMapping(value = {"/", "/dashboard", "/dashboard/*"})
-    public String index(HttpServletRequest request, HttpSession session, Model model) {
+    @RequestMapping(value = {"/dashboard", "/dashboard/*"})
+    public String dashboard(HttpServletRequest request, HttpSession session, Model model) {
         addCommonSettings(request, session, model);
         addVideoConstants(session, model, null);
-        return "redirect:/index.html";
+        return "forward:/index.html";
     }
 
     @RequestMapping("/desktop")
     public String desktop(HttpServletRequest request, HttpSession session, Model model) {
         addCommonSettings(request, session, model);
-        return "redirect:/index.html";
+        return "forward:/desktop/index.html";
     }
 
     @RequestMapping("/videoPlayerOpenBrowser")
@@ -159,7 +159,7 @@ public class PageController {
         if (!react) {
             return "video";
         } else {
-            return "react-video";
+            return "forward:/index.html";
         }
     }
 
@@ -175,7 +175,7 @@ public class PageController {
         if (!react) {
             return "categories";
         } else {
-            return "react-tool";
+            return "forward:/index.html";
         }
 
     }
@@ -206,18 +206,19 @@ public class PageController {
         return "r-console";
     }
 
-    @RequestMapping("/stats")
-    public String stats(HttpServletRequest request, HttpSession session, Model model) {
-        addCommonSettings(request, session, model);
-        return "react-stats";
-    }
-
-
-    @RequestMapping("/results")
-    public String results(HttpServletRequest request, HttpSession session, Model model) {
-        addCommonSettings(request, session, model);
-        return "react-results";
-    }
+//    TODO delete
+//    @RequestMapping("/stats")
+//    public String stats(HttpServletRequest request, HttpSession session, Model model) {
+//        addCommonSettings(request, session, model);
+//        return "react-stats";
+//    }
+//
+//
+//    @RequestMapping("/results")
+//    public String results(HttpServletRequest request, HttpSession session, Model model) {
+//        addCommonSettings(request, session, model);
+//        return "react-results";
+//    }
 
     @RequestMapping("/import")
     public String importData(HttpServletRequest request, HttpSession session, Model model) {
