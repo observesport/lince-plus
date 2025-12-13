@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Lince PLUS - Observation tool for research">
+    <meta name="author" content="Alberto Soto Fernandez">
+    <title>LINCE PLUS - Observational Software - Desktop</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <!-- Font Awesome 6 -->
+    <link href="css/fontawesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Tailwind CSS -->
+    <script src="css/tailwind.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/desktop.css" rel="stylesheet" type="text/css">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Main Container -->
+    <div class="flex-grow px-1 py-1">
+        <!-- Shared Header -->
+        <div class="bg-white rounded-lg shadow-lg p-2 mb-1">
+            <div class="flex items-center justify-between gap-2">
+                <!-- Lince PLUS Title with Logo -->
+                <div class="flex items-center gap-2">
+                    <img src="images/lince-logo.svg" alt="Lince PLUS" class="w-12 h-12">
+                    <h1 class="text-2xl font-bold text-gray-800">LINCE PLUS</h1>
+                </div>
+
+                <!-- Update Download Button -->
+                <div id="updateMessageWrapper" class="hidden flex items-center gap-2">
+                    <label for="updateButton">
+                        New version available
+                    </label>
+                    <button id="updateButton"
+                            type="button"
+                            onclick="openUpdateLincePlus();"
+                            class="flex items-center gap-2 bg-green-600 hover:bg-green-800 text-white font-semibold px-3 py-1.5 text-xs rounded transition duration-200">
+                        <span>Update to version <span id="updateVersion"></span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1">
+
+            <!-- Left Column - Citation Card -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+
+                <!-- Information Message -->
+                <div id="informationMessageWrapper" class="hidden bg-blue-50 border-l-4 border-blue-500 p-2 m-2 rounded">
+                    <div id="informationMessage" class="text-blue-700 text-xs"></div>
+                </div>
+
+                <!-- Header with Logo -->
+                <div class="gradient-primary text-white p-2 text-center mb-2">
+                    <p class="text-xs font-semibold">Scientific open source software.</p>
+                    <p class="text-xs">Please, refer us so we can continue growing.</p>
+                </div>
+
+                <!-- Citation Content -->
+                <div class="px-3 py-1">
+                    <h3 class="text-base font-bold text-gray-800 mt-1 mb-1 text-center">Article Citation</h3>
+                    <p class="text-gray-700 text-xs leading-snug">
+                        Soto, A, Camerino, O, Anguera, M.T., Iglesias, X., & Castañer, M., (2022):
+                        LINCE PLUS Software for Systematic Observation Studies of Sports and Health.
+                        <span class="italic">Behavior Research Methods</span>
+                        54, 1263–1271,
+                        <a href="https://doi.org/10.3758/s13428-021-01642-1"
+                           class="text-blue-600 hover:text-blue-800 underline text-xs"
+                           target="_blank">https://doi.org/10.3758/s13428-021-01642-1</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Column - Main Content -->
+            <div class="bg-white rounded-lg shadow-lg p-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- QR Code Section -->
+                    <div class="text-center">
+                        <img id="qrCodeImage"
+                                 src="/component/getQRCode"
+                                 width="140"
+                                 height="140"
+                                 alt="QR Code"
+                                 class="mx-auto mb-2 rounded-lg shadow-md">
+                            <p id="lang_qr" class="text-gray-600 text-xs mb-1">
+                                Usa este código QR para conectar con la aplicación de
+                                LINCE PLUS desde otros tablets o dispositivos en la misma red local.
+                            </p>
+                            <p id="projectUri" class="text-blue-600 font-mono text-xs break-all"></p>
+                        </div>
+
+                        <!-- Project Info Section -->
+                        <div id="projectInfo" class="hidden">
+                            <div class="space-y-2">
+                                <p id="lang_desc_1" class="text-gray-700 text-xs">
+                                    Ya puedes generar tus estudios con la última tecnología.
+                                    Recuerda: LINCE PLUS integra el programa estadístico R en su interior y cálculos validados.
+                                </p>
+                                <p id="lang_desc_2" class="font-bold text-gray-800 text-xs">
+                                    Para empezar, abre tu navegador a través de la opción superior "Visualizar" > "Abrir navegador".
+                                </p>
+
+                                <!-- Stats List -->
+                                <ul class="space-y-1">
+                                    <li class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                        <span id="option_registers" class="text-gray-700 text-xs">Registros por investigador 1</span>
+                                        <span id="statScene"
+                                              class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold">
+                                        </span>
+                                    </li>
+                                    <li class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                        <span class="text-gray-700 text-xs">Videos</span>
+                                        <span id="statVideo"
+                                              class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold">
+                                        </span>
+                                    </li>
+                                    <li class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                        <span id="option_observers" class="text-gray-700 text-xs">Observadores</span>
+                                        <span id="statObserver"
+                                              class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold">
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="px-1 py-1">
+            <div class="text-center text-gray-600 text-xs">
+                <span id="currentYear"></span> &copy; LINCE PLUS Behaviour Analysis Tool by Alberto Soto Fernández.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop"
+            class="hidden fixed bottom-8 right-8 text-white p-3 rounded-full shadow-lg transition duration-200"
+            style="background-color: var(--color-primary);">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="js/desktop.js"></script>
+
+    <!-- Google tag (gtag.js) GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PGTBMEJ65G"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-PGTBMEJ65G');
+        gtag('event', 'lince_desktop_4_startup', {
+            'event_category': 'Application',
+            'event_label': 'Lince Desktop 4 Started'
+        });
+    </script>
+</body>
+</html>

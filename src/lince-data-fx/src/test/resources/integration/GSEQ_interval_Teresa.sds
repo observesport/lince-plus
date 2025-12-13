@@ -1,0 +1,282 @@
+Interval=10'
+  ioffer = io
+  iplay = ip
+  ireceive = ir
+  ivocalize = iv
+  ooffer = oo
+  oencourage = oa
+  oentertain = oe
+  ovocalize = ov
+* Age (3yr 5yr) Place (Home Outdoors);
+
+<S01>
+
+*10,ir,*15,ir,*21,oo,ir,,ir*2,*28,ir,,ir,,iv,*23,ir,,ir*2,*2,ir,*3,ir,
+*20,oo*6,io oo*3,io ir,*9,io*2,*19;
+
+*2,ir,*2,ir,*2,ir,*3,ir,*4,ir,*100,ir,*3,iv,oe,*4,ir iv,*4,oa*4,*2,oa*6,
+*8,ov,oo,,oa,*2,ir,oe,io,*2,ir,*5,ov*2,oa ov,oa*3,oa ov,*2,oe;
+
+*20,ov,*4,oo,*14,ir,*21,ir,*2,ir*2,*4,ir,*3,ir *2,,ir*2,*4,ir,*44,oo,,io,
+io oo*2,io ir,*2,io,ir,*12,ir,*20,ir,*2,ir,*4;
+
+*11,iv,oa oe,oa ov,ov,*15,ir,*5,ir,*14,ir,*6,iv,*4,ir,,iv,*25,ir,,io ir,
+*18,ir,,io,*4,oo,*4,oo,*15,oo,*34,ir,*3,ir;
+
+oe ov,oe,*2,oa,*4,oa,,oe,io*2,io oe,io oa ov,io oe,oa,*3,oa,ov,,oa,,oa,
+io ov*2,io oa ov,io ov*2,io oa ov,io*2,*6,ir,*2,iv,ir,*20,ir,*57,ir,*7,ir*2,
+*23,ir,oe,,oo*3,io oo*2,io,ir,io ov*2,io oe ov*2,,io oe,io oa ov,io,io oa,*4;
+
+oe*6,io oe*2,oe,io oa ov,oa oe,io oa ov,io oe*2,io oa oe,io oa ov,io ov,
+io oe,*2,oe*5,oa oe,oe*3,oa oe,oe*9,,ov,*5,oa,,oa,,oa,*3,oa,*2,ov,*2,oa,*2,
+io*4,io ov*2,io oa ov,ov,io ov,io*3,oa ov,*2,io oe,*2,io,,io ov,oa,io*2,
+io oa oe,io,io oa,oe,io oa,ov*2,oa ov,,oa,ov,,oa,*3,io,oa*2,io*2,io oa,
+io oa ov,oa ov*2,ov*3,oa ov,oa*4,*5,oe ov,,ov,*4,ov,io oa,io ov,oa*3,io,ov,,
+oa ov,ov,,io,,oe,io oa,io oa ov,oa ov*3,oe,,io,io oa oe*2,oa,io oa,oa ov,io,
+*2,oa,,oa,io*4,io oe*2,oa oe,io oa,*5,oa
+
+(3yr Home)/
+
+<S02>
+
+ov,oa,*5,oe*4,oa oe,oe*4,oa,oe*2,*2,oe,*3,ir,*10,iv,io,*17,io,iv*11,*4,iv*4,
+ip iv oo,iv*2,ip iv,iv,,iv oo,*2,iv,*4,ip iv*2,iv,oo*3,ir,iv,*4,ir,*3,oe,
+oa oe*2,oa,oe*6,oe ov,ov,*2,oe ov,oa*2,oa oe,oa,*20,oa,*10,ov,*7,ov,*5,oe,*10;
+
+io iv,io ir,io ir iv,iv,io,ir*2,io iv,io iv oo*2,io ir iv,io,*4,ir iv,oo oa,
+oa oe,io ir,io*4,io ir,io*2,*12,ir,oa oe*5,*2,oe,oa oe,*5,ir iv,oa oe,,ir iv*2,
+*3,ir,*3,ir,,oa oe,ir,*11,ir,*4,ir,*9,ir,oa oe*3,*4,ir*5,ir iv,ir,oa oe,ir*2,
+iv*3,,ir,*2,ir iv,ir,*3,iv,*3,oe,,oe,oa,oa oe,oe,,ir iv,ir,ir iv,iv,io ir iv,
+ir,*13,io ir iv,io,*14,ir,,ir,*2,io*2,io ir iv oo;
+
+*10,oa*2,,ov,*5,oa oe,*5,ov,*9,oa, *2,oa oe ov,*2,ov,*4,ov,*6,oa,oa oe,,
+oa oe*2,,oa*2,,io oa,oa,,io,*61,oo,*11,oa*3,*4,ir,io iv,iv oo,ir,io*2,*10,
+oa oe,,oe*2,*3,ov,,oa,ov,*2,io oe,io*2,io ov*2;
+
+oo*9,ir oo,iv*3,iv oo,ir iv,iv*2,iv oo,iv*5,*2,oo,iv,*6,ir iv oo,iv oo,ir,*2,
+iv oo,*2,ir,,iv,*25,iv*2,*2,ir,*30,ir,*4,ir,*8,ir,*3,ir,*14,iv,*3,ir,*38
+
+(3yr Home)/
+
+<S03>
+
+*7,ov,*2,oo,ov,*12,oa,ir,*4,oo*5,,ir,*5,oo,ir,*8,oo,,oo,*11,oo,*49,oo*3,*27,
+oo*2,*4,oo,*12,oo,,oo*2,*9,oo,;
+
+oe,*2,oo*2,*7,oo,,ir,*2,iv oe,,ir,,oo,*3,ir,*8,ir,oo,*3,oo,*9,oo,*3,ir*2,*18,
+ir,*5,ir,,ir,oo,,ir,*2,ir,,ir*3,,oo*2,*5,ir,*4,ir*2,*2,ir*3,*5,ir*7,oo,,ir*9,
+*8,ir,ir oo,ir*10,oe,ir*3,,oo,ir*8,ir oo*7,ir*4;
+
+,ir*13,oo,ir*2,*4,ir*2,ir oo,ir*10,ir oo,ir*8,io ir iv,ir,io ir iv,ir*2,*4,
+ir*10,io ir,ir*8,*4,ir*5,ir oo,ir*11,ir oo,ir*4,io ir,ir*2,ir oo,ir,,ir,,ir*12,
+*2,ir*10,,ir*2,ir oo,ir*4,ir oo,ir*14,,ir*27;
+
+io,oa,,oo,*4,oa,ir,*8,ir,,oo,*23,
+ir,,oo,*19,ir,*36,ir,*10,ir*2,*11,iv,*14,ir,*15,ir,,ir,*16,oo,*2;
+
+oo,ir iv,oo,*3,ir,,oo,*6,ir*6,*2,ir*41,*2,ir*2,,ir,*2,oo,*4,ir*2,,ir,oo,
+*14,ir,*2,ir,*4,ir,*4,io,*15,ir,*2,ir,,ir,*2,ir*2,,ir,,oo,*3,ir,*2,ir*3,*4,
+ir,,ir*11,*2,io,,ir,io oo,ir,ir oo,*7;
+
+,oo,ir,*13,oo*3,*14,oo,ir,*2,oo,*5,ir*2,*2,oo,*2,ir,*3,oo,*12,oo*2,*6,oo,,ir,
+*2,ir,*4,oo,*6,oo,*3,oo*2,,oo,*3,oo,*6,oo,*7,oo,,oo,*8,oo,*3,oo,*12,oo,*8,oo,
+*2,oo,*4,oo,*5,oo,*7,oo,*2
+
+(3yr Outdoors)/
+
+<S04>
+
+*13,iv,ip,iv,ip ir,,ip,iv,*2,iv*2,,ip,*4,ip*2,io ir,*2,ir,,io ir,*16,iv,*15,ir,
+*62,ip,*24,ir *3,oo,ip ir,oo,*5,oo,,ir iv,*6,ir iv,;
+
+io ir,*27,oo,ir,*20,oo,ir,*39,ir*3,*3,ir,,ip ir,ir,*5,ir,*2,ir,*5,iv,*3,ir,*2,
+ir,*4,ir,*5,ir*3,*4,ir*2,*3,ir*2,*2,ir,*7,ir,io,*2,ir,oo,*7,oo,,ir,*7;
+
+*2,ov*5,oe,*2,ov,*4,oa*5,*3,io oa,*2,oa*3,oe ov,oa,,oa,*2,ov*2,ir,*2,ir,ov*3,
+*4,ir*2,*2,ir,iv,*2,ir*2,*32,ip,*16,ir,io,ir,*28,io,ir,,io ir,*25,io,,io*3,*4,
+io,,io*2;
+
+*2,ir iv,iv,*5,ir iv,oo*3,,iv,oo*4,*2,oo*2,,ov,*8,ir iv,iv,*2,ir*2,*3,ir,*3,
+ir,io oo,*2,iv,,iv,oo*2,,ir,ip iv,ir,,ir,,ir,*2,ir,*3,ip,*4,iv,ir,oo *2,
+ir iv,ir oo,iv,ir oo,oo,*2,iv*3,oo*3,iv,*6,oo,ir*2,,iv,ir,*6,ir iv,*2,ir,*5,
+ir,,ir,*3,ir*2,,ir,*5,ir,*4,ir*2,,oo,,ir,*2,ir,*2,ir,io ir*2,io,,ir,*6,ir*3,
+iv*2,*2,ir,*5,iv,*4;
+
+*2,oo,*10,ir,*9,ip,ir*2,*8,ir*2,io*2,ir*3,*8,ir,,io,ir,io ir,io*2,ir,*4,io,
+*2,ir*2,*8,io ir,io*2,*3,io,*3,ir,*7,oo,*3,ip*2,,ip,,ip,,ip*2,,ip*2,*2,oo,*2,
+ir,*7,oo,*4,ir*2,oo*2,ir,*4,oo*2,*2,ir,*5,io,ir*2,,iv,*8,ir iv,,ir,*2,io,ir,,
+ir*3,*3,ir,,ir*2,*4;
+
+ir,io,io ir iv,io,ir oo,io ir,iv,io iv,ir iv,io ir,io,iv,*2,io,,ir,iv,io iv,
+io ir,io*2,ir,io iv,io ir,io*3,io iv*2,io ir,io,,iv,,iv*2,*4,io,io ir,*4,io,,
+io ir,*13,ir*2,*24,iv,,io iv,ir,ir iv,*14,io*2,io ir,io,*2,io,ir,ir iv,ir,*10,
+io*6,io ir,io,io ir,io,,io ir,iv,*30,iv,*6,oo,
+
+(3yr Outdoors)/
+
+<S05>
+
+oo*9,*2,ir,*3,oa,ov,ir,*9,ir,oo*2,*3,ir,*2,ir,*3,ir,ov,,ov*2,ir,*4,ov,,oa ov,
+oa oe*2,*24,ir,*3,ir,,ir,oa*3,ir,,ir,*2,ir,oo,*2,ir,*3,ir iv,ir oa,oa ov,ov,
+*4,oa*2,*2,ir*3,*5,ir*3,*6,ir,*6,oe*2,*22,iv,*6,ir,*3,ir,oo*2,,ov,*2;
+
+oa oe*3,*10,oa,,oe,*81,oo,*3,ir iv,*2,ir,,ir*2,ip,ir,,ir,*3,ov*2, *6,ir,ov,
+ir*2,*21,io ir,,ir,*14,ir iv,ir,*2,ip,ir iv,ir*2,*7;
+
+*2,ir,,ov*5,,ir*2,oa oe*2,ov,*2,ov,*3,ov,*15,ip,ir iv,ir,,ir*2,*3,ir,*4,ir*2,*8,
+ir,,oo,ir,*4,ir*2,*3,ir,,ir,*8,ir*2,ir iv,*3,ir iv,*3,ir *2,ir iv,*2,ir*2,*2,iv,
+*11,ir*2,,ir,*2,io,iv,,io ir,,oo,*2,io*3,*24,ir,,ir,*17,ir,*2;
+
+*3,ov*3,*15,ov*2,oa,ov*2,ir ov,ir iv,ir,*3,ov*9,*2,oa*3,oe*2,*3,oe,oe ov,*2,ov,
+oa,*9,oe,oa,io oe,oa,io oa,oa, *3,oa oe*2,oa*2,*3,io oa,*8,oa,ov,*5,io oa,*16,
+ov,*14,oe,ov,,oa oe,*4,io oa,oa oe,*5,oa,*14,oa oe, *19;
+
+oa*2,ir oa,*5,oa oe,oa,,ir,oo,ir,oa oe,*8,oa,*2,oa oe*2,*7,oe*3,oa oe,
+ir,oe*2,,oe ov,oa,,ov,*2,oa, *4,oe*2,oa oe*3,ov,,oa ov,
+oe,ov,*4,oa,oa oe,ov,oa,,ov,oa oe ov,oa ov*8,io oa ov,,ov,*2,oa ov*3,
+*4,ir,*2,oa ov*3,ir*2,*7,ir,*2,io oe,io oo,io,*15,io iv,*22,io ir,
+*15,io,*4,io ir oo,*4;
+
+*17,ir,*2,iv,*2,ir,
+*13,ir*2,*4,oo,*4,ir,*2,ir,*2,oo,*5,ir,,ip,iv,ir,*9,ir,*12,ir,*11,ir*2,*3,ir,*3,ir,*17,ir*2,oo,,
+ir,,oo,*3,ir iv,ip ir,*3,ir,*9,ir,*4,ir,oo,*3,oo,*2,ir,,ir*2,*3,ir,,ir,*6
+
+(3yr Outdoors)/
+
+<S06>
+
+iv,*12,oa,oe,*3,io,oe ov*3,oa oe*4,io oa,io oa oe,io oe ov,*5,ir*2,io*2,
+io iv,io ir iv*3,io,io ir iv,io ir iv oo,io ir iv*6,io ir,io ir iv,io,
+io ir iv*2,ir iv,ir iv oo,ir iv*4,*21,ir,*9,ir,*69,ir,*16;
+
+io*2, *2,oe,io*2,*2,oa,*3,oa,ov,*20,ir,io iv,*5,ir,,ir,*23,ir,*2,ir,,ir,*4,
+ir,*20,ir*2,oe,,ir,*3,ir,*6,ov,*3,ir,iv oo,*2,io ir,oe,*15,oa,*4,oe,*8,oa,*2,
+oa*2,io*9,io iv,iv*2,io*2,io ir*2,io ir iv,ir,io,*2,io
+
+(5yr Home)/
+
+<S07>
+,oo,*9,iv,*18,oa,*13,oa oe,*7,oa,*4,iv,*13,ir,*14,io,,iv,io*4,*11,io*2,
+io iv oe,io,io ir,io*3,io ir,,io,io iv,oo,*27,oo*3,*8,io,*2,io,,io,ir,,ip iv,
+iv,oa,*14;
+
+*14,oa*4,io ir,io oa,ov*2,io ov,ov,io,,io ov*3,*2,ov*2,ir,,ov*2,*10,ir,,oe,
+*2,ir,*30,ir,iv,*2,oo,,io,oo,io*2,io iv*3,io ir,io iv,io ir iv,io ir,io,,
+io,*77;
+
+*11,ir,*61,ir,*2,ir,*17,ir,*4,ir,*5,io,*21,oo,*5,io,ir,io ir,io iv,*8,ir,
+*15,oa,oo*3, *8,oa ov*2,*3,oo,ir oo;
+
+*10,ov*5,,ir,*2,ir,io ir,ir,,ir,ov*2,oa,*3,oa,*11,io,oa oe,*12,io,*7,oa,*6,
+oa, *9,io oa,io,oe*2,ip,oa oe,oe,,oe,,oa*2,oa ov,ov,io oe,*7,io,oa,oe*3,oa oe,
+oa,oa oe*12,,oa,io oa oe,oa oe,,oe *2,,oa ov,oa,oa oe*2,io oa ov,oa,oo,,oa,*18,
+io,*2,io*3,io ir,io,,io,io ir iv,io*2,io ir iv,io ir*2,io ir iv,io ir,
+io ir iv oo,io ir,io,io iv,io;
+
+,ir,*3,oo,ir,*12,ir iv,ir,*6,io,*10,io ir iv,,io ir,oo,*9,ir,*22,ir, *4,oe,
+ov,,oa,ir,oa,*2,io,*4,ir,*6,iv,*2,ir,oo*5,ir oo,*2,ir*2,*2,oo*2,ir,*5,oo,*12,
+ir,,ir,*3,io,,io,ir,,io*2,io iv,io*2,*2,io,ir,*3,oo,*3,io*2,*2,io ir,ir,*3,oo,
+*4,oo*2,;
+
+*4,ir,*18,ir,,ir,*3,ir,*12,ir,*3,ir,*6,ir*2,,ir,*11,ir,*4,ir,*10,ir,*29,io*5,
+*21,ir,oo*7,io*3,io ir,*3,ir,*2,iv,*9,oo*3,iv,*5,ov,oa,
+
+(5yr Home)/
+
+<S08>
+
+,iv,ir,oo,*2,ir
+oo,iv,*2,ir,iv,*27,ir,*17,ir,*3,oo,*8,iv,*2,ir,*6,ir,*9,ir,*2,oo,*8,ir*2,,ir,
+oo*2,*2,ir,*3,ir,*2,ir,,iv,*2,ir,*9,ir*2,*14,ir,ip,,oe,*13,ir*2,*3,ir,*9;
+
+ip*2,ip oo,oo*3,,ir iv,io ir iv,io*2,io ir,io,*4,oo*2,*19,ir*2,*14,io ir,oo,,
+ir,*7,ir,*5,oo,*26,ip,iv,*14,ir*2,*6,ip,*4,ir,*8,ip,*2,ir,*3,io*3,*5,io,*14,
+ir,*8,iv,ir iv,,ir oo*2;
+
+*6,ip,*13,oa,,oa,*2,oa*2,*3,ip,oa,*13,oa,,ir,*5,oa,ip,oa*2,*4,oa,*2,oa,*11,oa,
+*4,oa,*6,oa,*3,oa,*3,ip,*8,oa,*3,oa oe*2,*3,oa,*10,oa,*3,oa,*3,oa,*3,oa,*7,oa,
+*3,oa,*4,oo*2,*10,ip,*8,oa*2,ov*2,;
+
+*3,ip iv,*2,ir*2,oo*3,*2,oo,,iv,,ir,*7,ip, *29,ip,*3,ip,*3,ir,ir oe,oe,*4,oo,
+*18,oe,*2,ip,*14,ip,,ip,oa*2,ir,*23,ip*2,,ir,*9,ir iv,*30;
+
+ov*4,oa,,ov*5,oa oe,,oa oe,ov*7,oa ov,ov,oe ov,,oa,oe,oa ov,ov,*4,ip,*13,oa,
+ir,oo,ir,*7,ir*2,*12,ir,*2,ir,*2,ir,*11,ir,*4,ip,*42,ir*2,iv oo,*27,ir,*11;
+
+*39,oo,ir,io*3,io ir,*9,io*2,*2,oo,*23,ir,oa ov*6,*3,oo *6,*4,oa,io oa,io ir,
+*4,oa*3,ov,*2,ir,,oe,*3,oe,*10,ir,oo*3,*6,oa*2,oa oe,ir,*7,ir,*19,oa,ov*3,
+oe ov *3
+
+(5yr Home)/
+
+<S09>
+
+ir,oo*3,ir*2,*2,ir,*2,ir*2,*2,io,ir oe,io ir iv,io iv,,io iv,*5,io oo,,ir iv,
+oo,io iv oo,ir oo,,ir oo,*2,oo*7,ir,*2,ir,,iv,,iv,,iv,*2,iv,ip iv,iv*2,*6,ir*2,
+*4,io iv,,ir*3,,ir*4,io iv oo,,io ir iv,ir*3, *2,ip iv,iv*2,ir*2,ir iv,*2,
+ir iv,ir,ir iv,oo,ir,io iv*2,io ir iv,io iv,io ir,io iv,io,io ir,ir iv,ir*2,,
+iv,ir iv ,ip iv,oo,iv oo,io,iv*2,ir,io iv,io ir,,io,*2,iv,*7,oa oe,oe,*4,
+oa ov*7,oe ov,oa oe,io oa oe,*3,iv,io ir iv,io *2,io iv,io,iv,io ir,io oo,io,
+io iv,io,io ir,io iv,,io,oo*3,*2,io iv oo,io,ir oo;
+
+*2,ov,oe,,oa,*2,io*2,oa,*31,oa oe,iv,ir oe,,oa,oa oe,,oa,*5,oa oe,*7,oa,,
+oa oe*3,*2,oe,io oa,io oe ov*2,io oa oe ov,io iv,,io,*12,ir, *4,oo,ir,*14,iv,
+*5,iv*2,*17,ir,,ip iv*2,ir*2,oo,io oo,ir,oo,ip iv,,iv,ir*3,iv,*2,iv,,ir*2,,iv,
+ir,*5,ir,oo,,oo*2,iv,*2,iv,*2,ir iv,iv;
+
+*3,io,oe,,iv,oe*2,oo oe,*8,oe ov,ov,*12,io*2,*4,oe,,oa,*5,ip,ip oa oe,*12,oe,
+*4,io oe,io oa*2,ir,iv,ir,io iv,iv,io,*7,iv,io iv,ir,ir iv,iv,,iv,*6,iv,*13,iv,
+*2,ir,io iv oo,,io,io ir iv,io iv,iv,*3,iv,*10,ir,*9,ir,,ip ir iv,*5,iv,ip iv*3,
+iv,*6,io*6,*3,io*3,io ir*2,iv,ir,*2,io;
+
+,iv oo ,*2,oe*6,oa oe,oa*2,,iv,oa oe,iv oe,oa,,oa,,oa,*2,oe*2,oa,,iv oe,oe,
+oa oe,,oa oe,*4,oa*3,*6,oa,*2,oe,,ov *3,ir iv ov,iv ov,ir ov,ir iv,ir,io ir iv,
+io ir,,io iv,*2,io,,oo,io,io iv,ir,io,,io,,ov*2,*11,ir,ir iv,*2,iv,io iv,,iv,ir,
+*2,ir,*4,oo,,ov,iv,,oo*2,*3,ir,oo ov*2,ir iv,iv*2,io iv,iv oo,oe,ir oa,oe,oa,*6,
+oa oe,oe,*4,oa oe,*2,oe,oa,,oe,io oe,oa,,oo,,io,oe,io oa,*4,oe,*3,io,ir,,iv,*15;
+
+iv oo,ov*4,iv,*2,iv,ir iv,,iv,,ir oa,iv,*3,iv,ir,oa,ov*3,oa,*2,oa*4,,oa,,oa,,
+oa*2,io oa,ov,oa oe,oa,io oe,oe ov,oa,io,oa,*2,oa,oe,oa,io ov,io oe,ov,oe,
+*12,io,io oe ov,oa,io,oa oe ov,io,io oa,ir,iv,*3,oo*2,*18,ir iv,*27,oo,*3,iv,
+io,*3,ir,io,io ir,io ir iv,io *2,*6,ir,,ov*2,oo,ir,*6,io,ir,,oa,ov,oe*2,*2,oa,
+*7,oe,;
+
+ir,*5,ir,,iv,*3,iv,,oo,*13,iv,oo,*5,ir,*2,ip,,ip*2,oo,ip,*3,oo,,ip*2,*2,ir*2,
+*2,ir*3,ir iv,,ir,oo,*2,ir,*6,ir*5,*3,ip,ir iv*2,iv,,oo,,oo,*12,ir,iv,*2,ir,,
+ir,oo*2,*2,ir,*11,ir,*6,ir,*3,ir,*2,ir*2,,ir,iv,ir iv,*5,io ir,ir,*3,ir,*5,iv,
+*12,ir,,io iv ,*2,iv,
+
+(5yr Outdoors)/
+
+<S10>
+
+*2,oa,iv oo,ir,iv,,iv,*9,iv,*2,iv,*3,ir oo,,ir,*32,ir,*4,iv,ir iv,iv,,oo*3,
+io iv,ir iv oo,iv,ir, *2,iv,*2,io*2,io ir,io iv oo*3,io ir iv,io iv,iv,io,
+io ir iv oo*2,io iv,ir iv*3,io iv,io,io ir iv,io,io ir iv,io iv oo*6,io ir iv,,
+io*2,iv,io*2,io ir,io ir iv,io ir,io ir iv*2,io ir*2,io ir iv,*11,io ir,ir iv,
+ir,io ir iv,io iv,io,io iv,io oo,io,io ir iv*2,io iv,io ir iv oo*3,io,io ir iv,
+ir iv*11,*2,ir iv*6,,ir iv*7,ir*3;
+
+oe,oa oe *2,oa,*2,ip,,oe*3,*3,oe*2,*3,oe,ip,,oe,,oe,ip oa oe,oe,*4,oe,*4,oa,*2,
+oe,*14,oa oe*2,*5,oe,*3,oa, *2,oa,*2,oa,*3,oa oe,oa,*13,oo,oa,,oe,*32,iv,oa oe,
+oe,*7,io oa oe,,ov,*2,oe,,oa oe,oe,*2,io,oa ov,io,oa ov ,oa,oe,oa,,io oe*2,,io,
+*3,io oa,io oe*2,*2,oa,,ir,*5,io,io ir,io,,io ir;
+
+*7,ip iv,*14,ip,*3,iv,*46,ip,*18,ir iv,iv oo,oo,*5,ip,iv oo,,iv*2,,iv,*5,ip iv,
+*3,ip,iv,oo*2,,ip iv,*15,iv,*17,ir,iv,*3,oo,*12,io *3,iv,oo*3;
+
+oe*2,,oa,ov*2,oe,*10,oe,*7,oe,*2,ip,*4,oa,oo oe,*20,oa ov,,oa*4,*21,oa,*17,oe,
+*18,iv *2,oa,*6,io,*8,oo,*5,ir,*10,iv*2,,ir iv,*6,ir,*3,oo,,ir,*6,iv,*2;
+
+,oo*2,*2,iv,*2,iv,*5,iv,*4,ir,oo,ip,,iv,oo*2,*3,oo*2,,iv oo,*3,iv,,iv,*7,oo,io,
+iv,io ir,*7,iv,*2,iv,ip iv*2,ip oo*3,iv,,iv,*2,ir,oo,ir,oo*5,oa,*4,io oa,,
+io ov*2,ov,*3,oe,*7,iv*2,*2,io,*5,oe,,oa,oo,iv oo*2,ir*2,*13,ir,*8,ip,,ip*2,
+iv oo,*5,iv,,oo,*12,io,*14;
+
+iv,ir,,iv*3,,iv oo,*2,oo,iv oo,iv*5,,oo,iv oo,,ir,*2,oo,iv oo*2,iv*3,,iv oo*2,,
+iv oo,*7,ir,ir iv,,io iv,io,*7,ir,oo,*2,ir,*2,iv,*3,oo,ir,*15,oo,ir,*7,oo*2,,
+ir iv oo,iv oo*3,oo*3,*4,io,oo*2,,ir,,ir,iv*3,ir iv,iv*2,io,,ir iv,iv oo,iv*4,
+ir iv,ir,,iv*8,io iv,,io iv,ir iv oo,oo*2,iv*12,ir iv,iv *5,iv oo,iv*3,iv ov*2,
+ir iv,ir iv ov,iv ov,iv,iv oo,iv*2,iv oo,ir iv,iv oo,iv,*2
+
+(5yr Outdoors)/
