@@ -192,12 +192,26 @@ public class LinceApp extends Application implements ILinceApp {
 
     private void generateQRCode() {
         try {
-            String url = systemService.getCurrentServerURI();
+            String url = getQRCodeURL();
             QRCodeGenerator.generateQRCodeFileImage(url);
             log.info("QR Code to {}", url);
         } catch (Exception e) {
             log.error("Generating QR Code", e);
         }
+    }
+
+    public String getQRCodeURL() {
+        if (externalLinkService != null && externalLinkService.isConnected()) {
+            String externalLink = externalLinkService.getExternalLink();
+            if (StringUtils.isNotEmpty(externalLink)) {
+                return externalLink;
+            }
+        }
+        return systemService.getCurrentServerURI();
+    }
+
+    public void regenerateQRCode() {
+        generateQRCode();
     }
 
     public String getWindowIcon() {

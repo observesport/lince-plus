@@ -134,7 +134,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 );
                 return cell;
             });
-            JavaFXBrowser browser = new JavaFXBrowser(getMainLinceApp().getServerURL() + "/deprecated/desktop.html");
+            JavaFXBrowser browser = new JavaFXBrowser(getMainLinceApp().getServerURL() + "/desktop/index.html");
             pane.getChildren().add(browser);
 
         } catch (Exception e) {
@@ -411,7 +411,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             String externalLink = externalLinkService.generateLink(getMainLinceApp().getCurrentPort());
             if (!StringUtils.isEmpty(externalLink)) {
                 JavaFXLogHelper.addLogInfo("Ngrok located at " + externalLink);
-                JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Started", "External link: " + externalLink);
+                getMainLinceApp().regenerateQRCode();
+                showNgrokSuccessDialog(externalLink);
             }
             ngrokRunning.set(externalLinkService.isConnected());
         } else {
@@ -424,6 +425,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void handleNgrokStop() {
         externalLinkService.disconnect();
         ngrokRunning.set(false);
+        getMainLinceApp().regenerateQRCode();
         JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Stopped", "Ngrok service has been stopped.");
     }
 
@@ -795,6 +797,27 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             JavaFXLoader.exit(getMainLinceApp()); // Ensure application shuts down even if there's an error
         }
     };
+
+    private void showNgrokSuccessDialog(String externalLink) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Ngrok Started");
+        alert.setHeaderText("External link is now active!");
+        alert.setContentText("Your application is now accessible via:\n" + externalLink);
+
+        ButtonType copyButtonType = new ButtonType("Copy URL");
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        alert.getButtonTypes().setAll(copyButtonType, okButtonType);
+
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == copyButtonType) {
+                javafx.scene.input.Clipboard clipboard = javafx.scene.input.Clipboard.getSystemClipboard();
+                javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
+                content.putString(externalLink);
+                clipboard.setContent(content);
+                JavaFXLogHelper.addLogInfo("Ngrok URL copied to clipboard: " + externalLink);
+            }
+        });
+    }
 
     private boolean showConfigurationDialog(Map<String, String> configParams, Map<String, String> userInputs) {
         Dialog<ButtonType> dialog = new Dialog<>();

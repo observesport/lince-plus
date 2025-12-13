@@ -7,6 +7,7 @@ import com.lince.observer.data.security.AuthenticationFacade;
 import com.lince.observer.desktop.component.ApplicationContextProvider;
 import com.lince.observer.data.service.SystemService;
 import com.lince.observer.data.common.SessionDataAttributes;
+import com.lince.observer.desktop.spring.service.ExternalLinkService;
 import com.lince.observer.math.service.DataHubService;
 import com.lince.observer.data.service.SessionService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,6 +48,7 @@ public class SessionControllerImpl extends BaseRestControllerWrapper implements 
     protected final SessionService service;
     private final DataHubService dataHubService;
     private final SystemService systemService;
+    private final ExternalLinkService externalLinkService;
     private ResourceBundle resourceBundle =null;
     private final AuthenticationFacade authenticationFacade;
 
@@ -55,12 +57,13 @@ public class SessionControllerImpl extends BaseRestControllerWrapper implements 
     }
 
     @Autowired
-    public SessionControllerImpl(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver, ApplicationContextProvider applicationContextProvider, SystemService systemService, AuthenticationFacade authenticationFacade) {
+    public SessionControllerImpl(SessionService service, DataHubService dataHubService, LocaleResolver localeResolver, ApplicationContextProvider applicationContextProvider, SystemService systemService, ExternalLinkService externalLinkService, AuthenticationFacade authenticationFacade) {
         this.service = service;
         this.dataHubService = dataHubService;
         this.localeResolver = localeResolver;
         this.applicationContextProvider = applicationContextProvider;
         this.systemService = systemService;
+        this.externalLinkService = externalLinkService;
         this.authenticationFacade = authenticationFacade;
     }
 
@@ -164,13 +167,27 @@ public class SessionControllerImpl extends BaseRestControllerWrapper implements 
             rtn.put("scenes", dataHubService.getCurrentDataRegister().size());
             rtn.put("observers", getNumObservers());
             rtn.put("locale", getLocaleString(rq));
-            rtn.put("url",systemService.getCurrentServerURI());
+            rtn.put("url", getCurrentUrl());
             rtn.put("i18n",getI18Messages());
             rtn.put("information", applicationContextProvider.getUserInformation());
         } catch (Exception e) {
             log.error("on project info", e);
         }
         return new ResponseEntity<>(rtn.toString(), HttpStatus.OK);
+    }
+
+    /**
+     * Returns the current URL to display - ngrok URL if connected, otherwise local server URI
+     * @return The URL string
+     */
+    private String getCurrentUrl() {
+        if (externalLinkService != null && externalLinkService.isConnected()) {
+            String externalLink = externalLinkService.getExternalLink();
+            if (StringUtils.isNotEmpty(externalLink)) {
+                return externalLink;
+            }
+        }
+        return systemService.getCurrentServerURI();
     }
 
     /**
