@@ -106,7 +106,7 @@
         <jaxbImpl.version>4.0.5</jaxbImpl.version>
         <start-class>com.lince.observer.desktop.LinceAppFx</start-class>
         <outputFolder>../lince-data/</outputFolder>
-        <ngrok.version>1.6.1</ngrok.version>
+        <ngrok.version>2.5.0</ngrok.version>
     </properties>
     <dependencyManagement>
         <dependencies>

@@ -5,7 +5,6 @@ import com.github.alexdlaird.ngrok.conf.JavaNgrokConfig;
 import com.github.alexdlaird.ngrok.installer.NgrokVersion;
 import com.github.alexdlaird.ngrok.process.NgrokLog;
 import com.github.alexdlaird.ngrok.protocol.CreateTunnel;
-import com.github.alexdlaird.ngrok.protocol.Region;
 import com.github.alexdlaird.ngrok.protocol.Tunnel;
 import jakarta.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +20,7 @@ public class NgrokConfig {
     private NgrokClient ngrokClient;
     private Tunnel tunnel;
     private String token;
+    private String lastError;
     private final Function<NgrokLog, Void> logEventCallback;
 
     public NgrokConfig(Function<NgrokLog, Void> logEventCallback) {
@@ -34,7 +34,6 @@ public class NgrokConfig {
             }
             final JavaNgrokConfig javaNgrokConfig = new JavaNgrokConfig.Builder()
                     .withAuthToken(token)
-                    .withRegion(Region.EU)
                     .withLogEventCallback(logEventCallback)
                     .withMaxLogs(10)
                     .withNgrokVersion(NgrokVersion.V3).build();
@@ -58,10 +57,29 @@ public class NgrokConfig {
             log.info("=============================================================");
             log.info("Public URL: {}", getPublicUrl());
             log.info("=============================================================");
+            lastError = null;
         } catch (Exception e) {
             log.error("Failed to start ngrok: ", e);
+            lastError = extractErrorMessage(e);
             closeNgrok();
         }
+    }
+
+    public String getLastError() {
+        return lastError;
+    }
+
+    private String extractErrorMessage(Exception e) {
+        String message = e.getMessage();
+        if (StringUtils.isNotEmpty(message)) {
+            if (message.contains("too old") || message.contains("ERR_NGROK")) {
+                return "Ngrok agent needs updating. Run 'ngrok update' or download from https://ngrok.com/download";
+            }
+            if (message.contains("authentication failed")) {
+                return "Ngrok authentication failed. Please verify your auth token.";
+            }
+        }
+        return "Ngrok failed to start: " + StringUtils.defaultString(message, "Unknown error");
     }
 
     public Optional<String> getPublicUrl() {
@@ -71,9 +89,18 @@ public class NgrokConfig {
 
     @PreDestroy
     public void closeNgrok() {
-        if (ngrokClient != null && tunnel != null) {
-            ngrokClient.disconnect(String.valueOf(tunnel));
-            ngrokClient.kill();
+        try {
+            if (ngrokClient != null) {
+                if (tunnel != null) {
+                    ngrokClient.disconnect(String.valueOf(tunnel));
+                }
+                ngrokClient.kill();
+            }
+        } catch (Exception e) {
+            log.warn("Error closing ngrok: {}", e.getMessage());
+        } finally {
+            ngrokClient = null;
+            tunnel = null;
         }
     }
 }
