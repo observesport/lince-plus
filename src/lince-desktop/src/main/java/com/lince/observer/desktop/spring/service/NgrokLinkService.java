@@ -47,8 +47,17 @@ public class NgrokLinkService implements ExternalLinkService {
         Optional<String> publicUrl = ngrokConfig.getPublicUrl();
         if (publicUrl.isPresent()) {
             log.info("Generated Ngrok link: {}", publicUrl);
+        } else {
+            String error = ngrokConfig.getLastError();
+            if (StringUtils.isNotEmpty(error)) {
+                log.error("Ngrok link generation failed: {}", error);
+            }
         }
         return publicUrl.orElse(StringUtils.EMPTY);
+    }
+
+    public String getLastError() {
+        return ngrokConfig.getLastError();
     }
 
     @Override

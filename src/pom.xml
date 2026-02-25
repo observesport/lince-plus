@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.lince.observer</groupId>
     <artifactId>lince-plus-root</artifactId>
-    <version>4.0.3</version>
+    <version>4.0.4</version>
     <packaging>pom</packaging>
     <name>Lince Plus</name>
     <description>Lince-Observer project for Spring Boot</description>
@@ -106,7 +106,7 @@
         <jaxbImpl.version>4.0.5</jaxbImpl.version>
         <start-class>com.lince.observer.desktop.LinceAppFx</start-class>
         <outputFolder>../lince-data/</outputFolder>
-        <ngrok.version>1.6.1</ngrok.version>
+        <ngrok.version>2.5.0</ngrok.version>
     </properties>
     <dependencyManagement>
         <dependencies>
