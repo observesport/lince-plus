@@ -30,14 +30,13 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 - LINCE PLUS works in any computer (x64) and has been tested with Win10 and MacOS ARM and chipset intel
 - We do not have license as it needs a fee and it's free software.
 
-## Download 
+## Download
 
-[https://github.com/observesport/lince-plus/releases/tag/v3.2.5](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
+[https://github.com/observesport/lince-plus/releases/tag/v4.0.4](https://github.com/observesport/lince-plus/releases/tag/v4.0.4)
 
-### Current version 3.2.5
+### Current version 4.0.4
 
-Solves slow motion episode saving
-https://github.com/observesport/lince-plus/issues/90
+New Research page with integrated Python notebook for data analysis, improved Ngrok connectivity
 
 #### Lince Plus 3.2.4 Release Notes
 
@@ -110,6 +109,7 @@ macOS users should ensure Terminal has full disk access enabled in System Prefer
 
 ### Previous versions
 
+- [3.2.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
 - [3.2.3 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.3)
 - [2.1.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.1.0)
 - [2.0.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.0.0)
@@ -158,6 +158,14 @@ LINCE PLUS has been develop using [Jetbrains Suite](https://jb.gg/OpenSource) th
 LINCE PLUS installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 4.0.4 RELEASE, 25/02/2026
+	- New Research page with integrated Python notebook for in-browser data analysis
+	- One-click code templates for analysis, visualization, and timeline exploration
+	- Observation data is automatically loaded and ready to analyze
+	- Ngrok connection errors now display a clear error dialog
+	- Removed region restriction from Ngrok for better worldwide connectivity
+	- Upgraded Ngrok library to version 2.5.0
 
 - Version 2.1.0 RELEASE, 02/10/2023
 	- AI Studio

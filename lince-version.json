@@ -1,5 +1,8 @@
 {
-  "version": "4.0.2",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.2",
-  "message": ["Instalacion recomendada con mejoras significativas a nivel interno"]
+  "version": "4.0.4",
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.4",
+  "message": [
+    "Nueva pagina de Investigacion con cuaderno Python integrado para analisis de datos",
+    "Mejoras en la conexion Ngrok con mensajes de error visibles"
+  ]
 }
