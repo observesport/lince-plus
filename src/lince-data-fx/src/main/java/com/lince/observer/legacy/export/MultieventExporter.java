@@ -27,7 +27,8 @@ import java.util.List;
  * GSEQ Multievent format exporter.
  * <p>
  * Multievent format is used for observations where multiple events can occur simultaneously.
- * Observations are separated by periods (.) except the last one which ends with semicolon (;).
+ * Each observation row produces one line with space-separated codes from all criteria.
+ * Lines end with {@code .} except the last in a sequence which ends with {@code ;} or {@code /}.
  * <p>
  * Format structure:
  * <pre>
@@ -39,12 +40,12 @@ import java.util.List;
  *
  * code1 code3.
  * code2 code4.
- * code1 code4;
- * /
+ * code1 code4/
  * </pre>
+ * <p>
+ * All observations form a single sequence ending with {@code /}.
  *
  * @see GseqExporter
- * @see <a href="file:../../../../../integration/GSEQ_FORMAT_SPECIFICATION.md">GSEQ Format Specification</a>
  */
 public class MultieventExporter extends GseqExporter {
 
@@ -55,7 +56,7 @@ public class MultieventExporter extends GseqExporter {
 
     @Override
     protected boolean useFormatA() {
-        return true; // Multievent format uses Format A variable declarations
+        return true;
     }
 
     @Override
@@ -66,7 +67,7 @@ public class MultieventExporter extends GseqExporter {
             return contenido.append(SEQUENCE_END).append(LINE_SEPARATOR).toString();
         }
 
-        // First pass: collect all non-empty observations
+        // Collect all non-empty observations
         List<String> observations = new ArrayList<>();
         for (FilaRegistro filaRegistro : datosVariables) {
             String cont = exportFila(criterios, filaRegistro, " ");
@@ -75,21 +76,18 @@ public class MultieventExporter extends GseqExporter {
             }
         }
 
-        // Second pass: output with correct separators
-        int lastObservationIndex = observations.size() - 1;
+        // Output as single sequence: lines end with "." except last which ends with "/"
+        int lastIndex = observations.size() - 1;
         for (int i = 0; i < observations.size(); i++) {
             contenido.append(observations.get(i));
 
-            // Add appropriate ending: period for non-last, semicolon for last
-            if (i == lastObservationIndex) {
-                contenido.append(";");
+            if (i == lastIndex) {
+                contenido.append(SEQUENCE_END);
             } else {
-                contenido.append(".").append(LINE_SEPARATOR);
+                contenido.append(".");
             }
+            contenido.append(LINE_SEPARATOR);
         }
-
-        // End with forward slash
-        contenido.append(SEQUENCE_END).append(LINE_SEPARATOR).append(LINE_SEPARATOR);
 
         return contenido.toString();
     }

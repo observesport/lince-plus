@@ -235,39 +235,39 @@ class GseqFormatComplianceTest {
     }
 
     @Test
-    void testMultieventFormat_DataLinesEndWithPeriodOrSemicolon() {
-        // Multievent format: non-last lines end with period, last line with semicolon
+    void testMultieventFormat_DataLinesEndWithPeriodOrSlash() {
+        // Multievent format (single sequence): non-last lines end with period, last line with /
         String result = registro.exportToSdisGseqMultievento(criterios);
 
         // Find data section
         String[] lines = result.split(LINE_SEPARATOR);
         boolean inDataSection = false;
         boolean foundPeriod = false;
-        boolean foundSemicolon = false;
+        boolean foundSlash = false;
 
         for (String line : lines) {
             if (line.trim().isEmpty() && inDataSection) {
                 continue;
             }
 
-            if (inDataSection && !line.contains("/")) {
+            if (inDataSection) {
                 if (line.trim().endsWith(".")) {
                     foundPeriod = true;
                 }
-                if (line.trim().endsWith(";")) {
-                    foundSemicolon = true;
+                if (line.trim().endsWith("/")) {
+                    foundSlash = true;
                 }
             }
 
-            // Start of data section (after double empty line)
+            // Start of data section (after variable declarations ending with semicolon)
             if (line.trim().endsWith(";") && line.contains("$")) {
                 inDataSection = true;
             }
         }
 
-        // Should have either periods or semicolons in data (or both)
-        assertTrue(foundPeriod || foundSemicolon,
-            "Multievent format data lines must end with period or semicolon");
+        // Single sequence should have periods for non-last lines and / for last line
+        assertTrue(foundPeriod || foundSlash,
+            "Multievent format data lines must end with period or forward slash");
     }
 
     @Test

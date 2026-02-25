@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for GSEQ Exporter classes.
  * <p>
- * These tests verify that the new object-oriented exporter design produces
- * the same output as the existing Registro methods.
+ * Tests verify that exporters produce valid GSEQ format output and that
+ * Registro methods delegate correctly to the exporter classes.
  */
 class GseqExporterTest {
 
@@ -42,37 +42,34 @@ class GseqExporterTest {
     }
 
     @Test
-    void testEventExporter_ProducesSameOutputAsRegistro() {
-        // Export using existing method
-        String expectedOutput = registro.exportToSdisGseqEvento(criterios);
+    void testEventExporter_RegistroDelegatesToExporter() {
+        // Registro now delegates to EventExporter, so both should produce identical output
+        String registroOutput = registro.exportToSdisGseqEvento(criterios);
 
-        // Export using new exporter
         GseqExporter exporter = GseqExporterFactory.createEventExporter();
-        String actualOutput = exporter.export(criterios, registro.datosVariables);
+        String exporterOutput = exporter.export(criterios, registro.datosVariables);
 
-        assertEquals(expectedOutput, actualOutput,
-            "EventExporter should produce the same output as Registro.exportToSdisGseqEvento()");
+        assertEquals(registroOutput, exporterOutput,
+            "Registro.exportToSdisGseqEvento() should delegate to EventExporter");
     }
 
     @Test
-    void testMultieventExporter_ProducesSameOutputAsRegistro() {
-        // Export using existing method
-        String expectedOutput = registro.exportToSdisGseqMultievento(criterios);
+    void testMultieventExporter_RegistroDelegatesToExporter() {
+        // Registro now delegates to MultieventExporter
+        String registroOutput = registro.exportToSdisGseqMultievento(criterios);
 
-        // Export using new exporter
         GseqExporter exporter = GseqExporterFactory.createMultieventExporter();
-        String actualOutput = exporter.export(criterios, registro.datosVariables);
+        String exporterOutput = exporter.export(criterios, registro.datosVariables);
 
-        assertEquals(expectedOutput, actualOutput,
-            "MultieventExporter should produce the same output as Registro.exportToSdisGseqMultievento()");
+        assertEquals(registroOutput, exporterOutput,
+            "Registro.exportToSdisGseqMultievento() should delegate to MultieventExporter");
     }
 
     @Test
     void testTimedExporter_ProducesSameOutputAsRegistro() {
-        // Export using existing method
+        // Timed export still uses Registro's own method (not yet delegated)
         String expectedOutput = registro.exportToSdisGseqEventoConTiempo(criterios);
 
-        // Export using new exporter
         GseqExporter exporter = GseqExporterFactory.createTimedExporter();
         String actualOutput = exporter.export(criterios, registro.datosVariables);
 
@@ -82,10 +79,9 @@ class GseqExporterTest {
 
     @Test
     void testStateExporter_ProducesSameOutputAsRegistro() {
-        // Export using existing method
+        // State export still uses Registro's own method (not yet delegated)
         String expectedOutput = registro.exportToSdisGseqEstado(criterios);
 
-        // Export using new exporter
         GseqExporter exporter = GseqExporterFactory.createStateExporter();
         String actualOutput = exporter.export(criterios, registro.datosVariables);
 
@@ -94,16 +90,15 @@ class GseqExporterTest {
     }
 
     @Test
-    void testIntervalExporter_ProducesSameOutputAsRegistro() {
-        // Export using existing method
-        String expectedOutput = registro.exportToSdisGseqIntervalo(criterios);
+    void testIntervalExporter_RegistroDelegatesToExporter() {
+        // Registro now delegates to IntervalExporter
+        String registroOutput = registro.exportToSdisGseqIntervalo(criterios);
 
-        // Export using new exporter with auto-calculated interval
         GseqExporter exporter = GseqExporterFactory.createIntervalExporter(registro.datosVariables);
-        String actualOutput = exporter.export(criterios, registro.datosVariables);
+        String exporterOutput = exporter.export(criterios, registro.datosVariables);
 
-        assertEquals(expectedOutput, actualOutput,
-            "IntervalExporter should produce the same output as Registro.exportToSdisGseqIntervalo()");
+        assertEquals(registroOutput, exporterOutput,
+            "Registro.exportToSdisGseqIntervalo() should delegate to IntervalExporter");
     }
 
     @Test
@@ -173,6 +168,21 @@ class GseqExporterTest {
         String output = exporter.export(criterios, registro.datosVariables);
         assertTrue(output.startsWith("Interval=20'"),
             "Output should reflect updated interval duration");
+    }
+
+    @Test
+    void testMultieventExporter_SingleSequenceEndsWithSlash() {
+        // Single sequence: last observation should end with "/" not ";/"
+        GseqExporter exporter = GseqExporterFactory.createMultieventExporter();
+        String output = exporter.export(criterios, registro.datosVariables);
+
+        // The data section should not contain ";/" pattern (that was the old bug)
+        assertFalse(output.contains(";/"),
+            "Multievent single-sequence output should not contain ';/' - last line should end with '/' directly");
+
+        // Should end with "/" somewhere
+        assertTrue(output.contains("/"),
+            "Multievent output should contain sequence terminator (/)");
     }
 
     @Test

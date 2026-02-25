@@ -84,15 +84,17 @@ TIME\tEVENT\r\n
 
 ## GSEQ Event (.sds)
 
-SDIS Event Sequential Data format. Each observation is one code on its own line.
+SDIS Event Sequential Data format. Each observation row becomes its own sequence.
+Within each sequence, each criterion's code appears on its own line.
 
 **Structure:**
 - Header: `Event\r\n`
 - Blank line
 - Format A variable declarations: `($CriterionName = code1 code2 ...);\r\n`
 - Two blank lines
-- Data: one code per line
-- Sequences separated by `;` on last line; final sequence ends with `/`
+- Data: each observation row is a sequence; codes from different criteria on separate lines
+- Sequences separated by `;` on last code; final sequence ends with `/`
+- Blank line between sequences
 
 **Variable declarations (Format A):**
 ```
@@ -101,10 +103,14 @@ SDIS Event Sequential Data format. Each observation is one code on its own line.
 Multiple criteria: last one gets the `;`.
 
 **Data section:**
-- One code per observation line
-- Last line of non-final sequence: append `;` after code
-- Last line of final sequence: append `/` after code
+- Each observation row forms its own sequence
+- Within a sequence, each criterion code is on its own line
+- Last code of non-final sequence: append `;`
+- Last code of final sequence: append `/`
 - Blank line between sequences
+
+**Lince PLUS behavior:** Since Lince has no native episode/sequence concept, each
+observation row is treated as its own sequence.
 
 **Example:**
 ```
@@ -137,14 +143,17 @@ SDIS Multievent format. Multiple codes can occur simultaneously (space-separated
 - Blank line
 - Format A variable declarations (one per criterion, last ends `;`)
 - Two blank lines
-- Data: space-separated codes per line, line endings indicate position in sequence
+- Data: space-separated codes per line (one code per criterion), line endings indicate position
 
 **Data line endings:**
 - `.` (period): non-last observation in a sequence
 - `;` (semicolon): last observation in a non-final sequence
 - `/` (forward slash): last observation in the final sequence
 
-**Example:**
+**Lince PLUS behavior:** All observations form a single sequence. Lines end with `.`
+except the last which ends with `/`.
+
+**Example (multi-sequence from sample):**
 ```
 Multievent\r\n
 \r\n

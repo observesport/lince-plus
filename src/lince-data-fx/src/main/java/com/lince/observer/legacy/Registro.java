@@ -20,8 +20,9 @@ package com.lince.observer.legacy;
 import com.lince.observer.data.LegacyToolException;
 import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.legacy.datos.ControladorArchivos;
-import com.lince.observer.data.legacy.utiles.Tiempo;
 import com.lince.observer.data.util.TimeCalculations;
+import com.lince.observer.legacy.export.GseqExporter;
+import com.lince.observer.legacy.export.GseqExporterFactory;
 import com.lince.observer.legacy.instrumentoObservacional.Categoria;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
@@ -46,10 +47,6 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     static final String CRITERIOS = "criterios";
     static final String DATOS_FIJOS = "datosEstaticos";
     static final String DATOS_VARIABLES = "datosVariables";
-
-    // Line ending constants
-    private static final String LINE_SEPARATOR = "\r\n";
-    private static final String SEQUENCE_END = "/";
 
     private final TimeCalculations timeCalculations = new TimeCalculations();
 
@@ -272,255 +269,60 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     }
 
     public String exportToSdisGseqEvento(List<Criterio> criterios) {
-        String contenido = "Event";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
-        contenido += exportRegistroSdisGseqEvento(criterios);
-        return contenido;
+        GseqExporter exporter = GseqExporterFactory.createEventExporter();
+        return exporter.export(criterios, datosVariables);
     }
 
     public String exportToSdisGseqMultievento(List<Criterio> criterios) {
-        String contenido = "Multievent";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
-        contenido += exportRegistroSdisGseqMultivento(criterios);
-        return contenido;
+        GseqExporter exporter = GseqExporterFactory.createMultieventExporter();
+        return exporter.export(criterios, datosVariables);
     }
 
     public String exportToSdisGseqEventoConTiempo(List<Criterio> criterios) {
-        String contenido = "Timed";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
-        contenido += exportRegistroSdisGseqEventoConTiempo(criterios);
-        return contenido;
+        GseqExporter exporter = GseqExporterFactory.createTimedExporter();
+        return exporter.export(criterios, datosVariables);
     }
 
     public String exportToSdisGseqIntervalo(List<Criterio> criterios) {
-        // Calculate interval duration from observations
-        int intervalSeconds = calculateIntervalDuration();
-        String contenido = "Interval=" + intervalSeconds + "'\r\n";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseq(criterios);
-        contenido += exportRegistroSdisGseqIntervalo(criterios);
-        return contenido;
-    }
-
-    /**
-     * Calculates the average interval duration between observations in seconds
-     */
-    private int calculateIntervalDuration() {
-        if (datosVariables == null || datosVariables.size() < 2) {
-            return 10; // Default to 10 seconds if insufficient data
-        }
-
-        // Calculate average time difference between consecutive observations
-        long totalDiff = 0;
-        int count = 0;
-
-        for (int i = 1; i < datosVariables.size(); i++) {
-            int diff = datosVariables.get(i).getMilis() - datosVariables.get(i - 1).getMilis();
-            if (diff > 0) { // Only count positive differences
-                totalDiff += diff;
-                count++;
-            }
-        }
-
-        if (count == 0) {
-            return 10; // Default to 10 seconds
-        }
-
-        // Convert milliseconds to seconds and round
-        int avgIntervalMs = (int) (totalDiff / count);
-        int avgIntervalSeconds = (avgIntervalMs + 500) / 1000; // Round to nearest second
-
-        // Return at least 1 second
-        return Math.max(1, avgIntervalSeconds);
+        GseqExporter exporter = GseqExporterFactory.createIntervalExporter(datosVariables);
+        return exporter.export(criterios, datosVariables);
     }
 
     public String exportToSdisGseqEstado(List<Criterio> criterios) {
-        String contenido = "State";
-        contenido += InstrumentoObservacional.getInstance().exportToSdisGseqOldFormat(criterios);
-        contenido += exportRegistroSdisGseqState(criterios);
-        return contenido;
-    }
-
-    private String exportRegistroSdisGseqEvento(List<Criterio> criterios) {
-        String contenido = "";
-
-        for (FilaRegistro filaRegistro : datosVariables) {
-            String cont = exportFila(criterios, filaRegistro, " ");
-
-            contenido += "\r\n" + cont;
-        }
-        contenido += "/\r\n";
-        return contenido;
-    }
-
-    private String exportRegistroSdisGseqMultivento(List<Criterio> criterios) {
-        String contenido = "";
-
-        if (datosVariables.isEmpty()) {
-            return contenido + SEQUENCE_END + LINE_SEPARATOR;
-        }
-
-        // First pass: collect all non-empty observations
-        List<String> observations = new ArrayList<>();
-        for (FilaRegistro filaRegistro : datosVariables) {
-            String cont = exportFila(criterios, filaRegistro, " ");
-            if (!cont.isEmpty()) {
-                observations.add(cont);
-            }
-        }
-
-        // Second pass: output with correct separators
-        int lastObservationIndex = observations.size() - 1;
-        for (int i = 0; i < observations.size(); i++) {
-            contenido += observations.get(i);
-
-            // Add appropriate ending: period for non-last, semicolon for last
-            if (i == lastObservationIndex) {
-                contenido += ";";
-            } else {
-                contenido += "." + LINE_SEPARATOR;
-            }
-        }
-
-        // End with forward slash
-        contenido += SEQUENCE_END + LINE_SEPARATOR + LINE_SEPARATOR;
-
-        return contenido;
-    }
-
-    private String exportRegistroSdisGseqEventoConTiempo(List<Criterio> criterios) {
-        /*
-         * TODO comprobar si el tiempo ha de estar siempre en forma m:ss
-         *  -   Ver si permite milisegundos
-         *  -   Ver si permite horas
-         */
-
-        String contenido = "";
-
-        FilaRegistro filaAnterior = null;
-        String tiempo = "";
-        for (FilaRegistro filaRegistro : datosVariables) {
-            String cont = exportFila(criterios, filaRegistro, "+");
-
-            // Si la anterior es diferente de null toca terminar la lina anterior.
-            if (filaAnterior != null) {
-                contenido += "-" + Tiempo.formatSimpleSeconds(filaRegistro.getMilis());
-            }
-
-            tiempo = Tiempo.formatSimpleSeconds(filaRegistro.getMilis());
-            contenido += "\r\n" + cont + "," + tiempo;
-
-            filaAnterior = filaRegistro;
-        }
-        if (tiempo != null) {
-            contenido += "-" + tiempo;
-        }
-        contenido += "/\r\n";
-
-        return contenido;
-    }
-
-    private String exportRegistroSdisGseqIntervalo(List<Criterio> criterios) {
-        String contenido = "";
-
-        if (datosVariables.isEmpty()) {
-            return contenido + "/\r\n";
-        }
-
-        // Start with empty line and session marker (placeholder for now)
-        contenido += "\r\n<S01>\r\n";
-
-        int tiempoAnterior = 0;
-        boolean isFirst = true;
-
-        for (FilaRegistro filaRegistro : datosVariables) {
-            String cont = exportFila(criterios, filaRegistro, " ");
-
-            // Skip empty observations
-            if (cont.isEmpty()) {
-                continue;
-            }
-
-            // Calculate time interval from previous observation (or from start for first one)
-            int tiempoActual = filaRegistro.getMilis();
-            int intervalo = tiempoActual - tiempoAnterior;
-
-            if (!isFirst) {
-                contenido += ",";
-            }
-
-            // Add timing before the data
-            contenido += "*" + intervalo + "," + cont;
-
-            isFirst = false;
-            tiempoAnterior = tiempoActual;
-        }
-
-        // Add session end marker with placeholder metadata
-        contenido += "\r\n\r\n(Session)/\r\n";
-
-        return contenido;
-    }
-
-    private String exportRegistroSdisGseqState(List<Criterio> criterios) {
-        String contenido = "";
-        FilaRegistro filaAnterior = null;
-        int tiempoAnterior = -1;
-        for (FilaRegistro filaRegistro : datosVariables) {
-            String cont = exportFila(criterios, filaRegistro, "+");
-            // Si la anterior es diferente de null toca terminar la lina anterior.
-            if (filaAnterior != null) {
-                contenido = contenido.replaceAll("\\+", "=" + (filaRegistro.getMilis() - tiempoAnterior) + "\t") + "=" + (filaRegistro.getMilis() - tiempoAnterior);
-            }
-            contenido += "\r\n" + cont;
-            filaAnterior = filaRegistro;
-            tiempoAnterior = filaRegistro.getMilis();
-        }
-        contenido = contenido.replaceAll("\\+", "=1\t");
-        contenido += "/\r\n";
-        return contenido;
+        GseqExporter exporter = GseqExporterFactory.createStateExporter();
+        return exporter.export(criterios, datosVariables);
     }
 
     public String exportToTheme5(List<Criterio> criterios) {
-        return exportRegistroToTheme(criterios, ";", true);
+        return exportRegistroToTheme(criterios, ";", false);
     }
 
     public String exportToTheme6(List<Criterio> criterios) {
-        return exportRegistroToTheme(criterios, "\t", false);
+        return exportRegistroToTheme(criterios, "\t", true);
     }
 
-    private String exportRegistroToTheme(List<Criterio> criterios, String separator, boolean dataname) {
-        final int MARCA = -2;
-        String nombreRegistro = getName();
+    private String exportRegistroToTheme(List<Criterio> criterios, String separator, boolean useSequentialTime) {
         String contenido = "";
-        if (dataname) {
-            contenido += "DATANAME" + separator;
-        }
         contenido += "TIME" + separator + "EVENT\r\n";
-        int timeFoot = MARCA;
         boolean isFirst = true;
+        int sequentialTime = 1;
         for (FilaRegistro filaRegistro : datosVariables) {
             String cont = StringUtils.trim(exportFila(criterios, filaRegistro, ","));
+            int timeValue = useSequentialTime ? sequentialTime : filaRegistro.getRegisterFrameValue();
             if (isFirst) {
-                int time = filaRegistro.getRegisterFrameValue();
-                if (dataname) {
-                    contenido += nombreRegistro + separator;
-                }
-                contenido += (time - 1) + separator + ":\r\n";
+                int startTime = useSequentialTime ? sequentialTime : (filaRegistro.getRegisterFrameValue() - 1);
+                contenido += startTime + separator + ":\r\n";
                 isFirst = false;
+                if (useSequentialTime) {
+                    sequentialTime++;
+                    timeValue = sequentialTime;
+                }
             }
-            if (dataname) {
-                contenido += nombreRegistro + separator;
-            }
-            contenido += filaRegistro.getRegisterFrameValue() + separator + cont + "\r\n";
-            timeFoot = MARCA;
+            contenido += timeValue + separator + cont + "\r\n";
+            sequentialTime++;
         }
-        if (timeFoot == MARCA) {
-            timeFoot = datosVariables.get(datosVariables.size() - 1).getRegisterFrameValue() + 1;
-        }
-        if (dataname) {
-            contenido += nombreRegistro + separator;
-        }
-        contenido += timeFoot + separator + "&\r\n";
+        int footTime = useSequentialTime ? sequentialTime : (datosVariables.get(datosVariables.size() - 1).getRegisterFrameValue() + 1);
+        contenido += footTime + separator + "&\r\n";
         return contenido;
     }
 
