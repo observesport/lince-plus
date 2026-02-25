@@ -413,6 +413,13 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 JavaFXLogHelper.addLogInfo("Ngrok located at " + externalLink);
                 getMainLinceApp().regenerateQRCode();
                 showNgrokSuccessDialog(externalLink);
+            } else {
+                String errorMsg = externalLinkService.getLastError();
+                if (StringUtils.isEmpty(errorMsg)) {
+                    errorMsg = "Ngrok failed to generate an external link. Please check the log for details.";
+                }
+                JavaFXLogHelper.addLogError("Ngrok connection failed: " + errorMsg, null);
+                JavaFXLogHelper.showMessage(AlertType.ERROR, "Ngrok Connection Failed", errorMsg);
             }
             ngrokRunning.set(externalLinkService.isConnected());
         } else {

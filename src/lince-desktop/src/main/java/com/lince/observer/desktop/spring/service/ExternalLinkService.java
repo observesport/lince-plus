@@ -72,4 +72,13 @@ public interface ExternalLinkService {
      * @return A message indicating the current configuration needs.
      */
     String getConfigurationMessage();
+
+    /**
+     * Returns the last error message from a failed connection attempt.
+     *
+     * @return The error message, or null if no error occurred.
+     */
+    default String getLastError() {
+        return null;
+    }
 }
