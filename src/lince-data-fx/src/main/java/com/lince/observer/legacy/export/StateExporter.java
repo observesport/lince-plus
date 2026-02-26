@@ -17,32 +17,24 @@
  */
 package com.lince.observer.legacy.export;
 
+import com.lince.observer.data.legacy.utiles.Tiempo;
 import com.lince.observer.legacy.FilaRegistro;
+import com.lince.observer.legacy.instrumentoObservacional.Categoria;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GSEQ State format exporter.
+ * GSEQ State Sequential Data format exporter.
  * <p>
- * State format is used for state sequences where each state has a duration.
- * Durations are calculated as the time difference until the next state.
+ * Produces multi-stream output: one stream per criterion, separated by {@code &}.
+ * Within each stream, state transitions are written as {@code code,M:SS} pairs.
  * <p>
- * Format structure:
- * <pre>
- * State
- *
- * ($Criterion1 = code1 code2 ...)
- * ($Criterion2 = code3 code4 ...);
- *
- *
- * code1=1000  code3=500
- * code2=1500  code4=2000
- * /
- * </pre>
+ * Lince PLUS has no native session/episode concept, so all observations form
+ * a single session {@code <S01>} ending with {@code /}.
  *
  * @see GseqExporter
- * @see <a href="file:../../../../../integration/GSEQ_FORMAT_SPECIFICATION.md">GSEQ Format Specification</a>
  */
 public class StateExporter extends GseqExporter {
 
@@ -53,39 +45,67 @@ public class StateExporter extends GseqExporter {
 
     @Override
     protected boolean useFormatA() {
-        return true; // State format uses Format A variable declarations
+        return true;
     }
 
     @Override
     protected String exportDataSection(List<Criterio> criterios, List<FilaRegistro> datosVariables) {
         StringBuilder contenido = new StringBuilder();
 
-        FilaRegistro filaAnterior = null;
-        int tiempoAnterior = -1;
-
-        for (FilaRegistro filaRegistro : datosVariables) {
-            String cont = exportFila(criterios, filaRegistro, "+");
-
-            // If previous row exists, calculate duration and replace placeholders
-            if (filaAnterior != null) {
-                int duracion = filaRegistro.getMilis() - tiempoAnterior;
-                // Replace all + placeholders with =duration\t, then append =duration at end
-                String contentStr = contenido.toString();
-                contentStr = contentStr.replaceAll("\\+", "=" + duracion + "\t");
-                contenido = new StringBuilder(contentStr);
-                contenido.append("=").append(duracion);
-            }
-
-            contenido.append(LINE_SEPARATOR).append(cont);
-            filaAnterior = filaRegistro;
-            tiempoAnterior = filaRegistro.getMilis();
+        if (datosVariables.isEmpty() || criterios.isEmpty()) {
+            contenido.append(LINE_SEPARATOR).append("<S01>").append(LINE_SEPARATOR);
+            contenido.append(LINE_SEPARATOR).append(SEQUENCE_END).append(LINE_SEPARATOR);
+            return contenido.toString();
         }
 
-        // Replace remaining placeholders with default duration of 1
-        String contentStr = contenido.toString();
-        contentStr = contentStr.replaceAll("\\+", "=1\t");
-        contenido = new StringBuilder(contentStr);
+        // Session marker with start time
+        String startTime = Tiempo.formatSimpleSeconds(datosVariables.get(0).getMilis());
+        contenido.append(LINE_SEPARATOR).append("<S01>,").append(startTime);
 
+        // Build one stream per criterion, separated by &
+        boolean isFirstCriterion = true;
+        for (Criterio criterio : criterios) {
+            if (!isFirstCriterion) {
+                contenido.append(" &").append(LINE_SEPARATOR);
+            }
+
+            // Collect transitions for this criterion
+            List<String> codes = new ArrayList<>();
+            List<Long> times = new ArrayList<>();
+
+            for (FilaRegistro fila : datosVariables) {
+                Categoria cat = fila.getCategoria(criterio);
+                if (cat != null) {
+                    String code = cat.getCodigo();
+                    long time = fila.getMilis();
+                    // Only add if different from previous code (state transition)
+                    if (codes.isEmpty() || !codes.get(codes.size() - 1).equals(code)) {
+                        codes.add(code);
+                        times.add(time);
+                    }
+                }
+            }
+
+            // Write transitions: code,M:SS
+            StringBuilder stream = new StringBuilder();
+            for (int i = 0; i < codes.size(); i++) {
+                if (stream.length() > 0) {
+                    stream.append(" ");
+                }
+                stream.append(codes.get(i)).append(",").append(Tiempo.formatSimpleSeconds(times.get(i)));
+            }
+            if (stream.length() > 0) {
+                if (isFirstCriterion) {
+                    // First stream follows session marker on same line, separated by space
+                    contenido.append(" ").append(stream);
+                } else {
+                    contenido.append(stream);
+                }
+            }
+            isFirstCriterion = false;
+        }
+
+        // End the single session with /
         contenido.append(SEQUENCE_END).append(LINE_SEPARATOR);
 
         return contenido.toString();

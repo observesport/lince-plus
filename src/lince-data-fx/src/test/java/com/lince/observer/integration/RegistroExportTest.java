@@ -214,7 +214,7 @@ class RegistroExportTest {
         // Assert
         assertNotNull(result, "Export result should not be null");
         assertFalse(result.isEmpty(), "Export result should not be empty");
-        assertTrue(result.contains("DATANAME"), "Should contain DATANAME header");
+        assertFalse(result.contains("DATANAME"), "Should not contain DATANAME header");
         assertTrue(result.contains("TIME"), "Should contain TIME header");
         assertTrue(result.contains("EVENT"), "Should contain EVENT header");
         assertTrue(result.contains(";"), "Should use semicolon separator");

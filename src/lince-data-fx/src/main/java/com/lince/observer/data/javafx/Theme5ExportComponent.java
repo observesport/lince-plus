@@ -58,7 +58,7 @@ public class Theme5ExportComponent extends GenericExportComponent {
 
     @Override
     String getExportTitle() {
-        return "Theme 6 Export";
+        return "Theme 5 Export";
     }
 
 }

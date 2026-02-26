@@ -51,7 +51,7 @@ public class Theme6ExportComponent extends GenericExportComponent {
 
     @Override
     String getFileExtension() {
-        return ".vvt";
+        return ".txt";
     }
 
     @Override
