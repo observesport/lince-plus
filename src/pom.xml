@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.lince.observer</groupId>
     <artifactId>lince-plus-root</artifactId>
-    <version>4.0.4</version>
+    <version>4.0.4-export-fix</version>
     <packaging>pom</packaging>
     <name>Lince Plus</name>
     <description>Lince-Observer project for Spring Boot</description>
@@ -70,7 +70,7 @@
         <!--        <jdk.version>17.0.9</jdk.version> deprecated -->
         <!--        https://github.com/openjdk/jfx/blob/jfx23/doc-files/release-notes-20.md-->
         <!--        For compatibility with mac os catalina : version 16-->
-        <javafx.version>16</javafx.version>
+        <javafx.version>17.0.10</javafx.version>
         <install4j.version>10.0.6</install4j.version>
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
@@ -91,9 +91,9 @@
         <ffmpeg.version>6.1.1-1.5.10</ffmpeg.version>
         <!-- TODO 2024 jackcess Needs update but breaks! -->
         <jackcess.version>1.2.13</jackcess.version>
-        <tikaCore.version>2.9.1</tikaCore.version>
+        <tikaCore.version>3.2.2</tikaCore.version>
         <apacheCommonsIo.version>2.16.0</apacheCommonsIo.version>
-        <apacheCommonsLang3.version>3.14.0</apacheCommonsLang3.version>
+        <apacheCommonsLang3.version>3.18.0</apacheCommonsLang3.version>
         <apacheCommonsCollections4.version>4.4</apacheCommonsCollections4.version>
         <apacheCommonsMath.version>3.6.1</apacheCommonsMath.version>
         <guava.version>33.1.0-jre</guava.version>
