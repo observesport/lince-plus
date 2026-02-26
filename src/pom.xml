@@ -91,7 +91,7 @@
         <ffmpeg.version>6.1.1-1.5.10</ffmpeg.version>
         <!-- TODO 2024 jackcess Needs update but breaks! -->
         <jackcess.version>1.2.13</jackcess.version>
-        <tikaCore.version>2.9.1</tikaCore.version>
+        <tikaCore.version>3.2.2</tikaCore.version>
         <apacheCommonsIo.version>2.16.0</apacheCommonsIo.version>
         <apacheCommonsLang3.version>3.18.0</apacheCommonsLang3.version>
         <apacheCommonsCollections4.version>4.4</apacheCommonsCollections4.version>
