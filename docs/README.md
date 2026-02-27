@@ -32,11 +32,11 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download
 
-[https://github.com/observesport/lince-plus/releases/tag/v4.0.4](https://github.com/observesport/lince-plus/releases/tag/v4.0.4)
+[https://github.com/observesport/lince-plus/releases/tag/v4.0.5](https://github.com/observesport/lince-plus/releases/tag/v4.0.5)
 
-### Current version 4.0.4
+### Current version 4.0.5
 
-New Research page with integrated Python notebook for data analysis, improved Ngrok connectivity
+New Reporting page for PDF study reports, consolidated GSEQ export formats, improved interactive performance
 
 #### Lince Plus 3.2.4 Release Notes
 
@@ -109,6 +109,7 @@ macOS users should ensure Terminal has full disk access enabled in System Prefer
 
 ### Previous versions
 
+- [4.0.4 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.4)
 - [3.2.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
 - [3.2.3 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.3)
 - [2.1.0 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v2.1.0)
@@ -158,6 +159,13 @@ LINCE PLUS has been develop using [Jetbrains Suite](https://jb.gg/OpenSource) th
 LINCE PLUS installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 4.0.5 RELEASE, 27/02/2026
+	- New Reporting page for generating PDF study reports with video thumbnails
+	- Consolidated and fixed GSEQ export formats for SDIS-GSEQ specification compliance
+	- Corrected Theme 5 and Theme 6 export labels and file extensions
+	- Improved performance with React-based interactive skills
+	- Upgraded Apache Commons Lang, Apache Tika, and JavaFX Media dependencies
 
 - Version 4.0.4 RELEASE, 25/02/2026
 	- New Research page with integrated Python notebook for in-browser data analysis

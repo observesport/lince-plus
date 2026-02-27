@@ -1,8 +1,9 @@
 {
-  "version": "4.0.4",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.4",
+  "version": "4.0.5",
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.5",
   "message": [
-    "Nueva pagina de Investigacion con cuaderno Python integrado para analisis de datos",
-    "Mejoras en la conexion Ngrok con mensajes de error visibles"
+    "Nueva página de Informes para generar reportes PDF del estudio",
+    "Mejoras en la exportación GSEQ y corrección de formatos de exportación",
+    "Mejoras de rendimiento en componentes interactivos"
   ]
 }
