@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/lince-desktop/src/main/resources/public/assets/RStudio-C0o_jMFj.js
-import{O as k,Q as S,d as h,ao as O,J as e,R as r,n as t,cr as n,ac as w,cq as m,S as C,a2 as l,B as N,cs as T,Z as A,ct as R,cu as z,aR as B}from"./index-CWbCoMd7.js";import"./jspdf-Bc8qoIxo.js";import{D as p}from"./index-fZYmAKv-.js";import"./highcharts-E-ssCwwk.js";import"./codemirror-BR0_0jR2.js";import"./videojs-DGfV6Fwm.js";const c={linceBasic:`print(linceData);
-========
 import{O as k,Q as S,d as h,ao as O,J as e,R as r,n as t,cr as n,ac as w,cq as m,S as C,a2 as l,B as N,cs as T,Z as A,ct as R,cu as z,aR as B}from"./index-DVFcurTb.js";import"./jspdf-CBsff_1n.js";import{D as p}from"./index-CvHk58zD.js";import"./highcharts-E-ssCwwk.js";import"./codemirror-B9EvPrFu.js";import"./videojs-C_BAc1MK.js";const c={linceBasic:`print(linceData);
->>>>>>>> 86308ab8 (Improve performance with react skills):src/lince-desktop/src/main/resources/public/assets/RStudio-Dpv0GSBo.js
 print(linceDataByCategory);
 #This is a comment!
 df <- data.frame(x = seq(5), y = runif(5));

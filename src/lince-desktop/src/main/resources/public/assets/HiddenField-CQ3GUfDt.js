@@ -1,5 +1,1 @@
-<<<<<<<< HEAD:src/lince-desktop/src/main/resources/public/assets/HiddenField-B31vcvax.js
-import{bc as i,bd as s,d,l as t,be as u}from"./index-CWbCoMd7.js";function f(l){var n,{value:a}=l,r=i(l,["value"]);const e=s(r.name,r,{initialValue:!1})[0];return d.useEffect(()=>{a!==void 0&&a!==e.value&&e.onChange(a)}),e.noDOM?null:t.createElement("input",Object.assign({disabled:e.disabled,name:e.name,readOnly:e.readOnly,ref:e.inputRef,type:"hidden",value:(n=a??e.value)!==null&&n!==void 0?n:""},u(e)))}export{f as H};
-========
 import{bc as i,bd as s,d,l as t,be as u}from"./index-DVFcurTb.js";function f(l){var n,{value:a}=l,r=i(l,["value"]);const e=s(r.name,r,{initialValue:!1})[0];return d.useEffect(()=>{a!==void 0&&a!==e.value&&e.onChange(a)}),e.noDOM?null:t.createElement("input",Object.assign({disabled:e.disabled,name:e.name,readOnly:e.readOnly,ref:e.inputRef,type:"hidden",value:(n=a??e.value)!==null&&n!==void 0?n:""},u(e)))}export{f as H};
->>>>>>>> 86308ab8 (Improve performance with react skills):src/lince-desktop/src/main/resources/public/assets/HiddenField-CQ3GUfDt.js
