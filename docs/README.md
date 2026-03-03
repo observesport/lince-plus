@@ -32,11 +32,11 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download
 
-[https://github.com/observesport/lince-plus/releases/tag/v4.0.5](https://github.com/observesport/lince-plus/releases/tag/v4.0.5)
+[https://github.com/observesport/lince-plus/releases/tag/v4.0.7](https://github.com/observesport/lince-plus/releases/tag/v4.0.7)
 
-### Current version 4.0.5
+### Current version 4.0.7
 
-New Reporting page for PDF study reports, consolidated GSEQ export formats, improved interactive performance
+Fixed video player reset on register save, angle export from pose estimation, reporting validation, and improved pause-on-selection toggle
 
 #### Lince Plus 3.2.4 Release Notes
 
@@ -109,6 +109,7 @@ macOS users should ensure Terminal has full disk access enabled in System Prefer
 
 ### Previous versions
 
+- [4.0.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.5)
 - [4.0.4 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.4)
 - [3.2.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
 - [3.2.3 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.3)
@@ -159,6 +160,13 @@ LINCE PLUS has been develop using [Jetbrains Suite](https://jb.gg/OpenSource) th
 LINCE PLUS installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 4.0.7 RELEASE, 03/03/2026
+	- Fixed video player resetting to the beginning when saving an observation register
+	- Pose estimation now supports exporting calculated angles for biomechanical analysis
+	- Reporting tool validation improvements for more reliable PDF report generation
+	- Improved pause-on-selection toggle for smoother recording workflow
+	- Continued improvements to the Research notebook for in-browser Python data analysis with pandas, numpy, and matplotlib
 
 - Version 4.0.5 RELEASE, 27/02/2026
 	- New Reporting page for generating PDF study reports with video thumbnails

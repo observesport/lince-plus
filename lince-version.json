@@ -1,9 +1,9 @@
 {
-  "version": "4.0.4",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.4",
+  "version": "4.0.7",
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.7",
   "message": [
-    "Nueva página de Informes para generar reportes PDF del estudio",
-    "Mejoras en la exportación GSEQ y corrección de formatos de exportación",
-    "Mejoras de rendimiento en componentes interactivos"
+    "Corrección del reinicio del reproductor de vídeo al guardar un registro",
+    "Exportación de ángulos desde la estimación de pose y validación de informes PDF",
+    "Mejora del comportamiento de pausa al seleccionar categorías"
   ]
 }
