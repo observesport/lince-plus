@@ -1,0 +1,8 @@
+TIME	EVENT
+1	:
+2	RS,A
+3	PT,A
+4	AR1,A
+5	PE,A
+6	L
+7	&
