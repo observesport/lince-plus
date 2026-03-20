@@ -1,0 +1,46 @@
+Multievent
+
+($Campo = Inf Sup)
+($InicioPunto = Saq1 Saq2 Res1 Res2)
+($Jugador = Alca Djo)
+($Sector = Def Con Pres Ataq Defin)
+($Zona = Z1 Z2 Z3 Z4 Z5 Z6 Z7 Z8 Z9 Z10)
+($ZonaExterior = ZLE ZFE)
+($AgarreGolpe = Dch DchInv Rev1m Rev2m)
+($Efecto = Cort Nocor)
+($Accióntécnica = Glob Vol Dej Rem Pass App GB Otr)
+($TipoResolución = Win ENF EF Ace FT DobleF Net)
+($GanadorPunto = GanaAlcaraz GanaDjokovic);
+
+
+Sup Saq1 Djo Def Z6.
+Inf Res1 Alca Def Z8 ZFE.
+Alca Def Z10 Dch Nocor GB.
+Alca EF GanaDjokovic.
+Sup Saq1 Djo Def Z5.
+Inf Res1 Alca Def Z3.
+Alca Def Z3 Rev2m Nocor GB.
+Djo Con Z3 Rev2m Nocor GB.
+Alca Def Z4 Rev2m Nocor GB.
+Djo Def Z8 ZFE Dch Cort GB.
+Djo EF GanaAlcaraz.
+Sup Saq1 Djo Def Z6.
+Inf Res1 Alca Def Z8.
+Djo Net.
+Sup Saq1 Djo Def Z6.
+Inf Res1 Alca Def Z8.
+Djo FT.
+Sup Saq2 Djo Def Z6.
+Inf Res2 Alca Def Z8.
+Alca Con Z8 Dch Nocor GB.
+Alca Win GanaAlcaraz
+Sup Saq1 Alca Def Z7.
+Inf Res1 Djo Def Z8.
+Alca Net.
+Sup Saq1 Alca Def Z7.
+Inf Res1 Djo Def Z8.
+Alca FT.
+Sup Saq2 Alca Def Z7.
+Inf Res2 Djo Def Z8.
+Djo Con Z8 Rev2m Nocor GB.
+Djo EF GanaAlcaraz/

@@ -1,0 +1,612 @@
+! 
+Verbal interaction in couples
+Codes:
+  WCom   wife complains 
+  WEmo   wife emotes
+  WApp   wife approves
+  WNeg   wife negates
+  WOth   other utterances
+  HCom   husband complains 
+  HEmo   husband emotes
+  HApp   husband approves
+  HNeg   husband negates
+  HOth   other utterances   
+Variables:
+  Age of couple:  Young / Adult
+  Type of couple: Clinic / Control
+Number of units per levels of variables:
+  Young and Clinic:  6
+  Young and Control: 6
+  Adult and Clinic:  6
+  Adult and Control: 7
+Number of sessions per unit varies between 2 and 5
+!
+
+Event                                        % Data type declaration
+($Wife    = WCom WEmo WApp WEmp WNeg WOth)   % Code declaration
+($Husband = HCom HEmo HApp HEmp HNeg HOth)
+* Age (Young Adult)                          % Variable declaration
+  Type (Clinic Control);
+
+<Young Clinic 1>
+% Session #1 (1)
+HApp WEmp WEmo HEmp WEmp WNeg WNeg HApp WEmo HEmo WEmp HEmp WCom HCom WCom HCom
+WEmo HEmo WEmo HEmo WEmp HEmo WEmo HApp WEmp WEmo HApp HApp WApp HEmo WEmp HEmp
+HEmo WEmo WEmo HApp HCom WNeg WNeg WCom HEmo WEmo HEmp WEmp HEmp WEmo HEmo WEmo
+WEmo HEmp HNeg HOth HCom WOth WEmo WApp HApp WEmp WEmo HApp WEmp HEmp WCom HEmo
+WEmo WCom HEmo WEmp HEmp WEmp HEmp WEmp HCom WCom HCom WNeg HCom WEmp HEmp WEmp
+HEmp HEmo WEmo WEmp;
+
+% Session #2 (2)
+WEmo HEmo HEmp WEmo WApp HApp WEmp HEmo WEmo HEmo WEmp HNeg WEmp HCom WCom HNeg
+HCom HNeg WEmp HEmp WEmp HEmp WEmp HEmp WEmo HEmo WEmo HEmo WEmo HApp WApp HApp
+HApp WEmp HEmp WCom HEmp WEmp HEmo HNeg HApp HEmp WEmp HEmo HApp WApp WApp HEmp
+WApp HCom WCom HCom HNeg WEmo HEmo WEmo HEmp WEmp;
+
+% Session #3 (3)
+HCom WEmo HEmo HEmp WEmp HApp WEmo HEmp WEmp HEmo WEmo HEmo WApp WApp HApp WEmp
+HEmp WEmp WEmo HEmp HEmp WEmp WEmp HEmp WEmp HApp HApp WApp HApp WEmp HEmp HApp
+WApp HApp WEmo HEmo WEmp HApp WApp HEmo HEmp WEmo HEmp WEmp HEmp WOth HApp WEmp
+HApp WEmp HEmo HCom HEmp WEmp WEmo HEmo WEmo HEmp WEmp HEmp WEmp HEmp WEmo HEmo
+WEmo (Young, Clinic)/
+
+<Young Clinic 2>
+% Session #1 (4)
+WEmo HEmp WEmp HEmp HNeg WEmo HApp WEmo HEmo WEmp HEmo WEmo HEmo WApp HEmp WEmo
+HNeg WEmp WEmo HEmo HEmp WEmp WEmo HEmo WEmo HApp WEmp WEmp HEmo HNeg HApp WNeg
+HApp HCom WEmo HEmo WEmo HEmo HNeg WEmo WOth HEmo WEmo HApp WEmo HEmo WEmo HEmo
+WEmo WApp HEmo WEmo HEmp WEmp HEmp WCom HApp HEmp WEmp HEmp;
+
+% Session #2 (5)
+HCom WApp HApp WApp WApp WOth WNeg WApp WEmp HApp WEmp WNeg WCom HCom HEmp WEmp
+HApp WApp HApp WEmp HEmo WEmo HApp WEmp HEmp WApp HApp WEmp HEmo WApp HApp WApp
+HEmp WEmo HApp WEmo HEmp WEmp HEmp WEmp HApp WApp WEmp WEmo WApp HApp WApp WEmo
+WCom HCom WEmp WEmo HEmp WEmp HEmp WEmp HEmp HEmo WEmo HEmo WEmo HEmp WEmo WCom
+HApp WCom HCom WCom (Young, Clinic)/
+
+<Young Clinic 3>
+% Session #1 (6)
+HCom WNeg WNeg WNeg HNeg HNeg WApp HEmp WCom HNeg WApp HEmp WEmp HEmp WEmp HEmo
+WEmp HApp WEmp HNeg WEmo HEmo;
+
+% Session #2 (7)
+HNeg HEmo WEmp HEmp WEmp HEmp WCom WCom HCom HEmo WEmp HEmo WEmo WApp HNeg WApp
+HApp WEmp HEmp HEmo WApp HEmo WApp HEmo WEmo HEmp WCom HApp WEmp HEmo WEmo HApp
+WNeg HCom HEmo WEmo HEmp WEmo HEmo WEmo HEmo HEmp WEmp HEmp WEmp HCom WApp;
+
+% Session #3 (8)
+HApp WEmo HApp WEmp HApp WApp WApp HEmo WEmo HEmo WEmo HEmp WEmp HEmp WEmp WEmo
+HEmp WApp WEmp WEmp HCom WApp HApp WApp WApp WEmp WEmp HEmo WEmo HEmo WApp HEmp
+HEmo HNeg WApp HApp WEmo/
+
+<Young Clinic 4>
+% Session #1 (9)
+WEmp HEmo WEmo HApp WEmp HEmo WEmo HApp WEmp HEmp WApp HEmo WEmp HEmp WEmo WApp
+WEmo WEmo HNeg WEmp HApp WCom HCom HApp WEmo HEmo WEmo WApp WEmp HEmp WOth HCom
+WCom HCom HNeg WCom HEmo HNeg WNeg HNeg WNeg HApp WCom HCom WOth WEmp HEmo WEmo
+HEmo WEmo WEmo HCom WCom HCom WCom HEmp HApp WCom HApp WEmp HEmp WEmo HEmo WEmo
+HEmo WEmo HEmo WEmp HEmp WEmp WEmo;
+
+% Session #2 (10)
+WNeg HEmo HCom WApp HOth WCom HEmo WEmo HEmp HEmp WEmp WEmp HNeg WNeg HNeg HEmo
+WEmo HEmo WApp;
+
+% Session #3 (11)
+HEmo WEmo HEmo WEmp HCom HCom WCom HCom WEmp WEmp WEmo HApp WApp WEmp HEmp WEmo
+HEmo WEmo HEmo HEmp WApp WEmo HEmo HCom HNeg HApp WApp WEmo WCom HEmp WNeg HCom
+WCom HCom HNeg WEmo HEmp WEmp HEmp HCom HNeg WApp HNeg WEmp HNeg HNeg WCom HEmp
+WEmp HEmp WCom HEmp WEmp WEmp HNeg WCom HCom HNeg WNeg HNeg WNeg HNeg WApp WEmp
+WEmo HEmo WEmo WEmo WCom HCom WApp WEmp WEmo HEmo WEmo HEmo WEmo;
+
+% Session #4 (12)
+HApp WCom HCom HApp WCom HEmp WEmp HEmp WEmp HApp WApp HApp WApp HApp HEmo HNeg
+HEmo WEmo HApp WEmo HEmp WEmp WEmo WEmp WCom HEmp WEmo HEmo WEmo WEmp HEmo HNeg
+WCom HCom WCom HCom WEmp HEmp WEmp HEmo HCom WCom HCom WCom HEmp WEmp HEmp WEmp
+WApp HApp WEmp HEmo WEmo WEmo WCom HEmp WApp WApp WEmp HEmp WApp HEmp WEmp HEmp
+WEmp HEmp HCom WApp WApp HEmo WEmo HApp WCom HCom WApp HEmo WEmo HApp WApp WEmo
+HApp WEmp HEmo WEmo HEmo HCom WEmp HEmp WCom (Young, Clinic)/
+
+<Young Clinic 5>
+% Session #1 (13)
+HCom WApp HEmo WEmo HEmo WEmo HEmo WEmp HEmp WEmp HEmo WApp WOth HApp WApp HEmo
+WEmo HEmo WEmo WEmo WEmo HNeg WEmo HApp WApp WEmo WCom HCom HEmo HCom HApp WEmo
+HEmo WApp HEmp HCom HCom WEmo WCom HCom WCom HCom WEmo HEmo WApp WEmp HCom HEmp
+WEmp HEmp HEmp WEmp HEmo WEmo HEmp WEmp HEmp WEmo HApp WEmp WEmo HEmo WEmo WCom
+HEmo HOth;
+
+% Session #2 (14)
+WEmo HApp HApp WApp WApp WNeg HEmp WEmp HCom HApp WApp HApp HApp WEmp HEmp HCom
+WCom HCom HApp WApp HOth HEmo WEmo WCom HCom HEmo WEmo HEmp WApp HApp WEmp HEmp
+WEmp HEmp WEmo HEmo WEmo HApp WApp HEmp WEmp;
+
+% Session #3 (15)
+WCom HCom HNeg HCom HApp WEmp HEmp WCom HEmo WApp HApp WEmo HEmo WEmo HEmo WEmo
+HApp HApp WEmo WCom HEmp WEmo HApp WOth HCom WEmo HEmo WEmo WCom HCom WCom HCom
+WApp (Young, Clinic)/
+
+<Young Clinic 6>
+% Session #1 (16)
+WNeg WNeg HApp HEmp HNeg WEmo WEmo HApp WApp HEmo WEmo HEmo WApp HApp WEmo HApp
+HApp WApp WApp HApp WApp WApp HApp WEmp HEmp WEmp HEmp HNeg WApp HEmo WEmp HCom
+WCom HCom HCom WEmo HEmo WEmo HEmo HEmp WEmo WCom HCom HEmp WEmp HApp HApp WEmp
+HEmp WEmp HEmo WEmo WEmo WApp HCom WApp HEmp WApp WEmo HEmp WEmp HEmo WNeg HApp
+WApp HEmp WEmp HEmp;
+
+% Session #2 (17)
+WEmp HEmp WEmo HApp WNeg HOth WNeg HCom HEmp WEmp HEmp WNeg HEmp WEmp HEmp WEmp
+HEmo WNeg WApp WApp WEmp WEmo HEmo;
+
+% Session #3 (18)
+HNeg WCom HEmp WEmp HEmp WEmp WEmo HEmo HOth WEmo WEmo HEmo WEmo HOth HEmp WEmp
+HEmp HEmp WEmp HEmp WEmp HEmp HEmo WEmp HEmp WOth WEmp WApp HApp HEmp WEmp HEmp
+WApp HEmp WCom HCom WCom HEmp WCom HEmp WNeg WCom HEmp WEmp HEmp WEmp WApp HNeg
+WCom HCom WNeg HCom WCom WCom WCom HEmp WEmp HEmp WEmp HEmp WEmp HEmo WEmo WCom
+HCom HCom HNeg WNeg;
+
+% Session #4 (19)
+HEmp HEmo WApp WApp HApp WEmp HEmp WEmo HEmo WEmp HNeg WNeg HApp WApp HApp WApp
+WApp WApp HEmo WEmo WEmo HCom HNeg WEmo HEmo WEmo HEmp WEmp HApp WEmp HEmp WEmp
+WEmp HEmp WEmp HEmo WEmp HEmo WEmo HApp HApp WApp WEmo HEmo HCom HEmo WEmp HEmp
+WEmp HCom WNeg HCom HEmp WEmp HEmp WEmo HNeg WEmo HEmp WEmp HEmp WEmp HCom WCom
+HCom WCom HCom HNeg WNeg HCom HApp WCom HEmp WEmp HEmp WEmo HApp WApp WEmo HEmo
+WEmo WEmo (Young, Clinic)/
+
+<Young Control 1>
+% Session #1 (20)
+WEmp HApp WApp HApp WEmo HEmo WApp HApp WEmo HEmo WEmp HEmp WEmp HEmp WApp WEmp
+WEmo HApp WEmp HEmp HCom WApp WOth HCom WApp HApp WEmp HApp WEmo HEmp HCom WEmo
+HEmo WEmo HEmo HNeg WEmo HEmo HNeg WEmo HEmo WEmo WEmo HEmp HEmo WEmo HApp WEmp;
+
+% Session #2 (21)
+HEmo WEmp HNeg WEmo HEmo WEmo HApp HEmo WEmo HApp WEmp WEmo HEmp WEmp HEmp WCom
+HCom WEmo WCom HEmo WEmo HEmo WEmo HEmo HOth HApp WEmp HEmp HCom HApp WEmo HEmo
+WEmo HApp WEmp HEmp WEmp HEmp WEmp HApp WApp HApp WEmp HEmo WEmo HNeg WApp HEmp
+HNeg WEmo HApp WEmp WCom HCom WApp HNeg HCom WApp HApp WApp HEmo WApp WEmo HApp
+WEmo HEmo HCom HEmo HEmp WEmp HEmo WEmo WApp WEmo WEmo HEmo HOth WEmo HEmo WEmo
+HApp WEmp HApp HEmp;
+
+% Session #3 (22)
+WEmo HEmo HEmp WEmp HEmp WEmp HNeg WNeg WNeg HNeg WEmp HEmp HNeg WApp HApp WEmp
+HEmp WEmp WEmo WCom HCom HNeg WCom HCom HEmo WEmo HApp WApp HEmp WEmp HNeg WCom
+HEmp WEmp HEmp WEmp HEmo WEmo HEmo WEmo WApp HEmo WEmo HEmo HEmp HCom WCom HApp
+HApp WApp HEmp WEmp HEmp WApp (Young, Control)/
+
+<Young Control 2>
+% Session #1 (23)
+HNeg HNeg HNeg HNeg WEmp HEmo WEmo WEmo HApp WEmp HEmo WApp WApp WApp HApp WApp
+HApp WApp WOth HEmo HNeg WEmo WEmo HEmp WEmp HEmp WCom HEmp WEmp HEmp WNeg HApp
+WEmo HEmo WApp WApp HOth WEmp WApp HEmp WCom HCom WCom HNeg WEmp HEmp HApp WEmo
+HApp WEmo HApp WCom HCom HEmp HNeg HNeg WApp HEmp WApp HEmp WEmp WNeg WNeg WNeg
+HCom HNeg WNeg HCom WEmo HEmo WApp HEmo HEmp WCom HApp WApp WEmp HCom HNeg WEmo
+HEmo WEmp HEmp WEmo HEmp WEmp HEmp WOth WEmp HNeg WCom HEmo HCom HNeg WNeg WNeg
+WApp HEmp;
+
+% Session #2 (24)
+HEmo WNeg HNeg HNeg WNeg WApp HEmp HNeg WEmo HEmp WApp HApp WCom HCom HEmo WApp
+WEmp HApp HApp WNeg HNeg WApp HApp WEmp HEmp WApp HEmp HApp WEmp HCom WEmp HEmo
+WEmp WEmo HEmo HCom HCom HCom HApp WApp HApp HApp WOth WEmp HEmp WEmp WApp HEmp
+HApp WApp HCom WApp HCom WApp WEmp HEmp HApp WNeg HApp WApp HCom HEmo HEmp HEmo
+WApp WEmp HEmp WEmo HApp WEmp HNeg WApp HApp WEmp HEmp WEmp WEmo HEmp WEmp WEmo
+HNeg WApp WApp WApp WApp HEmo WEmo HEmo HCom WCom HApp WEmp HEmo WEmo HEmo WEmp
+HEmp WEmp HEmp WEmp HCom WCom HEmp WEmp HEmp WEmp HNeg;
+
+% Session #3 (25)
+HApp WNeg HEmo WCom HCom WApp WOth HNeg HOth HApp HApp WApp HEmp WEmp HEmp HEmo
+HOth WEmp WApp HEmo WEmo HEmo HEmo WApp HEmo WEmo WCom HEmp WEmo HEmo WApp HEmp
+WEmp HEmp WEmp HEmp HCom HEmp HNeg WNeg HCom WApp HApp WNeg HNeg HEmo WEmo HEmp
+HCom HNeg WEmo HCom HApp WApp WApp HOth WCom HEmo WEmo WCom HCom WCom HEmo WEmo
+HOth WEmo HEmo WEmo HApp HNeg WApp WOth HApp HEmo WEmo HEmo WEmo WApp HEmo WEmp
+HEmp WEmp WCom HEmp WOth WEmp HApp WEmp HEmp HEmp/
+
+<Young Control 3>
+% Session #1 (26)
+WEmo HEmo WEmo HEmp WEmp HEmp WEmp HApp WEmp WEmo HEmo WApp WApp WApp HApp WEmo
+HEmo WEmp HNeg WEmo HEmo HEmp WEmp HEmp WEmp HEmp WEmp HApp WEmp HEmo HNeg HCom
+WApp HApp WApp HEmp WEmp HCom HApp HApp WEmp WEmp HEmp HEmo WApp WEmp HEmp HApp
+WApp HApp WEmp HEmo WNeg HEmp WCom HEmp WEmp HEmp WEmp HEmp HApp HApp WApp HEmo
+WEmo HEmo WEmp HCom WEmp WEmp HEmo WEmo HEmo WEmo HEmo WEmo WCom HEmp WEmp HEmp
+WEmp HEmo WEmo HApp WApp HNeg WEmp HEmo WEmo HEmp WEmp HApp WApp WEmp HEmo WEmo
+HEmo WEmo WEmo;
+
+% Session #2 (27)
+HApp HApp WApp HCom HEmp WEmp HEmp WEmp HApp WApp HApp HApp WApp HApp HApp WEmp
+HNeg WNeg WApp HEmp WEmo HEmo HEmo WEmo HNeg WApp HApp WApp WApp HNeg HNeg WApp
+HEmp WEmp WOth HEmo HApp WEmo HCom WNeg HCom HEmp WEmp HApp HEmp WEmp WEmo HEmp
+WEmp HEmp WNeg HNeg WNeg WOth;
+
+% Session #3 (28)
+WEmp HEmp HApp WEmo HApp WEmp HNeg HNeg WApp HEmp HEmo HOth HApp WEmp HEmp WEmo
+HApp WApp HApp WNeg HEmo WEmo HEmo WApp WApp HApp WEmo HEmo WEmp HCom WApp HApp
+WApp HApp WEmo HEmo WEmo HEmp WApp HApp HApp WNeg HApp WEmo HEmo HApp HCom HEmo
+WApp HEmp HApp HApp WEmp HEmp WOth WApp HCom HApp WApp WNeg HNeg HCom HNeg
+(Young, Control)/
+
+<Young Control 4>
+% Session #1 (29)
+HApp WApp WEmp WCom HApp WEmo WCom HEmp HEmo HEmp WEmp HEmo WEmp HEmo WEmp HCom
+WEmo HApp WEmp HEmp;
+
+% Session #2 (30)
+HCom WApp WEmo HEmp WApp WEmo HApp WEmp WEmo HEmo WEmo HApp WApp WApp HApp WApp
+HApp HApp WEmp HEmp WEmp HEmp WCom WNeg WOth HEmo HEmo WEmo WEmo HCom HEmp WEmp
+HEmp WEmp HEmp WEmo HOth WCom HEmo WCom HCom HNeg WCom WCom HEmo WApp HApp WEmo
+HEmo WEmo HEmo WEmp HEmp WEmo HApp WEmo HEmo WEmo HEmo WEmo HEmp WEmp;
+
+% Session #3 (31)
+WNeg HCom HEmo WEmo HEmo HEmo WEmo HEmo WEmo HEmo WEmo HEmp WEmp HEmp WEmo HEmp
+WEmo HOth HEmp HEmo WEmo HApp WEmp HEmo WEmo HEmp;
+
+% Session #4 (32)
+WEmp HEmp WEmp HEmp HEmp WEmp HEmp WEmp HEmo WCom HCom HEmo WApp HEmp WEmp HEmo
+HCom WEmp HEmo HEmp WEmp HEmo WApp HApp WEmp HEmp HEmo HCom WNeg HApp WEmo WApp
+HOth HApp WEmp HNeg WNeg HCom HEmp WNeg HApp WApp HEmp WEmp HEmp WEmp WNeg WNeg
+HApp HApp WCom WOth HCom WEmo HCom WCom HEmp WNeg HEmp WEmo WEmo HEmp WEmp HApp
+WApp HCom HEmo WEmo HEmp WEmp HEmo WEmo HEmo HOth WNeg;
+
+% Session #5 (33)
+WEmo HNeg WOth WApp WEmo HEmo WEmo HEmo HNeg WEmp WEmo HEmo HNeg WApp WApp HApp
+WApp WEmp HCom WApp HApp HApp WApp HApp WApp WApp HEmo WEmp HEmp WApp HApp HApp
+HEmo HEmo HCom HCom WOth HApp WApp HApp WEmo HApp WApp HApp HNeg WApp HEmp WApp
+HApp WEmo (Young, Control)/
+
+<Young Control 5>
+% Session #1 (34)
+WEmp HNeg HNeg WApp HEmp WNeg HEmp WEmp HEmp WEmp HEmp WEmp WApp HEmp WCom HEmo
+WEmp HEmp HCom WApp WApp WEmp HNeg WNeg WNeg HCom WEmo HEmp HCom WEmo HEmo WEmp
+HEmp WEmp HEmo WEmo WCom HEmp WEmp HEmo HApp HApp WNeg HNeg WNeg HEmo WEmo HEmp
+WEmp WEmp HEmp WEmo WCom HApp WEmp HCom WCom HEmp WEmp HEmp WOth HApp WCom HEmp
+WEmp HEmp WEmp HEmp WEmp HEmo WEmp WNeg WEmo HEmo WEmo HEmo HNeg WNeg HNeg WApp
+WEmo HEmp WEmp HApp WApp HEmo WApp WApp HOth HCom WApp WApp HApp HNeg HNeg;
+
+% Session #2 (35)
+WEmp HNeg WNeg HEmp WEmo HEmo WEmo WCom HCom HApp WApp HApp WEmo WApp WApp HApp
+WEmp HEmo WEmo HEmp WOth HApp WEmp WEmo HEmo WCom HNeg WEmo HEmp WEmo HEmo WEmo
+HNeg WEmo HEmp WEmp HApp WEmo HEmo HEmp WEmp WEmo HNeg HApp WEmo HEmo HApp WEmp
+HNeg WEmp HNeg WNeg HNeg WApp HEmp WEmo WEmo HEmo WEmp HCom HNeg HNeg WNeg HCom
+WNeg HApp WApp HEmp WEmp HEmp WCom HEmp HEmp HEmo WEmp HEmp WEmp HEmp WEmp HEmp
+WCom HEmo WEmo HEmo WEmo HEmo WEmp HEmp WEmp HEmp WEmp HEmo WEmo HEmo WEmp HEmp
+WEmp HEmo WEmp HEmp WEmp HEmp WEmp WNeg;
+
+% Session #3 (36)
+HApp WApp HApp WApp HEmp HEmo HApp HApp WApp HEmp WEmp HCom HEmo WApp HApp WApp
+HEmo WEmo WEmo HEmo WEmo HEmo HOth WEmo WCom HEmp WEmp HEmo WApp WEmo HEmo WEmo
+HEmo WEmo HEmp WEmp HEmp HNeg HNeg WEmo HApp WEmp HEmp WEmp HEmp WEmo WCom HApp
+WCom HEmp WCom HCom WApp HEmo WEmo HNeg WNeg HEmo WEmo HEmo WEmo HEmp HEmo WEmo
+HEmp HCom HEmo WEmo HApp WApp HCom HEmo WApp HEmo WEmp WApp HEmp WEmp HEmo WEmo
+HEmo WEmo WApp HEmp HCom HEmo WEmo HEmp HEmo HNeg WNeg WEmo WCom HEmp WEmp WEmo
+HApp (Young, Control)/
+
+<Young Control 6>
+% Session #1 (37)
+HApp WEmo WCom HCom WApp HEmo WEmo HEmo WEmo HEmp WApp HApp WApp WApp HEmp WEmp
+WApp WApp HApp WNeg HApp WApp WOth HApp WApp HEmp WEmo HApp WApp HCom WCom HEmo
+HOth WEmo HApp HApp WEmp HEmp HEmo HOth WApp HOth HCom WApp;
+
+% Session #2 (38)
+HEmo WEmo WApp WNeg HCom WOth HCom WCom HCom WEmp HNeg WEmo HEmo WEmo HEmo WEmo
+HEmo WEmo HEmo WEmo HEmo WEmo HEmo HCom WCom HCom HEmp HEmo WEmo HApp HApp WApp
+HEmo WEmo HEmo WEmp HEmo WApp HEmp WEmp WEmo HEmp WEmp HEmp HEmp WEmo HEmo WEmo
+HApp HEmp HNeg WApp HApp HApp WEmo HEmp WEmp HApp WApp WEmp HEmp WEmp HEmp HEmp
+WCom HCom WEmo HEmp WEmp HEmo WApp HEmp WEmp HEmp WEmp WCom HNeg WCom HCom WEmo
+HEmo WEmo HNeg WCom HCom WEmo HEmo HNeg WEmo HEmo HNeg WApp HApp WApp WEmp WApp
+HEmp WCom HCom WEmo HEmo WEmo HEmo WEmo HApp;
+
+% Session #3 (39)
+WEmo WEmp HEmo HEmp WApp HApp HApp WApp HEmo WEmo HEmo WNeg WCom WEmp HEmp WEmo
+HEmo WEmo HEmo WEmo HEmo WApp WApp WEmo HEmo HEmo WEmo WApp HApp WNeg HCom HNeg
+WCom HCom HEmo WEmo HEmo WApp HApp WEmp WApp HOth HCom WApp HEmo WApp HApp WCom
+HCom HEmo WApp HEmp WEmp HEmp WEmp HEmo WEmo HEmo HCom (Young, Control)/
+
+<Adult Clinic 1>
+% Session #1 (40)
+HEmo HCom HCom HEmo WEmo HEmo HNeg WCom HApp WCom WEmp WEmo WApp HNeg WCom HEmp
+WEmp HEmp WEmo HApp WEmp WEmo HEmp WEmp HEmp WCom HCom HEmp WEmo HEmo WApp WApp
+HEmp WOth HEmo WEmo HEmp HEmp WCom WCom HEmp HApp HApp WCom HEmo WEmo HEmo WEmp
+WCom WNeg HApp HNeg WEmo HEmo WEmo HNeg WEmp HEmp WEmp WNeg HEmp WEmp HEmo WEmo
+HEmo WEmo HEmo HOth HCom WCom HCom WCom HEmp HEmp;
+
+% Session #2 (41)
+HEmo WEmo HEmo WEmp HEmp WApp HEmo WEmp HEmo WEmp HNeg WEmo HEmp WEmp HEmp WEmp
+WEmo HEmp WNeg HEmp HEmo WApp WApp HApp WApp HEmo WEmo WEmp HApp WEmo HApp WEmp
+WEmo HEmo WEmo HEmo WEmo HEmo WEmo HEmp WEmp HCom WCom HCom WApp HEmo WEmo HEmo
+WEmo HNeg WNeg HApp WCom HEmp WEmp HEmp HNeg WEmo WCom HEmo WEmp HEmp WEmp HEmp
+WEmp HEmo WEmo HEmp WEmp WEmo WOth HCom HEmo HOth HApp HApp WApp HApp WEmp HEmp
+WEmp WEmo HApp WCom HCom WCom HCom WNeg HCom HEmo WEmo HEmp WCom HNeg WApp WEmp
+HEmp;
+
+% Session #3 (42)
+HApp WEmp WEmo HEmo WEmo HEmo WEmo HEmo HCom HEmo WEmp HEmp WEmp WNeg WEmo HCom
+WApp HEmo WEmo HApp WApp HApp WApp WApp WApp HEmo WEmo HEmo WEmo HApp WOth WEmp
+WEmo HEmp WEmo HNeg WNeg HCom WApp HApp WEmp HEmp WEmp HEmp HApp WApp HEmp WEmp
+HEmp HNeg (Adult, Clinic)/
+
+<Adult Clinic 2>
+% Session #1 (43)
+WEmp HEmp HEmo WEmo WCom WNeg HCom HNeg WCom HNeg WApp WEmo HNeg WApp HApp WEmp
+HEmp WEmp HEmp HEmo HEmp WEmp HCom WApp HNeg WApp HEmp WEmp HEmo WEmo HApp HApp
+WEmp WApp WEmo HEmo WEmo HEmo WEmo HEmo WApp HApp WEmo HCom WCom HCom WCom HNeg
+WEmo HCom WCom HEmo WNeg WEmo HEmo WEmp HEmo WEmo HEmo HApp WApp WEmo HEmp WEmp
+HEmo HNeg WNeg HNeg HCom HEmp WCom HNeg WCom;
+
+% Session #2 (44)
+WNeg HEmo HEmo HCom WCom HCom WCom HCom WCom HCom WCom HCom WCom HCom WCom HCom
+WCom HCom WCom HEmp WEmo HEmo WEmo HEmp WEmp HEmp WEmp HEmp WEmp HApp WEmp HEmo
+WApp HEmp WEmp HEmp WEmp HEmo WEmo HEmo HCom HEmp WEmp HEmp WEmp HApp WApp HEmo
+WEmo HEmo WEmo HEmo WEmo HEmo WEmp WEmp HApp WEmp WEmo HEmo WEmo HEmo WApp HEmp
+WNeg WNeg HCom HEmo WEmo HApp WCom HEmp WEmo HNeg WCom HCom WCom HCom HNeg WEmo
+HEmo WEmo WEmo HEmo;
+
+% Session #3 (45)
+HEmo WNeg WEmp HNeg WNeg HEmo WEmo WApp WEmp HApp WEmo HApp WOth WEmo HEmo WEmo
+HEmo HNeg HCom WOth HApp WCom HCom WCom HCom WCom HCom HApp WApp HApp WEmo HApp
+WApp HEmp HNeg WEmo HEmo WEmo HEmo WEmp HEmp WEmo HEmo HEmp WEmp HEmo HEmo;
+
+% Session #4 (46)
+WEmo HEmp WApp WApp WApp WEmp HEmo WEmo WEmo HEmo WEmp HEmo WApp HEmp HCom WCom
+HCom WCom HCom HNeg HCom WApp HApp WApp HApp WApp WEmo HEmo HApp WEmo HEmp WEmp
+HEmp WEmp HEmp WEmo HEmo WEmo HEmo (Adult, Clinic)/
+
+<Adult Clinic 3>
+% Session #1 (47)
+HNeg WCom HEmp WEmp HCom HEmo WEmo HEmo WEmo HEmo WEmp HCom HCom WEmp HEmp WApp
+WApp HEmp WEmp WEmo HApp WEmo HEmp WEmo HApp;
+
+% Session #2 (48)
+HApp WApp HApp WEmp HEmo WEmp HEmo WEmp HEmo WApp HApp WApp HApp HEmp WEmp HCom
+HApp WApp WApp HApp WEmp HEmo WNeg HEmp WEmo HEmo WEmo HEmp WEmp HEmp WEmp HEmp;
+
+% Session #3 (49)
+HApp HApp WEmp HNeg WCom HCom WCom HCom WCom HCom HNeg HCom WEmo HNeg WEmo HEmo
+WEmo WEmo WApp HEmp HApp WEmp HEmp HEmo HApp WEmo HEmo WApp HEmp WEmp HApp WNeg
+WApp HEmp WEmo HApp HApp WEmp HEmo WEmo HEmo WEmo WApp HApp WEmp HEmp WEmp HEmp
+WEmp HEmp WEmo WEmo WCom HCom HApp WEmo HEmo HOth HCom WApp WEmp HEmp WCom HCom
+WCom HCom WCom HCom HNeg HNeg WEmp HEmo WApp HEmp WEmo;
+
+% Session #4 (50)
+WEmp HEmo WEmo HEmo HNeg HCom WEmo HCom WCom HCom HNeg HNeg WNeg HEmp WEmp HApp
+WNeg WNeg WCom HCom WCom HEmp WEmp HEmp HEmp WCom HCom WCom HCom WCom HNeg HCom
+WCom HCom WApp HEmp WEmp HApp WCom HCom HNeg HNeg WNeg WApp HApp WEmo HApp WEmp
+WOth WEmo WOth WEmo HApp HNeg HCom HEmp WEmp WApp HEmo WCom HEmp HEmo WEmo HEmo
+WEmo HEmo HEmp WEmp HEmp HNeg WEmo HEmo HCom WCom HEmp WEmp HEmp HEmo WEmp HEmp
+WEmp WEmp HEmp HEmo HEmp WEmp HEmp WEmp HEmp WEmp (Adult, Clinic)/
+
+<Adult Clinic 4>
+% Session #1 (51)
+HApp WEmp HEmp WEmp HEmp HCom WNeg HCom WCom HCom WCom HCom HCom WApp WEmp HEmp
+HApp WEmo HCom WEmp HNeg WApp HApp WEmo HEmo HCom WNeg HEmp WApp WApp WApp HEmp
+WEmp HCom WCom HCom WCom HCom WCom HCom HEmo WApp HApp;
+
+% Session #2 (52)
+HApp WEmp HEmp WEmp HEmp WEmp HEmp WEmp HEmo WApp HEmo WEmo HEmo WEmo HEmp HEmo
+WEmo HOth HEmp WEmp HEmp WEmo HEmp WEmo HEmp WEmp HEmo WEmp WOth HCom WApp HApp
+WNeg WEmo HEmo WEmo HEmo WEmo HEmp WEmp HEmo WApp HEmp WEmp;
+
+% Session #3 (53)
+HNeg WApp WEmp HEmp WEmp HApp HCom HNeg WCom HEmp WEmp WEmp HEmp WEmp HEmp WEmp
+HEmp WEmp HEmp WEmo HEmo WApp HEmp WEmp WCom HOth WApp HApp HCom HApp HApp WEmp
+HEmo WEmo HEmo WApp HEmp WEmp HEmp WEmp HEmo WApp HEmp WEmp HEmp WEmp HEmp WApp
+HApp WEmo WCom HEmp WEmp HEmp HEmp HCom WEmo HEmo WEmo WApp HApp HCom HEmo WApp
+HEmp WEmp HEmo WEmo HEmo WEmo HEmo WEmo HApp WCom;
+
+% Session #4 (55)
+WEmp HEmp WCom HCom WCom HApp HApp WOth HEmo WCom HCom WCom HCom HEmo WEmo
+(Adult, Clinic)/
+
+<Adult Clinic 5>
+% Session #1 (56)
+HEmp WEmp HApp WEmp WNeg HNeg HOth HCom WEmp HNeg HEmo WEmp WApp WEmp HEmp WEmp
+HEmp WOth HApp WEmo HEmp WCom WCom HNeg WCom HEmp WApp HEmp HEmo WEmo;
+
+% Session #2 (57)
+WCom HEmp WApp HEmp WEmp HApp WEmp HEmp WEmo HEmo WEmp HEmo WEmo WEmo HEmo WEmo
+WCom HCom HEmo WEmo HEmo WEmo HApp WNeg HApp WEmp WApp HEmp WCom HCom HApp WEmp
+HNeg WEmo HEmo WApp WEmp HEmp WEmp HEmo WEmo HEmo WEmo HApp WEmp WCom HNeg WApp
+HEmo WEmo HEmo WApp HApp WApp WApp HApp WEmo HEmo HEmp WEmo HEmp WEmp WEmo WApp
+HApp WEmp HEmo WEmo HEmo HNeg WCom HEmo WEmp WApp HApp WEmp WOth WApp HEmo HCom
+WEmp HApp;
+
+% Session #3 (58)
+WApp HCom WCom HCom HEmp WEmp WApp HEmo WApp HEmp WEmp HCom WEmp WEmo WCom HEmp
+HNeg HNeg WEmo HNeg WNeg HEmp WEmp HNeg WEmp HEmp WEmp HEmo WEmo HEmo WEmp HEmo
+WApp HApp HCom;
+
+% Session #4 (59)
+WEmo HEmo WApp HCom HNeg HEmo WEmo HEmo HOth WEmp HEmo HCom WEmp WEmp HApp WEmp
+HEmp WEmp HCom HEmp WEmp HApp WEmo WCom HApp WEmp HEmp WCom HEmp WEmp HEmp WEmp
+HEmp WNeg HCom HApp HEmp WEmp HEmp WEmp HEmp WEmo HEmo WApp HApp WApp WEmo HEmp
+WEmp HEmo WEmo HEmo WEmo HEmo WApp HEmp (Adult, Clinic)/
+
+<Adult Clinic 6>
+% Session #1 (60)
+WApp HEmo WApp HApp HEmp WNeg WEmp HEmo WEmo HEmo WEmo HEmo WApp HEmp WCom HOth
+HCom WEmo HEmo WApp WEmo HEmo WApp HEmo WCom HCom WCom HCom WEmo HEmo WEmp HEmo
+HNeg WEmo HEmp WCom HCom WEmp WEmo HEmo WApp HCom HApp WApp HApp WApp HEmo WEmo
+HApp WApp WApp HOth HEmo WApp HCom WApp WApp HApp WEmo HEmp WEmp HEmp WCom HEmp
+WEmp HEmp WEmo HEmp WEmo HApp HApp WApp WApp HCom HEmo WEmo WEmp HEmp WEmp HEmo
+WEmp HEmp WCom WCom HCom WEmo HEmo WEmp HEmp HEmp WApp HApp WApp WOth;
+
+% Session #2 (61)
+WApp WApp WNeg HNeg WNeg HNeg WNeg HCom WEmp HEmp WEmp HEmp WEmp HEmp WEmo WApp
+WEmp HApp HEmo WApp HEmp WCom HApp WApp HEmo WEmo;
+
+% Session #3 (62)
+WEmo HApp WCom WEmo HApp WEmo HCom WEmp HEmp WEmo HEmo WEmo HApp WEmo HEmo WEmo
+HNeg HApp WApp HApp WEmo HEmo WEmo HEmp HApp WApp WEmp HEmp WEmp WEmp HCom WCom
+HCom WCom HCom WCom HEmp HNeg WNeg HEmo WEmp HEmp WEmp WNeg HCom HApp WEmp HEmo
+WEmo HEmo WEmo HEmo WEmp HEmo WApp HEmp WEmp WApp HApp HNeg WCom HApp WEmo HEmo
+WEmo (Adult, Clinic)/
+
+<Adult Control 1>
+% Session #1 (63)
+HApp WEmo HNeg WApp HEmp WEmo HEmo WApp WApp HApp WApp HApp WApp HEmo WCom HCom
+HApp WCom HCom WCom HNeg WCom HEmo WEmo HApp WEmo HEmo WEmo HEmp WEmp WEmo HApp
+WApp HEmo;
+
+% Session #2 (64)
+HNeg WApp HEmp WEmp HApp WOth WEmo HEmo WEmo HApp HApp HApp WNeg WNeg WApp HCom
+WCom HCom HNeg WCom WCom HApp WApp HApp WApp WEmo WEmo HOth WEmo HApp WCom HEmp
+WApp WEmo HEmo HNeg HCom HEmp WEmp HEmp WEmp HEmp WCom HNeg WApp HCom HEmo HEmp
+HCom WEmo HApp HApp HApp HApp WEmp HEmp WEmo HEmo WEmo HEmo WEmo HEmo WEmo HEmo
+WEmo HApp HCom WApp HEmo WEmo HEmo WEmo HEmo WEmo HEmo WEmo WEmo WCom HApp HApp
+WEmo WCom HCom WCom HApp WEmp HEmp HEmp WCom HCom WCom HCom WEmp HEmo WEmp HEmo;
+
+% Session #3 (65)
+WCom HEmp WEmp HEmp HNeg WCom HCom WCom HCom HEmp WEmp HEmp WCom HCom WCom HEmp
+WNeg HNeg WEmp HApp WApp HEmp HEmo HCom HNeg WNeg WNeg HEmo WEmp WEmp HEmp WEmo
+HEmp HEmo WCom (Adult, Control)/
+
+<Adult Control 2>
+% Session #1 (66)
+WEmo WCom HEmp WApp HEmo WEmo HEmp WOth WNeg HCom WEmo HNeg WCom HEmo WEmo HEmp
+WEmo HApp WCom HCom WEmo HApp WCom HCom WNeg WNeg WNeg HCom HEmp WApp HEmp WEmp
+WEmp WEmo HNeg WEmo HEmo WEmo;
+
+% Session #2 (67)
+HNeg HApp WCom HNeg WApp HEmp WEmp HEmp WCom HEmp WEmp WEmp HEmp WEmp HCom WEmo
+HEmo WEmo HEmo WEmo HEmo WEmo HEmo WApp HEmp HApp WEmo WCom HCom HCom WEmp HEmo
+WApp HApp WEmp HCom WApp HEmp HApp WEmp HEmo WApp HApp WEmo WCom WCom HCom HEmo
+HEmp WEmp HEmo WEmp HEmo WEmo HEmp WEmo WApp HEmp WEmp HEmp WEmo HEmo HEmp HNeg
+WCom WNeg HEmo WEmo WApp HEmp WEmp HEmp WEmp HNeg HNeg WEmo WOth HNeg WEmo HEmp
+WEmo HCom WNeg WApp HEmp WApp HEmp WCom HNeg HNeg HNeg HNeg WApp HApp HEmo WEmo
+HApp HApp WApp HEmp HEmo WEmo HApp WEmo HNeg WApp HEmo HNeg WNeg;
+
+% Session #3 (68)
+WEmp HNeg WEmo WApp HApp WEmp HApp HApp WCom HApp WApp HApp WApp HEmp WApp WApp
+WEmp HEmp HCom WNeg HEmo WEmo HEmo WEmo HApp WApp WOth HCom WEmp WEmo HEmo WApp
+HApp WCom HCom HNeg WEmo HEmo WApp HApp WEmp HNeg WApp WEmp HCom WApp HEmp WCom
+HEmp HNeg WCom HApp WEmp HApp WApp HApp WEmp HEmo WApp HNeg HNeg WNeg HEmo HEmo
+WEmo HEmp HCom WEmp WEmo HEmp HNeg WNeg HNeg HNeg WCom HCom WCom HOth WEmo HApp
+HApp WApp HOth HApp WCom HCom HNeg HEmo WEmp HEmp WEmo HCom WNeg
+(Adult, Control)/
+
+<Adult Control 3>
+% Session #1 (69)
+WEmp HNeg WApp WApp HApp WEmp WEmp HEmo WApp HEmp WEmp HEmo WEmp HApp HApp WCom
+HCom WEmp HApp WEmp WCom HEmo WEmo HEmo WEmo WCom HCom WApp WEmo HEmp WApp HApp
+WApp HEmo WEmo HEmo WEmo HEmo WApp HApp WEmo HEmo WEmp HEmo WApp HEmp WOth WApp
+HApp HApp WEmo HEmp WApp HApp WNeg WEmo HNeg WEmo HEmo WApp HApp HCom WCom HEmp
+WEmp HEmo WEmo HEmo WApp HApp WEmp HNeg WCom HCom WApp HApp HApp WEmp HEmp HCom
+WApp HCom WApp WEmp WEmp HEmp WEmp HEmo WEmp HEmp WEmp HNeg WEmo HEmo WEmo HEmo
+HCom HApp HEmp WEmo HEmo WEmo HApp WEmp HEmo WEmp HEmp WEmp HEmp WEmp HEmo HNeg;
+
+% Session #2 (70)
+WEmp HNeg WApp HApp WApp HEmp WEmp HEmp WEmp WApp WApp WApp HApp WEmp HNeg WApp
+HApp WEmp HEmp WEmp WApp HEmo WEmo WEmo HApp WApp HApp WApp HApp HApp WApp WNeg
+HCom WNeg WNeg HNeg WEmp HEmp WEmo HEmp HEmp WEmo WApp HOth WEmo HEmo WEmo WCom
+HEmp WNeg WNeg WEmo HEmo WApp HEmp HEmo WEmp HEmp WCom HCom WEmp WNeg HApp WApp
+WEmp HEmo HApp WEmp WEmo WEmo HEmo WEmo HEmp WCom WApp HApp HApp WEmo HEmo WEmo
+HEmp WEmp HEmo HNeg WEmo HEmp HCom HEmp WEmp HEmo WEmo HNeg HApp HApp WApp HEmp
+WApp HApp WEmp WCom HCom HEmp WEmp HEmp WNeg HCom WEmp WApp HEmo WEmo HApp WOth
+WEmp HEmp HEmo WEmo;
+
+% Session #3 (71)
+HCom WEmo WOth HApp WNeg WNeg HNeg WApp WApp HEmp HEmp WEmo HEmo WEmo HEmo HEmp
+WEmp HEmo WEmo HApp WApp WApp HApp HApp WEmo HEmo WApp HEmp WEmo HApp WApp HApp
+HCom WEmp WEmo HEmo WEmo WEmo HEmo WEmo HEmp HCom WCom HEmo WEmo WEmo HApp HEmp
+HNeg WEmo WOth WApp HEmp WEmp HEmp WNeg HEmo WEmo HEmo WEmo WCom HEmo WApp HApp
+HApp WCom HCom WCom HCom WEmp HEmp HApp WEmp HCom HApp WEmo WApp WEmo HEmo HEmo
+WEmo HEmo WEmp HEmo HEmo HApp WApp HApp WEmp HEmo WEmo HEmp WEmp
+(Adult, Control)/
+
+<Adult Control 4>
+% Session #1 (72)
+HApp WEmo HEmo WNeg WApp HApp WApp HEmp WNeg WNeg HEmo WEmo HApp WEmp HApp WEmp
+WEmo HCom HEmp WEmp HEmp WEmp HEmp HEmp WApp HApp HApp WNeg HEmo WEmp HEmo WApp
+HEmp WEmo WApp HEmp WEmo WEmo WCom HEmo WEmo HEmo WEmo WCom HCom HApp WApp HEmp
+WEmp HEmo WEmp HEmp HEmo WApp HEmo WEmo HEmp WApp WApp WEmo HApp WApp WEmo HEmp
+WEmo HEmo WNeg HApp HEmp WEmo HCom WNeg WNeg HNeg HEmp HCom WEmp HEmo WCom HApp
+WCom HEmp HApp WEmp HEmp WEmo WCom HApp HApp WApp HNeg WEmo HApp;
+
+% Session #2 (73)
+WApp HEmo WEmo HEmo WEmo HEmp WEmp HEmp HCom HEmo WEmo HApp HApp WCom HNeg WEmo
+HEmo WEmp HEmp WEmo WApp HApp WApp WApp HApp WCom HEmo WCom HEmo WApp WEmo HEmp
+WEmp HEmp WEmp WEmo HNeg WEmp HEmp WEmo WEmo HEmo WEmo HEmo WApp HOth HEmo WEmo
+HEmo WEmo HEmo HEmp WEmo HEmp WEmp HNeg WEmo WEmo HEmo WEmo HEmp WEmp HEmo WEmo
+HEmo WEmo HEmo WEmo WCom HEmp WEmp HEmp WEmo HEmo HEmo WEmo WEmo HEmo WApp WApp
+HEmo WEmo HEmp WEmp HEmp WEmp HEmo WEmo HEmp WEmp HCom WApp HEmo WEmo HEmo WEmo
+HEmo WEmo HEmo WEmo HEmp WEmp HEmo WEmo HApp HApp WApp HEmo WNeg;
+
+% Session #3 (74)
+HApp HApp HApp WEmp WCom HCom HEmp WCom HEmo WEmo HApp WApp HApp WApp HApp WNeg
+HNeg HNeg HCom WApp HApp HNeg WEmo WCom HCom WEmo WEmo HEmo HEmo WEmo HEmo WEmo
+HNeg WApp HOth WOth WEmp HEmp HEmo WEmo HEmo WEmo HEmo WEmo HEmo WEmo HEmp WEmp
+HEmp HNeg WNeg WEmo HEmo WEmo HEmp WNeg WNeg HOth WApp WApp HApp HApp WEmo HCom
+(Adult, Control)/
+
+<Adult Control 5>
+% Session #1 (75)
+HApp WEmp HEmp WCom HApp WCom HApp WApp HEmp WEmp HEmp WEmp HEmo WEmo HEmo WEmo
+WApp WEmo WApp HEmp WEmp HEmp WCom HEmo WApp HOth WApp HApp HNeg WEmo HEmo WEmo
+HEmp WEmp HApp WApp WEmo HEmp WEmp WEmp HEmp WEmp HEmp WEmp HEmp WEmo HApp WEmo
+HEmo WEmo HApp WEmp WEmo HEmo WApp WApp WEmo HEmo WEmo HEmp WEmp HEmp HApp HEmp
+HCom WCom HEmp WCom HNeg WEmo HEmp WNeg WNeg HCom WCom HApp WEmo HCom HNeg WApp
+WApp HApp WEmp HEmp WEmp WApp WApp HEmp WEmp HEmp HApp WEmp HEmp WEmp HNeg HNeg
+WNeg HEmo WEmp HEmo WEmo HEmo HCom HNeg WEmp HEmp WOth WApp HApp WEmp HEmp WApp
+HEmp WEmp HEmp WEmp HEmp WEmp;
+
+% Session #2 (76)
+WApp HApp WEmp HEmo WEmo HEmo WEmo HEmo HCom WEmo HEmo HCom HApp WApp WApp HEmo
+WApp HApp HApp WApp WApp HOth WApp HEmp WEmp WEmo HEmp WCom WEmp HEmp WEmp WEmo
+HEmo WEmo WApp HEmo;
+
+% Session #3 (77)
+HEmo HApp WEmo HEmp WCom HEmo WApp HEmo WEmo WCom HApp WEmo WEmo HEmp WNeg HCom
+WApp WNeg HCom WApp HApp WEmp HEmo WEmo;
+
+% Session #4 (78)
+WEmp HEmp WEmp HEmp WEmp WEmo HEmo WEmp HApp WApp WEmp HNeg HEmo WEmo HEmo WEmo
+HEmo WEmo WApp HEmp WCom HEmp WOth HCom WCom HEmp WEmo WEmo HEmo HEmp WEmp HEmo
+WEmo HEmp WEmp HEmo HCom HApp HApp HApp WNeg HEmo WCom HCom WNeg HEmp WCom HNeg
+HNeg WApp WEmp HEmp;
+
+% Session #5 (79)
+WApp HCom WApp HApp HApp WCom HCom WEmo HApp HEmp WApp HApp WApp HEmo WEmo HEmp
+WEmp WNeg WCom HEmo WApp WEmp HEmo HCom WCom (Adult, Control)/
+
+<Adult Control 6>
+% Session #1 (80)
+WApp WEmo HEmo WEmp HApp WEmp HEmo WEmo WCom HApp WApp HApp WEmp WEmp HApp WApp
+HEmp HEmo WApp HApp WApp HEmo HEmp WEmp HEmp HApp WEmp HEmp WEmo HEmo WEmp HEmo
+HNeg;
+
+% Session #2 (81)
+WCom HApp WEmo WCom HCom HEmp WEmo HApp WEmp HEmo WEmo HApp WEmp WEmo HEmp WEmp
+HEmo WEmo HApp HNeg WNeg WCom HApp WApp HEmp WEmp WEmp HApp WEmo HEmp WEmp HCom
+WCom HCom WApp WApp HApp HNeg WCom HNeg HApp WEmo HEmp HNeg WApp HApp WEmo HApp
+WCom HNeg WNeg HEmp WCom WOth HEmo HCom WCom HCom HCom WEmo HCom HNeg WApp HEmo
+HCom HNeg WEmo HEmo WEmp;
+
+% Session #3 (82)
+HCom HNeg WEmo HEmo WEmo HEmp HNeg WApp WEmp HEmo WCom HCom HEmo HCom WCom HEmp
+WEmp HEmo WEmo HEmo HCom WEmo WEmo HEmo WEmo WCom HCom WApp HEmp WEmp HEmp WEmo
+HEmp WEmo HEmo WEmo HEmp HEmp HNeg HCom WEmo HEmo WEmo WCom HCom WEmp HEmp WEmp
+HEmo WEmo WEmo HEmo WEmo HEmp WEmp HEmp WEmp HEmp WEmp HEmo;
+
+% Session #4 (83)
+WOth HEmp WNeg HOth HCom WEmo HEmp WEmp HEmo WEmo HEmp WNeg WEmo HEmo WEmo WApp
+WApp HEmp WEmp HEmp HEmo WEmp HEmo WEmo WEmp HEmp WEmp WApp HEmp HCom WCom WNeg
+HEmo WEmo WCom (Adult, Control)/
+
+<Adult Control 7>
+% Session #1 (84)
+HNeg HNeg WNeg WCom HEmp WNeg HApp HNeg WEmo WEmo HEmp WEmp HApp WEmp HEmp WEmp
+HEmp WEmp HEmp WEmo HApp WApp WEmp HEmp WEmp HEmp WEmp HEmp WEmp WEmo HEmo WEmo
+HEmo WEmp HEmp WApp HEmp WCom HEmo WApp;
+
+% Session #2 (85)
+HApp WApp HApp WEmo HEmo WEmo WCom HEmo HApp WApp HApp HApp WEmo WEmo HEmo WEmp
+HEmp WEmp WEmp HEmp WEmp HEmo WEmo HApp WApp HApp WEmp HApp HApp HEmp WEmp HEmp
+WEmp WEmp HCom WCom HCom HEmo WEmp HCom HEmp WEmo HEmp WEmp WEmo HApp WEmp HEmo
+WEmo WEmo HEmo WEmo WCom HNeg WApp HApp WNeg WApp HEmo WEmp;
+
+% Session #3 (86)
+WEmo WCom WEmo HEmo HApp WEmp HApp WEmp HApp HEmo WEmo WEmo HEmo HCom WEmo HApp
+WApp HApp HNeg HCom HEmo WEmo WCom HEmp HApp WEmp WEmo HEmo WEmp HApp HApp WEmo;
+
+% Session #4 (87)
+HNeg HNeg HApp HApp HEmp WEmp HApp HApp WApp HEmp WEmp HEmp WEmp HEmo WApp HApp
+WApp WEmp HEmp WApp WEmo HEmo WEmo HNeg WNeg HApp WEmp HEmp WApp WApp HCom HCom
+WEmo HEmo WApp HEmo WEmo HEmo WEmo HEmo WEmo WEmo HEmo WEmo HEmo HApp WEmp HApp
+WOth HCom HApp WCom HCom (Adult, Control)/
+
+    % End of data
