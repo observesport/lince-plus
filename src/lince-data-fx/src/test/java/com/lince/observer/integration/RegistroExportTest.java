@@ -232,6 +232,27 @@ class RegistroExportTest {
         assertTrue(result.contains("EVENT"), "Should contain EVENT header");
         assertFalse(result.contains("DATANAME"), "Should not contain DATANAME in Theme6");
         assertTrue(result.contains("\t"), "Should use tab separator");
+
+        // Verify TIME values are frame numbers, not sequential integers
+        String[] lines = result.split("\r\n");
+        List<Integer> timeValues = new ArrayList<>();
+        for (int i = 1; i < lines.length; i++) {
+            String[] parts = lines[i].split("\t");
+            if (parts.length >= 2 && !parts[1].equals(":") && !parts[1].equals("&")) {
+                timeValues.add(Integer.parseInt(parts[0].trim()));
+            }
+        }
+        if (timeValues.size() >= 2) {
+            boolean hasGaps = false;
+            for (int i = 1; i < timeValues.size(); i++) {
+                if (timeValues.get(i) - timeValues.get(i - 1) != 1) {
+                    hasGaps = true;
+                    break;
+                }
+            }
+            assertTrue(hasGaps,
+                "Theme 6 TIME values should be frame numbers (with gaps), not sequential: " + timeValues);
+        }
     }
 
     // ============================================================
