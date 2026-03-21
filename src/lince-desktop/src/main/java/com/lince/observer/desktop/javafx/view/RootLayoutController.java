@@ -84,10 +84,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private ListView<String> videoPlaylistView;
 
     @FXML
-    private MenuItem ngrokStartMenuItem;
-
-    @FXML
-    private MenuItem ngrokStopMenuItem;
+    private MenuItem ngrokMenuItem;
 
     private BooleanProperty ngrokRunning = new SimpleBooleanProperty(false);
 
@@ -99,8 +96,13 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void initialize() {
         log.info("--            Init RootLayoutController               --");
         logArea.setItems(JavaFXLogHelper.getFxLog());
-        ngrokStartMenuItem.visibleProperty().bind(ngrokRunning.not());
-        ngrokStopMenuItem.visibleProperty().bind(ngrokRunning);
+        ngrokRunning.addListener((obs, wasRunning, isRunning) -> {
+            if (isRunning) {
+                ngrokMenuItem.setText(i18n("desktop.option.browser.ngrok.close"));
+            } else {
+                ngrokMenuItem.setText(i18n("desktop.option.browser.ngrok.open"));
+            }
+        });
     }
 
     public void lazyInit() {
@@ -383,6 +385,17 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
     @FXML
+    private void handleNgrokToggle() {
+        if (ngrokRunning.get()) {
+            externalLinkService.disconnect();
+            ngrokRunning.set(false);
+            getMainLinceApp().regenerateQRCode();
+            JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Stopped", "Ngrok service has been stopped.");
+        } else {
+            handleNgrokStart();
+        }
+    }
+
     private void handleNgrokStart() {
         if (externalLinkService == null) {
             try {
@@ -425,15 +438,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         } else {
             JavaFXLogHelper.showMessage(AlertType.WARNING, "Ngrok Configuration", "Ngrok configuration was cancelled or incomplete.");
         }
-    }
-
-
-    @FXML
-    private void handleNgrokStop() {
-        externalLinkService.disconnect();
-        ngrokRunning.set(false);
-        getMainLinceApp().regenerateQRCode();
-        JavaFXLogHelper.showMessage(AlertType.INFORMATION, "Ngrok Stopped", "Ngrok service has been stopped.");
     }
 
     private String i18n(String key, String... args) {
