@@ -298,7 +298,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     }
 
     public String exportToTheme6(List<Criterio> criterios) {
-        return exportRegistroToTheme(criterios, "\t", true);
+        return exportRegistroToTheme(criterios, "\t", false);
     }
 
     private String exportRegistroToTheme(List<Criterio> criterios, String separator, boolean useSequentialTime) {

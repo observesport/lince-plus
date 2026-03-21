@@ -64,7 +64,8 @@ Tab-separated format for Theme 6 software.
 - Sequence end marker: `<time>\t&\r\n`
 
 **Notes:**
-- Time values are sequential integers (1, 2, 3, ...) NOT frame numbers
+- Time values are frame numbers (integer frame values from the register), matching Theme 5 behavior
+- Theme 5 and Theme 6 differ only in separator (`;` vs `\t`)
 - Tab-separated (not semicolons)
 - Codes within a row are comma-separated
 - Each sequence gets its own start/end markers
@@ -72,14 +73,11 @@ Tab-separated format for Theme 6 software.
 **Example:**
 ```
 TIME\tEVENT\r\n
-1\t:\r\n
-2\tRS,A\r\n
-3\tPT,A\r\n
+1059\t:\r\n
+1060\tRS,A\r\n
+1061\tPT,A\r\n
 ...
-7\t&\r\n
-8\t:\r\n
-9\tRS,A\r\n
-...
+1617\t&\r\n
 ```
 
 ## GSEQ Event (.sds)

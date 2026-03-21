@@ -1,0 +1,454 @@
+package com.lince.observer.data.export;
+
+import com.lince.observer.data.bean.RegisterItem;
+import com.lince.observer.data.bean.categories.Category;
+import com.lince.observer.data.bean.categories.Criteria;
+import org.junit.jupiter.api.Test;
+
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for Lince2ThemeExport using the modern project API.
+ * Builds synthetic Lince projects programmatically and validates
+ * that Theme export output matches expected external tool formats.
+ * <p>
+ * 5 complex scenarios per export type, modeled after validated sample files:
+ * - cordones.txt: 3 obs, 3 criteria, sparse codes
+ * - violin.txt: 15 obs, 7 criteria, all codes per row
+ * - p2.txt: 12 obs, multi-criteria with varying codes per row
+ * - stepsieteorden.txt: 87 obs, 8 criteria, dense data
+ * - p13.txt: 12 obs with large frame gaps
+ */
+class Lince2ThemeExportTest {
+
+    // ============================================================
+    // Helper: build Category with code
+    // ============================================================
+
+    private Category makeCategory(int id, String code, int parentId) {
+        Category cat = new Category(id, code, parentId);
+        cat.setCode(code);
+        return cat;
+    }
+
+    private RegisterItem makeRegisterItem(double videoTime, int frames, Category... categories) {
+        RegisterItem item = new RegisterItem(videoTime, categories);
+        item.setFrames(frames);
+        return item;
+    }
+
+    private String captureExport(List<RegisterItem> register) {
+        try {
+            java.io.File tempFile = java.io.File.createTempFile("lince_theme_test_", ".txt");
+            tempFile.deleteOnExit();
+            Lince2ThemeExport exporter = new Lince2ThemeExport(register);
+            exporter.createFile(new FileWriter(tempFile));
+            return new String(java.nio.file.Files.readAllBytes(tempFile.toPath()));
+        } catch (Exception e) {
+            fail("Failed to capture export: " + e.getMessage());
+            return "";
+        }
+    }
+
+    // ============================================================
+    // Scenario 1: "Cordones" - 3 observations, 3 criteria, sparse
+    // Modeled after sample-theme6/cordones.txt
+    // ============================================================
+
+    @Test
+    void testCordones_3Obs3Criteria_SparseCodesPerRow() {
+        Criteria paso = new Criteria(1, "PASO");
+        Category rs = makeCategory(10, "RS", 1);
+        Category pt = makeCategory(11, "PT", 1);
+        paso.setInnerCategories(new LinkedList<>(List.of(rs, pt)));
+
+        Criteria funcional = new Criteria(2, "FUNCIONAL");
+        Category a = makeCategory(20, "A", 2);
+        Category na = makeCategory(21, "NA", 2);
+        funcional.setInnerCategories(new LinkedList<>(List.of(a, na)));
+
+        Criteria exito = new Criteria(3, "EXITO");
+        Category l = makeCategory(30, "NL", 3);
+        exito.setInnerCategories(new LinkedList<>(List.of(l)));
+
+        List<RegisterItem> register = List.of(
+            makeRegisterItem(2.0, 50, rs, a),       // frame 50
+            makeRegisterItem(13.0, 325, pt, na),     // frame 325
+            makeRegisterItem(24.0, 600, l)           // frame 600, only 1 code
+        );
+
+        String output = captureExport(register);
+
+        // Header check
+        assertTrue(output.startsWith("TIME\tEVENT"), "Must start with TIME\\tEVENT header");
+
+        String[] lines = output.split("\r?\n");
+        assertTrue(lines.length >= 5, "Should have header + start marker + 3 data + end marker");
+
+        // Start marker: frame-1
+        assertEquals("49\t:", lines[1], "Start marker should be first frame - 1");
+
+        // Data rows use frame numbers
+        assertTrue(lines[2].startsWith("50\t"), "First data row should use frame 50");
+        assertTrue(lines[3].startsWith("325\t"), "Second data row should use frame 325");
+        assertTrue(lines[4].startsWith("600\t"), "Third data row should use frame 600");
+
+        // End marker: last frame + 1
+        assertEquals("601\t&", lines[5], "End marker should be last frame + 1");
+
+        // Codes comma-separated, no spaces
+        assertTrue(lines[2].contains("RS,A") || lines[2].contains("RS\tA") == false,
+            "Codes should be comma-separated: " + lines[2]);
+        assertFalse(lines[2].contains(", "), "No spaces after commas");
+
+        // Sparse row (1 code)
+        String lastDataEvent = lines[4].split("\t")[1];
+        assertEquals("NL", lastDataEvent, "Single-code row should just have the code");
+    }
+
+    // ============================================================
+    // Scenario 2: "Violin" - 15 obs, 7 criteria, all codes per row
+    // Modeled after sample-theme6/violin.txt
+    // ============================================================
+
+    @Test
+    void testViolin_15Obs7Criteria_AllCodesPerRow() {
+        Criteria c1 = new Criteria(1, "BRAZO");
+        Category bm = makeCategory(10, "BM", 1);
+        Criteria c2 = new Criteria(2, "VIBRATO");
+        Category vr = makeCategory(20, "VR", 2);
+        Category voi = makeCategory(21, "VOI", 2);
+        Criteria c3 = new Criteria(3, "ARCO");
+        Category aa = makeCategory(30, "AA", 3);
+        Category ar = makeCategory(31, "AR", 3);
+        Criteria c4 = new Criteria(4, "INCLINACION");
+        Category icd = makeCategory(40, "ICD", 4);
+        Category icad = makeCategory(41, "ICAD", 4);
+        Criteria c5 = new Criteria(5, "HOMBRO");
+        Category hp = makeCategory(50, "HP", 5);
+        Criteria c6 = new Criteria(6, "DEDOS");
+        Category da = makeCategory(60, "DA", 6);
+        Criteria c7 = new Criteria(7, "CODO");
+        Category ct = makeCategory(70, "CT", 7);
+
+        // 15 observations at different frame values (matching violin.txt pattern)
+        int[] frames = {607, 654, 677, 745, 759, 784, 854, 923, 1089, 1201, 1265, 1319, 1375, 1564, 1816};
+        List<RegisterItem> register = new ArrayList<>();
+        for (int i = 0; i < frames.length; i++) {
+            Category vibrato = (i % 2 == 0) ? vr : voi;
+            Category arco = (i % 3 == 0) ? aa : ar;
+            Category incl = (i < 5) ? icd : icad;
+            register.add(makeRegisterItem(frames[i] / 25.0, frames[i], bm, vibrato, arco, incl, hp, da, ct));
+        }
+
+        String output = captureExport(register);
+        String[] lines = output.split("\r?\n");
+
+        // Header
+        assertEquals("TIME\tEVENT", lines[0]);
+
+        // Start marker at frame 606
+        assertEquals("606\t:", lines[1]);
+
+        // 15 data rows
+        for (int i = 0; i < 15; i++) {
+            String line = lines[i + 2];
+            String[] parts = line.split("\t");
+            assertEquals(String.valueOf(frames[i]), parts[0], "Frame mismatch at row " + i);
+            // Each row should have 7 codes
+            String[] codes = parts[1].split(",");
+            assertEquals(7, codes.length, "Each row should have 7 comma-separated codes at row " + i);
+            // No spaces in codes
+            for (String code : codes) {
+                assertFalse(code.contains(" "), "No spaces in code: " + code);
+            }
+        }
+
+        // End marker at last frame + 1
+        assertEquals("1817\t&", lines[17]);
+    }
+
+    // ============================================================
+    // Scenario 3: "P2" - 12 obs with varying criteria per row & large gaps
+    // Modeled after sample-theme6/p2.txt
+    // ============================================================
+
+    @Test
+    void testP2_12ObsVaryingCriteria_LargeFrameGaps() {
+        Category tp1 = makeCategory(10, "TP1", 1);
+        Category et = makeCategory(20, "ET", 2);
+        Category mtrz = makeCategory(21, "MTRZ", 2);
+        Category i1 = makeCategory(30, "I1", 3);
+        Category p1 = makeCategory(40, "P1", 4);
+        Category p2 = makeCategory(41, "P2", 4);
+        Category p3 = makeCategory(42, "P3", 4);
+        Category p4 = makeCategory(43, "P4", 4);
+        Category p5 = makeCategory(44, "P5", 4);
+        Category r = makeCategory(45, "R", 4);
+        Category ad = makeCategory(50, "AD", 5);
+        Category gi = makeCategory(51, "GI", 5);
+        Category npm = makeCategory(60, "NPM", 6);
+        Category npli = makeCategory(61, "NPLI", 6);
+        Category nnm = makeCategory(70, "NNM", 7);
+        Category nnli = makeCategory(71, "NNLI", 7);
+        Category nnld = makeCategory(72, "NNLD", 7);
+        Category adap = makeCategory(80, "ADAP", 8);
+
+        // Matching p2.txt frame pattern with gaps
+        List<RegisterItem> register = List.of(
+            makeRegisterItem(50.04, 1251, tp1, et, i1, p1, ad, npm, nnm, adap),
+            makeRegisterItem(55.52, 1388, tp1, et, i1, p2, ad, npm, nnm, adap),
+            makeRegisterItem(59.64, 1491, tp1, et, i1, p3, gi, npm, nnm, adap),
+            makeRegisterItem(67.64, 1691, tp1, et, i1, p4, ad, npli, nnli, adap),
+            makeRegisterItem(76.88, 1922, tp1, et, i1, p5, ad, npli, nnli, adap),
+            makeRegisterItem(78.96, 1974, tp1, et, i1, r),           // only 4 codes
+            makeRegisterItem(99.88, 2497, tp1, mtrz, i1, p1, ad, nnm, adap),  // 7 codes
+            makeRegisterItem(103.0, 2575, tp1, mtrz, i1, p2, ad, nnm, adap),
+            makeRegisterItem(104.2, 2605, tp1, mtrz, i1, p3, gi, nnm, adap),
+            makeRegisterItem(105.64, 2641, tp1, mtrz, i1, p4, ad, nnld, adap),
+            makeRegisterItem(106.88, 2672, tp1, mtrz, i1, p5, ad, nnld, adap),
+            makeRegisterItem(107.92, 2698, tp1, mtrz, i1, r)         // only 4 codes
+        );
+
+        String output = captureExport(register);
+        String[] lines = output.split("\r?\n");
+
+        // Verify frame gaps (not sequential)
+        int prevFrame = 0;
+        boolean hasLargeGap = false;
+        for (int i = 2; i < lines.length - 1; i++) {
+            int frame = Integer.parseInt(lines[i].split("\t")[0]);
+            if (frame - prevFrame > 10) hasLargeGap = true;
+            prevFrame = frame;
+        }
+        assertTrue(hasLargeGap, "Should have large frame gaps like the sample");
+
+        // Varying code count per row
+        String row6 = lines[7].split("\t")[1]; // 6th data row (R only 4 codes)
+        String row1 = lines[2].split("\t")[1]; // 1st data row (8 codes)
+        assertTrue(row6.split(",").length < row1.split(",").length,
+            "Rows should have varying number of codes");
+
+        // Start/end markers
+        assertEquals("1250\t:", lines[1]);
+        assertEquals("2699\t&", lines[lines.length - 1]);
+    }
+
+    // ============================================================
+    // Scenario 4: Dense data - 30 obs, 8 criteria per row
+    // Modeled after sample-theme6/stepsieteorden.txt pattern
+    // ============================================================
+
+    @Test
+    void testDenseData_30Obs8Criteria() {
+        Category tp7 = makeCategory(10, "TP7", 1);
+        Category dpr = makeCategory(20, "DPR", 2);
+        Category manet = makeCategory(21, "MANET", 2);
+        Category i1 = makeCategory(30, "I1", 3);
+        Category i2 = makeCategory(31, "I2", 3);
+        Category p1 = makeCategory(40, "P1", 4);
+        Category p2 = makeCategory(41, "P2", 4);
+        Category rCode = makeCategory(42, "R", 4);
+        Category gi = makeCategory(50, "GI", 5);
+        Category ad = makeCategory(51, "AD", 5);
+        Category npm = makeCategory(60, "NPM", 6);
+        Category npli = makeCategory(61, "NPLI", 6);
+        Category nnm = makeCategory(70, "NNM", 7);
+        Category nnli = makeCategory(71, "NNLI", 7);
+        Category adap = makeCategory(80, "ADAP", 8);
+        Category noad = makeCategory(81, "NOAD", 8);
+
+        List<RegisterItem> register = new ArrayList<>();
+        // 30 observations with consecutive frames (like stepsieteorden where each obs is 1 frame apart)
+        for (int i = 0; i < 30; i++) {
+            int frame = 100 + i * 3; // small gaps
+            Category tipo = (i < 15) ? dpr : manet;
+            Category intento = (i % 2 == 0) ? i1 : i2;
+            Category paso = (i % 5 == 4) ? rCode : ((i % 2 == 0) ? p1 : p2);
+
+            if (paso == rCode) {
+                // R rows have fewer codes (like stepsieteorden.txt)
+                register.add(makeRegisterItem(frame / 25.0, frame, tp7, tipo, intento, rCode));
+            } else {
+                Category dir = (i % 3 == 0) ? gi : ad;
+                Category np = (i % 4 < 2) ? npm : npli;
+                Category nn = (i % 4 < 2) ? nnm : nnli;
+                Category adapt = (i < 20) ? adap : noad;
+                register.add(makeRegisterItem(frame / 25.0, frame, tp7, tipo, intento, paso, dir, np, nn, adapt));
+            }
+        }
+
+        String output = captureExport(register);
+        String[] lines = output.split("\r?\n");
+
+        // Header + start marker + 30 data + end marker = 33 lines
+        assertEquals(33, lines.length, "Should have 33 lines total");
+
+        // Verify mixed code counts (8 codes for normal, 4 for R-rows)
+        int minCodes = Integer.MAX_VALUE;
+        int maxCodes = 0;
+        for (int i = 2; i < 32; i++) {
+            int count = lines[i].split("\t")[1].split(",").length;
+            minCodes = Math.min(minCodes, count);
+            maxCodes = Math.max(maxCodes, count);
+        }
+        assertEquals(4, minCodes, "R-rows should have 4 codes");
+        assertEquals(8, maxCodes, "Normal rows should have 8 codes");
+    }
+
+    // ============================================================
+    // Scenario 5: Multiple-sequence simulation with large frame gaps
+    // Modeled after THEME5_registro.csv with multiple start/end markers
+    // (Lince2ThemeExport produces single sequence, validating that)
+    // ============================================================
+
+    @Test
+    void testLargeGaps_SingleSequence() {
+        Category zi20 = makeCategory(10, "ZI20", 1);
+        Category zf20 = makeCategory(20, "ZF20", 2);
+        Category ffsp = makeCategory(30, "FFSP", 3);
+        Category c1 = makeCategory(31, "C1", 3);
+        Category c2 = makeCategory(32, "C2", 3);
+        Category tf = makeCategory(33, "TF", 3);
+
+        // Large gaps between observations (like THEME5_registro.csv)
+        List<RegisterItem> register = List.of(
+            makeRegisterItem(42.4, 1060, zi20, zf20, ffsp),
+            makeRegisterItem(42.44, 1061, zi20, zf20, c1),
+            makeRegisterItem(44.84, 1121, zi20, zf20, c2),
+            // Large gap
+            makeRegisterItem(96.48, 2412, zi20, zf20, c1),
+            makeRegisterItem(100.04, 2501, zi20, zf20, tf),
+            // Another large gap
+            makeRegisterItem(136.52, 3414, zi20, zf20, c1),
+            makeRegisterItem(141.04, 3526, zi20, zf20, c2)
+        );
+
+        String output = captureExport(register);
+        String[] lines = output.split("\r?\n");
+
+        // Single sequence with one start marker and one end marker
+        int startMarkers = 0;
+        int endMarkers = 0;
+        for (String line : lines) {
+            if (line.endsWith("\t:")) startMarkers++;
+            if (line.endsWith("\t&")) endMarkers++;
+        }
+        assertEquals(1, startMarkers, "Modern export produces single sequence with one start marker");
+        assertEquals(1, endMarkers, "Modern export produces single sequence with one end marker");
+
+        // Verify frame values are preserved with gaps
+        assertEquals("1059\t:", lines[1], "Start marker at frame-1");
+        assertEquals("1060", lines[2].split("\t")[0]);
+        assertEquals("2412", lines[5].split("\t")[0]);
+        assertEquals("3526", lines[8].split("\t")[0]);
+        assertEquals("3527\t&", lines[9]);
+
+        // Verify frame gap exists (not sequential)
+        int frame3 = Integer.parseInt(lines[4].split("\t")[0]); // 1121
+        int frame4 = Integer.parseInt(lines[5].split("\t")[0]); // 2412
+        assertTrue(frame4 - frame3 > 1000, "Should have large frame gap: " + frame3 + " -> " + frame4);
+    }
+
+    // ============================================================
+    // Cross-validation: file extension
+    // ============================================================
+
+    @Test
+    void testCreateFile_UsesTxtExtension() throws Exception {
+        Category cat = makeCategory(1, "TEST", 1);
+        List<RegisterItem> register = List.of(makeRegisterItem(1.0, 25, cat));
+
+        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_test_").toFile();
+        tempDir.deleteOnExit();
+        String basePath = new java.io.File(tempDir, "export").getAbsolutePath();
+
+        Lince2ThemeExport exporter = new Lince2ThemeExport(register);
+        exporter.createFile(basePath);
+
+        java.io.File expectedFile = new java.io.File(basePath + ".txt");
+        assertTrue(expectedFile.exists(), "Export should create .txt file, not .vvt");
+        expectedFile.deleteOnExit();
+
+        // Verify .vvt was NOT created
+        java.io.File wrongFile = new java.io.File(basePath + ".vvt");
+        assertFalse(wrongFile.exists(), "Should NOT create .vvt file for register export");
+    }
+
+    // ============================================================
+    // Empty register edge case
+    // ============================================================
+
+    @Test
+    void testEmptyRegister_ProducesHeaderOnly() {
+        List<RegisterItem> register = new ArrayList<>();
+        String output = captureExport(register);
+
+        assertTrue(output.contains("TIME"), "Should still have header");
+        assertTrue(output.contains("EVENT"), "Should still have header");
+        assertFalse(output.contains(":"), "No start marker for empty register");
+        assertFalse(output.contains("&"), "No end marker for empty register");
+    }
+
+    // ============================================================
+    // Header case validation
+    // ============================================================
+
+    @Test
+    void testHeader_IsUppercase() {
+        Category cat = makeCategory(1, "X", 1);
+        List<RegisterItem> register = List.of(makeRegisterItem(1.0, 25, cat));
+        String output = captureExport(register);
+
+        String firstLine = output.split("\r?\n")[0];
+        assertTrue(firstLine.contains("TIME"), "Header must use uppercase TIME");
+        assertTrue(firstLine.contains("EVENT"), "Header must use uppercase EVENT");
+        assertFalse(firstLine.contains("Time") && !firstLine.contains("TIME"),
+            "Header must not use mixed case");
+    }
+
+    // ============================================================
+    // Codes have no spaces (regression for Arrays.toString bug)
+    // ============================================================
+
+    @Test
+    void testCodes_NoSpacesAfterComma() {
+        Category c1 = makeCategory(1, "AA", 1);
+        Category c2 = makeCategory(2, "BB", 1);
+        Category c3 = makeCategory(3, "CC", 1);
+        List<RegisterItem> register = List.of(makeRegisterItem(1.0, 25, c1, c2, c3));
+        String output = captureExport(register);
+
+        String[] lines = output.split("\r?\n");
+        // Find the data row (after header and start marker)
+        String dataLine = lines[2];
+        String event = dataLine.split("\t")[1];
+        assertEquals("AA,BB,CC", event, "Codes must be comma-separated without spaces");
+        assertFalse(event.contains(", "), "Must not have space after comma");
+        assertFalse(event.contains("["), "Must not have bracket from Arrays.toString");
+    }
+
+    // ============================================================
+    // Codes use getCode() not toString() (regression test)
+    // ============================================================
+
+    @Test
+    void testCodes_UseCodeNotToString() {
+        // Category.toString() returns "code-name", getCode() returns just "code"
+        Category cat = new Category(1, "MyName", 1);
+        cat.setCode("COD");
+        List<RegisterItem> register = List.of(makeRegisterItem(1.0, 25, cat));
+        String output = captureExport(register);
+
+        String[] lines = output.split("\r?\n");
+        String event = lines[2].split("\t")[1];
+        assertEquals("COD", event, "Should use getCode() not toString()");
+        assertFalse(event.contains("-"), "Should not contain '-' from toString()");
+        assertFalse(event.contains("MyName"), "Should not contain name from toString()");
+    }
+}

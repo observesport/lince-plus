@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * com.lince.observer.data.export
@@ -28,13 +28,24 @@ public class Lince2ThemeExport {
     public void createFile(FileWriter fileWriter){
         try {
             TsvWriter writer = new TsvWriter(fileWriter, new TsvWriterSettings());
-            writer.writeHeaders("Time", "event");
+            writer.writeHeaders("TIME", "EVENT");
+            boolean isFirst = true;
+            int lastFrame = 0;
             for (RegisterItem item : register) {
                 String frame = item.getFrames().toString();
-                String event = Arrays.toString(item.getRegister().toArray());
-                event = org.apache.commons.lang3.StringUtils.remove(event, "[");
-                event = org.apache.commons.lang3.StringUtils.remove(event, "]");
+                String event = item.getRegister().stream()
+                    .map(c -> c.getCode())
+                    .collect(Collectors.joining(","));
+                if (isFirst) {
+                    int startFrame = item.getFrames() - 1;
+                    writer.writeRow(String.valueOf(startFrame), ":");
+                    isFirst = false;
+                }
                 writer.writeRow(frame, event);
+                lastFrame = item.getFrames();
+            }
+            if (!register.isEmpty()) {
+                writer.writeRow(String.valueOf(lastFrame + 1), "&");
             }
             writer.close();
         } catch (Exception e) {
@@ -44,7 +55,7 @@ public class Lince2ThemeExport {
 
     public void createFile(String url) {
         try {
-            FileWriter fileWriter = new FileWriter(url + ".vvt");
+            FileWriter fileWriter = new FileWriter(url + ".txt");
             createFile(fileWriter);
         } catch (Exception e) {
             log.error("writing theme file", e);
