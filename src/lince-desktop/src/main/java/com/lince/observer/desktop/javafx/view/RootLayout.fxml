@@ -51,8 +51,7 @@
             <Menu mnemonicParsing="false" text="%desktop.option.video.visualize">
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#handleOpenBrowser" text="%desktop.option.video.visualize.open" />
-                  <MenuItem fx:id="ngrokStartMenuItem" mnemonicParsing="false" onAction="#handleNgrokStart" text="%desktop.option.browser.ngrok.open" />
-                  <MenuItem fx:id="ngrokStopMenuItem"  mnemonicParsing="false" onAction="#handleNgrokStop" text="%desktop.option.browser.ngrok.close" />
+                  <MenuItem fx:id="ngrokMenuItem" mnemonicParsing="false" onAction="#handleNgrokToggle" text="%desktop.option.browser.ngrok.open" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="%desktop.option.data">
