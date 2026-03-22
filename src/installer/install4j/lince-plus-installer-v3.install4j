@@ -633,6 +633,7 @@ return console.askYesNo(message, true);
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="317" />
+    <mediaSet refId="400" />
   </buildIds>
   <buildOptions verbose="true" />
 </install4j>
