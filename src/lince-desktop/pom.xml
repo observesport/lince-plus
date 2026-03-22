@@ -47,7 +47,7 @@
                                             <value>${project.version}</value>
                                         </property>
                                     </variables>
-                                    <mediaIds>60,268,317,400</mediaIds>
+                                    <buildIds>60,268,317,400</buildIds>
                                 </configuration>
                             </execution>
                         </executions>
