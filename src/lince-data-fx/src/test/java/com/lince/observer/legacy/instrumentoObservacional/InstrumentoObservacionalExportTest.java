@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +25,7 @@ class InstrumentoObservacionalExportTest {
         instrumento = InstrumentoObservacional.getInstance();
 
         // Get all criterios for testing
-        criterios = Arrays.asList(instrumento.getCriterios());
+        criterios = List.of(instrumento.getCriterios());
     }
 
     @Test
@@ -59,7 +58,7 @@ class InstrumentoObservacionalExportTest {
     @Test
     void testExportToSdisGseq_WithEmptyCriterios() {
         // Act
-        String result = instrumento.exportToSdisGseq(Arrays.asList());
+        String result = instrumento.exportToSdisGseq(List.of());
 
         // Assert
         assertNotNull(result, "Export result should not be null");
@@ -116,7 +115,7 @@ class InstrumentoObservacionalExportTest {
     @Test
     void testExportToTheme_WithEmptyCriterios() {
         // Act
-        String result = instrumento.exportToTheme(Arrays.asList());
+        String result = instrumento.exportToTheme(List.of());
 
         // Assert
         assertNotNull(result, "Export result should not be null");

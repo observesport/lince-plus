@@ -28,7 +28,7 @@ public class RegistroSdisGseqTimedEventExport extends GenericExportComponent {
 
     @Override
     protected List<Object> getSelectionItems() {
-        return Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
+        return List.of(InstrumentoObservacional.getInstance().getCriterios());
     }
     @Override
     String getFileExtension() {

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +35,7 @@ class RegistroExportTest {
         registro = Registro.cargarRegistro(linceRegister, exceptions);
 
         assertNotNull(registro, "Registro should be loaded successfully");
-        criterios = Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
+        criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
     }
 
     // ============================================================
@@ -98,7 +97,7 @@ class RegistroExportTest {
     @Test
     void testExportToSdisGseqIntervalo_EmptyCriteriosList() {
         // Act
-        String result = registro.exportToSdisGseqIntervalo(Arrays.asList());
+        String result = registro.exportToSdisGseqIntervalo(List.of());
 
         // Assert
         assertNotNull(result, "Export should not return null even with empty criterios");
@@ -143,7 +142,7 @@ class RegistroExportTest {
     @Test
     void testExportToSdisGseqEvento_EmptyCriteriosList() {
         // Act
-        String result = registro.exportToSdisGseqEvento(Arrays.asList());
+        String result = registro.exportToSdisGseqEvento(List.of());
 
         // Assert
         assertNotNull(result);

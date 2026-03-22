@@ -82,9 +82,9 @@ public class HoisanTool {
             //usado para obtener cuadros de dialogo en logica brais
             String[] otros = {LinceDataConstants.COL_TFRAMES, LinceDataConstants.COL_DURACION_FR, LinceDataConstants.COL_TSEGUNDOS, LinceDataConstants.COL_DURACION_SEC, LinceDataConstants.COL_TMILISEGUNDOS, LinceDataConstants.COL_DURACION_MS};
             //desde criterios tenemos toda la jerarquia de elementos a insertar en tables criterio y categoria
-            List<Criterio> criterios = Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
-            List<NodoInformacion> datosMixtos = Arrays.asList(InstrumentoObservacional.getInstance().getDatosMixtos());
-            List<NodoInformacion> datosFijos = Arrays.asList(InstrumentoObservacional.getInstance().getDatosFijos());
+            List<Criterio> criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
+            List<NodoInformacion> datosMixtos = List.of(InstrumentoObservacional.getInstance().getDatosMixtos());
+            List<NodoInformacion> datosFijos = List.of(InstrumentoObservacional.getInstance().getDatosFijos());
             //usado para exportar e importar en codigo brais
             //en registro -> datos variables, tendriamos todos los datos necesarios para el registro temporal
             Registro registro = Registro.getInstance();

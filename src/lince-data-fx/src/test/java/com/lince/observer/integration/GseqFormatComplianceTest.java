@@ -11,7 +11,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +48,7 @@ class GseqFormatComplianceTest {
         registro = Registro.cargarRegistro(linceRegister, exceptions);
 
         assertNotNull(registro, "Registro should be loaded successfully");
-        criterios = Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
+        criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
     }
 
     // ============================================================
@@ -427,7 +426,7 @@ class GseqFormatComplianceTest {
     @Test
     void testAllFormats_EmptyCriteriosList() {
         // All formats should handle empty criterios list gracefully
-        List<Criterio> emptyCriterios = Arrays.asList();
+        List<Criterio> emptyCriterios = List.of();
 
         assertDoesNotThrow(() -> registro.exportToSdisGseqEvento(emptyCriterios),
             "Event export should handle empty criterios");
