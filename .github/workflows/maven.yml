@@ -53,7 +53,7 @@ jobs:
           echo "File version: $FILE_VERSION"
 
       - name: Download and setup Install4j
-        run: | 
+        run: |
           wget https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_9.deb
           sudo dpkg -i install4j_linux-x64_10_0_9.deb
           echo "INSTALL4J_HOME=/opt/install4j10" >> $GITHUB_ENV
@@ -84,7 +84,7 @@ jobs:
       - name: Build with Maven
         run: |
           cd src
-          mvn -B package install --update-snapshots -DskipTests -DinstallDir="${INSTALL4J_HOME}" -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}"
+          mvn -B package install --update-snapshots -DskipTests -DinstallDir="${INSTALL4J_HOME}" -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}" -Dinstall4j.jvmDir="${JAVA_HOME}"
         env:
           INSTALL4J_HOME: "/opt/install4j10"
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
