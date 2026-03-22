@@ -34,7 +34,7 @@ class RegistroTest {
         registro = Registro.cargarRegistro(linceRegister, exceptions);
 
         if (registro != null) {
-            criterios = Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
+            criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
         }
     }
 

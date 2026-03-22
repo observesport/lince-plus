@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +35,7 @@ class ExportFormatComplianceTest {
         registro = Registro.cargarRegistro(linceRegister, exceptions);
 
         assertNotNull(registro, "Registro should be loaded successfully");
-        criterios = Arrays.asList(InstrumentoObservacional.getInstance().getCriterios());
+        criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
     }
 
     // ============================================================

@@ -331,8 +331,8 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     }
 
     private String exportRegistroToSas(List<Object> criterios) {
-        List<NodoInformacion> fijos = Arrays.asList(InstrumentoObservacional.getInstance().getDatosFijos());
-        List<NodoInformacion> mixtos = Arrays.asList(InstrumentoObservacional.getInstance().getDatosMixtos());
+        List<NodoInformacion> fijos = List.of(InstrumentoObservacional.getInstance().getDatosFijos());
+        List<NodoInformacion> mixtos = List.of(InstrumentoObservacional.getInstance().getDatosMixtos());
         String contenido = "";
 
         int numCriterios = criterios.size();
