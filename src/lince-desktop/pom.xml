@@ -47,6 +47,7 @@
                                             <value>${project.version}</value>
                                         </property>
                                     </variables>
+                                    <mediaIds>60,268,317,400</mediaIds>
                                 </configuration>
                             </execution>
                         </executions>
