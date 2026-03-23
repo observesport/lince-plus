@@ -628,11 +628,7 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" manualJreEntry="true">
-        <modules>
-          <defaultModules set="all" />
-        </modules>
-      </jreBundle>
+      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
     </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">
