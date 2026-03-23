@@ -131,7 +131,7 @@ jobs:
           EXE_PATH="./src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe"
           DMG_ARM_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg"
           DMG_X86_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-x86.dmg"
-          LINUX_PATH="./src/installer/lince-plus_linux_${FILE_VERSION}_linux-x64.sh"
+          LINUX_PATH="./src/installer/lince-plus_unix_${FILE_VERSION}_linux-x64.sh"
 
           MISSING_FILES=0
 
@@ -183,4 +183,4 @@ jobs:
             ./src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
             ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
             ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
-            ./src/installer/lince-plus_linux_${{ env.FILE_VERSION }}_linux-x64.sh
+            ./src/installer/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh

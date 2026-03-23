@@ -621,19 +621,23 @@ return console.askYesNo(message, true);
       </exclude>
       <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
     </macosFolder>
-    <linux name="linux-x64" id="400">
+    <unixInstaller name="linux-x64" id="337">
       <excludedLaunchers>
         <launcher id="336" />
       </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
-    </linux>
+      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" manualJreEntry="true">
+        <modules>
+          <defaultModules set="all" />
+        </modules>
+      </jreBundle>
+    </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="317" />
-    <mediaSet refId="400" />
+    <mediaSet refId="337" />
   </buildIds>
   <buildOptions verbose="true" />
 </install4j>

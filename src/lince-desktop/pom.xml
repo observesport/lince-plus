@@ -47,7 +47,7 @@
                                             <value>${project.version}</value>
                                         </property>
                                     </variables>
-                                    <buildIds>60,268,317,400</buildIds>
+                                    <buildIds>60,268,317,337</buildIds>
                                 </configuration>
                             </execution>
                         </executions>
