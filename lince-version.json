@@ -1,9 +1,9 @@
 {
-  "version": "4.0.7",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.7",
+  "version": "4.0.10",
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.10",
   "message": [
-    "Corrección del reinicio del reproductor de vídeo al guardar un registro",
-    "Exportación de ángulos desde la estimación de pose y validación de informes PDF",
-    "Mejora del comportamiento de pausa al seleccionar categorías"
+    "Mejoras en las exportaciones de integración con herramientas externas",
+    "Archivos de muestra incluidos para Theme 6 y formatos GSEQ",
+    "Trabajo inicial para el instalador de Linux en progreso"
   ]
 }
