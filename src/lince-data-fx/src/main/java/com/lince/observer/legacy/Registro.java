@@ -304,6 +304,9 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     private String exportRegistroToTheme(List<Criterio> criterios, String separator, boolean useSequentialTime) {
         String contenido = "";
         contenido += "TIME" + separator + "EVENT\r\n";
+        if (datosVariables == null || datosVariables.isEmpty()) {
+            return contenido;
+        }
         boolean isFirst = true;
         int sequentialTime = 1;
         for (FilaRegistro filaRegistro : datosVariables) {

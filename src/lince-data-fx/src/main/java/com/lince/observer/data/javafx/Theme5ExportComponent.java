@@ -34,7 +34,7 @@ public class Theme5ExportComponent extends GenericExportComponent {
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {
         Button btnExportInstrumento = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR INSTRUMENTO OBSERVACIONAL"));
         btnExportInstrumento.setOnAction(e -> {
-            executeExport(selectionPanelComponent, InstrumentoObservacional.getInstance()::exportToTheme, ".vvt");
+            executeExport(selectionPanelComponent, InstrumentoObservacional.getInstance()::exportToTheme, "*.vvt");
         });
 
         Button btnExportRegistro = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR REGISTRO"));

@@ -389,4 +389,36 @@ class RegistroExportTest {
         String csvExport = registro.exportToCsv(new ArrayList<>(criterios), true);
         assertTrue(csvExport.contains("\r\n"), "Should use Windows line endings");
     }
+
+    // ============================================================
+    // Empty Register Tests
+    // ============================================================
+
+    @Test
+    void testExportToTheme6_EmptyRegister_ReturnsHeaderOnly() {
+        Registro.loadNewInstance();
+        Registro emptyRegistro = Registro.getInstance();
+
+        String result = emptyRegistro.exportToTheme6(criterios);
+
+        assertNotNull(result, "Should not return null for empty register");
+        assertTrue(result.startsWith("TIME\tEVENT\r\n"), "Should contain header");
+        assertFalse(result.contains(":"), "Should not have start marker for empty register");
+        assertFalse(result.contains("&"), "Should not have end marker for empty register");
+
+    }
+
+    @Test
+    void testExportToTheme5_EmptyRegister_ReturnsHeaderOnly() {
+        Registro.loadNewInstance();
+        Registro emptyRegistro = Registro.getInstance();
+
+        String result = emptyRegistro.exportToTheme5(criterios);
+
+        assertNotNull(result, "Should not return null for empty register");
+        assertTrue(result.startsWith("TIME;EVENT\r\n"), "Should contain header");
+        assertFalse(result.contains(":"), "Should not have start marker for empty register");
+        assertFalse(result.contains("&"), "Should not have end marker for empty register");
+
+    }
 }
