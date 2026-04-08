@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 /**
  * @author Alberto Soto-Fernandez
  */
+@Deprecated
 public class Registro extends ModeloDeTablaLince implements Observer {
 
     static final String NOMBRE_INSTRUMENTO_OBSERVACIONAL = "nombreInstrumentoObservacional";
