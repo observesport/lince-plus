@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Created by Alberto Soto. 7/11/24
@@ -134,6 +135,25 @@ public abstract class GenericExportComponent extends BorderPane {
                 boolean secondaryOk = writeContentToFile(secondaryFile, secondaryContent);
 
                 if (primaryOk && secondaryOk) {
+                    JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
+                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
+                            ResourceBundleHelper.getI18NLabel("FILE_SAVED"));
+                } else {
+                    JavaFXLogHelper.showMessage(Alert.AlertType.ERROR,
+                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
+                            ResourceBundleHelper.getI18NLabel("ERROR_SAVING_FILE"));
+                }
+            }
+        });
+    }
+
+    protected void executeModernExport(Supplier<String> contentSupplier, String fileExtension) {
+        Platform.runLater(() -> {
+            File file = LinceDesktopFileHelper.openSaveFileDialog(fileExtension);
+            if (file != null) {
+                String content = contentSupplier.get();
+                boolean success = writeContentToFile(file, content);
+                if (success) {
                     JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
                             ResourceBundleHelper.getI18NLabel(getExportTitle()),
                             ResourceBundleHelper.getI18NLabel("FILE_SAVED"));

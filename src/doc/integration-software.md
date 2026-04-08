@@ -80,6 +80,13 @@ Tab-separated format for Theme 6 software.
 - Tab-separated (not semicolons)
 - Codes within a row are comma-separated
 - Each sequence gets its own start/end markers
+- **Line endings must be CRLF (`\r\n`)** on all platforms — Theme 6 software requires Windows-style
+  line endings regardless of the OS used to generate the file. The `TsvWriter` is explicitly
+  configured with `settings.getFormat().setLineSeparator("\r\n")` to override the system default.
+
+**Implementation:** `Lince2ThemeExport` in `lince-data` module (modern API, no legacy `Registro` dependency).
+Uses univocity `TsvWriter` with forced CRLF. Register data comes from `ILinceProject.getRegister()`,
+instrument data from `ILinceProject.getObservationTool()`.
 
 **Example:**
 ```

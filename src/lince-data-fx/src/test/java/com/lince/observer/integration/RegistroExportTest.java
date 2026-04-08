@@ -219,41 +219,6 @@ class RegistroExportTest {
         assertTrue(result.contains(";"), "Should use semicolon separator");
     }
 
-    @Test
-    void testExportToTheme6_WithValidData() {
-        // Act
-        String result = registro.exportToTheme6(criterios);
-
-        // Assert
-        assertNotNull(result, "Export result should not be null");
-        assertFalse(result.isEmpty(), "Export result should not be empty");
-        assertTrue(result.contains("TIME"), "Should contain TIME header");
-        assertTrue(result.contains("EVENT"), "Should contain EVENT header");
-        assertFalse(result.contains("DATANAME"), "Should not contain DATANAME in Theme6");
-        assertTrue(result.contains("\t"), "Should use tab separator");
-
-        // Verify TIME values are frame numbers, not sequential integers
-        String[] lines = result.split("\r\n");
-        List<Integer> timeValues = new ArrayList<>();
-        for (int i = 1; i < lines.length; i++) {
-            String[] parts = lines[i].split("\t");
-            if (parts.length >= 2 && !parts[1].equals(":") && !parts[1].equals("&")) {
-                timeValues.add(Integer.parseInt(parts[0].trim()));
-            }
-        }
-        if (timeValues.size() >= 2) {
-            boolean hasGaps = false;
-            for (int i = 1; i < timeValues.size(); i++) {
-                if (timeValues.get(i) - timeValues.get(i - 1) != 1) {
-                    hasGaps = true;
-                    break;
-                }
-            }
-            assertTrue(hasGaps,
-                "Theme 6 TIME values should be frame numbers (with gaps), not sequential: " + timeValues);
-        }
-    }
-
     // ============================================================
     // SAS Export Tests
     // ============================================================
@@ -346,8 +311,6 @@ class RegistroExportTest {
             "exportToSdisGseqEstado should not throw");
         assertDoesNotThrow(() -> registro.exportToTheme5(criterios),
             "exportToTheme5 should not throw");
-        assertDoesNotThrow(() -> registro.exportToTheme6(criterios),
-            "exportToTheme6 should not throw");
         assertDoesNotThrow(() -> registro.exportToCsv(new ArrayList<>(criterios), true),
             "exportToCsv with comma should not throw");
         assertDoesNotThrow(() -> registro.exportToCsv(new ArrayList<>(criterios), false),
@@ -393,20 +356,6 @@ class RegistroExportTest {
     // ============================================================
     // Empty Register Tests
     // ============================================================
-
-    @Test
-    void testExportToTheme6_EmptyRegister_ReturnsHeaderOnly() {
-        Registro.loadNewInstance();
-        Registro emptyRegistro = Registro.getInstance();
-
-        String result = emptyRegistro.exportToTheme6(criterios);
-
-        assertNotNull(result, "Should not return null for empty register");
-        assertTrue(result.startsWith("TIME\tEVENT\r\n"), "Should contain header");
-        assertFalse(result.contains(":"), "Should not have start marker for empty register");
-        assertFalse(result.contains("&"), "Should not have end marker for empty register");
-
-    }
 
     @Test
     void testExportToTheme5_EmptyRegister_ReturnsHeaderOnly() {

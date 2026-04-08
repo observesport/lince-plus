@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -29,9 +30,22 @@ public class Lince2ThemeExport {
         this.register = register;
     }
 
+    public String exportToString() {
+        StringWriter stringWriter = new StringWriter();
+        writeContent(stringWriter);
+        return stringWriter.toString();
+    }
+
     public void createFile(FileWriter fileWriter){
+        writeContent(fileWriter);
+    }
+
+    private void writeContent(java.io.Writer targetWriter){
         try {
-            TsvWriter writer = new TsvWriter(fileWriter, new TsvWriterSettings());
+            TsvWriterSettings settings = new TsvWriterSettings();
+            // Theme 6 requires CRLF line endings regardless of OS (TsvWriter defaults to system separator)
+            settings.getFormat().setLineSeparator("\r\n");
+            TsvWriter writer = new TsvWriter(targetWriter, settings);
             writer.writeHeaders("TIME", "EVENT");
             boolean isFirst = true;
             int lastFrame = 0;

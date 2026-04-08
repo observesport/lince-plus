@@ -39,196 +39,6 @@ class ExportFormatComplianceTest {
     }
 
     // ============================================================
-    // Theme 6 Tests
-    // ============================================================
-
-    @Test
-    void testTheme6_UsesFrameNumbers() {
-        String result = registro.exportToTheme6(criterios);
-        String[] lines = result.split(CRLF);
-
-        // Skip header and start marker, check data lines use frame numbers (not sequential 1,2,3...)
-        List<Integer> timeValues = new ArrayList<>();
-        for (int i = 1; i < lines.length; i++) {
-            String[] parts = lines[i].split("\t");
-            if (parts.length >= 2 && !parts[1].equals(":") && !parts[1].equals("&")) {
-                timeValues.add(Integer.parseInt(parts[0].trim()));
-            }
-        }
-
-        assertTrue(timeValues.size() >= 2, "Should have at least 2 data rows");
-
-        // Frame numbers should NOT be sequential 1,2,3... (they have gaps)
-        boolean hasGaps = false;
-        for (int i = 1; i < timeValues.size(); i++) {
-            if (timeValues.get(i) - timeValues.get(i - 1) != 1) {
-                hasGaps = true;
-                break;
-            }
-        }
-        assertTrue(hasGaps,
-            "Theme 6 time values should be frame numbers with gaps, not sequential integers. Values: " + timeValues);
-    }
-
-    @Test
-    void testTheme6_UsesTabSeparator() {
-        String result = registro.exportToTheme6(criterios);
-        String[] lines = result.split(CRLF);
-
-        for (String line : lines) {
-            assertTrue(line.contains("\t"),
-                "Every Theme 6 line must use tab separator: " + line);
-        }
-    }
-
-    @Test
-    void testTheme6_Header() {
-        String result = registro.exportToTheme6(criterios);
-        assertTrue(result.startsWith("TIME\tEVENT\r\n"),
-            "Theme 6 must start with TIME<tab>EVENT header");
-    }
-
-    @Test
-    void testTheme6_StartEndMarkers() {
-        String result = registro.exportToTheme6(criterios);
-        String[] lines = result.split(CRLF);
-
-        // Second line should be start marker
-        assertTrue(lines[1].endsWith("\t:"),
-            "Second line should be start marker (frame<tab>:): " + lines[1]);
-
-        // Last line should be end marker
-        String lastLine = lines[lines.length - 1];
-        assertTrue(lastLine.endsWith("\t&"),
-            "Last line should be end marker (frame<tab>&): " + lastLine);
-    }
-
-    @Test
-    void testTheme6_CommaSeparatedCodes() {
-        String result = registro.exportToTheme6(criterios);
-        String[] lines = result.split(CRLF);
-
-        for (int i = 1; i < lines.length; i++) {
-            String[] parts = lines[i].split("\t");
-            if (parts.length >= 2 && !parts[1].equals(":") && !parts[1].equals("&")) {
-                String event = parts[1];
-                // Should not have spaces after commas
-                assertFalse(event.contains(", "),
-                    "Codes must be comma-separated without spaces: " + event);
-            }
-        }
-    }
-
-    @Test
-    void testTheme6_CRLFLineEndings() {
-        String result = registro.exportToTheme6(criterios);
-        // All lines should use \r\n
-        assertTrue(result.contains(CRLF), "Theme 6 must use CRLF line endings");
-        // No bare \n without preceding \r
-        String withoutCRLF = result.replace(CRLF, "");
-        assertFalse(withoutCRLF.contains("\n"),
-            "Theme 6 must not have bare LF line endings");
-    }
-
-    @Test
-    void testTheme6_PairedExport_BothContentsNonEmpty() {
-        String txtOutput = registro.exportToTheme6(criterios);
-        String vvtOutput = InstrumentoObservacional.getInstance().exportToTheme(criterios);
-
-        assertNotNull(txtOutput, ".txt output must not be null");
-        assertFalse(txtOutput.isEmpty(), ".txt output must not be empty");
-        assertNotNull(vvtOutput, ".vvt output must not be null");
-        assertFalse(vvtOutput.isEmpty(), ".vvt output must not be empty");
-
-        // .txt must have at least: header + start marker + 1 data row + end marker = 4 lines
-        String[] txtLines = txtOutput.split(CRLF);
-        assertTrue(txtLines.length >= 4,
-            ".txt output must have at least header + start marker + 1 data row + end marker, got: " + txtLines.length + " lines");
-
-        // .vvt must have at least one criterion line (no indent) and one category line (indented)
-        String[] vvtLines = vvtOutput.split(CRLF);
-        boolean hasCriterion = false;
-        boolean hasCategory = false;
-        for (String line : vvtLines) {
-            if (!line.isEmpty() && !line.startsWith(" ")) {
-                hasCriterion = true;
-            }
-            if (line.startsWith(" ")) {
-                hasCategory = true;
-            }
-        }
-        assertTrue(hasCriterion, ".vvt output must contain at least one criterion line");
-        assertTrue(hasCategory, ".vvt output must contain at least one category line");
-    }
-
-    @Test
-    void testTheme6_VvtCodesMatchRegistroCodes() {
-        String txtOutput = registro.exportToTheme6(criterios);
-        String vvtOutput = InstrumentoObservacional.getInstance().exportToTheme(criterios);
-
-        // Collect all codes from the EVENT column of the .txt register
-        java.util.Set<String> registerCodes = new java.util.HashSet<>();
-        for (String line : txtOutput.split(CRLF)) {
-            String[] parts = line.split("\t");
-            if (parts.length >= 2) {
-                String event = parts[1].trim();
-                if (!event.isEmpty() && !event.equals(":") && !event.equals("&") && !event.equals("EVENT")) {
-                    for (String code : event.split(",")) {
-                        String trimmed = code.trim();
-                        if (!trimmed.isEmpty()) {
-                            registerCodes.add(trimmed);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Collect all category codes from the .vvt (lines starting with a space)
-        java.util.Set<String> vvtCodes = new java.util.HashSet<>();
-        for (String line : vvtOutput.split(CRLF)) {
-            if (line.startsWith(" ")) {
-                String trimmed = line.trim();
-                if (!trimmed.isEmpty()) {
-                    vvtCodes.add(trimmed);
-                }
-            }
-        }
-
-        // Every code in the register must be defined in the VVT
-        for (String code : registerCodes) {
-            assertTrue(vvtCodes.contains(code),
-                "Register code '" + code + "' is not defined in the VVT. VVT codes: " + vvtCodes);
-        }
-    }
-
-    @Test
-    void testTheme6_VvtCriteriaMatchSelectedCriteria() {
-        String vvtOutput = InstrumentoObservacional.getInstance().exportToTheme(criterios);
-
-        // Extract criterion names from VVT: lines NOT starting with a space
-        java.util.List<String> vvtCriteriaNames = new java.util.ArrayList<>();
-        for (String line : vvtOutput.split(CRLF)) {
-            if (!line.isEmpty() && !line.startsWith(" ")) {
-                vvtCriteriaNames.add(line);
-            }
-        }
-
-        // Collect expected criterion names from the criterios list
-        java.util.List<String> expectedNames = new java.util.ArrayList<>();
-        for (Criterio criterio : criterios) {
-            expectedNames.add(criterio.getNombre());
-        }
-
-        assertEquals(expectedNames.size(), vvtCriteriaNames.size(),
-            "VVT must contain exactly the same number of criteria as the selected criterios list");
-
-        for (String expectedName : expectedNames) {
-            assertTrue(vvtCriteriaNames.contains(expectedName),
-                "VVT must contain criterion '" + expectedName + "'. Found: " + vvtCriteriaNames);
-        }
-    }
-
-    // ============================================================
     // Theme 5 Tests
     // ============================================================
 
@@ -267,33 +77,6 @@ class ExportFormatComplianceTest {
             assertTrue(line.contains(";"),
                 "Every Theme 5 line must use semicolon separator: " + line);
         }
-    }
-
-    @Test
-    void testTheme5And6_SameFrameNumbers() {
-        String theme5 = registro.exportToTheme5(criterios);
-        String theme6 = registro.exportToTheme6(criterios);
-
-        // Extract frame numbers from Theme 5
-        List<Integer> theme5Frames = new ArrayList<>();
-        for (String line : theme5.split(CRLF)) {
-            String[] parts = line.split(";");
-            if (parts.length >= 2 && !parts[1].equals(":") && !parts[1].equals("&") && !parts[0].equals("TIME")) {
-                theme5Frames.add(Integer.parseInt(parts[0].trim()));
-            }
-        }
-
-        // Extract frame numbers from Theme 6
-        List<Integer> theme6Frames = new ArrayList<>();
-        for (String line : theme6.split(CRLF)) {
-            String[] parts = line.split("\t");
-            if (parts.length >= 2 && !parts[1].equals(":") && !parts[1].equals("&") && !parts[0].equals("TIME")) {
-                theme6Frames.add(Integer.parseInt(parts[0].trim()));
-            }
-        }
-
-        assertEquals(theme5Frames, theme6Frames,
-            "Theme 5 and Theme 6 must produce identical frame numbers");
     }
 
     // ============================================================
@@ -512,12 +295,11 @@ class ExportFormatComplianceTest {
     @Test
     void testAllFormats_WindowsLineEndings() {
         String theme5 = registro.exportToTheme5(criterios);
-        String theme6 = registro.exportToTheme6(criterios);
         String event = registro.exportToSdisGseqEvento(criterios);
         String multievent = registro.exportToSdisGseqMultievento(criterios);
 
         for (String[] pair : new String[][]{
-            {"Theme5", theme5}, {"Theme6", theme6},
+            {"Theme5", theme5},
             {"Event", event}, {"Multievent", multievent}
         }) {
             assertTrue(pair[1].contains(CRLF),

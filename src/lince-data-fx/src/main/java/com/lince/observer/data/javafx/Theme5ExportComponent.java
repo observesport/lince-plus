@@ -18,18 +18,6 @@ public class Theme5ExportComponent extends GenericExportComponent {
         super(observerId);
     }
 
-    /*
-    File f = LinceDesktopFileHelper.openSaveFileDialog("*.csv");
-    String contenido = Registro.getInstance().exportToTheme5(criterios);
-    //
-    File f = LinceDesktopFileHelper.openSaveFileDialog("*.txt");
-    String contenido = Registro.getInstance().exportToTheme6(criterios);
-    //
-    File f = LinceDesktopFileHelper.openSaveFileDialog("*.vvt");
-    String contenido = InstrumentoObservacional.getInstance().exportToTheme(criterios);
-     */
-
-
     @Override
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {
         Button btnExportInstrumento = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR INSTRUMENTO OBSERVACIONAL"));
