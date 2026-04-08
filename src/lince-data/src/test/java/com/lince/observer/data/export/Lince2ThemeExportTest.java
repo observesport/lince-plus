@@ -1,14 +1,19 @@
 package com.lince.observer.data.export;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.Criteria;
+import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
+import com.lince.observer.data.component.LinceFileImporter;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -650,5 +655,143 @@ class Lince2ThemeExportTest {
 
         assertEquals(singleExport, pairedTxt,
             "Paired export .txt content must be identical to single-file export output");
+    }
+
+    // ============================================================
+    // Integration test: real FCB_RMAD_0925 project file
+    // ============================================================
+
+    private ILinceProject loadProject(String resourceName) {
+        LinceFileImporter importer = new LinceFileImporter();
+        File file = new File(Objects.requireNonNull(
+                getClass().getClassLoader().getResource(resourceName)).getFile());
+        ILinceProject project = importer.importLinceProject(file);
+        assertNotNull(project, "Project should load from " + resourceName);
+        return project;
+    }
+
+    @Test
+    void testFcbRmadProject_RegisterExportHasValues() {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<LinceRegisterWrapper> registers = project.getRegister();
+        assertFalse(registers.isEmpty(), "Project should have at least one register");
+
+        List<RegisterItem> allItems = registers.stream()
+                .flatMap(r -> r.getRegisterData().stream())
+                .toList();
+        assertFalse(allItems.isEmpty(), "Register should have items");
+
+        Lince2ThemeExport exporter = new Lince2ThemeExport(allItems);
+        String output = captureExport(allItems);
+
+        // Must have header
+        assertTrue(output.startsWith("TIME\tEVENT"), "Must start with header");
+
+        // Must have data rows (not just header)
+        String[] lines = output.split("\r?\n");
+        assertTrue(lines.length >= 4,
+                "Must have header + start marker + data + end marker, got " + lines.length + " lines");
+
+        // Start marker
+        assertTrue(lines[1].endsWith("\t:"), "Second line must be start marker");
+
+        // Data rows must have actual codes (not empty events)
+        for (int i = 2; i < lines.length - 1; i++) {
+            String[] parts = lines[i].split("\t");
+            assertEquals(2, parts.length, "Each data row must have time and event columns: " + lines[i]);
+            String event = parts[1];
+            assertFalse(event.isEmpty(), "Event must not be empty at line " + i + ": " + lines[i]);
+            assertFalse(event.isBlank(), "Event must not be blank at line " + i + ": " + lines[i]);
+        }
+
+        // End marker
+        assertTrue(lines[lines.length - 1].endsWith("\t&"), "Last line must be end marker");
+
+        // Verify frame numbers are present and positive
+        for (int i = 2; i < lines.length - 1; i++) {
+            int frame = Integer.parseInt(lines[i].split("\t")[0]);
+            assertTrue(frame > 0, "Frame numbers must be positive: " + frame);
+        }
+    }
+
+    @Test
+    void testFcbRmadProject_InstrumentExportHasValues() {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<Criteria> criteria = project.getObservationTool();
+        assertFalse(criteria.isEmpty(), "Project should have criteria");
+
+        String vvt = Lince2ThemeExport.createVvtContent(criteria);
+
+        // Must not be empty
+        assertFalse(vvt.isEmpty(), "VVT output must not be empty");
+
+        // Must contain criterion names (from the project: EQUIPO, CUARTO, etc.)
+        assertTrue(vvt.contains("EQUIPO"), "VVT must contain EQUIPO criterion");
+        assertTrue(vvt.contains("CUARTO"), "VVT must contain CUARTO criterion");
+
+        // Must contain category codes
+        assertTrue(vvt.contains(" FCB"), "VVT must contain FCB category");
+        assertTrue(vvt.contains(" RMAD"), "VVT must contain RMAD category");
+        assertTrue(vvt.contains(" C1"), "VVT must contain C1 category");
+
+        // Must have CRLF line endings
+        assertTrue(vvt.contains("\r\n"), "VVT must use CRLF");
+    }
+
+    @Test
+    void testFcbRmadProject_RegisterHas7Items() {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<RegisterItem> allItems = project.getRegister().stream()
+                .flatMap(r -> r.getRegisterData().stream())
+                .toList();
+
+        assertEquals(7, allItems.size(), "FCB_RMAD project has exactly 7 register items");
+
+        // Verify known frame values from the XML
+        int[] expectedFrames = {561, 1230, 1629, 1893, 3251, 3836, 4532};
+        for (int i = 0; i < allItems.size(); i++) {
+            assertEquals(expectedFrames[i], allItems.get(i).getFrames(),
+                    "Frame mismatch at register item " + i);
+        }
+    }
+
+    @Test
+    void testFcbRmadProject_PairedExportWritesBothFiles() throws Exception {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<RegisterItem> allItems = project.getRegister().stream()
+                .flatMap(r -> r.getRegisterData().stream())
+                .toList();
+        List<Criteria> criteria = project.getObservationTool();
+
+        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_fcb_test_").toFile();
+        tempDir.deleteOnExit();
+        String basePath = new java.io.File(tempDir, "FCB_RMAD_0925").getAbsolutePath();
+
+        Lince2ThemeExport exporter = new Lince2ThemeExport(allItems);
+        exporter.createFile(basePath, criteria);
+
+        java.io.File txtFile = new java.io.File(basePath + ".txt");
+        java.io.File vvtFile = new java.io.File(basePath + ".vvt");
+        txtFile.deleteOnExit();
+        vvtFile.deleteOnExit();
+
+        assertTrue(txtFile.exists(), "Must create .txt file");
+        assertTrue(vvtFile.exists(), "Must create .vvt file");
+
+        String txtContent = new String(java.nio.file.Files.readAllBytes(txtFile.toPath()));
+        String vvtContent = new String(java.nio.file.Files.readAllBytes(vvtFile.toPath()));
+
+        // txt must have real data
+        String[] txtLines = txtContent.split("\r?\n");
+        assertTrue(txtLines.length >= 10,
+                "txt must have header+start+7 data+end = 10 lines, got " + txtLines.length);
+
+        // vvt must have criteria and categories
+        assertTrue(vvtContent.contains("EQUIPO"), "vvt must have EQUIPO");
+        assertTrue(vvtContent.contains(" FCB"), "vvt must have FCB");
     }
 }

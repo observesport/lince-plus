@@ -536,8 +536,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void doExportFX(javafx.scene.Node component, String key, String label) {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
-            Registro.loadNewInstance();
-//            ensureCompatibility(true); this makes the panel shown 2 times
             Stage stage = new Stage();
             stage.setTitle(i18n);
             Pane root = new Pane();
