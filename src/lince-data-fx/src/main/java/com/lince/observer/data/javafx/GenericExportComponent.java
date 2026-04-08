@@ -108,6 +108,54 @@ public abstract class GenericExportComponent extends BorderPane {
         });
     }
 
+    protected void executePairedExport(SelectionPanelComponent selectionPanelComponent,
+                                       ExportFunction primaryExport, String primaryExtension,
+                                       ExportFunction secondaryExport, String secondaryExtension) {
+        List<Criterio> selectedData = selectionPanelComponent.getSelectedElements().stream()
+                .filter(Criterio.class::isInstance)
+                .map(Criterio.class::cast)
+                .toList();
+
+        if (selectedData.isEmpty()) {
+            JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
+                    ResourceBundleHelper.getI18NLabel("LINCE"),
+                    ResourceBundleHelper.getI18NLabel("SELECT_AT_LEAST_ONE_CRITERIA"));
+            return;
+        }
+
+        Platform.runLater(() -> {
+            File primaryFile = LinceDesktopFileHelper.openSaveFileDialog(primaryExtension);
+            if (primaryFile != null) {
+                String primaryContent = primaryExport.apply(selectedData);
+                boolean primaryOk = writeContentToFile(primaryFile, primaryContent);
+
+                File secondaryFile = deriveSiblingFile(primaryFile, primaryExtension, secondaryExtension);
+                String secondaryContent = secondaryExport.apply(selectedData);
+                boolean secondaryOk = writeContentToFile(secondaryFile, secondaryContent);
+
+                if (primaryOk && secondaryOk) {
+                    JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
+                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
+                            ResourceBundleHelper.getI18NLabel("FILE_SAVED"));
+                } else {
+                    JavaFXLogHelper.showMessage(Alert.AlertType.ERROR,
+                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
+                            ResourceBundleHelper.getI18NLabel("ERROR_SAVING_FILE"));
+                }
+            }
+        });
+    }
+
+    static File deriveSiblingFile(File primaryFile, String primaryExt, String siblingExt) {
+        String cleanPrimary = primaryExt.replace("*", "");
+        String cleanSibling = siblingExt.replace("*", "");
+        String path = primaryFile.getAbsolutePath();
+        if (path.endsWith(cleanPrimary)) {
+            path = path.substring(0, path.length() - cleanPrimary.length());
+        }
+        return new File(path + cleanSibling);
+    }
+
     protected boolean writeContentToFile(File file, String content) {
         try {
             java.nio.file.Files.write(file.toPath(), content.getBytes());

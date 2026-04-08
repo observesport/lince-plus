@@ -1,12 +1,16 @@
 package com.lince.observer.data.export;
 
 import com.lince.observer.data.bean.RegisterItem;
+import com.lince.observer.data.bean.categories.Category;
+import com.lince.observer.data.bean.categories.Criteria;
 import com.univocity.parsers.tsv.TsvWriter;
 import com.univocity.parsers.tsv.TsvWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,14 +57,34 @@ public class Lince2ThemeExport {
         }
     }
 
-    public void createFile(String url) {
+    public void createFile(String basePath) {
         try {
-            FileWriter fileWriter = new FileWriter(url + ".txt");
+            FileWriter fileWriter = new FileWriter(basePath + ".txt");
             createFile(fileWriter);
         } catch (Exception e) {
             log.error("writing theme file", e);
         }
+    }
 
+    public void createFile(String basePath, List<Criteria> criteria) {
+        try {
+            createFile(new FileWriter(basePath + ".txt"));
+            String vvtContent = createVvtContent(criteria);
+            Files.write(Path.of(basePath + ".vvt"), vvtContent.getBytes());
+        } catch (Exception e) {
+            log.error("writing theme paired files", e);
+        }
+    }
+
+    public static String createVvtContent(List<Criteria> criteria) {
+        StringBuilder sb = new StringBuilder();
+        for (Criteria c : criteria) {
+            sb.append(c.getName()).append("\r\n");
+            for (Category cat : c.getInnerCategories()) {
+                sb.append(" ").append(cat.getCode()).append("\r\n");
+            }
+        }
+        return sb.toString();
     }
 
 }

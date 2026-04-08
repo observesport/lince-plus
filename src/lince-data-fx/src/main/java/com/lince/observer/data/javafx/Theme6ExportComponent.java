@@ -6,42 +6,32 @@ import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacion
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Created by Alberto Soto. 8/11/24
+ *
+ * Theme 6 paired export: produces both .txt (register) and .vvt (instrument) files
+ * from a single export action, as required by Theme 6 software.
  */
 public class Theme6ExportComponent extends GenericExportComponent {
     public Theme6ExportComponent(UUID observerId) {
         super(observerId);
     }
 
-    /*
-    File f = LinceDesktopFileHelper.openSaveFileDialog("*.csv");
-    String contenido = Registro.getInstance().exportToTheme5(criterios);
-    //
-    File f = LinceDesktopFileHelper.openSaveFileDialog("*.txt");
-    String contenido = Registro.getInstance().exportToTheme6(criterios);
-    //
-    File f = LinceDesktopFileHelper.openSaveFileDialog("*.vvt");
-    String contenido = InstrumentoObservacional.getInstance().exportToTheme(criterios);
-     */
-
     @Override
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {
-        Button btnExportInstrumento = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR INSTRUMENTO OBSERVACIONAL"));
-        btnExportInstrumento.setOnAction(e -> {
-            executeExport(selectionPanelComponent, InstrumentoObservacional.getInstance()::exportToTheme, ".vvt");
+        Button btnExport = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR THEME 6"));
+        btnExport.setOnAction(e -> {
+            executePairedExport(
+                    selectionPanelComponent,
+                    Registro.getInstance()::exportToTheme6, "*.txt",
+                    InstrumentoObservacional.getInstance()::exportToTheme, ".vvt"
+            );
         });
 
-        Button btnExportRegistro = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR REGISTRO"));
-        btnExportRegistro.setOnAction(e -> {
-            executeExport(selectionPanelComponent, Registro.getInstance()::exportToTheme6, "*.txt");
-        });
-
-        return Arrays.asList(btnExportInstrumento, btnExportRegistro);
+        return List.of(btnExport);
     }
 
     @Override

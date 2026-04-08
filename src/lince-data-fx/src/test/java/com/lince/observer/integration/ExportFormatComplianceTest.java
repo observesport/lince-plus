@@ -130,6 +130,104 @@ class ExportFormatComplianceTest {
             "Theme 6 must not have bare LF line endings");
     }
 
+    @Test
+    void testTheme6_PairedExport_BothContentsNonEmpty() {
+        String txtOutput = registro.exportToTheme6(criterios);
+        String vvtOutput = InstrumentoObservacional.getInstance().exportToTheme(criterios);
+
+        assertNotNull(txtOutput, ".txt output must not be null");
+        assertFalse(txtOutput.isEmpty(), ".txt output must not be empty");
+        assertNotNull(vvtOutput, ".vvt output must not be null");
+        assertFalse(vvtOutput.isEmpty(), ".vvt output must not be empty");
+
+        // .txt must have at least: header + start marker + 1 data row + end marker = 4 lines
+        String[] txtLines = txtOutput.split(CRLF);
+        assertTrue(txtLines.length >= 4,
+            ".txt output must have at least header + start marker + 1 data row + end marker, got: " + txtLines.length + " lines");
+
+        // .vvt must have at least one criterion line (no indent) and one category line (indented)
+        String[] vvtLines = vvtOutput.split(CRLF);
+        boolean hasCriterion = false;
+        boolean hasCategory = false;
+        for (String line : vvtLines) {
+            if (!line.isEmpty() && !line.startsWith(" ")) {
+                hasCriterion = true;
+            }
+            if (line.startsWith(" ")) {
+                hasCategory = true;
+            }
+        }
+        assertTrue(hasCriterion, ".vvt output must contain at least one criterion line");
+        assertTrue(hasCategory, ".vvt output must contain at least one category line");
+    }
+
+    @Test
+    void testTheme6_VvtCodesMatchRegistroCodes() {
+        String txtOutput = registro.exportToTheme6(criterios);
+        String vvtOutput = InstrumentoObservacional.getInstance().exportToTheme(criterios);
+
+        // Collect all codes from the EVENT column of the .txt register
+        java.util.Set<String> registerCodes = new java.util.HashSet<>();
+        for (String line : txtOutput.split(CRLF)) {
+            String[] parts = line.split("\t");
+            if (parts.length >= 2) {
+                String event = parts[1].trim();
+                if (!event.isEmpty() && !event.equals(":") && !event.equals("&") && !event.equals("EVENT")) {
+                    for (String code : event.split(",")) {
+                        String trimmed = code.trim();
+                        if (!trimmed.isEmpty()) {
+                            registerCodes.add(trimmed);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Collect all category codes from the .vvt (lines starting with a space)
+        java.util.Set<String> vvtCodes = new java.util.HashSet<>();
+        for (String line : vvtOutput.split(CRLF)) {
+            if (line.startsWith(" ")) {
+                String trimmed = line.trim();
+                if (!trimmed.isEmpty()) {
+                    vvtCodes.add(trimmed);
+                }
+            }
+        }
+
+        // Every code in the register must be defined in the VVT
+        for (String code : registerCodes) {
+            assertTrue(vvtCodes.contains(code),
+                "Register code '" + code + "' is not defined in the VVT. VVT codes: " + vvtCodes);
+        }
+    }
+
+    @Test
+    void testTheme6_VvtCriteriaMatchSelectedCriteria() {
+        String vvtOutput = InstrumentoObservacional.getInstance().exportToTheme(criterios);
+
+        // Extract criterion names from VVT: lines NOT starting with a space
+        java.util.List<String> vvtCriteriaNames = new java.util.ArrayList<>();
+        for (String line : vvtOutput.split(CRLF)) {
+            if (!line.isEmpty() && !line.startsWith(" ")) {
+                vvtCriteriaNames.add(line);
+            }
+        }
+
+        // Collect expected criterion names from the criterios list
+        java.util.List<String> expectedNames = new java.util.ArrayList<>();
+        for (Criterio criterio : criterios) {
+            expectedNames.add(criterio.getNombre());
+        }
+
+        assertEquals(expectedNames.size(), vvtCriteriaNames.size(),
+            "VVT must contain exactly the same number of criteria as the selected criterios list");
+
+        for (String expectedName : expectedNames) {
+            assertTrue(vvtCriteriaNames.contains(expectedName),
+                "VVT must contain criterion '" + expectedName + "'. Found: " + vvtCriteriaNames);
+        }
+    }
+
     // ============================================================
     // Theme 5 Tests
     // ============================================================
