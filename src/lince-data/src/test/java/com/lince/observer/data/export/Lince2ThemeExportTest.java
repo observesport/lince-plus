@@ -794,4 +794,55 @@ class Lince2ThemeExportTest {
         assertTrue(vvtContent.contains("EQUIPO"), "vvt must have EQUIPO");
         assertTrue(vvtContent.contains(" FCB"), "vvt must have FCB");
     }
+
+    // ============================================================
+    // VVT content sanitization: spaces, leading non-letter, duplicates
+    // ============================================================
+
+    @Test
+    void testCreateVvtContent_ReplacesSpacesWithUnderscores() {
+        Criteria crit = new Criteria(1, "BLOQUEO DIRECTO");
+        crit.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "FALTA OFENSIVA", 1)
+        )));
+
+        String vvt = Lince2ThemeExport.createVvtContent(List.of(crit));
+
+        assertTrue(vvt.contains("BLOQUEO_DIRECTO\r\n"), "spaces in criterion must become underscores");
+        assertTrue(vvt.contains(" FALTA_OFENSIVA\r\n"), "spaces in category must become underscores");
+        assertFalse(vvt.contains("BLOQUEO DIRECTO"), "raw space must not appear in criterion name");
+        assertFalse(vvt.contains("FALTA OFENSIVA"), "raw space must not appear in category code");
+    }
+
+    @Test
+    void testCreateVvtContent_PrefixesNamesStartingWithNonLetter() {
+        Criteria crit = new Criteria(1, "1stHalf");
+        crit.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "2point", 1)
+        )));
+
+        String vvt = Lince2ThemeExport.createVvtContent(List.of(crit));
+
+        assertTrue(vvt.contains("C_1stHalf\r\n"), "criterion starting with digit must be prefixed with C_");
+        assertTrue(vvt.contains(" E_2point\r\n"), "category starting with digit must be prefixed with E_");
+    }
+
+    @Test
+    void testCreateVvtContent_DeduplicatesRepeatedNames() {
+        Criteria a = new Criteria(1, "TEAM");
+        a.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "HIT", 1)
+        )));
+        Criteria b = new Criteria(2, "TEAM");
+        b.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(20, "HIT", 2)
+        )));
+
+        String vvt = Lince2ThemeExport.createVvtContent(List.of(a, b));
+
+        assertTrue(vvt.contains("TEAM\r\n"), "first TEAM stays as-is");
+        assertTrue(vvt.contains("TEAM_2\r\n"), "second TEAM must be suffixed _2");
+        assertTrue(vvt.contains(" HIT\r\n"), "first HIT stays as-is");
+        assertTrue(vvt.contains(" HIT_2\r\n"), "second HIT must be suffixed _2");
+    }
 }

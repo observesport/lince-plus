@@ -8,7 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,22 +25,21 @@ public class Theme6ExportComponent extends GenericExportComponent {
 
     @Override
     protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {
-        Button btnExportInstrumento = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR INSTRUMENTO OBSERVACIONAL"));
-        btnExportInstrumento.setOnAction(e -> {
+        Button btnExport = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR THEME 6"));
+        btnExport.setOnAction(e -> {
             List<Criteria> criteria = linceProject.getObservationTool();
-            executeModernExport(() -> Lince2ThemeExport.createVvtContent(criteria), "*.vvt");
-        });
-
-        Button btnExportRegistro = new Button(ResourceBundleHelper.getI18NLabel("EXPORTAR REGISTRO"));
-        btnExportRegistro.setOnAction(e -> {
             List<RegisterItem> allItems = linceProject.getRegister().stream()
                     .flatMap(r -> r.getRegisterData().stream())
                     .toList();
             Lince2ThemeExport exporter = new Lince2ThemeExport(allItems);
-            executeModernExport(exporter::exportToString, "*.txt");
+            executeFixedSiblingExport(
+                    "*.txt",
+                    exporter::exportToString,
+                    "vvt.vvt",
+                    () -> Lince2ThemeExport.createVvtContent(criteria)
+            );
         });
-
-        return Arrays.asList(btnExportInstrumento, btnExportRegistro);
+        return Collections.singletonList(btnExport);
     }
 
     @Override

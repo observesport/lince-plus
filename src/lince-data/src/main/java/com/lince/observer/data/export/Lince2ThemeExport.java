@@ -12,7 +12,9 @@ import java.io.FileWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -92,13 +94,42 @@ public class Lince2ThemeExport {
 
     public static String createVvtContent(List<Criteria> criteria) {
         StringBuilder sb = new StringBuilder();
+        Set<String> used = new HashSet<>();
         for (Criteria c : criteria) {
-            sb.append(c.getName()).append("\r\n");
+            String criterionName = uniquify(sanitizeName(c.getName(), NameKind.CRITERION), used);
+            sb.append(criterionName).append("\r\n");
             for (Category cat : c.getInnerCategories()) {
-                sb.append(" ").append(cat.getCode()).append("\r\n");
+                String categoryName = uniquify(sanitizeName(cat.getCode(), NameKind.EVENT), used);
+                sb.append(" ").append(categoryName).append("\r\n");
             }
         }
         return sb.toString();
+    }
+
+    private enum NameKind { CRITERION, EVENT }
+
+    static String sanitizeName(String raw, NameKind kind) {
+        String base = (raw == null) ? "" : raw.trim();
+        base = base.replaceAll("\\s+", "_");
+        base = base.replaceAll("[^A-Za-z0-9_]", "");
+        if (base.isEmpty() || !Character.isLetter(base.charAt(0))) {
+            String prefix = (kind == NameKind.CRITERION) ? "C_" : "E_";
+            base = prefix + base;
+        }
+        return base;
+    }
+
+    private static String uniquify(String candidate, Set<String> used) {
+        if (used.add(candidate)) {
+            return candidate;
+        }
+        int suffix = 2;
+        String attempt = candidate + "_" + suffix;
+        while (!used.add(attempt)) {
+            suffix++;
+            attempt = candidate + "_" + suffix;
+        }
+        return attempt;
     }
 
 }
