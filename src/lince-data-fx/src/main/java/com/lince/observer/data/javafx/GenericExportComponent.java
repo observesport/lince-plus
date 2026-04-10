@@ -179,11 +179,14 @@ public abstract class GenericExportComponent extends BorderPane {
             boolean primaryOk = writeContentToFile(primaryFile, primaryContent.get());
             boolean siblingOk = writeContentToFile(siblingFile, siblingContent.get());
             if (primaryOk && siblingOk) {
-                JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
+                String body = ResourceBundleHelper.getI18NLabel("THEME6_BOTH_FILES_SAVED")
+                        + "\n\n"
+                        + "  • " + primaryFile.getName() + "\n    " + primaryFile.getAbsolutePath()
+                        + "\n\n"
+                        + "  • " + siblingFile.getName() + "\n    " + siblingFile.getAbsolutePath();
+                JavaFXLogHelper.showMessageDialog(Alert.AlertType.INFORMATION,
                         ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                        ResourceBundleHelper.getI18NLabel("THEME6_BOTH_FILES_SAVED")
-                                + "\n" + primaryFile.getAbsolutePath()
-                                + "\n" + siblingFile.getAbsolutePath());
+                        body);
             } else {
                 JavaFXLogHelper.showMessage(Alert.AlertType.ERROR,
                         ResourceBundleHelper.getI18NLabel(getExportTitle()),
