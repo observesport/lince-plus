@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 /**
  * @author Alberto Soto-Fernandez
  */
+@Deprecated
 public class Registro extends ModeloDeTablaLince implements Observer {
 
     static final String NOMBRE_INSTRUMENTO_OBSERVACIONAL = "nombreInstrumentoObservacional";
@@ -297,13 +298,12 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         return exportRegistroToTheme(criterios, ";", false);
     }
 
-    public String exportToTheme6(List<Criterio> criterios) {
-        return exportRegistroToTheme(criterios, "\t", false);
-    }
-
     private String exportRegistroToTheme(List<Criterio> criterios, String separator, boolean useSequentialTime) {
         String contenido = "";
         contenido += "TIME" + separator + "EVENT\r\n";
+        if (datosVariables == null || datosVariables.isEmpty()) {
+            return contenido;
+        }
         boolean isFirst = true;
         int sequentialTime = 1;
         for (FilaRegistro filaRegistro : datosVariables) {

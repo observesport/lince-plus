@@ -1,14 +1,19 @@
 package com.lince.observer.data.export;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.Criteria;
+import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
+import com.lince.observer.data.component.LinceFileImporter;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -450,5 +455,394 @@ class Lince2ThemeExportTest {
         assertEquals("COD", event, "Should use getCode() not toString()");
         assertFalse(event.contains("-"), "Should not contain '-' from toString()");
         assertFalse(event.contains("MyName"), "Should not contain name from toString()");
+    }
+
+    // ============================================================
+    // VVT content: criterion names appear without leading space
+    // ============================================================
+
+    @Test
+    void testCreateVvtContent_CriterionNoIndent() {
+        Criteria post = new Criteria(1, "POST");
+        post.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "STAND", 1),
+            makeCategory(11, "SIT", 1)
+        )));
+
+        Criteria action = new Criteria(2, "ACTION");
+        action.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(20, "RUN", 2),
+            makeCategory(21, "WALK", 2)
+        )));
+
+        List<Criteria> criteria = List.of(post, action);
+        String vvt = Lince2ThemeExport.createVvtContent(criteria);
+
+        // Criterion names must NOT start with a space
+        String[] lines = vvt.split("\r\n");
+        boolean foundPost = false;
+        boolean foundAction = false;
+        for (String line : lines) {
+            if (line.equals("POST")) foundPost = true;
+            if (line.equals("ACTION")) foundAction = true;
+        }
+        assertTrue(foundPost, "Criterion 'POST' should appear without leading space");
+        assertTrue(foundAction, "Criterion 'ACTION' should appear without leading space");
+    }
+
+    // ============================================================
+    // VVT content: category codes indented with exactly one space
+    // ============================================================
+
+    @Test
+    void testCreateVvtContent_CategoryIndentedOneSpace() {
+        Criteria post = new Criteria(1, "POST");
+        post.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "STAND", 1),
+            makeCategory(11, "SIT", 1)
+        )));
+
+        Criteria action = new Criteria(2, "ACTION");
+        action.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(20, "RUN", 2)
+        )));
+
+        List<Criteria> criteria = List.of(post, action);
+        String vvt = Lince2ThemeExport.createVvtContent(criteria);
+
+        // Each category line must start with exactly one space
+        String[] lines = vvt.split("\r\n");
+        for (String line : lines) {
+            if (line.equals("POST") || line.equals("ACTION")) continue;
+            if (line.isEmpty()) continue;
+            assertTrue(line.startsWith(" "), "Category line should start with one space: '" + line + "'");
+            assertFalse(line.startsWith("  "), "Category line should not start with two spaces: '" + line + "'");
+        }
+
+        // Spot-check: STAND should appear as " STAND"
+        assertTrue(vvt.contains(" STAND\r\n"), "STAND must be indented with one space and end with CRLF");
+        assertTrue(vvt.contains(" SIT\r\n"), "SIT must be indented with one space and end with CRLF");
+        assertTrue(vvt.contains(" RUN\r\n"), "RUN must be indented with one space and end with CRLF");
+    }
+
+    // ============================================================
+    // VVT content: all line endings are CRLF
+    // ============================================================
+
+    @Test
+    void testCreateVvtContent_CRLFLineEndings() {
+        Criteria post = new Criteria(1, "POST");
+        post.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "STAND", 1),
+            makeCategory(11, "SIT", 1)
+        )));
+
+        List<Criteria> criteria = List.of(post);
+        String vvt = Lince2ThemeExport.createVvtContent(criteria);
+
+        // Must not contain bare LF (i.e. LF not preceded by CR)
+        for (int i = 0; i < vvt.length(); i++) {
+            if (vvt.charAt(i) == '\n') {
+                assertTrue(i > 0 && vvt.charAt(i - 1) == '\r',
+                    "Found bare LF at position " + i + " — all line endings must be CRLF");
+            }
+        }
+        // Must contain at least one CRLF
+        assertTrue(vvt.contains("\r\n"), "VVT content must use CRLF line endings");
+    }
+
+    // ============================================================
+    // VVT content: matches Gudberg format exactly
+    // ============================================================
+
+    @Test
+    void testCreateVvtContent_MatchesGudbergFormat() {
+        Criteria post = new Criteria(1, "POST");
+        post.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "STAND", 1),
+            makeCategory(11, "SIT", 1),
+            makeCategory(12, "KNEEL", 1),
+            makeCategory(13, "LIE", 1),
+            makeCategory(14, "IMMOBILE", 1)
+        )));
+
+        List<Criteria> criteria = List.of(post);
+        String vvt = Lince2ThemeExport.createVvtContent(criteria);
+
+        String expected = "POST\r\n STAND\r\n SIT\r\n KNEEL\r\n LIE\r\n IMMOBILE\r\n";
+        assertEquals(expected, vvt, "VVT content must match Gudberg format exactly");
+    }
+
+    // ============================================================
+    // Paired export: createFile(basePath, criteria) writes both files
+    // ============================================================
+
+    @Test
+    void testCreateFilePaired_WritesBothFiles() throws Exception {
+        Criteria post = new Criteria(1, "POST");
+        post.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "STAND", 1),
+            makeCategory(11, "SIT", 1)
+        )));
+
+        Category stand = makeCategory(10, "STAND", 1);
+        Category sit = makeCategory(11, "SIT", 1);
+        List<RegisterItem> register = List.of(
+            makeRegisterItem(1.0, 25, stand),
+            makeRegisterItem(2.0, 50, sit)
+        );
+        List<Criteria> criteria = List.of(post);
+
+        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_vvt_test_").toFile();
+        tempDir.deleteOnExit();
+        String basePath = new java.io.File(tempDir, "export").getAbsolutePath();
+
+        Lince2ThemeExport exporter = new Lince2ThemeExport(register);
+        exporter.createFile(basePath, criteria);
+
+        java.io.File txtFile = new java.io.File(basePath + ".txt");
+        java.io.File vvtFile = new java.io.File(basePath + ".vvt");
+        txtFile.deleteOnExit();
+        vvtFile.deleteOnExit();
+
+        assertTrue(txtFile.exists(), "Paired export must create .txt file");
+        assertTrue(vvtFile.exists(), "Paired export must create .vvt file");
+
+        String txtContent = new String(java.nio.file.Files.readAllBytes(txtFile.toPath()));
+        String vvtContent = new String(java.nio.file.Files.readAllBytes(vvtFile.toPath()));
+
+        assertTrue(txtContent.contains("TIME\tEVENT"), ".txt must contain TIME\\tEVENT header");
+        assertTrue(vvtContent.contains("POST"), ".vvt must contain criterion name POST");
+        assertTrue(vvtContent.contains(" STAND"), ".vvt must contain indented category STAND");
+        assertTrue(vvtContent.contains(" SIT"), ".vvt must contain indented category SIT");
+    }
+
+    // ============================================================
+    // Paired export: .txt content matches single-file export
+    // ============================================================
+
+    @Test
+    void testCreateFilePaired_TxtContentMatchesSingleExport() throws Exception {
+        Criteria post = new Criteria(1, "POST");
+        post.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "STAND", 1),
+            makeCategory(11, "SIT", 1)
+        )));
+
+        Category stand = makeCategory(10, "STAND", 1);
+        Category sit = makeCategory(11, "SIT", 1);
+        List<RegisterItem> register = List.of(
+            makeRegisterItem(1.0, 25, stand),
+            makeRegisterItem(2.0, 50, sit)
+        );
+        List<Criteria> criteria = List.of(post);
+
+        // Single export via captureExport
+        String singleExport = captureExport(register);
+
+        // Paired export
+        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_vvt_paired_").toFile();
+        tempDir.deleteOnExit();
+        String basePath = new java.io.File(tempDir, "export").getAbsolutePath();
+
+        Lince2ThemeExport exporter = new Lince2ThemeExport(register);
+        exporter.createFile(basePath, criteria);
+
+        java.io.File txtFile = new java.io.File(basePath + ".txt");
+        txtFile.deleteOnExit();
+
+        String pairedTxt = new String(java.nio.file.Files.readAllBytes(txtFile.toPath()));
+
+        assertEquals(singleExport, pairedTxt,
+            "Paired export .txt content must be identical to single-file export output");
+    }
+
+    // ============================================================
+    // Integration test: real FCB_RMAD_0925 project file
+    // ============================================================
+
+    private ILinceProject loadProject(String resourceName) {
+        LinceFileImporter importer = new LinceFileImporter();
+        File file = new File(Objects.requireNonNull(
+                getClass().getClassLoader().getResource(resourceName)).getFile());
+        ILinceProject project = importer.importLinceProject(file);
+        assertNotNull(project, "Project should load from " + resourceName);
+        return project;
+    }
+
+    @Test
+    void testFcbRmadProject_RegisterExportHasValues() {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<LinceRegisterWrapper> registers = project.getRegister();
+        assertFalse(registers.isEmpty(), "Project should have at least one register");
+
+        List<RegisterItem> allItems = registers.stream()
+                .flatMap(r -> r.getRegisterData().stream())
+                .toList();
+        assertFalse(allItems.isEmpty(), "Register should have items");
+
+        Lince2ThemeExport exporter = new Lince2ThemeExport(allItems);
+        String output = captureExport(allItems);
+
+        // Must have header
+        assertTrue(output.startsWith("TIME\tEVENT"), "Must start with header");
+
+        // Must have data rows (not just header)
+        String[] lines = output.split("\r?\n");
+        assertTrue(lines.length >= 4,
+                "Must have header + start marker + data + end marker, got " + lines.length + " lines");
+
+        // Start marker
+        assertTrue(lines[1].endsWith("\t:"), "Second line must be start marker");
+
+        // Data rows must have actual codes (not empty events)
+        for (int i = 2; i < lines.length - 1; i++) {
+            String[] parts = lines[i].split("\t");
+            assertEquals(2, parts.length, "Each data row must have time and event columns: " + lines[i]);
+            String event = parts[1];
+            assertFalse(event.isEmpty(), "Event must not be empty at line " + i + ": " + lines[i]);
+            assertFalse(event.isBlank(), "Event must not be blank at line " + i + ": " + lines[i]);
+        }
+
+        // End marker
+        assertTrue(lines[lines.length - 1].endsWith("\t&"), "Last line must be end marker");
+
+        // Verify frame numbers are present and positive
+        for (int i = 2; i < lines.length - 1; i++) {
+            int frame = Integer.parseInt(lines[i].split("\t")[0]);
+            assertTrue(frame > 0, "Frame numbers must be positive: " + frame);
+        }
+    }
+
+    @Test
+    void testFcbRmadProject_InstrumentExportHasValues() {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<Criteria> criteria = project.getObservationTool();
+        assertFalse(criteria.isEmpty(), "Project should have criteria");
+
+        String vvt = Lince2ThemeExport.createVvtContent(criteria);
+
+        // Must not be empty
+        assertFalse(vvt.isEmpty(), "VVT output must not be empty");
+
+        // Must contain criterion names (from the project: EQUIPO, CUARTO, etc.)
+        assertTrue(vvt.contains("EQUIPO"), "VVT must contain EQUIPO criterion");
+        assertTrue(vvt.contains("CUARTO"), "VVT must contain CUARTO criterion");
+
+        // Must contain category codes
+        assertTrue(vvt.contains(" FCB"), "VVT must contain FCB category");
+        assertTrue(vvt.contains(" RMAD"), "VVT must contain RMAD category");
+        assertTrue(vvt.contains(" C1"), "VVT must contain C1 category");
+
+        // Must have CRLF line endings
+        assertTrue(vvt.contains("\r\n"), "VVT must use CRLF");
+    }
+
+    @Test
+    void testFcbRmadProject_RegisterHas7Items() {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<RegisterItem> allItems = project.getRegister().stream()
+                .flatMap(r -> r.getRegisterData().stream())
+                .toList();
+
+        assertEquals(7, allItems.size(), "FCB_RMAD project has exactly 7 register items");
+
+        // Verify known frame values from the XML
+        int[] expectedFrames = {561, 1230, 1629, 1893, 3251, 3836, 4532};
+        for (int i = 0; i < allItems.size(); i++) {
+            assertEquals(expectedFrames[i], allItems.get(i).getFrames(),
+                    "Frame mismatch at register item " + i);
+        }
+    }
+
+    @Test
+    void testFcbRmadProject_PairedExportWritesBothFiles() throws Exception {
+        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
+
+        List<RegisterItem> allItems = project.getRegister().stream()
+                .flatMap(r -> r.getRegisterData().stream())
+                .toList();
+        List<Criteria> criteria = project.getObservationTool();
+
+        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_fcb_test_").toFile();
+        tempDir.deleteOnExit();
+        String basePath = new java.io.File(tempDir, "FCB_RMAD_0925").getAbsolutePath();
+
+        Lince2ThemeExport exporter = new Lince2ThemeExport(allItems);
+        exporter.createFile(basePath, criteria);
+
+        java.io.File txtFile = new java.io.File(basePath + ".txt");
+        java.io.File vvtFile = new java.io.File(basePath + ".vvt");
+        txtFile.deleteOnExit();
+        vvtFile.deleteOnExit();
+
+        assertTrue(txtFile.exists(), "Must create .txt file");
+        assertTrue(vvtFile.exists(), "Must create .vvt file");
+
+        String txtContent = new String(java.nio.file.Files.readAllBytes(txtFile.toPath()));
+        String vvtContent = new String(java.nio.file.Files.readAllBytes(vvtFile.toPath()));
+
+        // txt must have real data
+        String[] txtLines = txtContent.split("\r?\n");
+        assertTrue(txtLines.length >= 10,
+                "txt must have header+start+7 data+end = 10 lines, got " + txtLines.length);
+
+        // vvt must have criteria and categories
+        assertTrue(vvtContent.contains("EQUIPO"), "vvt must have EQUIPO");
+        assertTrue(vvtContent.contains(" FCB"), "vvt must have FCB");
+    }
+
+    // ============================================================
+    // VVT content sanitization: spaces, leading non-letter, duplicates
+    // ============================================================
+
+    @Test
+    void testCreateVvtContent_ReplacesSpacesWithUnderscores() {
+        Criteria crit = new Criteria(1, "BLOQUEO DIRECTO");
+        crit.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "FALTA OFENSIVA", 1)
+        )));
+
+        String vvt = Lince2ThemeExport.createVvtContent(List.of(crit));
+
+        assertTrue(vvt.contains("BLOQUEO_DIRECTO\r\n"), "spaces in criterion must become underscores");
+        assertTrue(vvt.contains(" FALTA_OFENSIVA\r\n"), "spaces in category must become underscores");
+        assertFalse(vvt.contains("BLOQUEO DIRECTO"), "raw space must not appear in criterion name");
+        assertFalse(vvt.contains("FALTA OFENSIVA"), "raw space must not appear in category code");
+    }
+
+    @Test
+    void testCreateVvtContent_PrefixesNamesStartingWithNonLetter() {
+        Criteria crit = new Criteria(1, "1stHalf");
+        crit.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "2point", 1)
+        )));
+
+        String vvt = Lince2ThemeExport.createVvtContent(List.of(crit));
+
+        assertTrue(vvt.contains("C_1stHalf\r\n"), "criterion starting with digit must be prefixed with C_");
+        assertTrue(vvt.contains(" E_2point\r\n"), "category starting with digit must be prefixed with E_");
+    }
+
+    @Test
+    void testCreateVvtContent_DeduplicatesRepeatedNames() {
+        Criteria a = new Criteria(1, "TEAM");
+        a.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(10, "HIT", 1)
+        )));
+        Criteria b = new Criteria(2, "TEAM");
+        b.setInnerCategories(new LinkedList<>(List.of(
+            makeCategory(20, "HIT", 2)
+        )));
+
+        String vvt = Lince2ThemeExport.createVvtContent(List.of(a, b));
+
+        assertTrue(vvt.contains("TEAM\r\n"), "first TEAM stays as-is");
+        assertTrue(vvt.contains("TEAM_2\r\n"), "second TEAM must be suffixed _2");
+        assertTrue(vvt.contains(" HIT\r\n"), "first HIT stays as-is");
+        assertTrue(vvt.contains(" HIT_2\r\n"), "second HIT must be suffixed _2");
     }
 }

@@ -32,11 +32,11 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download
 
-[https://github.com/observesport/lince-plus/releases/tag/v4.0.7](https://github.com/observesport/lince-plus/releases/tag/v4.0.7)
+[https://github.com/observesport/lince-plus/releases/tag/v4.0.10](https://github.com/observesport/lince-plus/releases/tag/v4.0.10)
 
-### Current version 4.0.7
+### Current version 4.0.10
 
-Fixed video player reset on register save, angle export from pose estimation, reporting validation, and improved pause-on-selection toggle
+Improved integration exports, added sample files for Theme 6 and GSEQ formats, and initial groundwork for Linux installer support.
 
 #### Lince Plus 3.2.4 Release Notes
 
@@ -109,6 +109,7 @@ macOS users should ensure Terminal has full disk access enabled in System Prefer
 
 ### Previous versions
 
+- [4.0.7 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.7)
 - [4.0.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.5)
 - [4.0.4 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.4)
 - [3.2.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v3.2.5)
@@ -160,6 +161,12 @@ LINCE PLUS has been develop using [Jetbrains Suite](https://jb.gg/OpenSource) th
 LINCE PLUS installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 4.0.10 RELEASE, 26/03/2026
+	- Improved integration exports for better compatibility with external analysis tools.
+	- Added sample files for Theme 6 and GSEQ formats to help users get started.
+	- Linux installer support is in progress — initial groundwork has been laid for future Linux distribution.
+	- Updated jackson-core dependency for improved security and compatibility.
 
 - Version 4.0.7 RELEASE, 03/03/2026
 	- Fixed video player resetting to the beginning when saving an observation register

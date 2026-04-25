@@ -27,6 +27,17 @@ EXITO\r\n
  NL
 ```
 
+**Paired Export:** Theme 5 and Theme 6 require both a VVT file and a data file to function.
+When exporting for Theme 6, Lince PLUS produces both files together:
+- `<name>.vvt` — the instrument/coding scheme
+- `<name>.txt` — the register/observation data
+
+The VVT must define every code that appears in the data file.
+
+**Reference sample:** `src/doc/sample-theme6/gudberg/` contains a validated pair:
+- `vvt.vvt` — 13 criteria, 40 category codes
+- `Children1.txt` — 586 timestamped behavioral events
+
 ## Theme 5 - Register Export (.csv)
 
 Semicolon-separated CSV format for Theme 5 software.
@@ -69,6 +80,13 @@ Tab-separated format for Theme 6 software.
 - Tab-separated (not semicolons)
 - Codes within a row are comma-separated
 - Each sequence gets its own start/end markers
+- **Line endings must be CRLF (`\r\n`)** on all platforms — Theme 6 software requires Windows-style
+  line endings regardless of the OS used to generate the file. The `TsvWriter` is explicitly
+  configured with `settings.getFormat().setLineSeparator("\r\n")` to override the system default.
+
+**Implementation:** `Lince2ThemeExport` in `lince-data` module (modern API, no legacy `Registro` dependency).
+Uses univocity `TsvWriter` with forced CRLF. Register data comes from `ILinceProject.getRegister()`,
+instrument data from `ILinceProject.getObservationTool()`.
 
 **Example:**
 ```
@@ -79,6 +97,9 @@ TIME\tEVENT\r\n
 ...
 1617\t&\r\n
 ```
+
+**Paired Export:** Theme 6 always requires both files. See VVT section above for instrument format.
+When a user exports Theme 6, Lince PLUS saves both `<name>.txt` and `<name>.vvt` from a single action.
 
 ## GSEQ Event (.sds)
 
