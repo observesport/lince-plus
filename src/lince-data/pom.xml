@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.lince.observer</groupId>
         <artifactId>lince-plus-root</artifactId>
-        <version>4.0.10</version>
+        <version>4.0.11</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
