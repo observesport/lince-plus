@@ -536,8 +536,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void doExportFX(javafx.scene.Node component, String key, String label) {
         String i18n = getMainLinceApp().getMessage(key, label);
         try {
-            Registro.loadNewInstance();
-//            ensureCompatibility(true); this makes the panel shown 2 times
             Stage stage = new Stage();
             stage.setTitle(i18n);
             Pane root = new Pane();
@@ -664,12 +662,23 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     /***
      * Valid export to theme 6.
-     * Opens a legacy dialog with all previous Lince behaviour
+     * Uses modern API directly from ILinceProject, no legacy Registro needed.
      */
     @FXML
     private void handleExportTheme6() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        projectId.ifPresent(id -> doExportFX(new Theme6ExportComponent(projectId.get()), "panel_export_custom", "Theme 6"));
+        doExportFX(new CustomTheme6ExportComponent(getResearchSelection()), "panel_export_custom", "Theme 6");
+    }
+
+    private class CustomTheme6ExportComponent extends Theme6ExportComponent {
+        protected CustomTheme6ExportComponent(UUID observerId) {
+            super(observerId);
+        }
+
+        @Override
+        protected List<Object> getSelectionItems() {
+            setLinceProject(getCurrentProjectDetails());
+            return super.getSelectionItems();
+        }
     }
 
     /***
