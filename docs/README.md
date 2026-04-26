@@ -38,68 +38,6 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 Theme 6 export fixes (correct `.vvt` extension, no more empty records), a polished export dialog with completed Hoisan translations, and a unified export pipeline backed by stronger integration tests.
 
-#### Lince Plus 3.2.4 Release Notes
-
-Recommended update as it solves a critical issue during export:
-
-- Update to Spring 3.3.9
-- Solves exportation error and generates a new environment for excel Decoupled behaviour on registration:
-- User selection on excel export without converting to legacy lince
-- Sets frame value with current project settings, not using default FPS
-- When selecting a video it sets automatically the FPS of the project
-- Exportation introduces revisited conversion for FPS calculation and scene duration
-- New flow for lince v1.4 import/export
-- Significative improvements on unit testing
-
-### Version 3.2.3 Release notes
-
-This release focuses on modernizing the technology stack, improving installation reliability, and enhancing cloud compatibility to better support enterprise deployments.
-
-#### Major Changes
-
-**Framework Updates**
-
-- JDK17
-- Upgraded to Spring Boot version 3.2.3
-- Enhanced dependency injection system to support Lince Cloud extensions
-- Improved cloud-native compatibility for containerized deployments
-
-**Installation Improvements**
-
-- New automated installer package generated through CI/CD pipeline
-- Fixed installation issues on macOS systems
-- Resolved permission handling during setup
-- Improved application registration process
-- Addressed Windows-specific installation problems
-- Fixed path resolution conflicts
-- Enhanced registry management
-- Corrected service installation procedures
-
-**Cloud Integration**
-
-- Added cloud-native configuration options
-- Implemented extensible dependency injection framework for Lince Cloud
-- Enhanced service discovery capabilities
-- Improved container orchestration support
-
-> Installation Instructions
-
-The new installer package can be downloaded from the official Lince repository. For detailed installation steps, please refer to the updated documentation.
-
-**System Requirements**
-
-- macOS 10.15 or later
-- Windows 10/11 or Windows Server 2019/2022
-- 4GB RAM minimum
-- 2GB available disk space
-
-> Known Issues
-
-On Windows systems with restricted user permissions, manual elevation may be required during installation
-macOS users should ensure Terminal has full disk access enabled in System Preferences
-  
-[Download it here](https://github.com/observesport/lince-plus/releases/tag/v3.2.4)
-
 ## Documentation
 
 - Check the youtube channel! [LINCE PLUS YOUTUBE](https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g)
@@ -198,6 +136,26 @@ LINCE PLUS installer is build using Install4J [multi-platform installer builder]
 	- Ngrok connection errors now display a clear error dialog
 	- Removed region restriction from Ngrok for better worldwide connectivity
 	- Upgraded Ngrok library to version 2.5.0
+
+- Version 3.2.4 RELEASE
+	- Recommended update — solves a critical issue during export.
+	- Updated Spring to 3.3.9.
+	- Fixes exportation error and introduces a new environment for Excel with decoupled behaviour on registration.
+	- User selection on Excel export without converting to legacy Lince.
+	- Frame value now follows current project settings instead of the default FPS.
+	- Selecting a video automatically sets the project FPS.
+	- Revisited FPS conversion and scene duration calculation in exports.
+	- New flow for Lince v1.4 import/export.
+	- Significant unit testing improvements.
+
+- Version 3.2.3 RELEASE
+	- Modernized technology stack, improved installation reliability, and enhanced cloud compatibility.
+	- Upgraded to JDK 17 and Spring Boot 3.2.3.
+	- Enhanced dependency injection system to support Lince Cloud extensions.
+	- Improved cloud-native compatibility for containerized deployments.
+	- New automated installer package generated through CI/CD.
+	- Fixed installation issues on macOS (permissions, app registration) and Windows (path resolution, registry, service installation).
+	- Added cloud-native configuration options and extensible DI framework for Lince Cloud.
 
 - Version 2.1.0 RELEASE, 02/10/2023
 	- AI Studio
