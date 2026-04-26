@@ -32,11 +32,11 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download
 
-[https://github.com/observesport/lince-plus/releases/tag/v4.0.10](https://github.com/observesport/lince-plus/releases/tag/v4.0.10)
+[https://github.com/observesport/lince-plus/releases/tag/v4.0.11](https://github.com/observesport/lince-plus/releases/tag/v4.0.11)
 
-### Current version 4.0.10
+### Current version 4.0.11
 
-Improved integration exports, added sample files for Theme 6 and GSEQ formats, and initial groundwork for Linux installer support.
+Theme 6 export fixes (correct `.vvt` extension, no more empty records), a polished export dialog with completed Hoisan translations, and a unified export pipeline backed by stronger integration tests.
 
 #### Lince Plus 3.2.4 Release Notes
 
@@ -109,6 +109,7 @@ macOS users should ensure Terminal has full disk access enabled in System Prefer
 
 ### Previous versions
 
+- [4.0.10 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.10)
 - [4.0.7 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.7)
 - [4.0.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.5)
 - [4.0.4 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.4)
@@ -161,6 +162,14 @@ LINCE PLUS has been develop using [Jetbrains Suite](https://jb.gg/OpenSource) th
 LINCE PLUS installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 4.0.11 RELEASE, 26/04/2026
+	- Theme 6 export now generates files with the correct `.vvt` extension instead of no extension.
+	- Fixed empty values in Theme 6 record exports — exported records now contain the actual observation data.
+	- Theme 6 export rewritten on top of the modern Lince register while preserving import compatibility with legacy records.
+	- Export dialog now shows proper translated text (no more uppercase placeholders), is wider, and presents the generated file list more clearly.
+	- Added missing Hoisan export/import translations to the English interface.
+	- Unified Theme 5 and Theme 6 export logic and added bundle consistency tests to catch missing translations before release.
 
 - Version 4.0.10 RELEASE, 26/03/2026
 	- Improved integration exports for better compatibility with external analysis tools.
