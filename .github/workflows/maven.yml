@@ -126,7 +126,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for Installer Files
-        if: github.ref == 'refs/heads/master' && !contains(env.FULL_VERSION, 'SNAPSHOT')
+        if: (github.ref == 'refs/heads/master' && !contains(env.FULL_VERSION, 'SNAPSHOT')) || github.ref == 'refs/heads/develop'
         run: |
           EXE_PATH="./src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe"
           DMG_ARM_PATH="./src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg"
@@ -168,6 +168,19 @@ jobs:
             ls -R ./src/installer/
             exit 1
           fi
+
+      - name: Upload Develop Installer Artifacts
+        if: github.ref == 'refs/heads/develop'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lince-plus-installers-${{ env.FILE_VERSION }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ./src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
+            ./src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
+            ./src/installer/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
 
       - name: Upload Release Assets
         if: github.ref == 'refs/heads/master' && !contains(env.FULL_VERSION, 'SNAPSHOT')
