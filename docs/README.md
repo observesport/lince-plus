@@ -34,11 +34,11 @@ Our software it's build on a multilanguage base: Spanish, English, German and Ca
 
 ## Download
 
-[https://github.com/observesport/lince-plus/releases/tag/v4.0.11](https://github.com/observesport/lince-plus/releases/tag/v4.0.11)
+[https://github.com/observesport/lince-plus/releases/tag/v4.1.0](https://github.com/observesport/lince-plus/releases/tag/v4.1.0)
 
-### Current version 4.0.11
+### Current version 4.1.0
 
-Theme 6 export fixes (correct `.vvt` extension, no more empty records), a polished export dialog with completed Hoisan translations, and a unified export pipeline backed by stronger integration tests.
+A redesigned analysis dashboard introducing the T-Pattern Explorer for detecting repeating temporal patterns, a predictive assistant that suggests the next likely events while coding, and a quantitative view that synchronises sensor data with the video timeline. Linux installation is also more reliable, with a conventional `/opt/lince-plus` install path and working menu shortcuts.
 
 ## Documentation
 
@@ -49,6 +49,7 @@ Theme 6 export fixes (correct `.vvt` extension, no more empty records), a polish
 
 ### Previous versions
 
+- [4.0.11 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.11)
 - [4.0.10 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.10)
 - [4.0.7 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.7)
 - [4.0.5 - Mac x64 & Windows x64 (w10)](https://github.com/observesport/lince-plus/releases/tag/v4.0.5)
@@ -102,6 +103,16 @@ LINCE PLUS has been develop using [Jetbrains Suite](https://jb.gg/OpenSource) th
 LINCE PLUS installer is build using Install4J [multi-platform installer builder](https://www.ej-technologies.com/products/install4j/overview.html) thanks to their license support for Open source projects. 
 
 ## Release notes
+
+- Version 4.1.0 RELEASE, 18/09/2026
+	- New T-Pattern Explorer detects repeating temporal patterns in coded observations, with configurable minimum occurrences, significance level and time granularity.
+	- T-Pattern results show pattern length, level and occurrence counts; clicking an occurrence jumps the video to that exact moment.
+	- New predictive assistant suggests the next likely events with expected timing and a confidence score while coding.
+	- New quantitative view overlays sensor streams (heart rate, accelerometer, gyroscope) against the video timeline with a synchronised playhead.
+	- Added a data import module and a new reporting view for generating summaries from observation sessions.
+	- Linux installer now defaults to the `/opt/lince-plus` install path, making the application easier to find.
+	- Fixed Linux menu and desktop shortcuts failing to launch the application (#118).
+	- Refreshed dashboard across the projects, observers, scenes, register, results and research views.
 
 - Version 4.0.11 RELEASE, 26/04/2026
 	- Theme 6 export now generates files with the correct `.vvt` extension instead of no extension.

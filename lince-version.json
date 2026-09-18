@@ -1,9 +1,9 @@
 {
-  "version": "4.0.11",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.0.11",
+  "version": "4.1.0",
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.1.0",
   "message": [
-    "Exportación a Theme 6 corregida: extensión .vvt y valores ya no aparecen vacíos",
-    "Diálogo de exportación mejorado con textos traducidos y mejor presentación de archivos",
-    "Traducciones de Hoisan completadas en la interfaz en inglés"
+    "Nuevo Explorador de T-Patterns: detecta patrones temporales repetidos y salta al momento exacto del vídeo",
+    "Nuevo asistente predictivo que sugiere los siguientes eventos probables con su nivel de confianza",
+    "Nueva vista cuantitativa que sincroniza datos de sensores (frecuencia cardíaca, acelerómetro, giroscopio) con el vídeo"
   ]
 }
