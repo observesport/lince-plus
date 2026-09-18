@@ -22,7 +22,7 @@
       <fileEntry mountPoint="58" file="./branding/icon.png" overrideOverwriteMode="true" overrideUninstallMode="true" />
       <fileEntry mountPoint="58" file="./manuales/Manual de usuario.pdf" overrideOverwriteMode="true" overrideUninstallMode="true" />
       <fileEntry mountPoint="58" file="./manuales/Users manual.pdf" overrideOverwriteMode="true" overrideUninstallMode="true" />
-      <fileEntry mountPoint="58" file="./lince-os-launcher.sh" />
+      <fileEntry mountPoint="58" file="./lince-os-launcher.sh" mode="755" overrideOverwriteMode="true" overrideUninstallMode="true" />
     </entries>
   </files>
   <launchers>
@@ -221,6 +221,28 @@ return console.askOkCancel(message, true);
           <screen id="15" beanClass="com.install4j.runtime.beans.screens.InstallationScreen" rollbackBarrier="true" rollbackBarrierExitCode="0">
             <actions>
               <action id="17" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="quit" errorMessage="${i18n:FileCorrupted}" />
+              <action id="900" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="continue">
+                <serializedBean>
+                  <property name="arguments">
+                    <add>
+                      <string>+x</string>
+                    </add>
+                    <add>
+                      <string>${installer:sys.installationDir}/${compiler:sys.shortName}</string>
+                    </add>
+                    <add>
+                      <string>${installer:sys.installationDir}/lince-os-launcher.sh</string>
+                    </add>
+                  </property>
+                  <property name="executable" type="string">/bin/chmod</property>
+                  <property name="workingDirectory">
+                    <object class="java.io.File">
+                      <string>${installer:sys.installationDir}</string>
+                    </object>
+                  </property>
+                </serializedBean>
+                <condition>context.getVariable("sys.platform").toString().contains("unix")</condition>
+              </action>
               <action id="18" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
                   <property name="addUninstaller" type="boolean" value="true" />
@@ -629,6 +651,9 @@ return console.askYesNo(message, true);
         <entry location="lince-launcher.bat" />
       </exclude>
       <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
+      <overriddenProperties>
+        <property name="installation-directory-chooser.suggestAppDir" value="/opt/${compiler:sys.shortName}" />
+      </overriddenProperties>
     </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">

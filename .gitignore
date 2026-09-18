@@ -13,3 +13,4 @@ target
 /src/installer/install4j/deprecated/
 /exclude/
 **/.omc/
+/site/node_modules/**
