@@ -5,21 +5,44 @@ The CI/CD pipeline lives in [`.github/workflows/maven.yml`](../.github/workflows
 ## Stages
 
 ```
-build -> bundle-installer -> deploy -> publish-installer -> update-docs
-                                                             (manual gate)
+build -> test -> bundle-installer -> deploy -> publish-installer -> update-docs
+                                                                     (manual gate)
 ```
 
-| Stage | Runs on | What it does |
-| --- | --- | --- |
-| `build` | every push to `master` / `develop` | Compiles the reactor, resolves the version, decides whether this is a release build |
-| `bundle-installer` | every push | Runs Install4j, verifies all four installers exist, uploads them as a run artifact |
-| `deploy` | release only | `mvn deploy` to GitHub Packages |
-| `publish-installer` | release only | Attaches the four installers to the `v<version>` release and publishes it |
-| `update-docs` | release only, **after manual approval** | Publishes the website and the `lince-version.json` that triggers the in-app update notice |
+| Stage | What it does |
+| --- | --- |
+| `build` | Compiles the reactor, resolves the version, tiers the run |
+| `test` | Runs the unit suite, publishes a JUnit report as a check |
+| `bundle-installer` | Runs Install4j and verifies all four installers exist |
+| `deploy` | `mvn deploy` to GitHub Packages |
+| `publish-installer` | Attaches the four installers to the `v<version>` release and publishes it |
+| `update-docs` | Publishes the website and the `lince-version.json` that triggers the in-app update notice |
 
-A **release build** is a non-SNAPSHOT version on `master`. Everything else stops
-after `bundle-installer`, which is what gives `develop` its downloadable
-installer artifacts.
+## How far a run goes
+
+The pipeline is tiered by where it runs, so branches only pay for what they need:
+
+| Trigger | Stages |
+| --- | --- |
+| Feature branch push, or any PR | `build` -> `test` |
+| `develop` | ... + `bundle-installer` (built and verified, **not** uploaded or published) |
+| `master`, non-SNAPSHOT | ... + `deploy` -> `publish-installer` -> `update-docs` |
+
+A **release build** is a non-SNAPSHOT version on `master`. A SNAPSHOT on
+`master` deliberately stops after `test` — that is the guard that keeps an
+in-progress development version from publishing.
+
+On a pull request `GITHUB_REF` is `refs/pull/N/merge`, so neither tier flag is
+ever set for a PR. A PR only ever gets `build` + `test`, even when it targets
+`master` with a release version.
+
+`test` gates everything downstream: no installer is ever bundled from code with
+failing tests. When tests fail, the surefire reports are uploaded as an
+artifact for debugging.
+
+On `develop` the installers are built and verified but deliberately not
+uploaded — the run proves they can still be produced, and nothing downstream
+consumes them.
 
 ## Why docs are last, and manual
 
@@ -73,7 +96,7 @@ Without required reviewers the environment exists but never pauses, so the
 ## Releasing
 
 1. Merge the release branch into `master` with a non-SNAPSHOT version.
-2. Watch `build` -> `bundle-installer` -> `deploy` -> `publish-installer`.
+2. Watch `build` -> `test` -> `bundle-installer` -> `deploy` -> `publish-installer`.
 3. Verify the published release and download an installer.
 4. Approve the `update-docs` job. The site and `lince-version.json` go live.
 
@@ -82,8 +105,11 @@ has been announced yet, and the release can be deleted and rebuilt.
 
 ## Notes
 
-- `concurrency` is keyed per branch with `cancel-in-progress: false`, so a
-  second push cannot cancel a release midway and leave assets half-published.
+- `concurrency` never cancels a run on `master` or `develop`, so a second push
+  cannot cancel a release midway and leave assets half-published. On feature
+  branches superseded runs are cancelled, which also collapses the duplicate
+  run a PR branch would otherwise get from `push` and `pull_request` both
+  firing.
 - Installers are built **once** in `bundle-installer` and passed forward as an
   artifact, so the binaries that get verified are the ones that get published.
 - `update-docs` fails if `lince-version.json` disagrees with the released

@@ -2,7 +2,13 @@ name: Java CI with Maven
 
 # Staged release pipeline:
 #
-#   build -> bundle-installer -> deploy -> publish-installer -> update-docs
+#   build -> test -> bundle-installer -> deploy -> publish-installer -> update-docs
+#
+# How far a run goes depends on where it runs:
+#
+#   feature branches / PRs  build + test
+#   develop                 ... + bundle-installer (verified, not uploaded)
+#   master (non-SNAPSHOT)   ... + deploy + publish-installer + update-docs
 #
 # Every stage depends on the previous one, so docs can never go live before
 # the installers they advertise exist. `update-docs` additionally sits behind
@@ -14,12 +20,18 @@ name: Java CI with Maven
 
 on:
   push:
+    branches: [ '**' ]
+  pull_request:
     branches: [ master, develop ]
   workflow_dispatch:
 
 concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+  # Release runs must never be cancelled midway, or a release can end up with
+  # assets half-published. Feature branches and PRs are cheap to redo, so
+  # superseded runs there are cancelled - this also collapses the duplicate
+  # run a PR branch gets from `push` and `pull_request` firing together.
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
 
 permissions:
   contents: read
@@ -42,6 +54,7 @@ jobs:
       FILE_VERSION: ${{ steps.get_version.outputs.FILE_VERSION }}
       FULL_FILE_VERSION: ${{ steps.get_version.outputs.FULL_FILE_VERSION }}
       IS_RELEASE: ${{ steps.get_version.outputs.IS_RELEASE }}
+      IS_DEVELOP: ${{ steps.get_version.outputs.IS_DEVELOP }}
     steps:
       - uses: actions/checkout@v4
 
@@ -68,11 +81,19 @@ jobs:
           FILE_VERSION=${CLEAN_VERSION//./_}
           FULL_FILE_VERSION=${FULL_VERSION//./_}
 
-          # A release is a non-SNAPSHOT version sitting on master.
-          if [[ "$FULL_VERSION" != *SNAPSHOT* && "$GITHUB_REF" == "refs/heads/master" ]]; then
-            IS_RELEASE=true
-          else
-            IS_RELEASE=false
+          # Tier the run by branch. On pull_request GITHUB_REF is
+          # refs/pull/N/merge, so neither flag is ever set for a PR - a PR only
+          # ever gets build + test, even when it targets master.
+          IS_RELEASE=false
+          IS_DEVELOP=false
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            # A release is a non-SNAPSHOT version sitting on master.
+            if [[ "$FULL_VERSION" != *SNAPSHOT* && "$GITHUB_REF" == "refs/heads/master" ]]; then
+              IS_RELEASE=true
+            fi
+            if [ "$GITHUB_REF" = "refs/heads/develop" ]; then
+              IS_DEVELOP=true
+            fi
           fi
 
           {
@@ -81,6 +102,7 @@ jobs:
             echo "FILE_VERSION=$FILE_VERSION"
             echo "FULL_FILE_VERSION=$FULL_FILE_VERSION"
             echo "IS_RELEASE=$IS_RELEASE"
+            echo "IS_DEVELOP=$IS_DEVELOP"
           } >> "$GITHUB_OUTPUT"
 
           {
@@ -91,6 +113,7 @@ jobs:
             echo "| Project version | \`$FULL_VERSION\` |"
             echo "| Installer file version | \`$FULL_FILE_VERSION\` |"
             echo "| Release build | \`$IS_RELEASE\` |"
+            echo "| Develop build | \`$IS_DEVELOP\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build with Maven
@@ -99,11 +122,62 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ---------------------------------------------------------------------------
-  # 2. BUNDLE INSTALLER - run Install4j and verify all four artifacts exist.
+  # 2. TEST - run the unit test suite. Runs on every branch and PR, and gates
+  #    everything downstream: no installer is bundled from failing code.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Run tests
+        run: cd src && mvn -B -Plocal test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.xml'
+          include_passed: true
+          detailed_summary: true
+          fail_on_failure: true
+
+      - name: Upload surefire reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-${{ github.run_id }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: '**/target/surefire-reports/**'
+
+  # ---------------------------------------------------------------------------
+  # 3. BUNDLE INSTALLER - run Install4j and verify all four artifacts exist.
+  #    Develop and master only; feature branches and PRs stop after `test`.
   # ---------------------------------------------------------------------------
   bundle-installer:
     name: Bundle installer
-    needs: build
+    needs: [ build, test ]
+    if: needs.build.outputs.IS_RELEASE == 'true' || needs.build.outputs.IS_DEVELOP == 'true'
     runs-on: ubuntu-latest
     environment:
       name: cicd
@@ -174,7 +248,11 @@ jobs:
             exit 1
           fi
 
+      # Release runs only. On develop the installers are built and verified but
+      # deliberately not uploaded - the build proves they can be produced, and
+      # nothing downstream consumes them.
       - name: Upload installers
+        if: needs.build.outputs.IS_RELEASE == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: lince-plus-installers-${{ env.FULL_FILE_VERSION }}
@@ -187,11 +265,11 @@ jobs:
             ./src/installer/lince-plus_unix_${{ env.FULL_FILE_VERSION }}_linux-x64.sh
 
   # ---------------------------------------------------------------------------
-  # 3. DEPLOY - push artifacts to GitHub Packages. Release builds only.
+  # 4. DEPLOY - push artifacts to GitHub Packages. Release builds only.
   # ---------------------------------------------------------------------------
   deploy:
     name: Deploy to GitHub Packages
-    needs: [ build, bundle-installer ]
+    needs: [ build, test, bundle-installer ]
     if: needs.build.outputs.IS_RELEASE == 'true'
     runs-on: ubuntu-latest
     environment:
@@ -218,11 +296,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ---------------------------------------------------------------------------
-  # 4. PUBLISH INSTALLER - attach installers to the release and publish it.
+  # 5. PUBLISH INSTALLER - attach installers to the release and publish it.
   # ---------------------------------------------------------------------------
   publish-installer:
     name: Publish installer
-    needs: [ build, bundle-installer, deploy ]
+    needs: [ build, test, bundle-installer, deploy ]
     if: needs.build.outputs.IS_RELEASE == 'true'
     runs-on: ubuntu-latest
     environment:
@@ -259,7 +337,7 @@ jobs:
             ./installers/lince-plus_unix_${{ env.FULL_FILE_VERSION }}_linux-x64.sh
 
   # ---------------------------------------------------------------------------
-  # 5. UPDATE DOCS - website + lince-version.json (the in-app update trigger).
+  # 6. UPDATE DOCS - website + lince-version.json (the in-app update trigger).
   #
   # Gated twice:
   #   a) the `docs-release` environment requires a manual reviewer approval
