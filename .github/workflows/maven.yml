@@ -387,6 +387,68 @@ jobs:
           path: site/dist
 
   # ---------------------------------------------------------------------------
+  # VALIDATE SITE - token-free check of the exact artifact `update-docs` will
+  #    deploy. Downloads the Pages artifact, serves it on the runner under the
+  #    production base path, runs the smoke test, and stops the server again.
+  #    Needs nothing beyond the default GITHUB_TOKEN. Runs on every branch/PR.
+  # ---------------------------------------------------------------------------
+  validate-site:
+    name: Validate website
+    needs: build-site
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Pages artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: pages-artifact
+
+      - name: Unpack under the production base path
+        run: |
+          mkdir -p www/lince-plus
+          tar -xf pages-artifact/artifact.tar -C www/lince-plus
+          echo "Files:" && find www -type f | wc -l
+
+      - name: Serve
+        run: |
+          python3 -m http.server 8080 --directory www > server.log 2>&1 &
+          echo $! > server.pid
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null http://localhost:8080/lince-plus/ && break
+            sleep 1
+          done
+
+      - name: Smoke test
+        run: site/scripts/smoke.sh http://localhost:8080/lince-plus
+
+      - name: Teardown
+        if: always()
+        run: |
+          if [ -f server.pid ]; then kill "$(cat server.pid)" 2>/dev/null || true; fi
+          rm -rf www pages-artifact server.pid
+          echo "Local preview server stopped and files removed."
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Website validation"
+            echo ""
+            echo "The \`github-pages\` artifact of this run was served locally and smoke-tested."
+            echo ""
+            echo "To browse it yourself: download the artifact from this run, then"
+            echo '```'
+            echo "mkdir -p www/lince-plus && tar -xf artifact.tar -C www/lince-plus"
+            echo "python3 -m http.server 8080 --directory www   # http://localhost:8080/lince-plus/"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
   # PREVIEW SITE (optional) - publish the website to a temporary surge.sh URL,
   #    smoke-test it there, and tear it down again in `preview-teardown`.
   #
@@ -523,7 +585,7 @@ jobs:
   # ---------------------------------------------------------------------------
   update-docs:
     name: Update docs
-    needs: [ build, build-site, publish-installer ]
+    needs: [ build, build-site, validate-site, publish-installer ]
     if: needs.build.outputs.IS_RELEASE == 'true'
     runs-on: ubuntu-latest
     environment:

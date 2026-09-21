@@ -17,6 +17,7 @@ build -> test -> bundle-installer -> deploy -> publish-installer -> update-docs
 | `deploy` | `mvn deploy` to GitHub Packages |
 | `publish-installer` | Attaches the four installers to the `v<version>` release and publishes it |
 | `build-site` | Builds the Astro website under `site/` and uploads it as the Pages artifact (every branch, independent of Maven) |
+| `validate-site` | Serves the Pages artifact on the runner and smoke-tests it. No extra tokens. Every branch and PR |
 | `preview-site` | Optional. Deploys the website to a temporary surge.sh URL and smoke-tests it there (PRs, or manual runs with `preview`) |
 | `preview-teardown` | Removes the surge.sh preview once validation is done |
 | `update-docs` | Deploys the website built by `build-site`; `lince-version.json` on `master` is what triggers the in-app update notice |
@@ -27,7 +28,7 @@ The pipeline is tiered by where it runs, so branches only pay for what they need
 
 | Trigger | Stages |
 | --- | --- |
-| Feature branch push, or any PR | `build` -> `test`, plus `build-site` |
+| Feature branch push, or any PR | `build` -> `test`, plus `build-site` -> `validate-site` |
 | `develop` | ... + `bundle-installer` (built and verified, **not** uploaded or published) |
 | `master`, non-SNAPSHOT | ... + `deploy` -> `publish-installer` -> `update-docs` |
 
@@ -95,6 +96,19 @@ control to `update-docs`. The site is the Astro project under `site/` (see
 
 Without required reviewers the environment exists but never pauses, so the
 "manual" stage would run automatically.
+
+## Website validation without extra tokens
+
+`validate-site` downloads the `github-pages` artifact that `build-site`
+uploaded, unpacks it under `/lince-plus` on the runner, serves it with
+`python3 -m http.server`, runs `site/scripts/smoke.sh` against it and stops
+the server. It checks the exact bytes `update-docs` would deploy and needs
+only the default `GITHUB_TOKEN`.
+
+To look at a PR's site yourself, download the `github-pages` artifact from the
+run and serve it the same way (the job summary prints the two commands). A
+shareable live URL always needs a credential for some hosting service, which is
+what the optional surge.sh stage below is for.
 
 ## Website previews on surge.sh (optional)
 
