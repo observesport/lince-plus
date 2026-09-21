@@ -1,0 +1,176 @@
+---
+import { INSTALLERS, href } from '../lib/site';
+
+const mac = INSTALLERS.filter((i) => i.os === 'macOS');
+const win = INSTALLERS.find((i) => i.os === 'Windows')!;
+const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
+---
+
+<section id="install" class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Install</span>
+      <h2>Up And Running In Five Minutes.</h2>
+      <p class="lede">
+        Every installer ships with its own Java runtime. The builds are not
+        notarised or code-signed, so the operating system may ask you to
+        confirm the first launch.
+      </p>
+    </div>
+
+    <div class="grid">
+      <article class="card">
+        <header>
+          <span class="step">1</span>
+          <h3>macOS</h3>
+        </header>
+        <ol>
+          <li>Download the <code>.dmg</code> for your chip and drag LINCE PLUS to Applications.</li>
+          <li>
+            On first launch macOS may block the app. Open <strong>System Settings &rarr; Privacy &amp; Security</strong>
+            and choose <em>Open Anyway</em>.
+          </li>
+        </ol>
+        <div class="dl">
+          {mac.map((i) => (
+            <a class="btn btn-teal btn-sm" href={i.url} download>{i.label}</a>
+          ))}
+        </div>
+        <details>
+          <summary>What the security dialog looks like</summary>
+          <img
+            src={href('/img/mac-install-warning.png')}
+            alt="macOS dialog warning that LINCE PLUS cannot be verified, with the Open Anyway option"
+            loading="lazy"
+            width="1170"
+            height="629"
+          />
+          <p>
+            Apple's guide:
+            <a href="https://support.apple.com/en-us/HT202491" rel="noopener" target="_blank">English</a> &middot;
+            <a href="https://support.apple.com/es-es/guide/mac-help/mh40616/mac" rel="noopener" target="_blank">Español</a>
+          </p>
+        </details>
+      </article>
+
+      <article class="card">
+        <header>
+          <span class="step">2</span>
+          <h3>Windows</h3>
+        </header>
+        <ol>
+          <li>Download and run the <code>.exe</code> installer.</li>
+          <li>If SmartScreen appears, choose <em>More info &rarr; Run anyway</em>.</li>
+          <li>Follow the wizard. Windows 10 or later, x64.</li>
+        </ol>
+        <div class="dl">
+          <a class="btn btn-teal btn-sm" href={win.url} download>Windows x64</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <header>
+          <span class="step">3</span>
+          <h3>Linux</h3>
+        </header>
+        <ol>
+          <li>Download the <code>.sh</code> installer and make it executable.</li>
+          <li>Run it. The default install path is <code>/opt/lince-plus</code>, with menu and desktop shortcuts.</li>
+        </ol>
+        <pre><code>chmod +x {linux.file}
+./{linux.file}</code></pre>
+        <div class="dl">
+          <a class="btn btn-teal btn-sm" href={linux.url} download>Linux x64</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  .step {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--teal-400);
+    color: var(--fg-on-teal);
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  ol {
+    margin: 0 0 18px;
+    padding-left: 20px;
+    color: var(--fg-2);
+    font-size: 0.95rem;
+  }
+  ol li {
+    margin-bottom: 8px;
+  }
+  strong {
+    color: var(--fg-1);
+  }
+  .dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .dl .btn {
+    width: auto;
+  }
+  pre {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    background: var(--ink-900);
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--teal-200);
+  }
+  details {
+    margin-top: 18px;
+    font-size: 0.9rem;
+  }
+  summary {
+    cursor: pointer;
+    color: var(--fg-brand);
+    font-weight: 600;
+  }
+  details img {
+    margin: 12px 0;
+    border-radius: var(--radius-sm);
+  }
+  details p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

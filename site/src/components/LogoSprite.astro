@@ -1,0 +1,12 @@
+---
+// Inlined once per page so <Logo /> can reference the mark with <use>.
+// The SVG in public/ is also served as-is for external use.
+import svg from '../../public/lince-logo.svg?raw';
+
+const paths = svg.match(/<path[\s\S]*?\/>/g) ?? [];
+const markup = paths.map((p) => p.replace(/ class="[^"]*"/, '')).join('');
+---
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="lince-logo-mark" viewBox="0 0 404.63 410.18" set:html={markup}></symbol>
+</svg>

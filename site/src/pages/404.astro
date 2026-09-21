@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/site';
+---
+
+<Base title="Not found - LINCE PLUS" description="The page you are looking for does not exist.">
+  <section class="section">
+    <div class="container center">
+      <span class="eyebrow">404</span>
+      <h1>This Page Does Not Exist.</h1>
+      <p class="lede">Try the homepage or the changelog.</p>
+      <div class="cta-row">
+        <a class="btn btn-teal" href={href('/')}>Back to home</a>
+        <a class="btn btn-outline" href={href('/changelog')}>Changelog</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .center {
+    text-align: center;
+    max-width: 640px;
+  }
+  .cta-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

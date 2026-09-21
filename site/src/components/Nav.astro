@@ -1,0 +1,95 @@
+---
+import Logo from './Logo.astro';
+import { RELEASE_URL, VERSION, href } from '../lib/site';
+---
+
+<header class="nav">
+  <div class="container nav-row">
+    <a class="brand" href={href('/')} aria-label="LINCE PLUS home">
+      <Logo size={30} />
+      <span class="wordmark">LINCE <span>PLUS</span></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href={href('/#features')}>Features</a>
+      <a href={href('/#install')}>Install</a>
+      <a href={href('/#learn')}>Learn</a>
+      <a href={href('/#research')}>Research</a>
+      <a href={href('/changelog')}>Changelog</a>
+      <a class="btn btn-teal btn-sm nav-cta" href={RELEASE_URL}>
+        Download <span class="mono">v{VERSION}</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg-1);
+    border-bottom: 1px solid var(--border-2);
+  }
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 72px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--fg-brand);
+  }
+  .brand:hover {
+    text-decoration: none;
+    opacity: 1;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-style: italic;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    color: var(--fg-1);
+  }
+  .wordmark span {
+    color: var(--fg-brand);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  nav a {
+    color: var(--fg-2);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  nav a:hover {
+    color: var(--fg-1);
+    text-decoration: none;
+  }
+  nav a.nav-cta,
+  nav a.nav-cta:hover {
+    width: auto;
+    color: var(--fg-on-teal);
+  }
+  .nav-cta .mono {
+    font-weight: 500;
+    font-size: 0.82rem;
+    opacity: 0.85;
+  }
+  @media (max-width: 860px) {
+    nav a:not(.nav-cta) {
+      display: none;
+    }
+  }
+  @media (max-width: 420px) {
+    .nav-cta .mono {
+      display: none;
+    }
+  }
+</style>

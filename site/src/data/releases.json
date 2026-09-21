@@ -1,0 +1,263 @@
+[
+  {
+    "version": "4.1.0",
+    "date": "2026-09-18",
+    "tag": "v4.1.0",
+    "summary": "A redesigned analysis dashboard with the T-Pattern Explorer, a predictive assistant while coding, and a quantitative view that synchronises sensor data with the video timeline.",
+    "notes": [
+      "New T-Pattern Explorer detects repeating temporal patterns in coded observations, with configurable minimum occurrences, significance level and time granularity.",
+      "T-Pattern results show pattern length, level and occurrence counts; clicking an occurrence jumps the video to that exact moment.",
+      "New predictive assistant suggests the next likely events with expected timing and a confidence score while coding.",
+      "New quantitative view overlays sensor streams (heart rate, accelerometer, gyroscope) against the video timeline with a synchronised playhead.",
+      "Added a data import module and a new reporting view for generating summaries from observation sessions.",
+      "Linux installer now defaults to the /opt/lince-plus install path, making the application easier to find.",
+      "Fixed Linux menu and desktop shortcuts failing to launch the application.",
+      "Refreshed dashboard across the projects, observers, scenes, register, results and research views."
+    ]
+  },
+  {
+    "version": "4.0.11",
+    "date": "2026-04-26",
+    "tag": "v4.0.11",
+    "notes": [
+      "Theme 6 export now generates files with the correct .vvt extension instead of no extension.",
+      "Fixed empty values in Theme 6 record exports. Exported records now contain the actual observation data.",
+      "Theme 6 export rewritten on top of the modern Lince register while preserving import compatibility with legacy records.",
+      "Export dialog now shows proper translated text, is wider, and presents the generated file list more clearly.",
+      "Added missing Hoisan export/import translations to the English interface.",
+      "Unified Theme 5 and Theme 6 export logic and added bundle consistency tests to catch missing translations before release."
+    ]
+  },
+  {
+    "version": "4.0.10",
+    "date": "2026-03-26",
+    "tag": "v4.0.10",
+    "notes": [
+      "Improved integration exports for better compatibility with external analysis tools.",
+      "Added sample files for Theme 6 and GSEQ formats to help users get started.",
+      "Initial groundwork for the Linux installer.",
+      "Updated jackson-core dependency for improved security and compatibility."
+    ]
+  },
+  {
+    "version": "4.0.7",
+    "date": "2026-03-03",
+    "tag": "v4.0.7",
+    "notes": [
+      "Fixed video player resetting to the beginning when saving an observation register.",
+      "Pose estimation now supports exporting calculated angles for biomechanical analysis.",
+      "Reporting tool validation improvements for more reliable PDF report generation.",
+      "Improved pause-on-selection toggle for smoother recording workflow.",
+      "Continued improvements to the Research notebook for in-browser Python data analysis with pandas, numpy, and matplotlib."
+    ]
+  },
+  {
+    "version": "4.0.5",
+    "date": "2026-02-27",
+    "tag": "v4.0.5",
+    "notes": [
+      "New Reporting page for generating PDF study reports with video thumbnails.",
+      "Consolidated and fixed GSEQ export formats for SDIS-GSEQ specification compliance.",
+      "Corrected Theme 5 and Theme 6 export labels and file extensions.",
+      "Improved performance with React-based interactive skills.",
+      "Upgraded Apache Commons Lang, Apache Tika, and JavaFX Media dependencies."
+    ]
+  },
+  {
+    "version": "4.0.4",
+    "date": "2026-02-25",
+    "tag": "v4.0.4",
+    "notes": [
+      "New Research page with integrated Python notebook for in-browser data analysis.",
+      "One-click code templates for analysis, visualization, and timeline exploration.",
+      "Observation data is automatically loaded and ready to analyze.",
+      "Ngrok connection errors now display a clear error dialog.",
+      "Removed region restriction from Ngrok for better worldwide connectivity.",
+      "Upgraded Ngrok library to version 2.5.0."
+    ]
+  },
+  {
+    "version": "3.2.5",
+    "date": "2025-04-16",
+    "tag": "v3.2.5",
+    "notes": []
+  },
+  {
+    "version": "3.2.4",
+    "date": "2025-03-03",
+    "tag": "v3.2.4",
+    "notes": [
+      "Recommended update: solves a critical issue during export.",
+      "Updated Spring to 3.3.9.",
+      "Fixes exportation error and introduces a new environment for Excel with decoupled behaviour on registration.",
+      "User selection on Excel export without converting to legacy Lince.",
+      "Frame value now follows current project settings instead of the default FPS.",
+      "Selecting a video automatically sets the project FPS.",
+      "Revisited FPS conversion and scene duration calculation in exports.",
+      "New flow for Lince v1.4 import/export.",
+      "Significant unit testing improvements."
+    ]
+  },
+  {
+    "version": "3.2.3",
+    "date": "2024-11-09",
+    "tag": "v3.2.3",
+    "notes": [
+      "Modernized technology stack, improved installation reliability, and enhanced cloud compatibility.",
+      "Upgraded to JDK 17 and Spring Boot 3.2.3.",
+      "Enhanced dependency injection system to support Lince Cloud extensions.",
+      "Improved cloud-native compatibility for containerized deployments.",
+      "New automated installer package generated through CI/CD.",
+      "Fixed installation issues on macOS (permissions, app registration) and Windows (path resolution, registry, service installation).",
+      "Added cloud-native configuration options and extensible DI framework for Lince Cloud."
+    ]
+  },
+  {
+    "version": "2.1.0",
+    "date": "2023-10-02",
+    "tag": "v2.1.0",
+    "notes": ["AI Studio.", "New video player.", "YouTube player update."]
+  },
+  {
+    "version": "2.0.0",
+    "date": "2023-07-03",
+    "tag": "v2.0.0",
+    "notes": [
+      "GA4 introduction.",
+      "Spring Boot 2.7.",
+      "JDK 17 upgrade from 1.8.",
+      "Support issues solved (milestone #1)."
+    ]
+  },
+  {
+    "version": "1.3.2",
+    "date": "2021-01-20",
+    "tag": "v1.3.2",
+    "notes": ["Excel CSV error review."]
+  },
+  {
+    "version": "1.3.1",
+    "date": "2020-10-05",
+    "tag": "v1.3.1",
+    "notes": [
+      "Solves problems with big instruments.",
+      "Exporting data does not break anymore.",
+      "Improved performance on visualization and recording.",
+      "Better quantitizing phase."
+    ]
+  },
+  {
+    "version": "1.3.0",
+    "date": "2020-06-30",
+    "tag": "v1.3.0",
+    "notes": [
+      "UI enhancement and web redesign.",
+      "React + lerna monorepo + full microservices approach.",
+      "Scene program.",
+      "Keyboard usage.",
+      "Multi-observer exporting support.",
+      "Lince v1 support reviewed."
+    ]
+  },
+  {
+    "version": "1.2.0",
+    "date": "2020-05-21",
+    "tag": "v1.2.0",
+    "notes": [
+      "Solves multi-observer problems.",
+      "Adds transcoding support: Lince can convert any video to mp4 automatically."
+    ]
+  },
+  {
+    "version": "1.1.2",
+    "date": "2020-02-25",
+    "tag": "v1.1.2",
+    "notes": [
+      "New observers from legacy Lince register import.",
+      "Kappa index review.",
+      "Video analysis improvements: better draggable area, smaller gaps, descriptions on hover.",
+      "Adaptive graphs.",
+      "Legacy instrument review.",
+      "Log improvement and better messaging.",
+      "Temporal saving.",
+      "macOS installer updated.",
+      "Picture-in-picture behaviour review."
+    ]
+  },
+  {
+    "version": "1.1.1",
+    "date": "2019-12-10",
+    "tag": "v1.1.1",
+    "notes": [
+      "Repairs problems on importing files.",
+      "Includes change-version notification.",
+      "Source clean up.",
+      "Adds localhost on view option.",
+      "Improves QR.",
+      "Sandboxing https support."
+    ]
+  },
+  {
+    "version": "1.1.0",
+    "date": "2019-11-20",
+    "tag": "v1.1.0",
+    "notes": [
+      "Major update.",
+      "Installer works on macOS.",
+      "Installer improvements on Windows.",
+      "QR code generator for device connection.",
+      "Network utilities.",
+      "Recording sandbox.",
+      "Video chrono.",
+      "Mix data: information nodes on toolbox.",
+      "Unit tests.",
+      "Renjin version update.",
+      "CSV export update.",
+      "Web update."
+    ]
+  },
+  {
+    "version": "1.0.3",
+    "date": "2019-08-06",
+    "tag": "v1.0.3",
+    "notes": [
+      "Multi-observer file import issues.",
+      "Non-existing file check on autoload.",
+      "macOS installer with embedded JRE.",
+      "Windows 10 installer with embedded JRE.",
+      "Valid CSV export with ; or ,.",
+      "macOS can open browser and files properly."
+    ]
+  },
+  {
+    "version": "1.0.2",
+    "date": "2019-07-01",
+    "url": "https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.2-RELEASE.msi",
+    "notes": [
+      "File issues on macOS solved (import/export, browser, video selection).",
+      "Native swing adapter for JavaFX.",
+      "Solved multitier file saving.",
+      "Added testing operations.",
+      "Stable version.",
+      "Installer contains Java JRE check on Windows."
+    ]
+  },
+  {
+    "version": "1.0.1",
+    "date": "2019-06-12",
+    "url": "https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.1ga-RELEASE.msi",
+    "notes": [
+      "Unit testing included.",
+      "Valid i18n.",
+      "Exporting register to theme.",
+      "Support for CSV and tab files native on Lince PLUS.",
+      "Desktop app new design with interactive stats."
+    ]
+  },
+  {
+    "version": "1.0.0",
+    "date": "2019-06-10",
+    "url": "https://github.com/observesport/lince-plus/raw/master/lince-PLUS-1.0.0-RELEASE-win.msi",
+    "notes": ["Initial desktop version.", "macOS installer."]
+  }
+]

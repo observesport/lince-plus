@@ -1,0 +1,63 @@
+---
+import { href } from '../lib/site';
+---
+
+<section class="section-tight sponsors">
+  <div class="container">
+    <p class="label">Built with the support of</p>
+    <ul>
+      <li>
+        <a href="https://jb.gg/OpenSource" rel="noopener" target="_blank" aria-label="JetBrains open source licence">
+          <img src={href('/img/sponsors/jetbrains.png')} alt="JetBrains" width="150" height="84" loading="lazy" />
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://www.ej-technologies.com/products/install4j/overview.html"
+          rel="noopener"
+          target="_blank"
+          aria-label="install4j multi-platform installer builder"
+        >
+          <img src={href('/img/sponsors/install4j.png')} alt="install4j" width="120" height="34" loading="lazy" />
+        </a>
+      </li>
+    </ul>
+    <p class="note">Open-source licences provided by JetBrains and ej-technologies.</p>
+  </div>
+</section>
+
+<style>
+  .sponsors {
+    text-align: center;
+    border-top: 1px solid var(--border-2);
+  }
+  .label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin-bottom: 24px;
+  }
+  ul {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  img {
+    opacity: 0.85;
+  }
+  a:hover img {
+    opacity: 1;
+  }
+  .note {
+    color: var(--fg-3);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+</style>

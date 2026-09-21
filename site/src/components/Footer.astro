@@ -1,0 +1,142 @@
+---
+import Logo from './Logo.astro';
+import { CONTACT_EMAIL, LEGACY_LINCE_URL, REPO_URL, href } from '../lib/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container grid">
+    <div class="about">
+      <a class="brand" href={href('/')}>
+        <Logo size={26} />
+        <span class="wordmark">LINCE <span>PLUS</span></span>
+      </a>
+      <p>
+        Free, open-source software for systematic observation studies in sports
+        and health. Developed with the collaboration of INEFC Catalunya.
+      </p>
+    </div>
+    <div>
+      <h4>Project</h4>
+      <ul>
+        <li><a href={REPO_URL} rel="noopener" target="_blank">GitHub repository</a></li>
+        <li><a href={`${REPO_URL}/releases`} rel="noopener" target="_blank">All releases</a></li>
+        <li><a href={`${REPO_URL}/issues`} rel="noopener" target="_blank">Report a bug</a></li>
+        <li><a href={href('/changelog')}>Changelog</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Learn</h4>
+      <ul>
+        <li>
+          <a href="https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g" rel="noopener" target="_blank"
+            >YouTube channel</a
+          >
+        </li>
+        <li>
+          <a href="http://learning.albertosoto.es/lince-plus-guide_en.html" rel="noopener" target="_blank"
+            >Online guide (EN)</a
+          >
+        </li>
+        <li>
+          <a href="http://learning.albertosoto.es/lince-plus-guide.html" rel="noopener" target="_blank"
+            >Guía online (ES)</a
+          >
+        </li>
+        <li><a href={`${REPO_URL}/wiki`} rel="noopener" target="_blank">Wiki</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul>
+        <li><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
+        <li><a href={href('/privacy-mobile/')}>iOS app privacy policy</a></li>
+        <li><a href={LEGACY_LINCE_URL}>Legacy Lince 1.4 (Windows)</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container bottom">
+    <small>
+      &copy; {year} LINCE PLUS &middot; Alberto Soto Fernández &middot; GPL-3.0 &middot;
+      English, Spanish, Catalan and German interface
+    </small>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--bg-2);
+    padding: 64px 0 28px;
+    margin-top: 48px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--fg-brand);
+    margin-bottom: 14px;
+  }
+  .brand:hover {
+    text-decoration: none;
+  }
+  .wordmark {
+    font-weight: 800;
+    font-style: italic;
+    color: var(--fg-1);
+  }
+  .wordmark span {
+    color: var(--fg-brand);
+  }
+  .about p {
+    font-size: 0.92rem;
+    max-width: 38ch;
+  }
+  h4 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-brand);
+    margin-bottom: 16px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  ul a {
+    color: var(--fg-2);
+    font-size: 0.92rem;
+  }
+  ul a:hover {
+    color: var(--fg-1);
+  }
+  .bottom {
+    padding-top: 22px;
+    border-top: 1px solid var(--border-1);
+    color: var(--fg-3);
+    font-size: 0.8rem;
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .about {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 520px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

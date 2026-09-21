@@ -1,0 +1,32 @@
+[
+  {
+    "icon": "clipboard",
+    "title": "Observation Instruments",
+    "body": "Build criteria and categories, code behaviour against video frame by frame, and keep several observers on the same register."
+  },
+  {
+    "icon": "pattern",
+    "title": "T-Pattern Explorer",
+    "body": "Detect repeating temporal patterns in coded observations. Tune minimum occurrences, significance and granularity, then jump to every occurrence in the video."
+  },
+  {
+    "icon": "sparkles",
+    "title": "Predictive Assistant",
+    "body": "While you code, LINCE PLUS suggests the next likely events with expected timing and a confidence score."
+  },
+  {
+    "icon": "activity",
+    "title": "Sensor Sync",
+    "body": "Overlay heart rate, accelerometer and gyroscope streams on the video timeline with a single synchronised playhead."
+  },
+  {
+    "icon": "code",
+    "title": "Python Research Notebook",
+    "body": "An in-app notebook with pandas, numpy, matplotlib and scipy, with your observation data preloaded as a DataFrame."
+  },
+  {
+    "icon": "share",
+    "title": "Agreement And Exports",
+    "body": "Inter-observer agreement with kappa indices, PDF reports, and exports to Theme 5/6, GSEQ, Hoisan and Excel."
+  }
+]

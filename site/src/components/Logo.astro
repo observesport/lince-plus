@@ -1,0 +1,19 @@
+---
+// Lynx-head mark from the Lince Plus design system. `fill: currentColor` in
+// the SVG lets the colour follow the surrounding text.
+interface Props {
+  size?: number;
+}
+const { size = 28 } = Astro.props;
+---
+
+<svg
+  class="logo"
+  width={size}
+  height={size}
+  viewBox="0 0 404.63 410.18"
+  aria-hidden="true"
+  focusable="false"
+>
+  <use href="#lince-logo-mark"></use>
+</svg>
