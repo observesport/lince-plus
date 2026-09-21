@@ -3,10 +3,11 @@ name: Java CI with Maven
 # Staged release pipeline:
 #
 #   build -> test -> bundle-installer -> deploy -> publish-installer -> update-docs
+#   build-site (independent, every branch) ----------------------^
 #
 # How far a run goes depends on where it runs:
 #
-#   feature branches / PRs  build + test
+#   feature branches / PRs  build + test + build-site
 #   develop                 ... + bundle-installer (verified, not uploaded)
 #   master (non-SNAPSHOT)   ... + deploy + publish-installer + update-docs
 #
@@ -14,6 +15,11 @@ name: Java CI with Maven
 # the installers they advertise exist. `update-docs` additionally sits behind
 # a protected environment (manual approval) and re-verifies via the API that
 # the release is published with all four installers attached before it runs.
+#
+# The website is an Astro project under site/. `build-site` builds it on every
+# push so a broken site fails a PR, and uploads the result as the Pages
+# artifact; `update-docs` only deploys that artifact once the release is
+# verified.
 #
 # NOTE: GitHub's automatic "pages build and deployment" must be turned OFF for
 # the docs gate to mean anything. See docs/CI.md for the one-time repo setting.
@@ -24,6 +30,15 @@ on:
   pull_request:
     branches: [ master, develop ]
   workflow_dispatch:
+    inputs:
+      preview:
+        description: 'Deploy the website to a temporary surge.sh URL'
+        type: boolean
+        default: false
+      keep_preview:
+        description: 'Keep the surge.sh preview alive (skip teardown)'
+        type: boolean
+        default: false
 
 concurrency:
   # Release runs must never be cancelled midway, or a release can end up with
@@ -337,6 +352,168 @@ jobs:
             ./installers/lince-plus_unix_${{ env.FULL_FILE_VERSION }}_linux-x64.sh
 
   # ---------------------------------------------------------------------------
+  # BUILD SITE - build the Astro website under site/ and upload it as the
+  #    GitHub Pages artifact. Runs on every branch and PR, independently of the
+  #    Maven reactor, so a broken site is caught before it reaches master.
+  #    Nothing is deployed here; `update-docs` deploys this artifact.
+  # ---------------------------------------------------------------------------
+  build-site:
+    name: Build website
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: site/.nvmrc
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  # ---------------------------------------------------------------------------
+  # PREVIEW SITE (optional) - publish the website to a temporary surge.sh URL,
+  #    smoke-test it there, and tear it down again in `preview-teardown`.
+  #
+  #    Opt-in: only does anything when the SURGE_TOKEN secret exists. Runs on
+  #    pull requests, or on a manual run with the `preview` input ticked.
+  #    The site is rebuilt with SITE_BASE=/ because surge serves it from the
+  #    root of its own host, not under /lince-plus.
+  # ---------------------------------------------------------------------------
+  preview-site:
+    name: Preview website (surge.sh)
+    needs: build-site
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && inputs.preview)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: site-preview
+      url: ${{ steps.domain.outputs.url }}
+    env:
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+    outputs:
+      domain: ${{ steps.domain.outputs.domain }}
+      deployed: ${{ steps.deploy.outcome == 'success' }}
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - name: Check SURGE_TOKEN
+        if: env.SURGE_TOKEN == ''
+        run: |
+          echo "::notice::SURGE_TOKEN is not set - skipping the surge.sh preview. Add the secret to enable it (see docs/CI.md)."
+
+      - uses: actions/checkout@v4
+        if: env.SURGE_TOKEN != ''
+
+      - name: Set up Node
+        if: env.SURGE_TOKEN != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: site/.nvmrc
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      # One stable domain per PR (redeploys overwrite it) or per branch.
+      - name: Resolve preview domain
+        if: env.SURGE_TOKEN != ''
+        id: domain
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SLUG="pr${{ github.event.pull_request.number }}"
+          else
+            SLUG="$(echo "${GITHUB_REF_NAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g' | cut -c1-40)"
+          fi
+          DOMAIN="lince-plus-${SLUG}.surge.sh"
+          {
+            echo "domain=$DOMAIN"
+            echo "url=https://$DOMAIN"
+          } >> "$GITHUB_OUTPUT"
+          echo "Preview domain: https://$DOMAIN"
+
+      - name: Install dependencies
+        if: env.SURGE_TOKEN != ''
+        run: npm ci
+
+      - name: Build site for the preview host
+        if: env.SURGE_TOKEN != ''
+        env:
+          SITE_URL: ${{ steps.domain.outputs.url }}
+          SITE_BASE: /
+        run: npm run build
+
+      - name: Deploy to surge.sh
+        if: env.SURGE_TOKEN != ''
+        id: deploy
+        run: npx --yes surge ./dist "${{ steps.domain.outputs.domain }}" --token "$SURGE_TOKEN"
+
+      - name: Validate the preview
+        if: env.SURGE_TOKEN != ''
+        run: scripts/smoke.sh "${{ steps.domain.outputs.url }}"
+
+      - name: Summary
+        if: env.SURGE_TOKEN != ''
+        run: |
+          {
+            echo "### Website preview"
+            echo ""
+            echo "- URL: ${{ steps.domain.outputs.url }}"
+            echo "- Smoke test: passed"
+            if [ "${{ inputs.keep_preview }}" = "true" ]; then
+              echo "- Teardown: skipped (keep_preview). Remove it later with a manual run, or: \`npx surge teardown ${{ steps.domain.outputs.domain }}\`"
+            else
+              echo "- Teardown: runs in the \`preview-teardown\` job once validation is done"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # PREVIEW TEARDOWN - remove the temporary surge.sh site after validation.
+  #
+  #    Runs whenever a preview was deployed, even if the smoke test failed, so
+  #    nothing is left behind. Skipped when a manual run asked to keep it.
+  #    The `site-preview-teardown` environment is optional: give it a required
+  #    reviewer and the teardown waits for a human to sign the preview off.
+  # ---------------------------------------------------------------------------
+  preview-teardown:
+    name: Teardown website preview
+    needs: preview-site
+    if: >-
+      always() &&
+      needs.preview-site.outputs.deployed == 'true' &&
+      !(github.event_name == 'workflow_dispatch' && inputs.keep_preview)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: site-preview-teardown
+    env:
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+      DOMAIN: ${{ needs.preview-site.outputs.domain }}
+    steps:
+      - name: Tear down surge.sh preview
+        run: |
+          npx --yes surge teardown "$DOMAIN" --token "$SURGE_TOKEN"
+          echo "Removed https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
   # 6. UPDATE DOCS - website + lince-version.json (the in-app update trigger).
   #
   # Gated twice:
@@ -346,7 +523,7 @@ jobs:
   # ---------------------------------------------------------------------------
   update-docs:
     name: Update docs
-    needs: [ build, publish-installer ]
+    needs: [ build, build-site, publish-installer ]
     if: needs.build.outputs.IS_RELEASE == 'true'
     runs-on: ubuntu-latest
     environment:
@@ -414,18 +591,8 @@ jobs:
           fi
           echo "lince-version.json matches the release: $JSON_VERSION"
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Build docs site with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./docs
-          destination: ./_site
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-
+      # The site itself was built and uploaded by `build-site` in this same
+      # run, from the same commit. Only the deployment happens here.
       - name: Deploy to GitHub Pages
         id: pages
         uses: actions/deploy-pages@v4

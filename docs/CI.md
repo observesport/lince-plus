@@ -16,7 +16,10 @@ build -> test -> bundle-installer -> deploy -> publish-installer -> update-docs
 | `bundle-installer` | Runs Install4j and verifies all four installers exist |
 | `deploy` | `mvn deploy` to GitHub Packages |
 | `publish-installer` | Attaches the four installers to the `v<version>` release and publishes it |
-| `update-docs` | Publishes the website and the `lince-version.json` that triggers the in-app update notice |
+| `build-site` | Builds the Astro website under `site/` and uploads it as the Pages artifact (every branch, independent of Maven) |
+| `preview-site` | Optional. Deploys the website to a temporary surge.sh URL and smoke-tests it there (PRs, or manual runs with `preview`) |
+| `preview-teardown` | Removes the surge.sh preview once validation is done |
+| `update-docs` | Deploys the website built by `build-site`; `lince-version.json` on `master` is what triggers the in-app update notice |
 
 ## How far a run goes
 
@@ -24,7 +27,7 @@ The pipeline is tiered by where it runs, so branches only pay for what they need
 
 | Trigger | Stages |
 | --- | --- |
-| Feature branch push, or any PR | `build` -> `test` |
+| Feature branch push, or any PR | `build` -> `test`, plus `build-site` |
 | `develop` | ... + `bundle-installer` (built and verified, **not** uploaded or published) |
 | `master`, non-SNAPSHOT | ... + `deploy` -> `publish-installer` -> `update-docs` |
 
@@ -82,8 +85,8 @@ this workflow.
 > Settings -> Pages -> Build and deployment -> Source: **GitHub Actions**
 
 Switching the source from "Deploy from a branch" to "GitHub Actions" hands
-control to `update-docs`. The site content still comes from `docs/`; only the
-trigger changes.
+control to `update-docs`. The site is the Astro project under `site/` (see
+`site/README.md`); `docs/` no longer holds a Jekyll site.
 
 ### 2. Create the `docs-release` environment with required reviewers
 
@@ -92,6 +95,32 @@ trigger changes.
 
 Without required reviewers the environment exists but never pauses, so the
 "manual" stage would run automatically.
+
+## Website previews on surge.sh (optional)
+
+`preview-site` publishes the website to `https://lince-plus-pr<N>.surge.sh`
+(or `lince-plus-<branch>.surge.sh` on a manual run), runs
+`site/scripts/smoke.sh` against the live URL, and `preview-teardown` removes it
+again. The URL shows up as the `site-preview` deployment on the PR.
+
+It is opt-in and does nothing until the secret exists:
+
+> Settings -> Secrets and variables -> Actions -> New repository secret
+> -> `SURGE_TOKEN` = output of `npx surge token` for the surge.sh account that
+> should own the preview domains
+
+Runs:
+
+| Trigger | Behaviour |
+| --- | --- |
+| Pull request | Deploy, smoke-test, tear down. The whole cycle is automatic. |
+| Manual run, `preview` ticked | Same as above for the selected branch. |
+| Manual run, `preview` + `keep_preview` ticked | Deploy and smoke-test, keep the site up. Remove it later with `npx surge teardown <domain>`. |
+
+Teardown always runs when a deploy happened, even if the smoke test failed, so
+nothing is left behind. To add a human sign-off, create the
+`site-preview-teardown` environment with required reviewers: the teardown then
+waits until someone approves it, and the preview stays reachable meanwhile.
 
 ## Releasing
 
@@ -114,4 +143,6 @@ has been announced yet, and the release can be deleted and rebuilt.
   artifact, so the binaries that get verified are the ones that get published.
 - `update-docs` fails if `lince-version.json` disagrees with the released
   version. Update it as part of the release commit (the `release-notes` skill
-  does this).
+  does this), together with the new entry in `site/src/data/releases.json`.
+- `build-site` runs on every push, so a site that fails to build blocks a PR
+  the same way failing tests do. It never deploys; only `update-docs` does.
