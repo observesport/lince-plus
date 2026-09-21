@@ -52,7 +52,7 @@ export const ui = {
       cap8: 'Video, drawing and pose modes, picture-in-picture and fullscreen',
       tabNotebook: 'Notebooks',
       tabApi: 'API',
-      registerLede: 'Several observers code the same session while video, register and sensor streams stay synchronised on one timeline. Agreement and T-Patterns are computed right there.',
+      registerLede: 'Several observers code the same session while video, register and sensor streams stay synchronised on one timeline. Agreement and patterns are computed right there.',
       notebookLede: 'Run Jupyter notebooks inside LINCE PLUS Desktop. Your observation data is preloaded as a DataFrame, with pandas, numpy, matplotlib and scipy ready to use and one-click templates to start from.',
       notebookAlt: 'LINCE PLUS Research page: a Jupyter notebook with pandas code plotting observation codes and a pie chart by criterion',
       apiLede: 'Everything the desktop app does is behind a local REST API with an OpenAPI description. Connect from any tool or language: R, Python, MATLAB, a spreadsheet or your own scripts.',
