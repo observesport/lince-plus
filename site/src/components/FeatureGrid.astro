@@ -1,13 +1,14 @@
 ---
 import features from '../data/features.json';
+import { getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 
 const icons: Record<string, string> = {
-  clipboard:
-    '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8 10h8M8 14h8M8 18h5"/>',
-  pattern:
-    '<path d="M3 12h3l2-6 3 12 3-9 2 3h5"/>',
-  sparkles:
-    '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/>',
+  clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8 10h8M8 14h8M8 18h5"/>',
+  pose: '<circle cx="12" cy="4" r="2"/><path d="M12 6v6M12 12l-4 8M12 12l4 8M6 9l6-1 6 1"/>',
+  pattern: '<path d="M3 12h3l2-6 3 12 3-9 2 3h5"/>',
   activity: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
   code: '<path d="m8 6-6 6 6 6M16 6l6 6-6 6"/>',
   share:
@@ -15,16 +16,12 @@ const icons: Record<string, string> = {
 };
 ---
 
-<section id="features" class="section">
+<section id="features" class="section" data-section="features">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Features</span>
-      <h2>Everything A Behavioural Study Needs.</h2>
-      <p class="lede">
-        Observation, video coding, agreement, pattern detection and analysis in
-        one desktop application, interoperable with the tools the research
-        community already uses.
-      </p>
+      <span class="eyebrow">{t('features.eyebrow')}</span>
+      <h2>{t('features.title')}</h2>
+      <p class="lede">{t('features.lede')}</p>
     </div>
     <div class="grid">
       {features.map((f) => (
@@ -41,11 +38,11 @@ const icons: Record<string, string> = {
               stroke-linecap="round"
               stroke-linejoin="round"
               aria-hidden="true"
-              set:html={icons[f.icon] ?? icons.sparkles}
+              set:html={icons[f.icon] ?? icons.pattern}
             />
           </div>
-          <h3>{f.title}</h3>
-          <p>{f.body}</p>
+          <h3>{f.title[locale]}</h3>
+          <p>{f.body[locale]}</p>
         </article>
       ))}
     </div>
@@ -55,7 +52,7 @@ const icons: Record<string, string> = {
 <style>
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
   }
   .icon {
@@ -78,12 +75,12 @@ const icons: Record<string, string> = {
   }
   @media (max-width: 900px) {
     .grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
   @media (max-width: 560px) {
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

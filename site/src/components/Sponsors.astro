@@ -1,13 +1,17 @@
 ---
 import { href } from '../lib/site';
+import { getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 ---
 
-<section class="section-tight sponsors">
+<section class="section-tight sponsors" data-section="sponsors">
   <div class="container">
-    <p class="label">Built with the support of</p>
+    <p class="label">{t('sponsors.label')}</p>
     <ul>
       <li>
-        <a href="https://jb.gg/OpenSource" rel="noopener" target="_blank" aria-label="JetBrains open source licence">
+        <a href="https://jb.gg/OpenSource" rel="noopener" target="_blank" aria-label="JetBrains" data-ga="sponsor-jetbrains">
           <img src={href('/img/sponsors/jetbrains.png')} alt="JetBrains" width="150" height="84" loading="lazy" />
         </a>
       </li>
@@ -16,13 +20,14 @@ import { href } from '../lib/site';
           href="https://www.ej-technologies.com/products/install4j/overview.html"
           rel="noopener"
           target="_blank"
-          aria-label="install4j multi-platform installer builder"
+          aria-label="install4j"
+          data-ga="sponsor-install4j"
         >
           <img src={href('/img/sponsors/install4j.png')} alt="install4j" width="120" height="34" loading="lazy" />
         </a>
       </li>
     </ul>
-    <p class="note">Open-source licences provided by JetBrains and ej-technologies.</p>
+    <p class="note">{t('sponsors.note')}</p>
   </div>
 </section>
 

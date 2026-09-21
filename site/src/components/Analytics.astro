@@ -1,0 +1,62 @@
+---
+// Google Analytics 4. Same property as lince-plus.com (see lib/site.ts), so
+// every hit carries `app_mode: lince-plus-desktop-site` as a config-level
+// parameter and as a user property, which lets the property be segmented by
+// site. Clicks on links are sent as events with the section they came from.
+import { GA_MEASUREMENT_ID, GA_APP_MODE } from '../lib/site';
+---
+
+<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+></script>
+<script is:inline define:vars={{ GA_MEASUREMENT_ID, GA_APP_MODE }}>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('set', 'user_properties', { app_mode: GA_APP_MODE });
+  gtag('config', GA_MEASUREMENT_ID, {
+    app_mode: GA_APP_MODE,
+    site_name: GA_APP_MODE,
+  });
+
+  // Click tracking. Every anchor click becomes one event:
+  //   file_download  installer or binary links (.dmg, .exe, .sh, .msi)
+  //   click          everything else, with `outbound` for other hosts
+  // Parameters: link_url, link_text, link_id (data-ga), section (closest
+  // section/header/footer id or data-section), outbound, file_extension.
+  document.addEventListener(
+    'click',
+    function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!a) return;
+      var url;
+      try {
+        url = new URL(a.href, location.href);
+      } catch (err) {
+        return;
+      }
+      var ext = (url.pathname.match(/\.([a-z0-9]{2,4})$/i) || [])[1];
+      var isFile = /^(dmg|exe|sh|msi|zip|pdf)$/i.test(ext || '');
+      var scope = a.closest('[data-section], section, header, footer, nav');
+      var params = {
+        app_mode: GA_APP_MODE,
+        link_url: url.href,
+        link_text: (a.getAttribute('data-ga-label') || a.textContent || '').trim().slice(0, 100),
+        link_id: a.getAttribute('data-ga') || undefined,
+        section: scope ? scope.getAttribute('data-section') || scope.id || scope.tagName.toLowerCase() : undefined,
+        outbound: url.host !== location.host,
+        page_path: location.pathname,
+      };
+      if (isFile) {
+        params.file_extension = ext.toLowerCase();
+        params.file_name = url.pathname.split('/').pop();
+        gtag('event', 'file_download', params);
+      } else {
+        gtag('event', 'click', params);
+      }
+    },
+    { capture: true }
+  );
+</script>

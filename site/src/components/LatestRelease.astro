@@ -1,42 +1,53 @@
 ---
 // The signature teal panel: latest release with direct installer links.
 import releases from '../data/releases.json';
-import { INSTALLERS, RELEASE_URL, VERSION, formatDate, href } from '../lib/site';
+import version from '../../../lince-version.json';
+import { INSTALLERS, RELEASE_URL, VERSION } from '../lib/site';
+import { formatDate, getLocale, localePath, useTranslations } from '../i18n';
 
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 const latest = releases.find((r) => r.version === VERSION);
-const highlights = (latest?.notes ?? []).slice(0, 3);
+// Spanish readers get the Spanish highlights the desktop app shows; everyone
+// else gets the first English notes.
+const highlights =
+  locale === 'es' && Array.isArray(version.message) && version.message.length > 0
+    ? version.message
+    : (latest?.notes ?? []).slice(0, 3);
+const showLangNote = locale !== 'en' && !(locale === 'es' && highlights === version.message);
 ---
 
-<section class="latest" id="download">
+<section class="latest" id="download" data-section="latest-release">
   <div class="container grid">
     <div>
-      <span class="eyebrow">Latest release</span>
-      <h2>v{VERSION}{latest?.date && <span class="date"> &middot; {formatDate(latest.date)}</span>}</h2>
-      {latest?.summary && <p class="summary">{latest.summary}</p>}
+      <span class="eyebrow">{t('latest.eyebrow')}</span>
+      <h2>v{VERSION}{latest?.date && <span class="date"> &middot; {formatDate(latest.date, locale)}</span>}</h2>
+      {locale === 'en' && latest?.summary && <p class="summary">{latest.summary}</p>}
       {highlights.length > 0 && (
         <ul class="highlights">
           {highlights.map((n) => <li>{n}</li>)}
         </ul>
       )}
+      {showLangNote && <p class="lang-note">{t('latest.notesLang')}</p>}
       <div class="links">
-        <a href={RELEASE_URL} rel="noopener" target="_blank">Release on GitHub</a>
-        <a href={href('/changelog')}>Full changelog</a>
+        <a href={RELEASE_URL} rel="noopener" target="_blank" data-ga="latest-github">{t('latest.github')}</a>
+        <a href={localePath(locale, '/changelog')} data-ga="latest-changelog">{t('latest.changelog')}</a>
       </div>
     </div>
     <div class="downloads">
-      <span class="eyebrow">Download</span>
+      <span class="eyebrow">{t('latest.download')}</span>
       <ul>
         {INSTALLERS.map((i) => (
           <li>
-            <a class="btn btn-white" href={i.url} download>
+            <a class="btn btn-white" href={i.url} download data-ga={`download-${i.id}`}>
               <span class="os">{i.os}</span>
               <span class="sep">&middot;</span>
-              <span class="label">{i.label}</span>
+              <span class="label">{t(`installers.${i.id}`)}</span>
             </a>
           </li>
         ))}
       </ul>
-      <p class="hint">Installers bundle their own Java runtime. Nothing else to install.</p>
+      <p class="hint">{t('latest.hint')}</p>
     </div>
   </div>
 </section>
@@ -49,7 +60,7 @@ const highlights = (latest?.notes ?? []).slice(0, 3);
   }
   .grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: 56px;
     align-items: start;
   }
@@ -82,6 +93,10 @@ const highlights = (latest?.notes ?? []).slice(0, 3);
   }
   .highlights li {
     margin-bottom: 6px;
+  }
+  .lang-note {
+    color: var(--fg-on-teal-2);
+    font-size: 0.85rem;
   }
   .links {
     display: flex;
@@ -123,7 +138,7 @@ const highlights = (latest?.notes ?? []).slice(0, 3);
   }
   @media (max-width: 860px) {
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 36px;
     }
   }

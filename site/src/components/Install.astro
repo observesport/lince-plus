@@ -1,52 +1,50 @@
 ---
 import { INSTALLERS, href } from '../lib/site';
+import { getLocale, useTranslations } from '../i18n';
 
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 const mac = INSTALLERS.filter((i) => i.os === 'macOS');
 const win = INSTALLERS.find((i) => i.os === 'Windows')!;
 const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
 ---
 
-<section id="install" class="section">
+<section id="install" class="section" data-section="install">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Install</span>
-      <h2>Up And Running In Five Minutes.</h2>
-      <p class="lede">
-        Every installer ships with its own Java runtime. The builds are not
-        notarised or code-signed, so the operating system may ask you to
-        confirm the first launch.
-      </p>
+      <span class="eyebrow">{t('install.eyebrow')}</span>
+      <h2>{t('install.title')}</h2>
+      <p class="lede">{t('install.lede')}</p>
     </div>
 
     <div class="grid">
       <article class="card">
         <header>
           <span class="step">1</span>
-          <h3>macOS</h3>
+          <h3>{t('install.mac')}</h3>
         </header>
         <ol>
-          <li>Download the <code>.dmg</code> for your chip and drag LINCE PLUS to Applications.</li>
-          <li>
-            On first launch macOS may block the app. Open <strong>System Settings &rarr; Privacy &amp; Security</strong>
-            and choose <em>Open Anyway</em>.
-          </li>
+          <li set:html={t('install.macStep1')} />
+          <li set:html={t('install.macStep2')} />
         </ol>
         <div class="dl">
           {mac.map((i) => (
-            <a class="btn btn-teal btn-sm" href={i.url} download>{i.label}</a>
+            <a class="btn btn-teal btn-sm" href={i.url} download data-ga={`install-${i.id}`}>
+              {t(`installers.${i.id}`)}
+            </a>
           ))}
         </div>
         <details>
-          <summary>What the security dialog looks like</summary>
+          <summary>{t('install.macDialog')}</summary>
           <img
             src={href('/img/mac-install-warning.png')}
-            alt="macOS dialog warning that LINCE PLUS cannot be verified, with the Open Anyway option"
+            alt={t('install.macDialogAlt')}
             loading="lazy"
             width="1170"
             height="629"
           />
           <p>
-            Apple's guide:
+            {t('install.appleGuide')}
             <a href="https://support.apple.com/en-us/HT202491" rel="noopener" target="_blank">English</a> &middot;
             <a href="https://support.apple.com/es-es/guide/mac-help/mh40616/mac" rel="noopener" target="_blank">Español</a>
           </p>
@@ -56,31 +54,31 @@ const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
       <article class="card">
         <header>
           <span class="step">2</span>
-          <h3>Windows</h3>
+          <h3>{t('install.windows')}</h3>
         </header>
         <ol>
-          <li>Download and run the <code>.exe</code> installer.</li>
-          <li>If SmartScreen appears, choose <em>More info &rarr; Run anyway</em>.</li>
-          <li>Follow the wizard. Windows 10 or later, x64.</li>
+          <li set:html={t('install.winStep1')} />
+          <li set:html={t('install.winStep2')} />
+          <li set:html={t('install.winStep3')} />
         </ol>
         <div class="dl">
-          <a class="btn btn-teal btn-sm" href={win.url} download>Windows x64</a>
+          <a class="btn btn-teal btn-sm" href={win.url} download data-ga="install-windows">{t('install.winButton')}</a>
         </div>
       </article>
 
       <article class="card">
         <header>
           <span class="step">3</span>
-          <h3>Linux</h3>
+          <h3>{t('install.linux')}</h3>
         </header>
         <ol>
-          <li>Download the <code>.sh</code> installer and make it executable.</li>
-          <li>Run it. The default install path is <code>/opt/lince-plus</code>, with menu and desktop shortcuts.</li>
+          <li set:html={t('install.linuxStep1')} />
+          <li set:html={t('install.linuxStep2')} />
         </ol>
         <pre><code>chmod +x {linux.file}
 ./{linux.file}</code></pre>
         <div class="dl">
-          <a class="btn btn-teal btn-sm" href={linux.url} download>Linux x64</a>
+          <a class="btn btn-teal btn-sm" href={linux.url} download data-ga="install-linux">{t('install.linuxButton')}</a>
         </div>
       </article>
     </div>
@@ -90,7 +88,7 @@ const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
 <style>
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
     align-items: start;
   }
@@ -110,6 +108,7 @@ const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
     border-radius: 50%;
     background: var(--teal-400);
     color: var(--fg-on-teal);
+    font-family: var(--font-display);
     font-weight: 800;
     display: inline-flex;
     align-items: center;
@@ -125,7 +124,7 @@ const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
   ol li {
     margin-bottom: 8px;
   }
-  strong {
+  ol :global(strong) {
     color: var(--fg-1);
   }
   .dl {
@@ -170,7 +169,7 @@ const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
   }
   @media (max-width: 960px) {
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

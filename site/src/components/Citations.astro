@@ -1,26 +1,27 @@
 ---
 import citations from '../data/citations.json';
+import { getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 ---
 
-<section id="research" class="section">
+<section id="research" class="section" data-section="research">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Research</span>
-      <h2>Cite LINCE PLUS In Your Work.</h2>
-      <p class="lede">
-        LINCE PLUS is developed through doctoral research with INEFC Catalunya.
-        If it supports a study, please cite the most relevant paper.
-      </p>
+      <span class="eyebrow">{t('research.eyebrow')}</span>
+      <h2>{t('research.title')}</h2>
+      <p class="lede">{t('research.lede')}</p>
     </div>
     <ol class="citations">
-      {citations.map((c) => (
+      {citations.map((c, i) => (
         <li class="card">
           <span class="year mono">{c.year}</span>
           <div>
             <h3>{c.title}</h3>
             <p class="authors">{c.authors}</p>
             <p class="meta"><em>{c.journal}</em>, {c.details}</p>
-            <a class="mono" href={c.url} rel="noopener" target="_blank">doi:{c.doi}</a>
+            <a class="mono" href={c.url} rel="noopener" target="_blank" data-ga={`citation-${c.year}-${i}`}>doi:{c.doi}</a>
           </div>
         </li>
       ))}

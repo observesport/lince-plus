@@ -1,92 +1,63 @@
 ---
 import { RELEASE_URL, VERSION, href } from '../lib/site';
+import { getLocale, localePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 ---
 
-<section class="hero">
+<section class="hero" data-section="hero">
   <div class="container hero-grid">
     <div class="copy">
-      <span class="eyebrow">Open source &middot; v{VERSION} &middot; macOS, Windows and Linux</span>
-      <h1>Systematic Observation For Sports And Health Research.</h1>
-      <p class="lede">
-        LINCE PLUS is a free desktop application for behavioural video analysis.
-        Build observation instruments, code video frame by frame, detect
-        temporal patterns, sync sensor data and analyse everything in a built-in
-        Python notebook.
-      </p>
+      <span class="eyebrow">{t('hero.eyebrow', { version: VERSION })}</span>
+      <h1>{t('hero.title')}</h1>
+      <p class="lede">{t('hero.lede')}</p>
       <div class="cta-row">
-        <a class="btn btn-teal" href={href('/#install')}>Download v{VERSION}</a>
-        <a class="btn btn-outline" href={RELEASE_URL} rel="noopener" target="_blank">Release notes</a>
+        <a class="btn btn-teal" href={localePath(locale, '/#install')} data-ga="hero-download">
+          {t('hero.download', { version: VERSION })}
+        </a>
+        <a class="btn btn-outline" href={RELEASE_URL} rel="noopener" target="_blank" data-ga="hero-release-notes">
+          {t('hero.notes')}
+        </a>
       </div>
       <ul class="facts">
-        <li><span class="dot ok"></span>Free, no licence required</li>
-        <li><span class="dot"></span>Cited in Behavior Research Methods and Apunts</li>
-        <li><span class="dot"></span>Exports to Theme, GSEQ, Hoisan and Excel</li>
+        <li><span class="dot ok"></span>{t('hero.fact1')}</li>
+        <li><span class="dot"></span>{t('hero.fact2')}</li>
+        <li><span class="dot"></span>{t('hero.fact3')}</li>
       </ul>
     </div>
 
-    <!-- Schematic of a coded register: two observer tracks, a sensor stream,
-         and a detected T-Pattern. Purely decorative. -->
-    <div class="visual" aria-hidden="true">
-      <div class="panel">
-        <div class="panel-head">
-          <span class="title">Register &middot; Session 04</span>
-          <span class="chip chip-teal">T-Pattern found</span>
-        </div>
-        <div class="tracks">
-          <div class="track">
-            <span class="label">Observer A</span>
-            <div class="lane">
-              <i style="left:4%;width:12%"></i>
-              <i style="left:22%;width:7%"></i>
-              <i style="left:41%;width:15%"></i>
-              <i class="hit" style="left:63%;width:9%"></i>
-              <i style="left:80%;width:14%"></i>
-            </div>
-          </div>
-          <div class="track">
-            <span class="label">Observer B</span>
-            <div class="lane">
-              <i style="left:5%;width:11%"></i>
-              <i style="left:23%;width:6%"></i>
-              <i style="left:40%;width:16%"></i>
-              <i class="hit" style="left:63%;width:9%"></i>
-              <i style="left:82%;width:12%"></i>
-            </div>
-          </div>
-          <div class="track">
-            <span class="label">Heart rate</span>
-            <div class="lane sensor">
-              <svg viewBox="0 0 400 40" preserveAspectRatio="none">
-                <polyline
-                  points="0,30 30,26 60,28 90,18 120,22 150,12 180,16 210,8 240,14 270,10 300,20 330,16 360,24 400,22"
-                ></polyline>
-              </svg>
-            </div>
-          </div>
-          <div class="playhead"></div>
-        </div>
-        <div class="panel-foot">
-          <span class="mono">00:12:47.08</span>
-          <span class="mono">next: <b>Shot</b> &middot; 0.82</span>
-        </div>
-      </div>
-    </div>
+    <figure class="visual">
+      <img
+        src={href('/img/ai-studio-player.png')}
+        alt={t('hero.imageAlt')}
+        width="792"
+        height="531"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <figcaption>
+        <span class="chip chip-teal">{t('hero.chipPose')}</span>
+        <span class="chip">{t('hero.chipAngles')}</span>
+        <span class="chip">{t('hero.chip3d')}</span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
 <style>
   .hero {
-    padding: 96px 0 80px;
+    padding: 88px 0 72px;
     border-bottom: 1px solid var(--border-2);
   }
   .hero-grid {
     display: grid;
-    grid-template-columns: 1.05fr 1fr;
-    gap: 64px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 56px;
     align-items: center;
   }
   .copy .lede {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     max-width: 54ch;
     margin-bottom: 2rem;
   }
@@ -120,120 +91,28 @@ import { RELEASE_URL, VERSION, href } from '../lib/site';
   .dot.ok {
     background: var(--status-ok);
   }
-
   .visual {
-    position: relative;
+    margin: 0;
   }
-  .panel {
-    background: var(--bg-3);
+  .visual img {
     border-radius: var(--radius-lg);
-    padding: 22px;
     box-shadow: var(--shadow-lg);
+    background: var(--bg-3);
   }
-  .panel-head,
-  .panel-foot {
+  figcaption {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    justify-content: center;
   }
-  .panel-head {
-    margin-bottom: 20px;
-  }
-  .panel-head .title {
-    font-weight: 700;
-    font-size: 0.92rem;
-  }
-  .panel-foot {
-    margin-top: 18px;
-    color: var(--fg-3);
-    font-size: 0.8rem;
-  }
-  .panel-foot b {
-    color: var(--fg-1);
-    font-weight: 500;
-  }
-  .tracks {
-    position: relative;
-    display: grid;
-    gap: 14px;
-  }
-  .track {
-    display: grid;
-    grid-template-columns: 88px 1fr;
-    align-items: center;
-    gap: 12px;
-  }
-  .label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--fg-3);
-  }
-  .lane {
-    position: relative;
-    height: 26px;
-    background: var(--ink-800);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-  }
-  .lane i {
-    position: absolute;
-    top: 6px;
-    height: 14px;
-    border-radius: 4px;
-    background: var(--teal-600);
-  }
-  .lane i.hit {
-    background: var(--citron);
-  }
-  .lane.sensor {
-    height: 40px;
-  }
-  .lane.sensor svg {
-    width: 100%;
-    height: 100%;
-  }
-  .lane.sensor polyline {
-    fill: none;
-    stroke: var(--teal-300);
-    stroke-width: 2;
-    vector-effect: non-scaling-stroke;
-  }
-  .playhead {
-    position: absolute;
-    top: -6px;
-    bottom: -6px;
-    left: calc(88px + 12px + 67.5%);
-    width: 2px;
-    background: var(--fg-1);
-    animation: sweep 9s var(--ease-standard) infinite alternate;
-  }
-  @keyframes sweep {
-    from {
-      transform: translateX(-120px);
-    }
-    to {
-      transform: translateX(60px);
-    }
-  }
-
   @media (max-width: 960px) {
     .hero {
-      padding: 64px 0 56px;
+      padding: 56px 0 48px;
     }
     .hero-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 40px;
-    }
-  }
-  @media (max-width: 520px) {
-    .track {
-      grid-template-columns: 72px 1fr;
-    }
-    .playhead {
-      left: calc(72px + 12px + 67.5%);
     }
   }
 </style>

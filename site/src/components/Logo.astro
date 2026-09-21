@@ -1,19 +1,12 @@
 ---
-// Lynx-head mark from the Lince Plus design system. `fill: currentColor` in
-// the SVG lets the colour follow the surrounding text.
+// Lynx mark shared with lince-plus.com (linceIconV2). The symbol is inlined
+// once per page by LogoSprite; the colour follows `currentColor`.
 interface Props {
   size?: number;
 }
 const { size = 28 } = Astro.props;
 ---
 
-<svg
-  class="logo"
-  width={size}
-  height={size}
-  viewBox="0 0 404.63 410.18"
-  aria-hidden="true"
-  focusable="false"
->
+<svg class="logo" width={size} height={size} viewBox="0 0 405 410" aria-hidden="true" focusable="false">
   <use href="#lince-logo-mark"></use>
 </svg>

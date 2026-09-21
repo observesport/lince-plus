@@ -1,22 +1,30 @@
 ---
 import learn from '../data/learn.json';
+import { getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 ---
 
-<section id="learn" class="section-tight learn">
+<section id="learn" class="section-tight learn" data-section="learn">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Learn</span>
-      <h2>Guides, Videos And Workshops.</h2>
+      <span class="eyebrow">{t('learn.eyebrow')}</span>
+      <h2>{t('learn.title')}</h2>
     </div>
     <div class="grid">
-      {learn.map((l) => (
+      {learn.map((l, i) => (
         <article class="card">
-          <h3>{l.title}</h3>
-          <p>{l.body}</p>
+          <h3>{l.title[locale]}</h3>
+          <p>{l.body[locale]}</p>
           <div class="links">
-            <a class="btn btn-outline btn-sm" href={l.url} rel="noopener" target="_blank">{l.cta}</a>
-            {l.alt && (
-              <a class="alt" href={l.alt.url} rel="noopener" target="_blank">{l.alt.label}</a>
+            <a class="btn btn-outline btn-sm" href={l.url} rel="noopener" target="_blank" data-ga={`learn-${i}`}>
+              {l.cta[locale]}
+            </a>
+            {'alt' in l && l.alt && (
+              <a class="alt" href={l.alt.url} rel="noopener" target="_blank" data-ga={`learn-${i}-alt`}>
+                {l.alt.label[locale]}
+              </a>
             )}
           </div>
         </article>
@@ -32,7 +40,7 @@ import learn from '../data/learn.json';
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px;
   }
   .card {
@@ -58,12 +66,12 @@ import learn from '../data/learn.json';
   }
   @media (max-width: 960px) {
     .grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
   @media (max-width: 560px) {
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

@@ -3,10 +3,14 @@
 // so the website can never advertise a version the app does not know about.
 import version from '../../../lince-version.json';
 
-export const SITE_NAME = 'LINCE PLUS';
+export const SITE_NAME = 'LINCE PLUS Desktop';
+export const PRODUCT_NAME = 'LINCE PLUS';
 export const REPO_URL = 'https://github.com/observesport/lince-plus';
 export const CONTACT_EMAIL = 'alberto.soto@gmail.com';
+// Shared GA4 property with lince-plus.com. GA_APP_MODE tags every hit from
+// this site so it can be told apart from the main site and the app.
 export const GA_MEASUREMENT_ID = 'G-PGTBMEJ65G';
+export const GA_APP_MODE = 'lince-plus-desktop-site';
 
 export const VERSION: string = version.version;
 export const RELEASE_URL: string = version.link;

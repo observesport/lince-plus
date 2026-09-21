@@ -1,65 +1,49 @@
 ---
-import Logo from './Logo.astro';
+import Brand from './Brand.astro';
 import { CONTACT_EMAIL, LEGACY_LINCE_URL, REPO_URL, href } from '../lib/site';
+import { getLocale, localePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer">
+<footer class="footer" data-section="footer">
   <div class="container grid">
     <div class="about">
-      <a class="brand" href={href('/')}>
-        <Logo size={26} />
-        <span class="wordmark">LINCE <span>PLUS</span></span>
-      </a>
-      <p>
-        Free, open-source software for systematic observation studies in sports
-        and health. Developed with the collaboration of INEFC Catalunya.
-      </p>
+      <Brand size={26} />
+      <p>{t('footer.tagline')}</p>
     </div>
     <div>
-      <h4>Project</h4>
+      <h4>{t('footer.project')}</h4>
       <ul>
-        <li><a href={REPO_URL} rel="noopener" target="_blank">GitHub repository</a></li>
-        <li><a href={`${REPO_URL}/releases`} rel="noopener" target="_blank">All releases</a></li>
-        <li><a href={`${REPO_URL}/issues`} rel="noopener" target="_blank">Report a bug</a></li>
-        <li><a href={href('/changelog')}>Changelog</a></li>
+        <li><a href={REPO_URL} rel="noopener" target="_blank" data-ga="footer-repo">{t('footer.repo')}</a></li>
+        <li><a href={`${REPO_URL}/releases`} rel="noopener" target="_blank" data-ga="footer-releases">{t('footer.releases')}</a></li>
+        <li><a href={`${REPO_URL}/issues`} rel="noopener" target="_blank" data-ga="footer-issues">{t('footer.bug')}</a></li>
+        <li><a href={localePath(locale, '/changelog')} data-ga="footer-changelog">{t('footer.changelog')}</a></li>
       </ul>
     </div>
     <div>
-      <h4>Learn</h4>
+      <h4>{t('footer.learn')}</h4>
       <ul>
-        <li>
-          <a href="https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g" rel="noopener" target="_blank"
-            >YouTube channel</a
-          >
-        </li>
-        <li>
-          <a href="http://learning.albertosoto.es/lince-plus-guide_en.html" rel="noopener" target="_blank"
-            >Online guide (EN)</a
-          >
-        </li>
-        <li>
-          <a href="http://learning.albertosoto.es/lince-plus-guide.html" rel="noopener" target="_blank"
-            >Guía online (ES)</a
-          >
-        </li>
-        <li><a href={`${REPO_URL}/wiki`} rel="noopener" target="_blank">Wiki</a></li>
+        <li><a href="https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g" rel="noopener" target="_blank" data-ga="footer-youtube">{t('footer.youtube')}</a></li>
+        <li><a href="http://learning.albertosoto.es/lince-plus-guide_en.html" rel="noopener" target="_blank" data-ga="footer-guide-en">{t('footer.guideEn')}</a></li>
+        <li><a href="http://learning.albertosoto.es/lince-plus-guide.html" rel="noopener" target="_blank" data-ga="footer-guide-es">{t('footer.guideEs')}</a></li>
+        <li><a href={`${REPO_URL}/wiki`} rel="noopener" target="_blank" data-ga="footer-wiki">{t('footer.wiki')}</a></li>
       </ul>
     </div>
     <div>
-      <h4>Contact</h4>
+      <h4>{t('footer.contact')}</h4>
       <ul>
-        <li><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
-        <li><a href={href('/privacy-mobile/')}>iOS app privacy policy</a></li>
-        <li><a href={LEGACY_LINCE_URL}>Legacy Lince 1.4 (Windows)</a></li>
+        <li><a href={`mailto:${CONTACT_EMAIL}`} data-ga="footer-email">{CONTACT_EMAIL}</a></li>
+        <li><a href="https://lince-plus.com" rel="noopener" target="_blank" data-ga="footer-website">{t('footer.website')}</a></li>
+        <li><a href={href('/privacy-mobile/')} data-ga="footer-privacy">{t('footer.privacy')}</a></li>
+        <li><a href={LEGACY_LINCE_URL} data-ga="footer-legacy">{t('footer.legacy')}</a></li>
       </ul>
     </div>
   </div>
   <div class="container bottom">
-    <small>
-      &copy; {year} LINCE PLUS &middot; Alberto Soto Fernández &middot; GPL-3.0 &middot;
-      English, Spanish, Catalan and German interface
-    </small>
+    <small>&copy; {year} {t('footer.bottom')}</small>
   </div>
 </footer>
 
@@ -71,31 +55,14 @@ const year = new Date().getFullYear();
   }
   .grid {
     display: grid;
-    grid-template-columns: 1.6fr repeat(3, 1fr);
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
     gap: 40px;
     margin-bottom: 40px;
-  }
-  .brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--fg-brand);
-    margin-bottom: 14px;
-  }
-  .brand:hover {
-    text-decoration: none;
-  }
-  .wordmark {
-    font-weight: 800;
-    font-style: italic;
-    color: var(--fg-1);
-  }
-  .wordmark span {
-    color: var(--fg-brand);
   }
   .about p {
     font-size: 0.92rem;
     max-width: 38ch;
+    margin-top: 14px;
   }
   h4 {
     font-size: 0.72rem;
@@ -128,7 +95,7 @@ const year = new Date().getFullYear();
   }
   @media (max-width: 860px) {
     .grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
     .about {
       grid-column: 1 / -1;
@@ -136,7 +103,7 @@ const year = new Date().getFullYear();
   }
   @media (max-width: 520px) {
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

@@ -1,23 +1,39 @@
 ---
-import Logo from './Logo.astro';
-import { RELEASE_URL, VERSION, href } from '../lib/site';
+import Brand from './Brand.astro';
+import { RELEASE_URL, VERSION } from '../lib/site';
+import { getLocale, localeNames, localePath, locales, switchLocalePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+const pathname = Astro.url.pathname;
 ---
 
-<header class="nav">
+<header class="nav" data-section="nav">
   <div class="container nav-row">
-    <a class="brand" href={href('/')} aria-label="LINCE PLUS home">
-      <Logo size={30} />
-      <span class="wordmark">LINCE <span>PLUS</span></span>
-    </a>
+    <Brand />
     <nav aria-label="Primary">
-      <a href={href('/#features')}>Features</a>
-      <a href={href('/#install')}>Install</a>
-      <a href={href('/#learn')}>Learn</a>
-      <a href={href('/#research')}>Research</a>
-      <a href={href('/changelog')}>Changelog</a>
-      <a class="btn btn-teal btn-sm nav-cta" href={RELEASE_URL}>
-        Download <span class="mono">v{VERSION}</span>
+      <a href={localePath(locale, '/#features')} data-ga="nav-features">{t('nav.features')}</a>
+      <a href={localePath(locale, '/#install')} data-ga="nav-install">{t('nav.install')}</a>
+      <a href={localePath(locale, '/#learn')} data-ga="nav-learn">{t('nav.learn')}</a>
+      <a href={localePath(locale, '/#research')} data-ga="nav-research">{t('nav.research')}</a>
+      <a href={localePath(locale, '/changelog')} data-ga="nav-changelog">{t('nav.changelog')}</a>
+      <a class="btn btn-teal btn-sm nav-cta" href={RELEASE_URL} data-ga="nav-download">
+        {t('nav.download')} <span class="mono">v{VERSION}</span>
       </a>
+    </nav>
+    <nav class="lang" aria-label={t('nav.language')}>
+      {locales.map((l) => (
+        <a
+          href={switchLocalePath(locale, l, pathname)}
+          hreflang={l}
+          lang={l}
+          title={localeNames[l]}
+          aria-current={l === locale ? 'page' : undefined}
+          data-ga={`lang-${l}`}
+        >
+          {l.toUpperCase()}
+        </a>
+      ))}
     </nav>
   </div>
 </header>
@@ -33,35 +49,14 @@ import { RELEASE_URL, VERSION, href } from '../lib/site';
   .nav-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    gap: 20px;
     height: 72px;
   }
-  .brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--fg-brand);
-  }
-  .brand:hover {
-    text-decoration: none;
-    opacity: 1;
-  }
-  .wordmark {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-style: italic;
-    font-size: 1.05rem;
-    letter-spacing: -0.01em;
-    color: var(--fg-1);
-  }
-  .wordmark span {
-    color: var(--fg-brand);
-  }
-  nav {
+  nav[aria-label='Primary'] {
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 24px;
+    margin-left: auto;
   }
   nav a {
     color: var(--fg-2);
@@ -82,14 +77,42 @@ import { RELEASE_URL, VERSION, href } from '../lib/site';
     font-size: 0.82rem;
     opacity: 0.85;
   }
-  @media (max-width: 860px) {
-    nav a:not(.nav-cta) {
+  .lang {
+    display: flex;
+    gap: 2px;
+    border: 1.5px solid var(--border-1);
+    border-radius: var(--radius-pill);
+    padding: 3px;
+  }
+  .lang a {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    border-radius: var(--radius-pill);
+    color: var(--fg-3);
+  }
+  .lang a[aria-current='page'] {
+    background: var(--teal-400);
+    color: var(--fg-on-teal);
+  }
+  @media (max-width: 960px) {
+    nav[aria-label='Primary'] a:not(.nav-cta) {
       display: none;
     }
   }
-  @media (max-width: 420px) {
+  @media (max-width: 600px) {
     .nav-cta .mono {
       display: none;
+    }
+    .nav-row {
+      gap: 10px;
+    }
+    .nav-row :global(.wordmark) {
+      display: none;
+    }
+    .lang a {
+      padding: 4px 6px;
     }
   }
 </style>

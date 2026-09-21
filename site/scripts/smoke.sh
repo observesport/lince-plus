@@ -69,6 +69,19 @@ fi
 check "$BASE/changelog/" 200
 expect_text "v$VERSION" "changelog lists v$VERSION"
 
+# Localized pages: same content, correct <html lang>, translated navigation.
+for lang in es de ca; do
+  check "$BASE/$lang/" 200
+  expect_text "<html lang=\"$lang\"" "/$lang/ has lang=$lang"
+  expect_text "releases/download/v$VERSION/" "/$lang/ links the v$VERSION installers"
+  check "$BASE/$lang/changelog/" 200
+  expect_text "<html lang=\"$lang\"" "/$lang/changelog/ has lang=$lang"
+done
+expect_text 'hreflang="x-default"' "changelog carries hreflang alternates"
+
+check "$BASE/" 200
+expect_text 'app_mode' "GA4 app_mode tagging present"
+
 check "$BASE/privacy-mobile/" 200
 expect_text "Privacy Policy" "privacy policy renders"
 
