@@ -36,6 +36,12 @@ const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
         <button role="tab" id="tab-player" aria-controls="panel-player" aria-selected="false" tabindex="-1" data-ga="hero-tab-player">
           {t('hero.tabPlayer')}
         </button>
+        <button role="tab" id="tab-notebook" aria-controls="panel-notebook" aria-selected="false" tabindex="-1" data-ga="hero-tab-notebook">
+          {t('hero.tabNotebook')}
+        </button>
+        <button role="tab" id="tab-api" aria-controls="panel-api" aria-selected="false" tabindex="-1" data-ga="hero-tab-api">
+          {t('hero.tabApi')}
+        </button>
       </div>
 
       <!-- Tab 1: schematic of a coded register with two observer tracks, a
@@ -84,6 +90,7 @@ const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
             <span class="mono">{t('hero.next')}: <b>Shot</b> &middot; 0.82</span>
           </div>
         </div>
+        <p class="tab-lede">{t('hero.registerLede')}</p>
       </div>
 
       <!-- Tab 2: the built-in video player with the AI plugins enabled. -->
@@ -103,6 +110,55 @@ const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
             </ul>
           </figcaption>
         </figure>
+      </div>
+
+      <!-- Tab 3: Jupyter notebooks inside the desktop app. -->
+      <div id="panel-notebook" role="tabpanel" aria-labelledby="tab-notebook" class="panel" hidden>
+        <figure class="player">
+          <img
+            src={href('/img/research-notebook.png')}
+            alt={t('hero.notebookAlt')}
+            width="1200"
+            height="615"
+            loading="lazy"
+          />
+          <figcaption>
+            <p>{t('hero.notebookLede')}</p>
+            <div class="chips">
+              <span class="chip chip-teal">Jupyter</span>
+              <span class="chip">pandas</span>
+              <span class="chip">numpy</span>
+              <span class="chip">matplotlib</span>
+              <span class="chip">scipy</span>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Tab 4: the local REST API. Paths are real: springdoc serves
+           /api-docs, AnalysisController is mapped at /register (kappa,
+           krippendorf, percentageAgreement), plus import/export and /file. -->
+      <div id="panel-api" role="tabpanel" aria-labelledby="tab-api" class="panel" hidden>
+        <div class="api">
+          <div class="api-head">
+            <span class="dot-row" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="mono">terminal</span>
+          </div>
+          <pre class="mono"><code><span class="c"># OpenAPI description of the running desktop app</span>
+<span class="k">curl</span> http://localhost:<span class="v">&lt;port&gt;</span>/api-docs
+
+<span class="c"># Python, R, MATLAB, a spreadsheet: any HTTP client</span>
+<span class="k">import</span> requests
+lince = <span class="s">"http://localhost:&lt;port&gt;"</span>
+spec = requests.get(<span class="s">f"{"{"}lince{"}"}/api-docs"</span>).json()
+kappa = requests.get(
+    <span class="s">f"{"{"}lince{"}"}/register/kappa/{"{"}obs_a{"}"}/{"{"}obs_b{"}"}"</span>
+).json()</code></pre>
+        </div>
+        <p class="tab-lede">{t('hero.apiLede')}</p>
+        <ul class="caps">
+          {[1, 2, 3, 4].map((n) => <li>{t(`hero.apiCap${n}`)}</li>)}
+        </ul>
       </div>
     </div>
   </div>
@@ -194,6 +250,7 @@ const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
   /* Tabs */
   .tablist {
     display: inline-flex;
+    flex-wrap: wrap;
     gap: 4px;
     padding: 4px;
     margin-bottom: 16px;
@@ -319,6 +376,72 @@ const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
     to {
       transform: translateX(60px);
     }
+  }
+
+  .tab-lede {
+    margin: 16px 0 10px;
+    color: var(--fg-1);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Tab 4: API terminal card */
+  .api {
+    background: var(--ink-950);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .api-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-3);
+    color: var(--fg-3);
+    font-size: 0.75rem;
+  }
+  .dot-row {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .dot-row i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink-500);
+  }
+  .api pre {
+    margin: 0;
+    padding: 20px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--fg-2);
+    overflow-x: auto;
+  }
+  .api code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+  .api .c {
+    color: var(--fg-3);
+  }
+  .api .k {
+    color: var(--teal-300);
+  }
+  .api .s {
+    color: var(--citron);
+  }
+  .api .v {
+    color: var(--fg-1);
   }
 
   /* Tab 2: video player */
