@@ -478,8 +478,10 @@ jobs:
       run:
         working-directory: site
     steps:
+      # Runs before checkout, so site/ does not exist yet: use the workspace.
       - name: Check SURGE_TOKEN
         if: env.SURGE_TOKEN == ''
+        working-directory: ${{ github.workspace }}
         run: |
           echo "::notice::SURGE_TOKEN is not set - skipping the surge.sh preview. Add the secret to enable it (see docs/CI.md)."
 
