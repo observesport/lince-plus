@@ -1,12 +1,9 @@
 ---
-layout: default
-title: Lince Plus iOS — Privacy Policy
-permalink: /privacy-mobile/
+layout: ../layouts/Prose.astro
+title: Lince Plus iOS Privacy Policy
+description: Privacy policy for the Lince Plus iOS application. The app runs entirely on your device and does not collect, transmit or share personal data.
+updated: '2026-05-26'
 ---
-
-# Lince Plus iOS — Privacy Policy
-
-**Last updated:** 2026-05-26
 
 This privacy policy applies to the **Lince Plus** iOS application ("the App") developed by Alberto Soto Fernández / ObserveSport ("we", "us"). It explains what data the App accesses, how it is used, and where it is stored.
 

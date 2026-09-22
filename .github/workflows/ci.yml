@@ -1,0 +1,342 @@
+name: CI
+
+# Java pipeline for the desktop app:
+#
+#   compile -> test  -> deploy
+#           -> build ->
+#
+#   feature branches / PRs   compile + test
+#   develop                  ... + build (installers verified, not uploaded)
+#   master (non-SNAPSHOT)    ... + deploy (GitHub Packages + GitHub release),
+#                            then dispatches the Site workflow to publish
+#
+# The website has its own workflow (site.yml) and is not part of this one.
+# Pushes that only touch the site, docs or Markdown do not run the Java build.
+
+on:
+  push:
+    branches: [ '**' ]
+    paths-ignore:
+      - 'site/**'
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - '.github/workflows/site.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths-ignore:
+      - 'site/**'
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+
+concurrency:
+  # Never cancel a run on master or develop (a release must not stop halfway
+  # with assets half-published). Feature branches and PRs are cheap to redo,
+  # which also collapses the duplicate push + pull_request run of a PR branch.
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # COMPILE - build the reactor and resolve the version. No side effects.
+  # ---------------------------------------------------------------------------
+  compile:
+    name: Compile
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      file_version: ${{ steps.version.outputs.file_version }}
+      release: ${{ steps.version.outputs.release }}
+      develop: ${{ steps.version.outputs.develop }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # server-id wires up ~/.m2/settings.xml: the root pom resolves from
+      # GitHub Packages, so even a read-only build needs credentials.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Resolve version
+        id: version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f src/pom.xml)
+          FILE_VERSION=${VERSION//./_}
+
+          # Tier the run by branch. On pull_request GITHUB_REF is
+          # refs/pull/N/merge, so a PR never gets past `test`.
+          RELEASE=false
+          DEVELOP=false
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            if [[ "$VERSION" != *SNAPSHOT* && "$GITHUB_REF" == "refs/heads/master" ]]; then
+              RELEASE=true
+            fi
+            if [ "$GITHUB_REF" = "refs/heads/develop" ]; then
+              DEVELOP=true
+            fi
+          fi
+
+          {
+            echo "version=$VERSION"
+            echo "file_version=$FILE_VERSION"
+            echo "release=$RELEASE"
+            echo "develop=$DEVELOP"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Version"
+            echo ""
+            echo "| Field | Value |"
+            echo "| --- | --- |"
+            echo "| Project version | \`$VERSION\` |"
+            echo "| Installer file version | \`$FILE_VERSION\` |"
+            echo "| Release build | \`$RELEASE\` |"
+            echo "| Develop build | \`$DEVELOP\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Compile
+        run: cd src && mvn -B --update-snapshots -Plocal package -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ---------------------------------------------------------------------------
+  # TEST - unit suite. Every branch and PR. Gates `deploy`.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test
+    needs: compile
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Run tests
+        run: cd src && mvn -B -Plocal test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.xml'
+          include_passed: true
+          detailed_summary: true
+          fail_on_failure: true
+
+      - name: Upload surefire reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-${{ github.run_id }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: '**/target/surefire-reports/**'
+
+  # ---------------------------------------------------------------------------
+  # BUILD - Install4j installers, verified to exist. Develop and master only.
+  #   Runs alongside `test`; `deploy` waits for both.
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build
+    needs: compile
+    if: needs.compile.outputs.release == 'true' || needs.compile.outputs.develop == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+    permissions:
+      contents: read
+      packages: read
+    env:
+      FILE_VERSION: ${{ needs.compile.outputs.file_version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Set up Install4j
+        run: |
+          wget -q https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_9.deb
+          sudo dpkg -i install4j_linux-x64_10_0_9.deb
+          echo "INSTALL4J_HOME=/opt/install4j10" >> "$GITHUB_ENV"
+
+      - name: Build installers
+        run: |
+          cd src
+          mvn -B package install --update-snapshots -DskipTests \
+            -DinstallDir="${INSTALL4J_HOME}" \
+            -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}"
+        env:
+          INSTALL4J_HOME: "/opt/install4j10"
+          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show Install4j output
+        if: always()
+        run: cat src/installer/output.txt 2>/dev/null || echo "no src/installer/output.txt"
+
+      - name: Verify installers
+        run: |
+          MISSING=0
+          for FILE in \
+            "src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe" \
+            "src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg" \
+            "src/installer/lince-plus_macos_${FILE_VERSION}_mac-x86.dmg" \
+            "src/installer/lince-plus_unix_${FILE_VERSION}_linux-x64.sh" ; do
+            if [ -f "$FILE" ]; then
+              echo "Found: $FILE"
+            else
+              echo "::error::Installer not found: $FILE"
+              MISSING=$((MISSING+1))
+            fi
+          done
+          if [ "$MISSING" -gt 0 ]; then
+            ls -R src/installer/
+            exit 1
+          fi
+
+      # Release runs only. On develop the installers are built and verified
+      # but not kept: the run proves they can be produced.
+      - name: Upload installers
+        if: needs.compile.outputs.release == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ env.FILE_VERSION }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
+            src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
+            src/installer/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
+
+  # ---------------------------------------------------------------------------
+  # DEPLOY - release builds only. Pushes the Maven artifacts to GitHub
+  #   Packages, publishes the v<version> release with the four installers,
+  #   then asks the Site workflow to publish the website for it.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy
+    needs: [ compile, test, build ]
+    if: needs.compile.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+      url: ${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ needs.compile.outputs.version }}
+    permissions:
+      contents: write
+      packages: write
+      actions: write
+    env:
+      VERSION: ${{ needs.compile.outputs.version }}
+      FILE_VERSION: ${{ needs.compile.outputs.file_version }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # lince-version.json is polled by the desktop app to advertise updates,
+      # so it must agree with the version that is about to be released.
+      # Fail here, before anything is published.
+      - name: Verify lince-version.json
+        run: |
+          JSON_VERSION=$(jq -r '.version' lince-version.json)
+          if [ "$JSON_VERSION" != "$VERSION" ]; then
+            echo "::error::lince-version.json says '$JSON_VERSION' but this release is '$VERSION'. Update it in the release commit (the release-notes skill does this)."
+            exit 1
+          fi
+          echo "lince-version.json matches: $JSON_VERSION"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Deploy to GitHub Packages
+        run: cd src && mvn -B deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download installers
+        uses: actions/download-artifact@v4
+        with:
+          name: installers-${{ env.FILE_VERSION }}
+          path: installers
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            installers/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            installers/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
+            installers/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
+            installers/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
+
+      # The website advertises this version. Publish it now that the
+      # installers exist (the Site workflow re-verifies that before deploying).
+      - name: Publish website
+        run: |
+          gh workflow run site.yml --ref master -f publish=true
+          echo "Dispatched the Site workflow on master."
+
+      - name: Summary
+        run: |
+          {
+            echo "### Released v${VERSION}"
+            echo ""
+            echo "- Maven artifacts deployed to GitHub Packages"
+            echo "- Release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/v${VERSION}"
+            echo "- Website publish dispatched (Site workflow, \`publish\` job)"
+          } >> "$GITHUB_STEP_SUMMARY"

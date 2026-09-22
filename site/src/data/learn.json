@@ -1,0 +1,107 @@
+[
+  {
+    "title": {
+      "en": "YouTube Channel",
+      "es": "Canal de YouTube",
+      "de": "YouTube-Kanal",
+      "ca": "Canal de YouTube"
+    },
+    "body": {
+      "en": "Walkthroughs of the interface, from creating an instrument to exporting results.",
+      "es": "Recorridos por la interfaz, desde crear un instrumento hasta exportar resultados.",
+      "de": "Rundgänge durch die Oberfläche, vom Anlegen eines Instruments bis zum Export der Ergebnisse.",
+      "ca": "Recorreguts per la interfície, des de crear un instrument fins a exportar resultats."
+    },
+    "url": "https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g",
+    "cta": {
+      "en": "Watch",
+      "es": "Ver",
+      "de": "Ansehen",
+      "ca": "Veure"
+    }
+  },
+  {
+    "title": {
+      "en": "Online Guide",
+      "es": "Guía online",
+      "de": "Online-Anleitung",
+      "ca": "Guia en línia"
+    },
+    "body": {
+      "en": "Step-by-step guide to LINCE PLUS, available in English and Spanish.",
+      "es": "Guía paso a paso de LINCE PLUS, disponible en español e inglés.",
+      "de": "Schritt-für-Schritt-Anleitung zu LINCE PLUS, auf Englisch und Spanisch.",
+      "ca": "Guia pas a pas de LINCE PLUS, disponible en castellà i anglès."
+    },
+    "url": "http://learning.albertosoto.es/lince-plus-guide_en.html",
+    "cta": {
+      "en": "Read in English",
+      "es": "Leer en inglés",
+      "de": "Auf Englisch lesen",
+      "ca": "Llegir en anglès"
+    },
+    "alt": {
+      "label": {
+        "en": "Leer en español",
+        "es": "Leer en español",
+        "de": "Auf Spanisch lesen",
+        "ca": "Llegir en castellà"
+      },
+      "url": "http://learning.albertosoto.es/lince-plus-guide.html"
+    },
+    "flag": "learnResources"
+  },
+  {
+    "title": {
+      "en": "Workshop Material",
+      "es": "Material de taller",
+      "de": "Workshop-Material",
+      "ca": "Material de taller"
+    },
+    "body": {
+      "en": "Slides and exercises used in LINCE PLUS training sessions.",
+      "es": "Diapositivas y ejercicios de las sesiones de formación de LINCE PLUS.",
+      "de": "Folien und Übungen aus den LINCE PLUS Schulungen.",
+      "ca": "Diapositives i exercicis de les sessions de formació de LINCE PLUS."
+    },
+    "url": "http://learning.albertosoto.es/Lince-plus-workshop1.html",
+    "cta": {
+      "en": "Open",
+      "es": "Abrir",
+      "de": "Öffnen",
+      "ca": "Obrir"
+    },
+    "flag": "learnResources"
+  },
+  {
+    "title": {
+      "en": "Wiki And Sample Files",
+      "es": "Wiki y archivos de ejemplo",
+      "de": "Wiki Und Beispieldateien",
+      "ca": "Wiki i fitxers d'exemple"
+    },
+    "body": {
+      "en": "Installation notes on the project wiki, plus Theme 6 and GSEQ sample files in the repository.",
+      "es": "Notas de instalación en la wiki del proyecto y archivos de ejemplo Theme 6 y GSEQ en el repositorio.",
+      "de": "Installationshinweise im Projekt-Wiki sowie Theme-6- und GSEQ-Beispieldateien im Repository.",
+      "ca": "Notes d'instal·lació a la wiki del projecte i fitxers d'exemple Theme 6 i GSEQ al repositori."
+    },
+    "url": "https://github.com/observesport/lince-plus/wiki",
+    "cta": {
+      "en": "Wiki",
+      "es": "Wiki",
+      "de": "Wiki",
+      "ca": "Wiki"
+    },
+    "alt": {
+      "label": {
+        "en": "Sample files",
+        "es": "Archivos de ejemplo",
+        "de": "Beispieldateien",
+        "ca": "Fitxers d'exemple"
+      },
+      "url": "https://github.com/observesport/lince-plus/tree/master/src/doc"
+    },
+    "flag": "learnResources"
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "icon": "clipboard",
+    "title": {
+      "en": "Observation Instruments",
+      "es": "Instrumentos de observación",
+      "de": "Beobachtungsinstrumente",
+      "ca": "Instruments d'observació"
+    },
+    "body": {
+      "en": "Build criteria and categories, code behaviour against video frame by frame, and keep several observers on the same register.",
+      "es": "Crea criterios y categorías, codifica la conducta sobre el vídeo fotograma a fotograma y mantén varios observadores en el mismo registro.",
+      "de": "Kriterien und Kategorien anlegen, Verhalten Bild für Bild am Video kodieren und mehrere Beobachter im selben Register führen.",
+      "ca": "Crea criteris i categories, codifica la conducta sobre el vídeo fotograma a fotograma i mantén diversos observadors en el mateix registre."
+    }
+  },
+  {
+    "icon": "pose",
+    "title": {
+      "en": "AI Pose Analysis",
+      "es": "Análisis de pose con IA",
+      "de": "KI-Posenanalyse",
+      "ca": "Anàlisi de postura amb IA"
+    },
+    "body": {
+      "en": "Pose estimation on the video player, joint angle estimation with confidence scores, and a 3D pose viewer, with angles exportable for biomechanical analysis.",
+      "es": "Estimación de pose sobre el reproductor, estimación de ángulos articulares con nivel de confianza y visor 3D de la pose, con ángulos exportables para análisis biomecánico.",
+      "de": "Posenschätzung im Videoplayer, Gelenkwinkel mit Konfidenzwerten und eine 3D-Posenansicht; die Winkel lassen sich für biomechanische Analysen exportieren.",
+      "ca": "Estimació de postura sobre el reproductor, estimació d'angles articulars amb nivell de confiança i visor 3D de la postura, amb angles exportables per a l'anàlisi biomecànica."
+    }
+  },
+  {
+    "icon": "pattern",
+    "title": {
+      "en": "T-Patterns And Prediction",
+      "es": "T-Patterns y predicción",
+      "de": "T-Patterns Und Vorhersage",
+      "ca": "T-Patterns i predicció"
+    },
+    "body": {
+      "en": "Detect repeating temporal patterns and jump to every occurrence in the video. While coding, a predictive assistant suggests the next likely events with a confidence score.",
+      "es": "Detecta patrones temporales repetidos y salta a cada ocurrencia en el vídeo. Mientras codificas, un asistente predictivo sugiere los siguientes eventos probables con su nivel de confianza.",
+      "de": "Wiederkehrende zeitliche Muster erkennen und zu jedem Vorkommen im Video springen. Beim Kodieren schlägt ein Assistent die nächsten wahrscheinlichen Ereignisse mit Konfidenzwert vor.",
+      "ca": "Detecta patrons temporals repetits i salta a cada ocurrència al vídeo. Mentre codifiques, un assistent predictiu suggereix els següents esdeveniments probables amb el seu nivell de confiança."
+    }
+  },
+  {
+    "icon": "activity",
+    "title": {
+      "en": "Sensor Sync",
+      "es": "Sincronización de sensores",
+      "de": "Sensorsynchronisation",
+      "ca": "Sincronització de sensors"
+    },
+    "body": {
+      "en": "Overlay heart rate, accelerometer and gyroscope streams on the video timeline with a single synchronised playhead.",
+      "es": "Superpón frecuencia cardíaca, acelerómetro y giroscopio sobre la línea de tiempo del vídeo con un único cabezal sincronizado.",
+      "de": "Herzfrequenz, Beschleunigungs- und Gyroskopdaten mit einem synchronisierten Abspielkopf über die Videozeitleiste legen.",
+      "ca": "Superposa freqüència cardíaca, acceleròmetre i giroscopi sobre la línia de temps del vídeo amb un únic capçal sincronitzat."
+    }
+  },
+  {
+    "icon": "code",
+    "title": {
+      "en": "Python Research Notebook",
+      "es": "Cuaderno Python de investigación",
+      "de": "Python-Forschungsnotebook",
+      "ca": "Quadern Python de recerca"
+    },
+    "body": {
+      "en": "An in-app notebook with pandas, numpy, matplotlib and scipy, with your observation data preloaded as a DataFrame.",
+      "es": "Un cuaderno integrado con pandas, numpy, matplotlib y scipy, con tus datos de observación precargados como DataFrame.",
+      "de": "Ein integriertes Notebook mit pandas, numpy, matplotlib und scipy, in dem die Beobachtungsdaten bereits als DataFrame geladen sind.",
+      "ca": "Un quadern integrat amb pandas, numpy, matplotlib i scipy, amb les teves dades d'observació precarregades com a DataFrame."
+    }
+  },
+  {
+    "icon": "share",
+    "title": {
+      "en": "Agreement And Exports",
+      "es": "Concordancia y exportación",
+      "de": "Übereinstimmung Und Export",
+      "ca": "Concordança i exportació"
+    },
+    "body": {
+      "en": "Inter-observer agreement with kappa indices, PDF reports, and exports to Theme 5/6, GSEQ, Hoisan and Excel.",
+      "es": "Concordancia entre observadores con índices kappa, informes PDF y exportación a Theme 5/6, GSEQ, Hoisan y Excel.",
+      "de": "Beobachterübereinstimmung mit Kappa-Indizes, PDF-Berichte und Export nach Theme 5/6, GSEQ, Hoisan und Excel.",
+      "ca": "Concordança entre observadors amb índexs kappa, informes PDF i exportació a Theme 5/6, GSEQ, Hoisan i Excel."
+    }
+  }
+]

@@ -1,0 +1,43 @@
+---
+// Logo + wordmark: "LINCE PLUS" in white, "Desktop" in green, as used in the nav and footer.
+import Logo from './Logo.astro';
+import { localePath, getLocale, useTranslations } from '../i18n';
+
+interface Props {
+  size?: number;
+}
+const { size = 30 } = Astro.props;
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+---
+
+<a class="brand" href={localePath(locale, '/')} aria-label={t('nav.home')}>
+  <Logo size={size} />
+  <span class="wordmark">LINCE PLUS <span class="desktop">Desktop</span></span>
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--logo-teal);
+  }
+  .brand:hover {
+    text-decoration: none;
+    opacity: 1;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-style: normal;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    color: var(--fg-1);
+    white-space: nowrap;
+  }
+  .desktop {
+    color: var(--fg-brand);
+    font-style: italic;
+  }
+</style>

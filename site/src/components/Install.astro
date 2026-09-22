@@ -1,0 +1,178 @@
+---
+import { Image } from 'astro:assets';
+import macInstallWarning from '../assets/img/mac-install-warning.png';
+import { INSTALLERS } from '../lib/site';
+import { getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+const mac = INSTALLERS.filter((i) => i.os === 'macOS');
+const win = INSTALLERS.find((i) => i.os === 'Windows')!;
+const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
+---
+
+<section id="install" class="section" data-section="install">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">{t('install.eyebrow')}</span>
+      <h2>{t('install.title')}</h2>
+      <p class="lede">{t('install.lede')}</p>
+    </div>
+
+    <div class="grid">
+      <article class="card">
+        <header>
+          <span class="step">1</span>
+          <h3>{t('install.mac')}</h3>
+        </header>
+        <ol>
+          <li set:html={t('install.macStep1')} />
+          <li set:html={t('install.macStep2')} />
+        </ol>
+        <div class="dl">
+          {mac.map((i) => (
+            <a class="btn btn-teal btn-sm" href={i.url} download data-ga={`install-${i.id}`}>
+              {t(`installers.${i.id}`)}
+            </a>
+          ))}
+        </div>
+        <details>
+          <summary>{t('install.macDialog')}</summary>
+          <Image
+            src={macInstallWarning}
+            alt={t('install.macDialogAlt')}
+            width={1170}
+            height={629}
+            format="webp"
+            loading="lazy"
+          />
+          <p>
+            {t('install.appleGuide')}
+            <a href="https://support.apple.com/en-us/HT202491" rel="noopener" target="_blank">English</a> &middot;
+            <a href="https://support.apple.com/es-es/guide/mac-help/mh40616/mac" rel="noopener" target="_blank">Español</a>
+          </p>
+        </details>
+      </article>
+
+      <article class="card">
+        <header>
+          <span class="step">2</span>
+          <h3>{t('install.windows')}</h3>
+        </header>
+        <ol>
+          <li set:html={t('install.winStep1')} />
+          <li set:html={t('install.winStep2')} />
+          <li set:html={t('install.winStep3')} />
+        </ol>
+        <div class="dl">
+          <a class="btn btn-teal btn-sm" href={win.url} download data-ga="install-windows">{t('install.winButton')}</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <header>
+          <span class="step">3</span>
+          <h3>{t('install.linux')}</h3>
+        </header>
+        <ol>
+          <li set:html={t('install.linuxStep1')} />
+          <li set:html={t('install.linuxStep2')} />
+        </ol>
+        <pre><code>chmod +x {linux.file}
+./{linux.file}</code></pre>
+        <div class="dl">
+          <a class="btn btn-teal btn-sm" href={linux.url} download data-ga="install-linux">{t('install.linuxButton')}</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  .step {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--teal-400);
+    color: var(--fg-on-teal);
+    font-family: var(--font-display);
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  ol {
+    margin: 0 0 18px;
+    padding-left: 20px;
+    color: var(--fg-2);
+    font-size: 0.95rem;
+  }
+  ol li {
+    margin-bottom: 8px;
+  }
+  ol :global(strong) {
+    color: var(--fg-1);
+  }
+  .dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .dl .btn {
+    width: auto;
+  }
+  pre {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    background: var(--ink-900);
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--teal-200);
+  }
+  details {
+    margin-top: 18px;
+    font-size: 0.9rem;
+  }
+  summary {
+    cursor: pointer;
+    color: var(--fg-brand);
+    font-weight: 600;
+  }
+  details img {
+    margin: 12px 0;
+    border-radius: var(--radius-sm);
+  }
+  details p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

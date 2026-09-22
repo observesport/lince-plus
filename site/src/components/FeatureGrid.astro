@@ -1,0 +1,86 @@
+---
+import features from '../data/features.json';
+import { getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+
+const icons: Record<string, string> = {
+  clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8 10h8M8 14h8M8 18h5"/>',
+  pose: '<circle cx="12" cy="4" r="2"/><path d="M12 6v6M12 12l-4 8M12 12l4 8M6 9l6-1 6 1"/>',
+  pattern: '<path d="M3 12h3l2-6 3 12 3-9 2 3h5"/>',
+  activity: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  code: '<path d="m8 6-6 6 6 6M16 6l6 6-6 6"/>',
+  share:
+    '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+};
+---
+
+<section id="features" class="section" data-section="features">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">{t('features.eyebrow')}</span>
+      <h2>{t('features.title')}</h2>
+      <p class="lede">{t('features.lede')}</p>
+    </div>
+    <div class="grid">
+      {features.map((f) => (
+        <article class="card feature">
+          <div class="icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              set:html={icons[f.icon] ?? icons.pattern}
+            />
+          </div>
+          <h3>{f.title[locale]}</h3>
+          <p>{f.body[locale]}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--teal-400);
+    color: var(--fg-on-teal);
+    margin-bottom: 18px;
+  }
+  .feature h3 {
+    margin-bottom: 8px;
+  }
+  .feature p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 560px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import { localePath, getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+---
+
+<Base title={t('meta.notFoundTitle')} description={t('notFound.lede')} noindex>
+  <section class="section" data-section="not-found">
+    <div class="container center">
+      <span class="eyebrow">404</span>
+      <h1>{t('notFound.title')}</h1>
+      <p class="lede">{t('notFound.lede')}</p>
+      <div class="cta-row">
+        <a class="btn btn-teal" href={localePath(locale, '/')}>{t('notFound.home')}</a>
+        <a class="btn btn-outline" href={localePath(locale, '/changelog')}>{t('notFound.changelog')}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .center {
+    text-align: center;
+    max-width: 640px;
+  }
+  .cta-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

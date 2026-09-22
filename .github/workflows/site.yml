@@ -1,0 +1,341 @@
+name: Site
+
+# Website pipeline (Astro project under site/), independent of the Java build:
+#
+#   build -> check -> publish          (master: push or manual run)
+#         -> preview -> teardown       (PRs / manual run, only with SURGE_TOKEN)
+#
+# Runs when the site, lince-version.json or this file change, on a manual run,
+# and when the CI workflow dispatches it after a release. The site can be
+# published without a release: push a site change to master, or use
+# "Run workflow" on master. `publish` still refuses to go live unless the
+# version in lince-version.json is a published release with all installers.
+#
+# NOTE: GitHub's automatic "pages build and deployment" must be OFF (Pages
+# source = GitHub Actions), or it bypasses this workflow. See docs/CI.md.
+
+on:
+  push:
+    branches: [ '**' ]
+    paths:
+      - 'site/**'
+      - 'lince-version.json'
+      - '.github/workflows/site.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'site/**'
+      - 'lince-version.json'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to GitHub Pages (master only)'
+        type: boolean
+        default: true
+      preview:
+        description: 'Deploy a temporary surge.sh preview'
+        type: boolean
+        default: false
+      keep_preview:
+        description: 'Keep the surge.sh preview (skip teardown)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: site-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # BUILD - build the site and upload it as the Pages artifact. Nothing is
+  #   deployed here; `publish` deploys this exact artifact.
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: site/.nvmrc
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  # ---------------------------------------------------------------------------
+  # CHECK - token-free smoke test of the exact Pages artifact: serve it on the
+  #   runner under the production base path, run site/scripts/smoke.sh, stop.
+  # ---------------------------------------------------------------------------
+  check:
+    name: Check
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Pages artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: pages-artifact
+
+      - name: Serve under /lince-plus
+        run: |
+          mkdir -p www/lince-plus
+          tar -xf pages-artifact/artifact.tar -C www/lince-plus
+          echo "Files: $(find www -type f | wc -l)"
+          python3 -m http.server 8080 --directory www > server.log 2>&1 &
+          echo $! > server.pid
+          for _ in $(seq 1 20); do
+            curl -sf -o /dev/null http://localhost:8080/lince-plus/ && break
+            sleep 1
+          done
+
+      - name: Smoke test
+        run: site/scripts/smoke.sh http://localhost:8080/lince-plus
+
+      - name: Stop server
+        if: always()
+        run: |
+          [ -f server.pid ] && kill "$(cat server.pid)" 2>/dev/null || true
+          rm -rf www pages-artifact server.pid
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Website check"
+            echo ""
+            echo "The \`github-pages\` artifact of this run was served locally and smoke-tested."
+            echo "To browse it yourself, download the artifact from this run, then:"
+            echo '```'
+            echo "mkdir -p www/lince-plus && tar -xf artifact.tar -C www/lince-plus"
+            echo "python3 -m http.server 8080 --directory www   # http://localhost:8080/lince-plus/"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # PREVIEW (optional) - temporary surge.sh URL, smoke-tested, torn down in
+  #   `teardown`. Does nothing without the SURGE_TOKEN secret. Runs on PRs, or
+  #   on a manual run with `preview` ticked. Rebuilt with SITE_BASE=/ because
+  #   surge serves from the root of its own host.
+  # ---------------------------------------------------------------------------
+  preview:
+    name: Preview
+    needs: build
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && inputs.preview)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: site-preview
+      url: ${{ steps.domain.outputs.url }}
+    env:
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+    outputs:
+      domain: ${{ steps.domain.outputs.domain }}
+      deployed: ${{ steps.deploy.outcome == 'success' }}
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      # Runs before checkout, so site/ does not exist yet: use the workspace.
+      - name: Check SURGE_TOKEN
+        if: env.SURGE_TOKEN == ''
+        working-directory: ${{ github.workspace }}
+        run: echo "::notice::SURGE_TOKEN is not set - skipping the surge.sh preview. Add the secret to enable it (see docs/CI.md)."
+
+      - uses: actions/checkout@v4
+        if: env.SURGE_TOKEN != ''
+
+      - name: Set up Node
+        if: env.SURGE_TOKEN != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: site/.nvmrc
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      # One stable domain per PR (redeploys overwrite it) or per branch.
+      - name: Resolve preview domain
+        if: env.SURGE_TOKEN != ''
+        id: domain
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SLUG="pr${{ github.event.pull_request.number }}"
+          else
+            SLUG="$(echo "${GITHUB_REF_NAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g' | cut -c1-40)"
+          fi
+          DOMAIN="lince-plus-${SLUG}.surge.sh"
+          {
+            echo "domain=$DOMAIN"
+            echo "url=https://$DOMAIN"
+          } >> "$GITHUB_OUTPUT"
+          echo "Preview domain: https://$DOMAIN"
+
+      - name: Install
+        if: env.SURGE_TOKEN != ''
+        run: npm ci
+
+      - name: Build for the preview host
+        if: env.SURGE_TOKEN != ''
+        env:
+          SITE_URL: ${{ steps.domain.outputs.url }}
+          SITE_BASE: /
+        run: npm run build
+
+      - name: Deploy to surge.sh
+        if: env.SURGE_TOKEN != ''
+        id: deploy
+        run: npx --yes surge ./dist "${{ steps.domain.outputs.domain }}" --token "$SURGE_TOKEN"
+
+      - name: Smoke test
+        if: env.SURGE_TOKEN != ''
+        run: scripts/smoke.sh "${{ steps.domain.outputs.url }}"
+
+      - name: Summary
+        if: env.SURGE_TOKEN != ''
+        run: |
+          {
+            echo "### Website preview"
+            echo ""
+            echo "- URL: ${{ steps.domain.outputs.url }}"
+            echo "- Smoke test: passed"
+            if [ "${{ inputs.keep_preview }}" = "true" ]; then
+              echo "- Teardown: skipped (keep_preview). Remove it later with a manual run, or: \`npx surge teardown ${{ steps.domain.outputs.domain }}\`"
+            else
+              echo "- Teardown: runs in the \`teardown\` job"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # TEARDOWN - remove the surge.sh preview once it was checked, even if the
+  #   smoke test failed. Skipped when a manual run asked to keep it. Give the
+  #   `site-preview-teardown` environment a required reviewer to hold the
+  #   preview until someone signs it off.
+  # ---------------------------------------------------------------------------
+  teardown:
+    name: Teardown
+    needs: preview
+    if: >-
+      always() &&
+      needs.preview.outputs.deployed == 'true' &&
+      !(github.event_name == 'workflow_dispatch' && inputs.keep_preview)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: site-preview-teardown
+    env:
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+      DOMAIN: ${{ needs.preview.outputs.domain }}
+    steps:
+      - name: Tear down surge.sh preview
+        run: |
+          npx --yes surge teardown "$DOMAIN" --token "$SURGE_TOKEN"
+          echo "Removed https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # PUBLISH - deploy the checked artifact to GitHub Pages. Master only, on a
+  #   push or a manual run. No release is needed, but the site must not
+  #   advertise a version that does not exist: the version in
+  #   lince-version.json has to be a published release with all four
+  #   installers. Give the `docs-release` environment a required reviewer to
+  #   add a manual approval in front of it.
+  # ---------------------------------------------------------------------------
+  publish:
+    name: Publish
+    needs: [ build, check ]
+    if: >-
+      github.ref == 'refs/heads/master' &&
+      (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: site-pages
+      cancel-in-progress: false
+    environment:
+      name: docs-release
+      url: ${{ steps.pages.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify the advertised release exists
+        run: |
+          VERSION=$(jq -r '.version' lince-version.json)
+          FILE_VERSION=${VERSION//./_}
+          TAG="v${VERSION}"
+          echo "lince-version.json advertises $TAG"
+
+          if ! RELEASE_JSON=$(gh release view "$TAG" --json isDraft,assets 2>/dev/null); then
+            echo "::error::Release $TAG does not exist. If a release is in progress, wait for the CI workflow: it re-runs this publish once the installers are live."
+            exit 1
+          fi
+          if [ "$(echo "$RELEASE_JSON" | jq -r '.isDraft')" != "false" ]; then
+            echo "::error::Release $TAG is still a draft. Refusing to publish the site."
+            exit 1
+          fi
+
+          MISSING=0
+          for ASSET in \
+            "lince-plus_windows-x64_${FILE_VERSION}_Windows.exe" \
+            "lince-plus_macos_${FILE_VERSION}_mac-arm.dmg" \
+            "lince-plus_macos_${FILE_VERSION}_mac-x86.dmg" \
+            "lince-plus_unix_${FILE_VERSION}_linux-x64.sh" ; do
+            if echo "$RELEASE_JSON" | jq -e --arg a "$ASSET" '.assets[] | select(.name == $a)' > /dev/null; then
+              echo "Asset present: $ASSET"
+            else
+              echo "::error::Release asset missing: $ASSET"
+              MISSING=$((MISSING+1))
+            fi
+          done
+          if [ "$MISSING" -gt 0 ]; then
+            echo "::error::$MISSING release asset(s) missing. Refusing to publish the site."
+            exit 1
+          fi
+          echo "Release $TAG is published with all installers."
+
+      - name: Deploy to GitHub Pages
+        id: pages
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          {
+            echo "### Website published"
+            echo ""
+            echo "- Site: ${{ steps.pages.outputs.page_url }}"
+            echo "- Advertises: \`v$(jq -r '.version' lince-version.json)\` (verified as a published release)"
+            echo "- Trigger: ${{ github.event_name }}"
+          } >> "$GITHUB_STEP_SUMMARY"
