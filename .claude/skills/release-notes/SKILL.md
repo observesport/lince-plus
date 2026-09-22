@@ -1,14 +1,25 @@
 ---
 name: release-notes
 description: Generates and publishes release notes for Lince PLUS. Analyzes git commits between the last published version and the latest tag, drafts user-facing notes, and updates lince-version.json and the website release data in site/src/data/releases.json.
-allowed-tools: Bash(git log:*), Bash(git tag:*), Bash(git diff:*), Bash(git show:*), Bash(date:*), Bash(node -e:*), Read, Edit, Write, AskUserQuestion
+allowed-tools: Bash(git log:*), Bash(git tag:*), Bash(git diff:*), Bash(git show:*), Bash(date:*), Bash(node -e:*), Bash(npm ci:*), Bash(npm run build:*), Read, Edit, Write, AskUserQuestion
 ---
 
 # Release Notes Generator for Lince PLUS
 
 Generate user-facing release notes by analyzing git history, then update `lince-version.json` and the website's release data `site/src/data/releases.json`.
 
-The public website (https://observesport.github.io/lince-plus/) is an Astro project under `site/`. It reads the current version and release link from `lince-version.json` and renders the changelog page and the "latest release" panel from `site/src/data/releases.json`. There is no `docs/README.md` any more; do not recreate it.
+The public website (https://observesport.github.io/lince-plus/) is an Astro project under `site/`, served in English, Spanish, German and Catalan. It reads the current version and release link from `lince-version.json` and renders the changelog page and the "latest release" panel from `site/src/data/releases.json`. Release notes are English only on every locale; the Spanish home page shows the Spanish `message` strings from `lince-version.json` instead. There is no `docs/README.md` any more; do not recreate it.
+
+Where things live:
+
+| What | File |
+| --- | --- |
+| Current version, release link, Spanish highlights (polled by the desktop app) | `lince-version.json` |
+| Release notes shown on `/changelog` and in the latest-release panel | `site/src/data/releases.json` |
+| Feature cards on the home page (one string per locale) | `site/src/data/features.json` |
+| UI strings, including the hero copy and the player capabilities | `site/src/i18n/ui.ts` |
+
+The pipeline refuses to publish the site unless `lince-version.json` matches the released tag and the release carries all four installers (see `docs/CI.md`).
 
 ## Workflow
 
@@ -56,6 +67,9 @@ git diff v<OLD>..v<NEW> -- "*.java" --stat
 **Frontend context:** The frontend lives in a separate private repository. Commits in this repo that say "update frontend" bundle features built there. To understand what user-facing frontend features were added, check the merge commit messages and PR titles (e.g., `git log v<OLD>..v<NEW> --merges --oneline`). Known frontend features by version:
 
 - **v4.0.3–4.0.4**: New "Research" page with embedded JupyterLite Python notebook environment. Users can analyze observation data with Python (pandas, numpy, matplotlib, scipy) directly in the browser. Includes one-click code templates for data analysis, plotting, and timeline visualization. Pre-loads register data automatically into a `df` DataFrame. Supports fullscreen mode.
+- **v4.0.5–4.0.7**: Reporting page (PDF study reports with video thumbnails); AI Studio pose estimation exports calculated joint angles for biomechanical analysis; pause-on-selection toggle.
+- **v4.1.0**: T-Pattern Explorer (repeating temporal patterns with configurable minimum occurrences, significance and granularity; clicking an occurrence seeks the video); predictive assistant suggesting the next likely events with timing and confidence; quantitative view overlaying sensor streams (heart rate, accelerometer, gyroscope) on the video timeline; data import module; refreshed dashboard views.
+- The built-in video player (AI Studio) offers synchronised multi-video playback, frame stepping and speed control, drawing tools, selectable pose models (MoveNet, TensorFlow), a joint-angle panel with confidence, a 3D pose view, angle charts, snapshots and video/drawing/pose modes. Mention new player capabilities as such.
 - *(Add future version notes here as releases are made)*
 
 When drafting release notes, incorporate these frontend features as user-facing descriptions. Do not mention JupyterLite, Pyodide, iframe, Docker, or other implementation details — describe the capability from the researcher's perspective.
@@ -115,6 +129,10 @@ Prepare the exact content for both files before showing the preview.
 - `notes` are the categorized bullets from Step 3 flattened into one list, new features first, then improvements, fixes and technical updates. Keep the category order but do not add category headings.
 - Keep the existing 2-space indentation and trailing newline of the file.
 
+#### Headline features (optional)
+
+If the release adds a capability that deserves a card on the home page, propose an update to `site/src/data/features.json` (six cards; replace or reword one rather than adding a seventh). Every card carries `title` and `body` in `en`, `es`, `de` and `ca`; supply all four. Do the same for `site/src/i18n/ui.ts` if the hero copy or the player capability list (`hero.cap1`..`cap8`) should mention it. Show these in the preview as separate, optional changes.
+
 ### Step 5: Preview and confirm
 
 Show the user a complete preview of ALL changes that will be made:
@@ -132,6 +150,9 @@ Show the user a complete preview of ALL changes that will be made:
 
 #### site/src/data/releases.json — new first entry
 [Show the JSON object being inserted]
+
+#### Optional: site/src/data/features.json / site/src/i18n/ui.ts
+[Show proposed card or copy changes in the four languages, or "none"]
 ```
 
 Then ask the user for confirmation using AskUserQuestion:
@@ -146,14 +167,16 @@ After user approval:
 
 1. Write the updated `lince-version.json` using the Write tool
 2. Insert the new entry at the top of `site/src/data/releases.json` using the Edit tool (match on the opening `[` and the first existing entry's `"version"` line)
-3. Validate the JSON parses: `node -e "JSON.parse(require('fs').readFileSync('site/src/data/releases.json','utf8'))"`
-4. Confirm the changes were applied successfully
+3. Apply any approved optional changes to `features.json` or `ui.ts`
+4. Validate the JSON parses: `node -e "JSON.parse(require('fs').readFileSync('site/src/data/releases.json','utf8'))"`
+5. Build the site to be sure it still renders: `cd site && npm ci && npm run build` (the `build-site` CI job runs the same on push)
+6. Confirm the changes were applied successfully
 
 Then ask the user if they want to proceed with the next steps using AskUserQuestion:
 - "Run next steps?" with options: "Commit changes" / "Commit + create GitHub release draft" / "I'll handle it manually"
 
 **If committing:**
-1. Stage both files: `git add lince-version.json site/src/data/releases.json`
+1. Stage the files: `git add lince-version.json site/src/data/releases.json` (plus `site/src/data/features.json` or `site/src/i18n/ui.ts` if changed)
 2. Commit with message: `docs: update release notes and version to <NEW_VERSION>`
    - Include the `Co-Authored-By: Claude <model> <noreply@anthropic.com>` line for the model in use in the commit body
 3. Show the commit result
