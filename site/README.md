@@ -53,6 +53,17 @@ learning cards carry one string per locale in `src/data/*.json`. Release notes s
 the Spanish home page shows the Spanish highlights from `lince-version.json` instead. The
 iOS privacy policy is English only.
 
+## Feature flags
+
+`src/lib/flags.ts` reads `PUBLIC_FLAG_*` variables at build time. Currently:
+
+| Flag | Default | Effect |
+| --- | --- | --- |
+| `PUBLIC_FLAG_LEARN_RESOURCES` | off | Shows the online guide, workshop and wiki cards and their footer links. While off, the Learn section shows the YouTube card plus a collaboration call that also states LINCE PLUS is validated in peer-reviewed research. |
+
+Flip one for a build with `PUBLIC_FLAG_LEARN_RESOURCES=true npm run build`, or set it as an
+environment variable on the `build-site` and `preview-site` jobs in the workflow.
+
 ## Analytics
 
 Google Analytics 4 uses the same property as lince-plus.com (`GA_MEASUREMENT_ID` in

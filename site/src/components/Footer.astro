@@ -1,6 +1,7 @@
 ---
 import Brand from './Brand.astro';
 import { CONTACT_EMAIL, LEGACY_LINCE_URL, REPO_URL, href } from '../lib/site';
+import { flags } from '../lib/flags';
 import { getLocale, localePath, useTranslations } from '../i18n';
 
 const locale = getLocale(Astro);
@@ -27,9 +28,14 @@ const year = new Date().getFullYear();
       <h4>{t('footer.learn')}</h4>
       <ul>
         <li><a href="https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g" rel="noopener" target="_blank" data-ga="footer-youtube">{t('footer.youtube')}</a></li>
-        <li><a href="http://learning.albertosoto.es/lince-plus-guide_en.html" rel="noopener" target="_blank" data-ga="footer-guide-en">{t('footer.guideEn')}</a></li>
-        <li><a href="http://learning.albertosoto.es/lince-plus-guide.html" rel="noopener" target="_blank" data-ga="footer-guide-es">{t('footer.guideEs')}</a></li>
-        <li><a href={`${REPO_URL}/wiki`} rel="noopener" target="_blank" data-ga="footer-wiki">{t('footer.wiki')}</a></li>
+        {flags.learnResources && (
+          <>
+            <li><a href="http://learning.albertosoto.es/lince-plus-guide_en.html" rel="noopener" target="_blank" data-ga="footer-guide-en">{t('footer.guideEn')}</a></li>
+            <li><a href="http://learning.albertosoto.es/lince-plus-guide.html" rel="noopener" target="_blank" data-ga="footer-guide-es">{t('footer.guideEs')}</a></li>
+            <li><a href={`${REPO_URL}/wiki`} rel="noopener" target="_blank" data-ga="footer-wiki">{t('footer.wiki')}</a></li>
+          </>
+        )}
+        <li><a href={localePath(locale, '/#research')} data-ga="footer-research">{t('footer.research')}</a></li>
       </ul>
     </div>
     <div>

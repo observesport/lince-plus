@@ -1,9 +1,17 @@
 ---
 import learn from '../data/learn.json';
-import { getLocale, useTranslations } from '../i18n';
+import { flags, type FlagName } from '../lib/flags';
+import { CONTACT_EMAIL, REPO_URL } from '../lib/site';
+import { getLocale, localePath, useTranslations } from '../i18n';
 
 const locale = getLocale(Astro);
 const t = useTranslations(locale);
+
+// Cards can be gated by a feature flag (see lib/flags.ts). While the guide,
+// workshop and wiki links are not ready, only the YouTube card shows and a
+// collaboration call takes the remaining space.
+const visible = learn.filter((l) => !('flag' in l) || flags[l.flag as FlagName]);
+const hidden = learn.length - visible.length;
 ---
 
 <section id="learn" class="section-tight learn" data-section="learn">
@@ -12,8 +20,8 @@ const t = useTranslations(locale);
       <span class="eyebrow">{t('learn.eyebrow')}</span>
       <h2>{t('learn.title')}</h2>
     </div>
-    <div class="grid">
-      {learn.map((l, i) => (
+    <div class:list={['grid', { 'grid-collab': hidden > 0 }]}>
+      {visible.map((l, i) => (
         <article class="card">
           <h3>{l.title[locale]}</h3>
           <p>{l.body[locale]}</p>
@@ -29,6 +37,26 @@ const t = useTranslations(locale);
           </div>
         </article>
       ))}
+
+      {hidden > 0 && (
+        <article class="card collab" data-section="learn-collab">
+          <h3>{t('learn.collabTitle')}</h3>
+          <p>{t('learn.collabBody')}</p>
+          <div class="links">
+            <a class="btn btn-teal btn-sm" href={`mailto:${CONTACT_EMAIL}`} data-ga="learn-collab-email">
+              {t('learn.collabCta')}
+            </a>
+            <a class="alt" href={REPO_URL} rel="noopener" target="_blank" data-ga="learn-collab-github">
+              {t('learn.collabGithub')}
+            </a>
+          </div>
+          <p class="validated">
+            <span class="check" aria-hidden="true"></span>
+            {t('learn.validated')}
+            <a href={localePath(locale, '/#research')} data-ga="learn-validated-research">{t('learn.validatedLink')}</a>
+          </p>
+        </article>
+      )}
     </div>
   </div>
 </section>
@@ -42,6 +70,9 @@ const t = useTranslations(locale);
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px;
+  }
+  .grid-collab {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .card {
     display: flex;
@@ -64,13 +95,44 @@ const t = useTranslations(locale);
     font-size: 0.88rem;
     font-weight: 600;
   }
+  .collab {
+    background: var(--bg-2);
+    border: 1.5px solid var(--teal-600);
+  }
+  .collab > p:first-of-type {
+    max-width: 60ch;
+  }
+  .validated {
+    display: block;
+    margin: 20px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-1);
+    font-size: 0.88rem;
+    color: var(--fg-2);
+    flex: 0;
+  }
+  .validated a {
+    font-weight: 600;
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+  .check {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--status-ok);
+    vertical-align: middle;
+  }
   @media (max-width: 960px) {
     .grid {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
-  @media (max-width: 560px) {
-    .grid {
+  @media (max-width: 640px) {
+    .grid,
+    .grid-collab {
       grid-template-columns: minmax(0, 1fr);
     }
   }

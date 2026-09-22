@@ -6,7 +6,7 @@ import version from '../../../lince-version.json';
 export const SITE_NAME = 'LINCE PLUS Desktop';
 export const PRODUCT_NAME = 'LINCE PLUS';
 export const REPO_URL = 'https://github.com/observesport/lince-plus';
-export const CONTACT_EMAIL = 'alberto.soto@gmail.com';
+export const CONTACT_EMAIL = 'info@lince-plus.com';
 // Shared GA4 property with lince-plus.com. GA_APP_MODE tags every hit from
 // this site so it can be told apart from the main site and the app.
 export const GA_MEASUREMENT_ID = 'G-PGTBMEJ65G';

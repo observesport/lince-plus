@@ -103,6 +103,12 @@ export const ui = {
     learn: {
       eyebrow: 'Learn',
       title: 'Guides, Videos And Workshops.',
+      collabTitle: 'More Examples And Tutorials Are On The Way.',
+      collabBody: 'We are building new examples, tutorials and workshop material for LINCE PLUS Desktop. We need help to get there faster: if you teach, research or write documentation, reach out and collaborate.',
+      collabCta: 'Reach out',
+      collabGithub: 'Contribute on GitHub',
+      validated: 'LINCE PLUS is validated software, published and cited in peer-reviewed research.',
+      validatedLink: 'See the publications',
     },
     research: {
       eyebrow: 'Research',
@@ -130,6 +136,7 @@ export const ui = {
       privacy: 'iOS app privacy policy',
       legacy: 'Legacy Lince 1.4 (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Interface in English, Spanish, Catalan and German',
+      research: 'Cite us',
     },
     changelog: {
       eyebrow: 'Changelog',
@@ -253,6 +260,12 @@ export const ui = {
     learn: {
       eyebrow: 'Aprender',
       title: 'Guías, Vídeos Y Talleres.',
+      collabTitle: 'Más Ejemplos Y Tutoriales En Camino.',
+      collabBody: 'Estamos preparando nuevos ejemplos, tutoriales y material de taller para LINCE PLUS Desktop. Necesitamos ayuda para llegar antes: si enseñas, investigas o escribes documentación, escríbenos y colabora.',
+      collabCta: 'Contactar',
+      collabGithub: 'Contribuir en GitHub',
+      validated: 'LINCE PLUS es un software validado, publicado y citado en investigación revisada por pares.',
+      validatedLink: 'Ver las publicaciones',
     },
     research: {
       eyebrow: 'Investigación',
@@ -280,6 +293,7 @@ export const ui = {
       privacy: 'Política de privacidad de la app iOS',
       legacy: 'Lince 1.4 clásico (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Interfaz en español, inglés, catalán y alemán',
+      research: 'Cítanos',
     },
     changelog: {
       eyebrow: 'Versiones',
@@ -403,6 +417,12 @@ export const ui = {
     learn: {
       eyebrow: 'Lernen',
       title: 'Anleitungen, Videos Und Workshops.',
+      collabTitle: 'Weitere Beispiele Und Anleitungen Sind In Arbeit.',
+      collabBody: 'Wir erstellen neue Beispiele, Anleitungen und Workshop-Material für LINCE PLUS Desktop. Dafür brauchen wir Unterstützung: Wenn Sie lehren, forschen oder Dokumentation schreiben, melden Sie sich und arbeiten Sie mit.',
+      collabCta: 'Kontakt aufnehmen',
+      collabGithub: 'Auf GitHub mitwirken',
+      validated: 'LINCE PLUS ist validierte Software, veröffentlicht und zitiert in begutachteter Forschung.',
+      validatedLink: 'Zu den Veröffentlichungen',
     },
     research: {
       eyebrow: 'Forschung',
@@ -430,6 +450,7 @@ export const ui = {
       privacy: 'Datenschutzerklärung der iOS-App',
       legacy: 'Altes Lince 1.4 (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Oberfläche auf Deutsch, Englisch, Spanisch und Katalanisch',
+      research: 'Zitieren Sie uns',
     },
     changelog: {
       eyebrow: 'Versionen',
@@ -553,6 +574,12 @@ export const ui = {
     learn: {
       eyebrow: 'Aprendre',
       title: 'Guies, Vídeos I Tallers.',
+      collabTitle: 'Més Exemples I Tutorials En Camí.',
+      collabBody: "Estem preparant nous exemples, tutorials i material de taller per a LINCE PLUS Desktop. Necessitem ajuda per arribar-hi abans: si ensenyes, investigues o escrius documentació, escriu-nos i col·labora.",
+      collabCta: 'Contactar',
+      collabGithub: 'Contribuir a GitHub',
+      validated: 'LINCE PLUS és un programari validat, publicat i citat en recerca revisada per parells.',
+      validatedLink: 'Veure les publicacions',
     },
     research: {
       eyebrow: 'Recerca',
@@ -580,6 +607,7 @@ export const ui = {
       privacy: "Política de privadesa de l'app iOS",
       legacy: 'Lince 1.4 clàssic (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Interfície en català, castellà, anglès i alemany',
+      research: 'Cita\'ns',
     },
     changelog: {
       eyebrow: 'Versions',
