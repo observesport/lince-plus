@@ -4,8 +4,6 @@
    lince-plus.com: Inter for text, Red Hat Display for headings and the
    wordmark, and the same lynx mark (linceIconV2). */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Red+Hat+Display:ital,wght@0,500;0,700;0,800;0,900;1,900&family=JetBrains+Mono:wght@400;500&display=swap');
-
 :root {
   --teal-50: #e6f8f7;
   --teal-100: #c2efec;

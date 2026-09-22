@@ -15,7 +15,11 @@ interface Props {
 const { frontmatter } = Astro.props;
 ---
 
-<Base title={`${frontmatter.title} - ${SITE_NAME}`} description={frontmatter.description}>
+<Base
+  title={`${frontmatter.title} - ${SITE_NAME}`}
+  description={frontmatter.description}
+  localized={false}
+>
   <article class="prose-page" data-section="prose">
     <header class="container prose-head">
       <h1>{frontmatter.title}</h1>

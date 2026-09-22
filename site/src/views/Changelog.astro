@@ -10,7 +10,11 @@ const releaseUrl = (r: { tag?: string; url?: string }) =>
   r.url ?? (r.tag ? `${REPO_URL}/releases/tag/${r.tag}` : undefined);
 ---
 
-<Base title={t('meta.changelogTitle')} description={t('meta.changelogDescription')}>
+<Base
+  title={t('meta.changelogTitle')}
+  description={t('meta.changelogDescription')}
+  structuredData="changelog"
+>
   <header class="page-head" data-section="changelog-head">
     <div class="container">
       <span class="eyebrow">{t('changelog.eyebrow')}</span>

@@ -6,7 +6,7 @@ const locale = getLocale(Astro);
 const t = useTranslations(locale);
 ---
 
-<Base title={t('meta.notFoundTitle')} description={t('notFound.lede')}>
+<Base title={t('meta.notFoundTitle')} description={t('notFound.lede')} noindex>
   <section class="section" data-section="not-found">
     <div class="container center">
       <span class="eyebrow">404</span>

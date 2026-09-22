@@ -4,24 +4,46 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import LogoSprite from '../components/LogoSprite.astro';
 import Analytics from '../components/Analytics.astro';
+import StructuredData from '../components/StructuredData.astro';
 import { SITE_NAME, href } from '../lib/site';
-import { getLocale, locales, switchLocalePath, useTranslations } from '../i18n';
+import { getLocale, locales, ogLocales, switchLocalePath, useTranslations } from '../i18n';
 
 interface Props {
   title?: string;
   description?: string;
+  /** Pages that must stay out of the index (404): no alternates, noindex. */
+  noindex?: boolean;
+  /** False for pages that exist in English only (the iOS privacy policy). */
+  localized?: boolean;
+  /** Which JSON-LD graph to emit, if any. */
+  structuredData?: 'home' | 'changelog';
 }
 
 const locale = getLocale(Astro);
 const t = useTranslations(locale);
-const { title = t('meta.title'), description = t('meta.description') } = Astro.props;
+const {
+  title = t('meta.title'),
+  description = t('meta.description'),
+  noindex = false,
+  localized = true,
+  structuredData,
+} = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site);
+// Canonical and alternates must agree exactly, so both go through the same
+// normaliser: a trailing slash on every path. Astro writes directory-style
+// output (dist/es/index.html), which is what the slashed form resolves to.
+const withSlash = (p: string) => (p.endsWith('/') ? p : `${p}/`);
+
+const canonical = new URL(withSlash(Astro.url.pathname), Astro.site);
 const ogImage = new URL(href('/img/og-card.png'), Astro.site);
-const alternates = locales.map((l) => ({
-  lang: l,
-  url: new URL(switchLocalePath(locale, l, Astro.url.pathname), Astro.site),
-}));
+const llmsTxt = new URL(href('/llms.txt'), Astro.site);
+const alternates =
+  noindex || !localized
+    ? []
+    : locales.map((l) => ({
+        lang: l,
+        url: new URL(withSlash(switchLocalePath(locale, l, Astro.url.pathname)), Astro.site),
+      }));
 ---
 
 <!doctype html>
@@ -31,9 +53,11 @@ const alternates = locales.map((l) => ({
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical} />
     {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.url} />)}
-    <link rel="alternate" hreflang="x-default" href={alternates[0].url} />
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={alternates[0].url} />}
+    <link rel="alternate" type="text/plain" href={llmsTxt} title="llms.txt" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
     <meta name="theme-color" content="#14181B" />
     <meta property="og:type" content="website" />
@@ -42,10 +66,26 @@ const alternates = locales.map((l) => ({
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:locale" content={locale} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t('meta.ogImageAlt')} />
+    <meta property="og:locale" content={ogLocales[locale]} />
+    {locales
+      .filter((l) => l !== locale)
+      .map((l) => <meta property="og:locale:alternate" content={ogLocales[l]} />)}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={t('meta.ogImageAlt')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Red+Hat+Display:ital,wght@0,500;0,700;0,800;0,900;1,900&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    {structuredData && <StructuredData page={structuredData} />}
     <Analytics />
   </head>
   <body>

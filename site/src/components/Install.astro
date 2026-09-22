@@ -1,5 +1,7 @@
 ---
-import { INSTALLERS, href } from '../lib/site';
+import { Image } from 'astro:assets';
+import macInstallWarning from '../assets/img/mac-install-warning.png';
+import { INSTALLERS } from '../lib/site';
 import { getLocale, useTranslations } from '../i18n';
 
 const locale = getLocale(Astro);
@@ -36,12 +38,13 @@ const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
         </div>
         <details>
           <summary>{t('install.macDialog')}</summary>
-          <img
-            src={href('/img/mac-install-warning.png')}
+          <Image
+            src={macInstallWarning}
             alt={t('install.macDialogAlt')}
+            width={1170}
+            height={629}
+            format="webp"
             loading="lazy"
-            width="1170"
-            height="629"
           />
           <p>
             {t('install.appleGuide')}

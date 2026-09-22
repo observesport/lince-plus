@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // Production lives at https://observesport.github.io/lince-plus/ and is
 // published by the `update-docs` stage of .github/workflows/maven.yml.
@@ -21,6 +22,21 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
+  integrations: [
+    sitemap({
+      // Emits <xhtml:link rel="alternate" hreflang="..."> for every page that
+      // exists in more than one locale. The keys must match the i18n locales
+      // above; the values are the hreflang codes written into the sitemap.
+      i18n: {
+        defaultLocale: 'en',
+        locales: { en: 'en', es: 'es', de: 'de', ca: 'ca' },
+      },
+      // The 404 page must never be advertised for indexing.
+      filter: (page) => !page.includes('/404'),
+      changefreq: 'monthly',
+      lastmod: new Date(),
+    }),
+  ],
   build: {
     assets: 'assets',
   },

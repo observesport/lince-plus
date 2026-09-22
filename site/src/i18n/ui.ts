@@ -9,6 +9,8 @@ export const ui = {
       changelogTitle: 'Changelog - LINCE PLUS Desktop',
       changelogDescription: 'Every LINCE PLUS release since 2019, with notes and links to the installers on GitHub.',
       notFoundTitle: 'Not found - LINCE PLUS Desktop',
+      ogImageAlt:
+        'LINCE PLUS Desktop: free, open-source software for systematic observation studies in sports and health',
     },
     nav: {
       features: 'Features',
@@ -177,6 +179,8 @@ export const ui = {
       changelogTitle: 'Historial de versiones - LINCE PLUS Desktop',
       changelogDescription: 'Todas las versiones de LINCE PLUS desde 2019, con sus notas y enlaces a los instaladores en GitHub.',
       notFoundTitle: 'Página no encontrada - LINCE PLUS Desktop',
+      ogImageAlt:
+        'LINCE PLUS Desktop: software libre y de código abierto para estudios de observación sistemática en deporte y salud',
     },
     nav: {
       features: 'Funciones',
@@ -345,6 +349,8 @@ export const ui = {
       changelogTitle: 'Versionshistorie - LINCE PLUS Desktop',
       changelogDescription: 'Alle LINCE PLUS Versionen seit 2019 mit Hinweisen und Links zu den Installationsprogrammen auf GitHub.',
       notFoundTitle: 'Seite nicht gefunden - LINCE PLUS Desktop',
+      ogImageAlt:
+        'LINCE PLUS Desktop: freie Open-Source-Software für systematische Beobachtungsstudien in Sport und Gesundheit',
     },
     nav: {
       features: 'Funktionen',
@@ -513,6 +519,8 @@ export const ui = {
       changelogTitle: 'Historial de versions - LINCE PLUS Desktop',
       changelogDescription: 'Totes les versions de LINCE PLUS des del 2019, amb les notes i els enllaços als instal·ladors a GitHub.',
       notFoundTitle: 'Pàgina no trobada - LINCE PLUS Desktop',
+      ogImageAlt:
+        "LINCE PLUS Desktop: programari lliure i de codi obert per a estudis d'observació sistemàtica en esport i salut",
     },
     nav: {
       features: 'Funcions',

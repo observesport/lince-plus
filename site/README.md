@@ -43,6 +43,22 @@ Installer download links are derived from the version in `lince-version.json` us
 file names the release pipeline verifies before publishing, so the buttons only ever point at
 assets that exist.
 
+## SEO and machine-readable artifacts
+
+Generated at build time, all from `Astro.site` + `base`, so the surge.sh
+previews stay self-consistent:
+
+| File | Source | What it is |
+| --- | --- | --- |
+| `sitemap-index.xml`, `sitemap-0.xml` | `@astrojs/sitemap` in `astro.config.mjs` | Every page in every locale, with hreflang alternates. The 404 page is filtered out. |
+| `robots.txt` | `src/pages/robots.txt.ts` | Allows all crawlers, names the AI crawlers explicitly, declares the sitemap. |
+| `llms.txt` | `src/pages/llms.txt.ts` | Short index for LLM crawlers ([llmstxt.org](https://llmstxt.org)): what the product is, download links, API, citations, languages. |
+| `llms-full.txt` | `src/pages/llms-full.txt.ts` | The whole product description in one fetch, built from `src/data/*.json`. |
+| JSON-LD | `src/components/StructuredData.astro` | `SoftwareApplication`, `Organization`, `Person`, `WebSite`, `HowTo` (install) and `FAQPage` plus one `ScholarlyArticle` per citation on the home page; `BreadcrumbList` on the changelog. |
+
+`npm run smoke -- <base-url>` asserts all of them exist, so dropping the
+sitemap integration or an `llms.txt` route fails the `validate-site` job.
+
 ## Languages
 
 English is served at the site root, Spanish, German and Catalan under `/es/`, `/de/` and

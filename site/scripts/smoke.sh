@@ -86,8 +86,55 @@ check "$BASE/privacy-mobile/" 200
 expect_text "Privacy Policy" "privacy policy renders"
 
 check "$BASE/favicon.svg" 200
+
+# --- SEO and GEO artifacts -------------------------------------------------
+
 check "$BASE/robots.txt" 200
+expect_text "Sitemap:" "robots.txt declares a sitemap"
+expect_text "GPTBot" "robots.txt addresses AI crawlers"
+# The Sitemap line names the production origin, which is unreachable when a
+# production build is smoke-tested from a local server (validate-site job).
+# Only check that it points at sitemap-index.xml; the file itself is fetched
+# by path below.
+if grep -qE '^Sitemap: .*/sitemap-index\.xml[[:space:]]*$' "$BODY"; then
+  echo "ok    text  robots.txt Sitemap line points at sitemap-index.xml"
+else
+  echo "FAIL  text  robots.txt Sitemap line missing or not sitemap-index.xml"
+  FAILED=$((FAILED + 1))
+fi
+
+check "$BASE/sitemap-index.xml" 200
+check "$BASE/sitemap-0.xml" 200
+expect_text 'hreflang=' "sitemap carries hreflang alternates"
+for lang in es de ca; do
+  expect_text "/$lang/" "sitemap lists the /$lang/ pages"
+done
+if grep -q '/404' "$BODY"; then
+  echo "FAIL  text  sitemap must not list the 404 page"
+  FAILED=$((FAILED + 1))
+else
+  echo "ok    text  sitemap excludes the 404 page"
+fi
+
+check "$BASE/llms.txt" 200
+expect_text "# LINCE PLUS Desktop" "llms.txt has the product heading"
+expect_text "GPL-3.0" "llms.txt states the licence"
+expect_text "Current version: $VERSION" "llms.txt advertises $VERSION"
+check "$BASE/llms-full.txt" 200
+expect_text "api-docs" "llms-full.txt documents the local API"
+
+check "$BASE/" 200
+expect_text 'application/ld+json' "home page carries JSON-LD"
+expect_text '"SoftwareApplication"' "JSON-LD declares SoftwareApplication"
+expect_text '"ScholarlyArticle"' "JSON-LD declares the citations"
+expect_text '"price":"0"' "JSON-LD states the product is free"
+check "$BASE/changelog/" 200
+expect_text '"BreadcrumbList"' "changelog carries a BreadcrumbList"
+
 check "$BASE/this-page-does-not-exist/" 404
+# The 404 body is served for unknown paths; it must ask not to be indexed.
+check "$BASE/404.html" 200
+expect_text 'noindex' "404 page is noindex"
 
 if [ "$FAILED" -gt 0 ]; then
   echo "$FAILED check(s) failed"

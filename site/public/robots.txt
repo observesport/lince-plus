@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://observesport.github.io/lince-plus/sitemap-index.xml

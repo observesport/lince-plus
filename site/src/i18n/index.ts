@@ -21,6 +21,14 @@ const intlLocales: Record<Locale, string> = {
   ca: 'ca-ES',
 };
 
+/** Open Graph requires language_TERRITORY, not a bare language code. */
+export const ogLocales: Record<Locale, string> = {
+  en: 'en_GB',
+  es: 'es_ES',
+  de: 'de_DE',
+  ca: 'ca_ES',
+};
+
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (locales as readonly string[]).includes(value);
 }

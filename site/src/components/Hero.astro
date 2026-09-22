@@ -1,5 +1,8 @@
 ---
-import { RELEASE_URL, VERSION, href } from '../lib/site';
+import { Image } from 'astro:assets';
+import aiStudioPlayer from '../assets/img/ai-studio-player.png';
+import researchNotebook from '../assets/img/research-notebook.png';
+import { RELEASE_URL, VERSION } from '../lib/site';
 import { getLocale, localePath, useTranslations } from '../i18n';
 
 const locale = getLocale(Astro);
@@ -96,11 +99,12 @@ const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
       <!-- Tab 2: the built-in video player with the AI plugins enabled. -->
       <div id="panel-player" role="tabpanel" aria-labelledby="tab-player" class="panel" hidden>
         <figure class="player">
-          <img
-            src={href('/img/ai-studio-player.png')}
+          <Image
+            src={aiStudioPlayer}
             alt={t('hero.imageAlt')}
-            width="792"
-            height="531"
+            width={792}
+            height={531}
+            format="webp"
             loading="lazy"
           />
           <figcaption>
@@ -115,11 +119,12 @@ const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
       <!-- Tab 3: Jupyter notebooks inside the desktop app. -->
       <div id="panel-notebook" role="tabpanel" aria-labelledby="tab-notebook" class="panel" hidden>
         <figure class="player">
-          <img
-            src={href('/img/research-notebook.png')}
+          <Image
+            src={researchNotebook}
             alt={t('hero.notebookAlt')}
-            width="1200"
-            height="615"
+            width={1200}
+            height={615}
+            format="webp"
             loading="lazy"
           />
           <figcaption>
