@@ -93,7 +93,7 @@ check "$BASE/robots.txt" 200
 expect_text "Sitemap:" "robots.txt declares a sitemap"
 expect_text "GPTBot" "robots.txt addresses AI crawlers"
 # The Sitemap line names the production origin, which is unreachable when a
-# production build is smoke-tested from a local server (validate-site job).
+# production build is smoke-tested from a local server (Site workflow, check job).
 # Only check that it points at sitemap-index.xml; the file itself is fetched
 # by path below.
 if grep -qE '^Sitemap: .*/sitemap-index\.xml[[:space:]]*$' "$BODY"; then

@@ -19,7 +19,7 @@ export const RELEASE_URL: string = version.link;
 export const RELEASE_TAG = `v${VERSION}`;
 
 // Installer file names follow the Install4j naming used by the release
-// pipeline (see .github/workflows/maven.yml, `update-docs` verification step).
+// pipeline (see .github/workflows/site.yml, `publish` verification step).
 const fileVersion = VERSION.replace(/\./g, '_');
 const downloadBase = `${REPO_URL}/releases/download/${RELEASE_TAG}`;
 

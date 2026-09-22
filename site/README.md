@@ -1,7 +1,7 @@
 # LINCE PLUS website
 
 Public site for LINCE PLUS, published to https://observesport.github.io/lince-plus/ by the
-`update-docs` stage of `.github/workflows/maven.yml`.
+`publish` job of `.github/workflows/site.yml` (the **Site** workflow).
 
 Built with [Astro](https://astro.build). Static output, no client-side framework.
 
@@ -65,7 +65,7 @@ previews stay self-consistent:
 | JSON-LD | `src/components/StructuredData.astro` | `SoftwareApplication`, `Organization`, `Person`, `WebSite`, `HowTo` (install) and `FAQPage` plus one `ScholarlyArticle` per citation on the home page; `BreadcrumbList` on the changelog. |
 
 `npm run smoke -- <base-url>` asserts all of them exist, so dropping the
-sitemap integration or an `llms.txt` route fails the `validate-site` job.
+sitemap integration or an `llms.txt` route fails the `check` job.
 
 ## Languages
 
@@ -86,7 +86,7 @@ iOS privacy policy is English only.
 | `PUBLIC_FLAG_LEARN_RESOURCES` | off | Shows the online guide, workshop and wiki cards and their footer links. While off, the Learn section shows the YouTube card plus a collaboration call that also states LINCE PLUS is validated in peer-reviewed research. |
 
 Flip one for a build with `PUBLIC_FLAG_LEARN_RESOURCES=true npm run build`, or set it as an
-environment variable on the `build-site` and `preview-site` jobs in the workflow.
+environment variable on the `build` and `preview` jobs of `.github/workflows/site.yml`.
 
 ## Analytics
 
@@ -100,10 +100,13 @@ clicks are sent as `click` events (or `file_download` for installers) with `link
 
 1. Update `lince-version.json` and add the new entry at the top of `src/data/releases.json`
    as part of the release commit.
-2. The pipeline builds the site on every push (`build-site`). Pull requests can also get a
-   temporary surge.sh preview (`preview-site`, needs the `SURGE_TOKEN` secret; see
-   `docs/CI.md`). On a release build from `master` the `update-docs` job deploys the site
-   after manual approval and installer verification.
+2. The Site workflow builds and checks the site on every push that touches `site/` or
+   `lince-version.json`. Pull requests can also get a temporary surge.sh preview (`preview`,
+   needs the `SURGE_TOKEN` secret; see `docs/CI.md`).
+3. On `master` the `publish` job deploys the site to GitHub Pages: on push, on a manual
+   "Run workflow", or dispatched by the CI workflow right after a release. It first checks
+   that the version in `lince-version.json` is a published release with all installers.
+   No release is needed to publish a content change.
 
 ## Design
 

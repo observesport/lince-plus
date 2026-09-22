@@ -19,7 +19,7 @@ Where things live:
 | Feature cards on the home page (one string per locale) | `site/src/data/features.json` |
 | UI strings, including the hero copy and the player capabilities | `site/src/i18n/ui.ts` |
 
-The pipeline refuses to publish the site unless `lince-version.json` matches the released tag and the release carries all four installers (see `docs/CI.md`).
+The CI workflow refuses to publish a release unless `lince-version.json` matches it, and the Site workflow refuses to publish the site unless that version is a published release with all four installers (see `docs/CI.md`). The site can be republished on its own from `master` without a release.
 
 ## Workflow
 
@@ -169,7 +169,7 @@ After user approval:
 2. Insert the new entry at the top of `site/src/data/releases.json` using the Edit tool (match on the opening `[` and the first existing entry's `"version"` line)
 3. Apply any approved optional changes to `features.json` or `ui.ts`
 4. Validate the JSON parses: `node -e "JSON.parse(require('fs').readFileSync('site/src/data/releases.json','utf8'))"`
-5. Build the site to be sure it still renders: `cd site && npm ci && npm run build` (the `build-site` CI job runs the same on push)
+5. Build the site to be sure it still renders: `cd site && npm ci && npm run build` (the Site workflow's `build` job runs the same on push)
 6. Confirm the changes were applied successfully
 
 Then ask the user if they want to proceed with the next steps using AskUserQuestion:
