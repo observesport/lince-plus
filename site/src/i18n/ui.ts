@@ -115,6 +115,17 @@ export const ui = {
       title: 'Cite LINCE PLUS In Your Work.',
       lede: 'LINCE PLUS is developed through doctoral research with INEFC Catalunya. If it supports a study, please cite the most relevant paper.',
     },
+    tribute: {
+      eyebrow: 'In Memory',
+      title: 'Free, As A Tribute To Dr. Anguera.',
+      memorial:
+        'LINCE PLUS Desktop is free, and will always be, as a tribute to Dr. María Teresa Anguera Argilaga (1949-2025), Professor Emeritus of Methodology of Behavioural Sciences at the Universitat de Barcelona. A pioneer of observational methodology and mixed-methods research, she shaped the design taxonomy behind systematic behavioural observation and co-authored the papers that validate this software.',
+      legacy: 'Her legacy lives on in every observation LINCE PLUS makes possible.',
+      free: 'The desktop application is free and open source, and it will remain so.',
+      pro: 'Alongside it, LINCE PLUS Pro offers cloud services for professional users. Subscribing supports the project and funds new features that reach everyone, including the free desktop application.',
+      ctaPro: 'Discover LINCE PLUS Pro',
+      ctaResearch: 'See the publications',
+    },
     sponsors: {
       label: 'Built with the support of',
       note: 'Open-source licences provided by JetBrains and ej-technologies.',
@@ -271,6 +282,17 @@ export const ui = {
       eyebrow: 'Investigación',
       title: 'Cita LINCE PLUS En Tu Trabajo.',
       lede: 'LINCE PLUS se desarrolla en el marco de una investigación doctoral con el INEFC Catalunya. Si te ayuda en un estudio, cita el artículo más relevante.',
+    },
+    tribute: {
+      eyebrow: 'En memoria',
+      title: 'Gratuito, como homenaje a la Dra. Anguera.',
+      memorial:
+        'LINCE PLUS Desktop es gratuito, y lo será siempre, como homenaje a la memoria de la Dra. María Teresa Anguera Argilaga (1949-2025), catedrática emérita de Metodología de las Ciencias del Comportamiento de la Universitat de Barcelona. Pionera de la metodología observacional y de la investigación con métodos mixtos, definió la taxonomía de diseños que sustenta la observación sistemática del comportamiento y fue coautora de los artículos que validan este software.',
+      legacy: 'Su legado sigue vivo en cada observación que LINCE PLUS hace posible.',
+      free: 'La aplicación de escritorio es gratuita y de código abierto, y seguirá siéndolo.',
+      pro: 'Junto a ella, LINCE PLUS Pro ofrece servicios en la nube para usuarios profesionales. Suscribirse apoya el proyecto y financia nuevas funcionalidades que llegan a todo el mundo, también a la aplicación de escritorio gratuita.',
+      ctaPro: 'Descubre LINCE PLUS Pro',
+      ctaResearch: 'Ver las publicaciones',
     },
     sponsors: {
       label: 'Con el apoyo de',
@@ -429,6 +451,17 @@ export const ui = {
       title: 'Zitieren Sie LINCE PLUS In Ihrer Arbeit.',
       lede: 'LINCE PLUS entsteht im Rahmen einer Doktorarbeit mit dem INEFC Catalunya. Wenn es eine Studie unterstützt, zitieren Sie bitte die passendste Veröffentlichung.',
     },
+    tribute: {
+      eyebrow: 'Zum Gedenken',
+      title: 'Kostenlos, zum Gedenken an Dr. Anguera.',
+      memorial:
+        'LINCE PLUS Desktop ist kostenlos und wird es immer bleiben, dem Gedenken an Dr. María Teresa Anguera Argilaga (1949-2025) gewidmet, Professorin Emerita für Methodologie der Verhaltenswissenschaften an der Universitat de Barcelona. Als Pionierin der Beobachtungsmethodologie und der Mixed-Methods-Forschung prägte sie die Designtaxonomie, die der systematischen Verhaltensbeobachtung zugrunde liegt, und war Mitautorin der Veröffentlichungen, die diese Software validieren.',
+      legacy: 'Ihr Vermächtnis lebt in jeder Beobachtung weiter, die LINCE PLUS möglich macht.',
+      free: 'Die Desktop-Anwendung ist kostenlos und Open Source und wird es bleiben.',
+      pro: 'Ergänzend bietet LINCE PLUS Pro Cloud-Dienste für professionelle Anwender. Ein Abonnement unterstützt das Projekt und finanziert neue Funktionen, die allen zugutekommen, auch der kostenlosen Desktop-Anwendung.',
+      ctaPro: 'LINCE PLUS Pro entdecken',
+      ctaResearch: 'Zu den Veröffentlichungen',
+    },
     sponsors: {
       label: 'Mit Unterstützung von',
       note: 'Open-Source-Lizenzen bereitgestellt von JetBrains und ej-technologies.',
@@ -585,6 +618,17 @@ export const ui = {
       eyebrow: 'Recerca',
       title: 'Cita LINCE PLUS En El Teu Treball.',
       lede: "LINCE PLUS es desenvolupa en el marc d'una recerca doctoral amb l'INEFC Catalunya. Si t'ajuda en un estudi, cita l'article més rellevant.",
+    },
+    tribute: {
+      eyebrow: 'En memòria',
+      title: 'Gratuït, com a homenatge a la Dra. Anguera.',
+      memorial:
+        "LINCE PLUS Desktop és gratuït, i ho serà sempre, com a homenatge a la memòria de la Dra. Maria Teresa Anguera Argilaga (1949-2025), catedràtica emèrita de Metodologia de les Ciències del Comportament de la Universitat de Barcelona. Pionera de la metodologia observacional i de la recerca amb mètodes mixtos, va definir la taxonomia de dissenys que sustenta l'observació sistemàtica del comportament i va ser coautora dels articles que validen aquest programari.",
+      legacy: 'El seu llegat continua viu en cada observació que LINCE PLUS fa possible.',
+      free: "L'aplicació d'escriptori és gratuïta i de codi obert, i ho continuarà sent.",
+      pro: "Al costat seu, LINCE PLUS Pro ofereix serveis al núvol per a usuaris professionals. Subscriure-s'hi dona suport al projecte i finança noves funcionalitats que arriben a tothom, també a l'aplicació d'escriptori gratuïta.",
+      ctaPro: 'Descobreix LINCE PLUS Pro',
+      ctaResearch: 'Veure les publicacions',
     },
     sponsors: {
       label: 'Amb el suport de',
