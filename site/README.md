@@ -17,6 +17,14 @@ npm run preview    # serves dist/ at http://localhost:4321/lince-plus/
 
 Node 22.12 or later (see `.nvmrc`).
 
+When you add or update a dependency, regenerate `package-lock.json` on Linux so `npm ci` on
+the CI runner accepts it. A lock written on macOS can miss optional packages that sharp needs
+on Linux:
+
+```bash
+docker run --rm -v "$PWD":/app -w /app node:22 npm install --package-lock-only --ignore-scripts
+```
+
 `npm run smoke -- http://localhost:4321/lince-plus` checks a running copy of the site:
 every page answers, the 404 page works, home-page assets resolve, and the advertised
 version matches `lince-version.json`. CI runs the same script against the surge.sh preview.
