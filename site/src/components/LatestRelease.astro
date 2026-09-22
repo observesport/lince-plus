@@ -1,0 +1,145 @@
+---
+// The signature teal panel: latest release with direct installer links.
+import releases from '../data/releases.json';
+import version from '../../../lince-version.json';
+import { INSTALLERS, RELEASE_URL, VERSION } from '../lib/site';
+import { formatDate, getLocale, localePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+const latest = releases.find((r) => r.version === VERSION);
+// Spanish readers get the Spanish highlights the desktop app shows; everyone
+// else gets the first English notes.
+const highlights =
+  locale === 'es' && Array.isArray(version.message) && version.message.length > 0
+    ? version.message
+    : (latest?.notes ?? []).slice(0, 3);
+const showLangNote = locale !== 'en' && !(locale === 'es' && highlights === version.message);
+---
+
+<section class="latest" id="download" data-section="latest-release">
+  <div class="container grid">
+    <div>
+      <span class="eyebrow">{t('latest.eyebrow')}</span>
+      <h2>v{VERSION}{latest?.date && <span class="date"> &middot; {formatDate(latest.date, locale)}</span>}</h2>
+      {locale === 'en' && latest?.summary && <p class="summary">{latest.summary}</p>}
+      {highlights.length > 0 && (
+        <ul class="highlights">
+          {highlights.map((n) => <li>{n}</li>)}
+        </ul>
+      )}
+      {showLangNote && <p class="lang-note">{t('latest.notesLang')}</p>}
+      <div class="links">
+        <a href={RELEASE_URL} rel="noopener" target="_blank" data-ga="latest-github">{t('latest.github')}</a>
+        <a href={localePath(locale, '/changelog')} data-ga="latest-changelog">{t('latest.changelog')}</a>
+      </div>
+    </div>
+    <div class="downloads">
+      <span class="eyebrow">{t('latest.download')}</span>
+      <ul>
+        {INSTALLERS.map((i) => (
+          <li>
+            <a class="btn btn-white" href={i.url} download data-ga={`download-${i.id}`}>
+              <span class="os">{i.os}</span>
+              <span class="sep">&middot;</span>
+              <span class="label">{t(`installers.${i.id}`)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="hint">{t('latest.hint')}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .latest {
+    background: var(--bg-accent);
+    color: var(--fg-on-teal);
+    padding: 72px 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+  .latest .eyebrow {
+    color: var(--fg-on-teal-2);
+  }
+  .latest h2 {
+    color: var(--fg-on-teal);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .date {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.55em;
+    color: var(--fg-on-teal-2);
+  }
+  .summary {
+    color: var(--fg-on-teal);
+    font-size: 1.08rem;
+    font-weight: 500;
+    max-width: 58ch;
+  }
+  .highlights {
+    margin: 0 0 20px;
+    padding-left: 20px;
+    color: var(--fg-on-teal-2);
+    max-width: 60ch;
+  }
+  .highlights li {
+    margin-bottom: 6px;
+  }
+  .lang-note {
+    color: var(--fg-on-teal-2);
+    font-size: 0.85rem;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .links a {
+    color: var(--fg-on-teal);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .downloads ul {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .downloads .btn {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .downloads .os {
+    min-width: 76px;
+  }
+  .downloads .sep {
+    color: var(--fg-on-teal-2);
+  }
+  .downloads .label {
+    font-weight: 500;
+    color: var(--fg-on-teal-2);
+  }
+  .hint {
+    color: var(--fg-on-teal-2);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 36px;
+    }
+  }
+</style>

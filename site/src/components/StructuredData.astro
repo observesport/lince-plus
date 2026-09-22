@@ -1,0 +1,242 @@
+---
+// JSON-LD for search engines and answer engines. Every URL is derived from
+// Astro.site + BASE_URL so the surge.sh previews stay self-consistent, and
+// every fact comes from the same data files the pages render.
+import citations from '../data/citations.json';
+import releases from '../data/releases.json';
+import {
+  INSTALLERS,
+  PRODUCT_NAME,
+  RELEASE_URL,
+  REPO_URL,
+  SITE_NAME,
+  VERSION,
+  href,
+} from '../lib/site';
+import { getLocale, locales } from '../i18n';
+
+interface Props {
+  /** 'home' adds SoftwareApplication, HowTo, FAQPage and the citations;
+   *  'changelog' adds the BreadcrumbList only. */
+  page: 'home' | 'changelog';
+}
+
+const { page } = Astro.props;
+const locale = getLocale(Astro);
+const site = Astro.site!;
+const abs = (path: string) => new URL(href(path), site).href;
+const localeRoot = abs(locale === 'en' ? '/' : `/${locale}/`);
+
+const mac = INSTALLERS.filter((i) => i.os === 'macOS');
+const win = INSTALLERS.find((i) => i.os === 'Windows')!;
+const linux = INSTALLERS.find((i) => i.os === 'Linux')!;
+
+const organization = {
+  '@type': 'Organization',
+  '@id': `${abs('/')}#organization`,
+  name: 'ObserveSport',
+  url: abs('/'),
+  logo: abs('/lince-logo.svg'),
+  email: 'info@lince-plus.com',
+  sameAs: [REPO_URL, 'https://lince-plus.com'],
+};
+
+const author = {
+  '@type': 'Person',
+  '@id': `${abs('/')}#author`,
+  name: 'Alberto Soto Fernández',
+  affiliation: {
+    '@type': 'CollegeOrUniversity',
+    name: 'INEFC Catalunya',
+  },
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${abs('/')}#website`,
+  url: abs('/'),
+  name: SITE_NAME,
+  inLanguage: [...locales],
+  publisher: { '@id': organization['@id'] },
+};
+
+const softwareApplication = {
+  '@type': 'SoftwareApplication',
+  '@id': `${abs('/')}#software`,
+  name: SITE_NAME,
+  alternateName: [PRODUCT_NAME, 'LINCE PLUS', 'Lince Plus'],
+  applicationCategory: 'ResearchApplication',
+  applicationSubCategory: 'Behavioural video analysis and systematic observation',
+  operatingSystem: 'macOS, Windows 10 or later, Linux x64',
+  softwareVersion: VERSION,
+  datePublished: releases[0].date,
+  url: abs('/'),
+  downloadUrl: RELEASE_URL,
+  installUrl: abs('/#install'),
+  releaseNotes: abs('/changelog/'),
+  codeRepository: REPO_URL,
+  license: 'https://www.gnu.org/licenses/gpl-3.0.html',
+  isAccessibleForFree: true,
+  inLanguage: ['en', 'es', 'ca', 'de'],
+  programmingLanguage: 'Java',
+  screenshot: [abs('/img/ai-studio-player.png'), abs('/img/research-notebook.png')],
+  author: { '@id': author['@id'] },
+  publisher: { '@id': organization['@id'] },
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'EUR',
+    availability: 'https://schema.org/InStock',
+  },
+  featureList: [
+    'Observation instruments with criteria and categories',
+    'Frame-by-frame video coding with multiple observers',
+    'AI pose estimation with joint angles and a 3D pose viewer',
+    'T-Pattern detection and a predictive coding assistant',
+    'Sensor synchronisation (heart rate, accelerometer, gyroscope)',
+    'Built-in Jupyter notebooks with pandas, numpy, matplotlib and scipy',
+    'Observer agreement: Cohen kappa, Krippendorff alpha, percentage agreement',
+    'Exports to Theme, GSEQ, Hoisan and Excel',
+    'Local REST API with an OpenAPI description',
+  ],
+  softwareHelp: { '@type': 'CreativeWork', url: `${REPO_URL}/wiki` },
+  citation: citations.map((c) => ({ '@id': `${abs('/')}#citation-${c.year}` })),
+};
+
+// APA-style "Surname, X. Y., Surname2, X., & Surname3, X. Y." strings: each
+// author is a (surname, initials) PAIR of comma-separated tokens, not one
+// token per comma, so a flat split would turn "Soto-Fernández, A." into two
+// bogus authors "Soto-Fernández" and "A.".
+function parseApaAuthors(authors: string): { '@type': 'Person'; name: string }[] {
+  const tokens = authors
+    .replace(/&/g, ',')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean);
+  const people: { '@type': 'Person'; name: string }[] = [];
+  for (let i = 0; i < tokens.length; i += 2) {
+    const surname = tokens[i];
+    const initials = tokens[i + 1];
+    people.push({ '@type': 'Person', name: initials ? `${surname}, ${initials}` : surname });
+  }
+  return people;
+}
+
+const scholarlyArticles = citations.map((c) => ({
+  '@type': 'ScholarlyArticle',
+  '@id': `${abs('/')}#citation-${c.year}`,
+  headline: c.title,
+  name: c.title,
+  author: parseApaAuthors(c.authors),
+  datePublished: String(c.year),
+  isPartOf: { '@type': 'Periodical', name: c.journal },
+  pagination: c.details,
+  identifier: [{ '@type': 'PropertyValue', propertyID: 'DOI', value: c.doi }],
+  sameAs: c.url,
+  url: c.url,
+  about: { '@id': softwareApplication['@id'] },
+}));
+
+const installHowTo = {
+  '@type': 'HowTo',
+  '@id': `${abs('/')}#install`,
+  name: `Install ${SITE_NAME}`,
+  description:
+    'Download the installer for your operating system and run it. Every installer bundles its own Java runtime, so nothing else has to be installed.',
+  totalTime: 'PT5M',
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: 'macOS',
+      url: abs('/#install'),
+      text: `Download the Apple Silicon (${mac[0].file}) or Intel (${mac[1].file}) disk image, open it and drag LINCE PLUS to Applications. On first launch macOS reports an unverified developer: open System Settings, Privacy and Security, and choose Open Anyway.`,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: 'Windows',
+      url: abs('/#install'),
+      text: `Download ${win.file}, run it and follow the installer. Windows SmartScreen may ask for confirmation because the build is not code-signed.`,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: 'Linux',
+      url: abs('/#install'),
+      text: `Download ${linux.file}, make it executable with chmod +x and run it. The application installs to /opt/lince-plus.`,
+    },
+  ],
+};
+
+const faq = {
+  '@type': 'FAQPage',
+  '@id': `${abs('/')}#faq`,
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is LINCE PLUS Desktop free?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. LINCE PLUS Desktop is free and open source under GPL-3.0. No licence, account or registration is required.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Which operating systems does LINCE PLUS Desktop run on?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'macOS on Apple Silicon and Intel, Windows 10 or later on x64, and Linux x64. Every installer bundles its own Java runtime, so Java does not have to be installed separately.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Has LINCE PLUS been validated in peer-reviewed research?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. LINCE PLUS is published and cited in peer-reviewed journals, including Behavior Research Methods (2022) and Apunts. Educación Física y Deportes (2019 and 2026).',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can LINCE PLUS Desktop be scripted or automated?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. The desktop application exposes a local REST API with an OpenAPI description at /api-docs on the running instance, so projects, registers, agreement statistics and exports can be driven from Python, R, MATLAB or any HTTP client. It also runs Jupyter notebooks in-app with the observation data preloaded as a pandas DataFrame.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Which formats can LINCE PLUS export to?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Theme (Theme 5 and Theme 6), GSEQ, Hoisan and Excel, plus pose joint angles for biomechanical analysis.',
+      },
+    },
+  ],
+};
+
+const breadcrumb =
+  page === 'changelog'
+    ? {
+        '@type': 'BreadcrumbList',
+        '@id': `${localeRoot}changelog/#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: SITE_NAME, item: localeRoot },
+          { '@type': 'ListItem', position: 2, name: 'Changelog' },
+        ],
+      }
+    : null;
+
+const graph = [
+  organization,
+  author,
+  website,
+  ...(page === 'home' ? [softwareApplication, installHowTo, faq, ...scholarlyArticles] : []),
+  ...(breadcrumb ? [breadcrumb] : []),
+];
+
+const jsonld = { '@context': 'https://schema.org', '@graph': graph };
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(jsonld)} />

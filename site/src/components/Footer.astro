@@ -1,0 +1,115 @@
+---
+import Brand from './Brand.astro';
+import { CONTACT_EMAIL, LEGACY_LINCE_URL, REPO_URL, href } from '../lib/site';
+import { flags } from '../lib/flags';
+import { getLocale, localePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="footer" data-section="footer">
+  <div class="container grid">
+    <div class="about">
+      <Brand size={26} />
+      <p>{t('footer.tagline')}</p>
+    </div>
+    <div>
+      <h4>{t('footer.project')}</h4>
+      <ul>
+        <li><a href={REPO_URL} rel="noopener" target="_blank" data-ga="footer-repo">{t('footer.repo')}</a></li>
+        <li><a href={`${REPO_URL}/releases`} rel="noopener" target="_blank" data-ga="footer-releases">{t('footer.releases')}</a></li>
+        <li><a href={`${REPO_URL}/issues`} rel="noopener" target="_blank" data-ga="footer-issues">{t('footer.bug')}</a></li>
+        <li><a href={localePath(locale, '/changelog')} data-ga="footer-changelog">{t('footer.changelog')}</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>{t('footer.learn')}</h4>
+      <ul>
+        <li><a href="https://www.youtube.com/channel/UCyLQlDtUYWz6dZJ4B2HV-2g" rel="noopener" target="_blank" data-ga="footer-youtube">{t('footer.youtube')}</a></li>
+        {flags.learnResources && (
+          <>
+            <li><a href="http://learning.albertosoto.es/lince-plus-guide_en.html" rel="noopener" target="_blank" data-ga="footer-guide-en">{t('footer.guideEn')}</a></li>
+            <li><a href="http://learning.albertosoto.es/lince-plus-guide.html" rel="noopener" target="_blank" data-ga="footer-guide-es">{t('footer.guideEs')}</a></li>
+            <li><a href={`${REPO_URL}/wiki`} rel="noopener" target="_blank" data-ga="footer-wiki">{t('footer.wiki')}</a></li>
+          </>
+        )}
+        <li><a href={localePath(locale, '/#research')} data-ga="footer-research">{t('footer.research')}</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>{t('footer.contact')}</h4>
+      <ul>
+        <li><a href={`mailto:${CONTACT_EMAIL}`} data-ga="footer-email">{CONTACT_EMAIL}</a></li>
+        <li><a href="https://lince-plus.com" rel="noopener" target="_blank" data-ga="footer-website">{t('footer.website')}</a></li>
+        <li><a href={href('/privacy-mobile/')} data-ga="footer-privacy">{t('footer.privacy')}</a></li>
+        <li><a href={LEGACY_LINCE_URL} data-ga="footer-legacy">{t('footer.legacy')}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container bottom">
+    <small>&copy; {year} {t('footer.bottom')}</small>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--bg-2);
+    padding: 64px 0 28px;
+    margin-top: 48px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .about p {
+    font-size: 0.92rem;
+    max-width: 38ch;
+    margin-top: 14px;
+  }
+  h4 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-brand);
+    margin-bottom: 16px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  ul a {
+    color: var(--fg-2);
+    font-size: 0.92rem;
+  }
+  ul a:hover {
+    color: var(--fg-1);
+  }
+  .bottom {
+    padding-top: 22px;
+    border-top: 1px solid var(--border-1);
+    color: var(--fg-3);
+    font-size: 0.8rem;
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .about {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 520px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

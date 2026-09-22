@@ -86,12 +86,9 @@ Key external dependencies:
 
 ## CI/CD
 
-GitHub Actions workflow (`.github/workflows/maven.yml`):
-- Triggers on pushes to `master` and `develop` branches
-- Builds with Java 17 (Liberica distribution)
-- Creates installers for Windows (.exe) and macOS (.dmg) for both ARM and x86
-- Deploys to GitHub Packages on master branch (non-SNAPSHOT versions)
-- Creates draft releases with installer artifacts
+Two GitHub Actions workflows (see `docs/CI.md`):
+- `ci.yml` (**CI**): `compile` -> `test` / `build` -> `deploy`. Java 17 (Liberica). Installers for Windows, macOS ARM/x86 and Linux on `develop` and `master`; on `master` with a non-SNAPSHOT version it deploys to GitHub Packages, publishes the release and dispatches the Site workflow. Ignores site/docs-only changes.
+- `site.yml` (**Site**): `build` -> `check` -> `publish` for the Astro website under `site/`, plus an optional surge.sh `preview`. Publishes to GitHub Pages from `master` on push or manual run, without needing a release.
 
 ## Special Notes
 

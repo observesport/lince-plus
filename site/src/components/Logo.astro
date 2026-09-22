@@ -1,0 +1,12 @@
+---
+// Lynx mark shared with lince-plus.com (linceIconV2). The symbol is inlined
+// once per page by LogoSprite; the colour follows `currentColor`.
+interface Props {
+  size?: number;
+}
+const { size = 28 } = Astro.props;
+---
+
+<svg class="logo" width={size} height={size} viewBox="0 0 405 410" fill="currentColor" aria-hidden="true" focusable="false">
+  <use href="#lince-logo-mark"></use>
+</svg>

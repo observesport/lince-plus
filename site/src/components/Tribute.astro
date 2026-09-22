@@ -1,0 +1,107 @@
+---
+// Memorial section for Dr. María Teresa Anguera Argilaga (1949-2025), whose
+// work on observational methodology underpins LINCE PLUS. It also carries the
+// free-and-open-source pledge and the pointer to the Pro cloud services that
+// fund development.
+import { MAIN_SITE_URL } from '../lib/site';
+import { getLocale, localePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+---
+
+<section id="tribute" class="section-tight tribute" data-section="tribute">
+  <div class="container">
+    <div class="card memorial-card">
+      <div class="memorial">
+        <span class="eyebrow">{t('tribute.eyebrow')}</span>
+        <h2>{t('tribute.title')}</h2>
+        <p>{t('tribute.memorial')}</p>
+      </div>
+      <div class="pledge">
+        <p class="legacy">{t('tribute.legacy')}</p>
+        <p class="free">{t('tribute.free')}</p>
+        <p class="pro">{t('tribute.pro')}</p>
+        <div class="links">
+          <a
+            class="btn btn-teal btn-sm"
+            href={MAIN_SITE_URL}
+            rel="noopener"
+            target="_blank"
+            data-ga="tribute-pro"
+          >
+            {t('tribute.ctaPro')}
+          </a>
+          <a
+            class="btn btn-outline btn-sm"
+            href={localePath(locale, '/#research')}
+            data-ga="tribute-research"
+          >
+            {t('tribute.ctaResearch')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tribute {
+    border-top: 1px solid var(--border-2);
+  }
+  .memorial-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+    background: var(--bg-2);
+    border: 1.5px solid var(--teal-600);
+  }
+  .memorial h2 {
+    margin-bottom: 0.6em;
+  }
+  .memorial p {
+    margin-bottom: 0;
+  }
+  .pledge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .legacy {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    color: var(--fg-1);
+    text-wrap: balance;
+  }
+  .free {
+    font-weight: 600;
+    color: var(--fg-1);
+  }
+  .pro {
+    font-size: 0.95rem;
+    flex: 1;
+  }
+  .links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    width: 100%;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-1);
+  }
+  @media (max-width: 860px) {
+    .memorial-card {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+  }
+  @media (max-width: 640px) {
+    .links .btn {
+      width: 100%;
+    }
+  }
+</style>

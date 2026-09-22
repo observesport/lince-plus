@@ -1,0 +1,94 @@
+---
+// Layout for Markdown pages (src/pages/*.md). Frontmatter arrives as
+// `frontmatter`; the rendered Markdown arrives as the default slot.
+import Base from './Base.astro';
+import { SITE_NAME } from '../lib/site';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    description?: string;
+    updated?: string;
+  };
+}
+
+const { frontmatter } = Astro.props;
+---
+
+<Base
+  title={`${frontmatter.title} - ${SITE_NAME}`}
+  description={frontmatter.description}
+  localized={false}
+>
+  <article class="prose-page" data-section="prose">
+    <header class="container prose-head">
+      <h1>{frontmatter.title}</h1>
+      {frontmatter.updated && <p class="updated">Last updated {frontmatter.updated}</p>}
+    </header>
+    <div class="container prose">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .prose-page {
+    padding: 64px 0 96px;
+  }
+  .prose-head {
+    max-width: 820px;
+    margin-bottom: 32px;
+  }
+  .updated {
+    color: var(--fg-3);
+    font-size: 0.9rem;
+  }
+  .prose {
+    max-width: 820px;
+  }
+  .prose :global(h2) {
+    color: var(--fg-brand);
+    font-size: 1.35rem;
+    margin-top: 2.2em;
+  }
+  .prose :global(h3) {
+    margin-top: 1.6em;
+  }
+  .prose :global(p),
+  .prose :global(li) {
+    color: var(--fg-2);
+    font-size: 1rem;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.4em;
+  }
+  .prose :global(hr) {
+    border: 0;
+    height: 1px;
+    background: var(--border-1);
+    margin: 2.5em 0;
+  }
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 1.5em 0;
+    display: block;
+    overflow-x: auto;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-1);
+    color: var(--fg-2);
+  }
+  .prose :global(th) {
+    color: var(--fg-1);
+    font-weight: 700;
+  }
+  .prose :global(strong) {
+    color: var(--fg-1);
+  }
+</style>

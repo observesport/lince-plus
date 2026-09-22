@@ -1,0 +1,515 @@
+---
+import { Image } from 'astro:assets';
+import aiStudioPlayer from '../assets/img/ai-studio-player.png';
+import researchNotebook from '../assets/img/research-notebook.png';
+import { RELEASE_URL, VERSION } from '../lib/site';
+import { getLocale, localePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+const caps = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => t(`hero.cap${n}`));
+---
+
+<section class="hero" data-section="hero">
+  <div class="container hero-grid">
+    <div class="copy">
+      <span class="eyebrow">{t('hero.eyebrow', { version: VERSION })}</span>
+      <h1>{t('hero.title')}</h1>
+      <p class="lede">{t('hero.lede')}</p>
+      <div class="cta-row">
+        <a class="btn btn-teal" href={localePath(locale, '/#install')} data-ga="hero-download">
+          {t('hero.download', { version: VERSION })}
+        </a>
+        <a class="btn btn-outline" href={RELEASE_URL} rel="noopener" target="_blank" data-ga="hero-release-notes">
+          {t('hero.notes')}
+        </a>
+      </div>
+      <ul class="facts">
+        <li><span class="dot ok"></span>{t('hero.fact1')}</li>
+        <li><span class="dot"></span>{t('hero.fact2')}</li>
+        <li><span class="dot"></span>{t('hero.fact3')}</li>
+      </ul>
+    </div>
+
+    <div class="visual" data-tabs>
+      <div class="tablist" role="tablist" aria-label="LINCE PLUS">
+        <button role="tab" id="tab-register" aria-controls="panel-register" aria-selected="true" data-ga="hero-tab-register">
+          {t('hero.tabRegister')}
+        </button>
+        <button role="tab" id="tab-player" aria-controls="panel-player" aria-selected="false" tabindex="-1" data-ga="hero-tab-player">
+          {t('hero.tabPlayer')}
+        </button>
+        <button role="tab" id="tab-notebook" aria-controls="panel-notebook" aria-selected="false" tabindex="-1" data-ga="hero-tab-notebook">
+          {t('hero.tabNotebook')}
+        </button>
+        <button role="tab" id="tab-api" aria-controls="panel-api" aria-selected="false" tabindex="-1" data-ga="hero-tab-api">
+          {t('hero.tabApi')}
+        </button>
+      </div>
+
+      <!-- Tab 1: schematic of a coded register with two observer tracks, a
+           sensor stream and a detected T-Pattern. Decorative. -->
+      <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" class="panel">
+        <div class="register" aria-hidden="true">
+          <div class="panel-head">
+            <span class="title">{t('hero.panelTitle')}</span>
+            <span class="chip chip-teal">{t('hero.panelChip')}</span>
+          </div>
+          <div class="tracks">
+            <div class="track">
+              <span class="label">{t('hero.observerA')}</span>
+              <div class="lane">
+                <i style="left:4%;width:12%"></i>
+                <i style="left:22%;width:7%"></i>
+                <i style="left:41%;width:15%"></i>
+                <i class="hit" style="left:63%;width:9%"></i>
+                <i style="left:80%;width:14%"></i>
+              </div>
+            </div>
+            <div class="track">
+              <span class="label">{t('hero.observerB')}</span>
+              <div class="lane">
+                <i style="left:5%;width:11%"></i>
+                <i style="left:23%;width:6%"></i>
+                <i style="left:40%;width:16%"></i>
+                <i class="hit" style="left:63%;width:9%"></i>
+                <i style="left:82%;width:12%"></i>
+              </div>
+            </div>
+            <div class="track">
+              <span class="label">{t('hero.heartRate')}</span>
+              <div class="lane sensor">
+                <svg viewBox="0 0 400 40" preserveAspectRatio="none">
+                  <polyline
+                    points="0,30 30,26 60,28 90,18 120,22 150,12 180,16 210,8 240,14 270,10 300,20 330,16 360,24 400,22"
+                  ></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="playhead"></div>
+          </div>
+          <div class="panel-foot">
+            <span class="mono">00:12:47.08</span>
+            <span class="mono">{t('hero.next')}: <b>Shot</b> &middot; 0.82</span>
+          </div>
+        </div>
+        <p class="tab-lede">{t('hero.registerLede')}</p>
+      </div>
+
+      <!-- Tab 2: the built-in video player with the AI plugins enabled. -->
+      <div id="panel-player" role="tabpanel" aria-labelledby="tab-player" class="panel" hidden>
+        <figure class="player">
+          <Image
+            src={aiStudioPlayer}
+            alt={t('hero.imageAlt')}
+            width={792}
+            height={531}
+            format="webp"
+            loading="lazy"
+          />
+          <figcaption>
+            <p>{t('hero.playerLede')}</p>
+            <ul class="caps">
+              {caps.map((c) => <li>{c}</li>)}
+            </ul>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Tab 3: Jupyter notebooks inside the desktop app. -->
+      <div id="panel-notebook" role="tabpanel" aria-labelledby="tab-notebook" class="panel" hidden>
+        <figure class="player">
+          <Image
+            src={researchNotebook}
+            alt={t('hero.notebookAlt')}
+            width={1200}
+            height={615}
+            format="webp"
+            loading="lazy"
+          />
+          <figcaption>
+            <p>{t('hero.notebookLede')}</p>
+            <div class="chips">
+              <span class="chip chip-teal">Jupyter</span>
+              <span class="chip">pandas</span>
+              <span class="chip">numpy</span>
+              <span class="chip">matplotlib</span>
+              <span class="chip">scipy</span>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Tab 4: the local REST API. Paths are real: springdoc serves
+           /api-docs, AnalysisController is mapped at /register (kappa,
+           krippendorf, percentageAgreement), plus import/export and /file. -->
+      <div id="panel-api" role="tabpanel" aria-labelledby="tab-api" class="panel" hidden>
+        <div class="api">
+          <div class="api-head">
+            <span class="dot-row" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="mono">terminal</span>
+          </div>
+          <pre class="mono"><code><span class="c"># OpenAPI description of the running desktop app</span>
+<span class="k">curl</span> http://localhost:<span class="v">&lt;port&gt;</span>/api-docs
+
+<span class="c"># Python, R, MATLAB, a spreadsheet: any HTTP client</span>
+<span class="k">import</span> requests
+lince = <span class="s">"http://localhost:&lt;port&gt;"</span>
+spec = requests.get(<span class="s">f"{"{"}lince{"}"}/api-docs"</span>).json()
+kappa = requests.get(
+    <span class="s">f"{"{"}lince{"}"}/register/kappa/{"{"}obs_a{"}"}/{"{"}obs_b{"}"}"</span>
+).json()</code></pre>
+        </div>
+        <p class="tab-lede">{t('hero.apiLede')}</p>
+        <ul class="caps">
+          {[1, 2, 3, 4].map((n) => <li>{t(`hero.apiCap${n}`)}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  // Accessible tabs for the hero visual. Arrow keys move between tabs; the
+  // selected tab is reported to GA4 as select_content when gtag is loaded.
+  document.querySelectorAll('[data-tabs]').forEach(function (root) {
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    function select(tab, focus) {
+      tabs.forEach(function (other) {
+        var on = other === tab;
+        other.setAttribute('aria-selected', on ? 'true' : 'false');
+        other.tabIndex = on ? 0 : -1;
+        var panel = document.getElementById(other.getAttribute('aria-controls'));
+        if (panel) panel.hidden = !on;
+      });
+      if (focus) tab.focus();
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'select_content', {
+          content_type: 'hero_tab',
+          content_id: tab.id,
+          section: 'hero',
+        });
+      }
+    }
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () {
+        select(tab, false);
+      });
+      tab.addEventListener('keydown', function (e) {
+        var next = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : null;
+        if (next === null) return;
+        e.preventDefault();
+        select(tabs[(next + tabs.length) % tabs.length], true);
+      });
+    });
+  });
+</script>
+
+<style>
+  .hero {
+    padding: 88px 0 72px;
+    border-bottom: 1px solid var(--border-2);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 56px;
+    align-items: start;
+  }
+  .copy .lede {
+    font-size: 1.1rem;
+    max-width: 54ch;
+    margin-bottom: 2rem;
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .facts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    color: var(--fg-2);
+    font-size: 0.92rem;
+  }
+  .facts li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--teal-400);
+    flex-shrink: 0;
+  }
+  .dot.ok {
+    background: var(--status-ok);
+  }
+
+  /* Tabs */
+  .tablist {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 16px;
+    border: 1.5px solid var(--border-1);
+    border-radius: var(--radius-pill);
+    background: var(--bg-2);
+  }
+  .tablist button {
+    font: inherit;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--fg-2);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-pill);
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: opacity var(--motion-base) var(--ease-standard);
+  }
+  .tablist button:hover {
+    color: var(--fg-1);
+  }
+  .tablist button[aria-selected='true'] {
+    background: var(--teal-400);
+    color: var(--fg-on-teal);
+  }
+  .panel[hidden] {
+    display: none;
+  }
+
+  /* Tab 1: register schematic */
+  .register {
+    background: var(--bg-3);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    box-shadow: var(--shadow-lg);
+  }
+  .panel-head,
+  .panel-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .panel-head {
+    margin-bottom: 20px;
+  }
+  .panel-head .title {
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+  .panel-foot {
+    margin-top: 18px;
+    color: var(--fg-3);
+    font-size: 0.8rem;
+  }
+  .panel-foot b {
+    color: var(--fg-1);
+    font-weight: 500;
+  }
+  .tracks {
+    position: relative;
+    display: grid;
+    gap: 14px;
+  }
+  .track {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+  }
+  .label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .lane {
+    position: relative;
+    height: 26px;
+    background: var(--ink-800);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .lane i {
+    position: absolute;
+    top: 6px;
+    height: 14px;
+    border-radius: 4px;
+    background: var(--teal-600);
+  }
+  .lane i.hit {
+    background: var(--citron);
+  }
+  .lane.sensor {
+    height: 40px;
+  }
+  .lane.sensor svg {
+    width: 100%;
+    height: 100%;
+  }
+  .lane.sensor polyline {
+    fill: none;
+    stroke: var(--teal-300);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+  .playhead {
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    left: calc(88px + 12px + 67.5%);
+    width: 2px;
+    background: var(--fg-1);
+    animation: sweep 9s var(--ease-standard) infinite alternate;
+  }
+  @keyframes sweep {
+    from {
+      transform: translateX(-120px);
+    }
+    to {
+      transform: translateX(60px);
+    }
+  }
+
+  .tab-lede {
+    margin: 16px 0 10px;
+    color: var(--fg-1);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Tab 4: API terminal card */
+  .api {
+    background: var(--ink-950);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .api-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-3);
+    color: var(--fg-3);
+    font-size: 0.75rem;
+  }
+  .dot-row {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .dot-row i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink-500);
+  }
+  .api pre {
+    margin: 0;
+    padding: 20px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--fg-2);
+    overflow-x: auto;
+  }
+  .api code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+  .api .c {
+    color: var(--fg-3);
+  }
+  .api .k {
+    color: var(--teal-300);
+  }
+  .api .s {
+    color: var(--citron);
+  }
+  .api .v {
+    color: var(--fg-1);
+  }
+
+  /* Tab 2: video player */
+  .player {
+    margin: 0;
+  }
+  .player img {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-3);
+  }
+  .player figcaption {
+    margin-top: 16px;
+  }
+  .player figcaption p {
+    color: var(--fg-1);
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+  .caps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 6px 16px;
+    font-size: 0.86rem;
+    color: var(--fg-2);
+  }
+  .caps li {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .caps li::before {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    margin-top: 0.5em;
+    border-radius: 50%;
+    background: var(--teal-400);
+  }
+
+  @media (max-width: 960px) {
+    .hero {
+      padding: 56px 0 48px;
+    }
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+    }
+  }
+  @media (max-width: 560px) {
+    .track {
+      grid-template-columns: 72px minmax(0, 1fr);
+    }
+    .playhead {
+      left: calc(72px + 12px + 67.5%);
+    }
+    .caps {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,118 @@
+---
+import Brand from './Brand.astro';
+import { RELEASE_URL, VERSION } from '../lib/site';
+import { getLocale, localeNames, localePath, locales, switchLocalePath, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+const pathname = Astro.url.pathname;
+---
+
+<header class="nav" data-section="nav">
+  <div class="container nav-row">
+    <Brand />
+    <nav aria-label="Primary">
+      <a href={localePath(locale, '/#features')} data-ga="nav-features">{t('nav.features')}</a>
+      <a href={localePath(locale, '/#install')} data-ga="nav-install">{t('nav.install')}</a>
+      <a href={localePath(locale, '/#learn')} data-ga="nav-learn">{t('nav.learn')}</a>
+      <a href={localePath(locale, '/#research')} data-ga="nav-research">{t('nav.research')}</a>
+      <a href={localePath(locale, '/changelog')} data-ga="nav-changelog">{t('nav.changelog')}</a>
+      <a class="btn btn-teal btn-sm nav-cta" href={RELEASE_URL} data-ga="nav-download">
+        {t('nav.download')} <span class="mono">v{VERSION}</span>
+      </a>
+    </nav>
+    <nav class="lang" aria-label={t('nav.language')}>
+      {locales.map((l) => (
+        <a
+          href={switchLocalePath(locale, l, pathname)}
+          hreflang={l}
+          lang={l}
+          title={localeNames[l]}
+          aria-current={l === locale ? 'page' : undefined}
+          data-ga={`lang-${l}`}
+        >
+          {l.toUpperCase()}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg-1);
+    border-bottom: 1px solid var(--border-2);
+  }
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 72px;
+  }
+  nav[aria-label='Primary'] {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-left: auto;
+  }
+  nav a {
+    color: var(--fg-2);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  nav a:hover {
+    color: var(--fg-1);
+    text-decoration: none;
+  }
+  nav a.nav-cta,
+  nav a.nav-cta:hover {
+    width: auto;
+    color: var(--fg-on-teal);
+  }
+  .nav-cta .mono {
+    font-weight: 500;
+    font-size: 0.82rem;
+    opacity: 0.85;
+  }
+  .lang {
+    display: flex;
+    gap: 2px;
+    border: 1.5px solid var(--border-1);
+    border-radius: var(--radius-pill);
+    padding: 3px;
+  }
+  .lang a {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    border-radius: var(--radius-pill);
+    color: var(--fg-3);
+  }
+  .lang a[aria-current='page'] {
+    background: var(--teal-400);
+    color: var(--fg-on-teal);
+  }
+  @media (max-width: 960px) {
+    nav[aria-label='Primary'] a:not(.nav-cta) {
+      display: none;
+    }
+  }
+  @media (max-width: 600px) {
+    .nav-cta .mono {
+      display: none;
+    }
+    .nav-row {
+      gap: 10px;
+    }
+    .nav-row :global(.wordmark) {
+      display: none;
+    }
+    .lang a {
+      padding: 4px 6px;
+    }
+  }
+</style>

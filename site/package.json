@@ -1,0 +1,22 @@
+{
+  "name": "lince-plus-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Public website for LINCE PLUS, published to GitHub Pages",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro",
+    "smoke": "scripts/smoke.sh"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.3"
+  }
+}

@@ -1,0 +1,200 @@
+---
+import Base from '../layouts/Base.astro';
+import releases from '../data/releases.json';
+import { LEGACY_LINCE_URL, REPO_URL } from '../lib/site';
+import { formatDate, getLocale, useTranslations } from '../i18n';
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+const releaseUrl = (r: { tag?: string; url?: string }) =>
+  r.url ?? (r.tag ? `${REPO_URL}/releases/tag/${r.tag}` : undefined);
+---
+
+<Base
+  title={t('meta.changelogTitle')}
+  description={t('meta.changelogDescription')}
+  structuredData="changelog"
+>
+  <header class="page-head" data-section="changelog-head">
+    <div class="container">
+      <span class="eyebrow">{t('changelog.eyebrow')}</span>
+      <h1>{t('changelog.title')}</h1>
+      <p class="lede">{t('changelog.lede')}</p>
+      {locale !== 'en' && <p class="lang-note">{t('latest.notesLang')}</p>}
+    </div>
+  </header>
+
+  <div class="container layout" data-section="changelog">
+    <aside class="toc">
+      <h2>{t('changelog.versions')}</h2>
+      <ol>
+        {releases.map((r) => (
+          <li><a class="mono" href={`#v${r.version}`}>v{r.version}</a></li>
+        ))}
+        <li><a href="#legacy">{t('changelog.legacyTitle')}</a></li>
+      </ol>
+    </aside>
+
+    <div class="releases">
+      {releases.map((r) => {
+        const url = releaseUrl(r);
+        return (
+          <article id={`v${r.version}`} class="card release">
+            <header>
+              <h2 class="mono"><a href={`#v${r.version}`}>v{r.version}</a></h2>
+              {r.date && <span class="date">{formatDate(r.date, locale)}</span>}
+              {url && (
+                <a class="src" href={url} rel="noopener" target="_blank" data-ga={`changelog-${r.version}`}>
+                  {t('changelog.github')}
+                </a>
+              )}
+            </header>
+            {'summary' in r && r.summary && <p class="summary">{r.summary}</p>}
+            {r.notes.length > 0 ? (
+              <ul>{r.notes.map((n) => <li>{n}</li>)}</ul>
+            ) : (
+              <p class="empty">{t('changelog.maintenance')}</p>
+            )}
+          </article>
+        );
+      })}
+
+      <article id="legacy" class="card release legacy">
+        <header>
+          <h2>{t('changelog.legacyTitle')} <span class="chip chip-warn">{t('changelog.legacyBadge')}</span></h2>
+        </header>
+        <p>{t('changelog.legacyText')}</p>
+        <a class="btn btn-outline btn-sm" href={LEGACY_LINCE_URL} data-ga="changelog-legacy">{t('changelog.legacyDownload')}</a>
+      </article>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    padding: 72px 0 48px;
+    border-bottom: 1px solid var(--border-2);
+  }
+  .page-head .lede {
+    max-width: 60ch;
+    margin: 0;
+  }
+  .lang-note {
+    color: var(--fg-3);
+    font-size: 0.9rem;
+    margin: 12px 0 0;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 48px;
+    padding-top: 56px;
+    padding-bottom: 80px;
+  }
+  .toc {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  .toc h2 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-brand);
+    margin-bottom: 12px;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .toc a {
+    display: block;
+    padding: 4px 0;
+    color: var(--fg-3);
+    font-size: 0.88rem;
+  }
+  .toc a:hover {
+    color: var(--fg-1);
+    text-decoration: none;
+  }
+  .releases {
+    display: grid;
+    gap: 20px;
+  }
+  .release header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .release h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .release h2 a {
+    color: var(--fg-1);
+  }
+  .release h2 a:hover {
+    color: var(--fg-brand);
+    text-decoration: none;
+  }
+  .date {
+    color: var(--fg-3);
+    font-size: 0.88rem;
+  }
+  .src {
+    margin-left: auto;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  .summary {
+    color: var(--fg-1);
+    font-weight: 500;
+  }
+  .release ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--fg-2);
+    font-size: 0.95rem;
+  }
+  .release li {
+    margin-bottom: 6px;
+  }
+  .empty {
+    color: var(--fg-3);
+    font-style: italic;
+    margin: 0;
+  }
+  .legacy h2 {
+    font-family: var(--font-display);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .legacy .btn {
+    width: auto;
+  }
+  @media (max-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .toc {
+      position: static;
+      max-height: none;
+    }
+    .toc ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+    }
+  }
+</style>
