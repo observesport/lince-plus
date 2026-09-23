@@ -4,12 +4,14 @@ name: CI
 #
 #   compile -> test  -> deploy
 #           -> build ->
-#           -> test  -> snapshot
+#           -> test  -> snapshot   (manual only)
 #
 #   feature branches / PRs   compile + test
 #   develop                  ... + build (installers verified, not uploaded)
-#                            ... + snapshot (SNAPSHOT jars to GitHub Packages,
-#                            no installer, no lince-desktop fat jar)
+#   develop, "Run workflow"  compile + test + snapshot (SNAPSHOT jars to
+#     with `snapshot` ticked GitHub Packages; no installer, no lince-desktop
+#                            fat jar). Manual so it costs runner minutes
+#                            only when someone needs the snapshot.
 #   master (non-SNAPSHOT)    ... + deploy (GitHub Packages + GitHub release),
 #                            then dispatches the Site workflow to publish
 #
@@ -34,6 +36,11 @@ on:
       - '.claude/**'
       - '.github/workflows/site.yml'
   workflow_dispatch:
+    inputs:
+      snapshot:
+        description: 'Deploy the SNAPSHOT jars to GitHub Packages (develop only; skips the installer build)'
+        type: boolean
+        default: false
 
 concurrency:
   # Never cancel a run on master or develop (a release must not stop halfway
@@ -176,7 +183,8 @@ jobs:
   build:
     name: Build
     needs: compile
-    if: needs.compile.outputs.release == 'true' || needs.compile.outputs.develop == 'true'
+    # A manual snapshot run only needs the jars, not the installers.
+    if: (needs.compile.outputs.release == 'true' || needs.compile.outputs.develop == 'true') && !(github.event_name == 'workflow_dispatch' && inputs.snapshot)
     runs-on: ubuntu-latest
     environment:
       name: cicd
@@ -255,15 +263,17 @@ jobs:
             src/installer/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
 
   # ---------------------------------------------------------------------------
-  # SNAPSHOT - develop only. Pushes the SNAPSHOT Maven artifacts to GitHub
+  # SNAPSHOT - manual, develop only: "Run workflow" on develop with the
+  #   `snapshot` input ticked. Pushes the SNAPSHOT Maven artifacts to GitHub
   #   Packages so other projects (lince-server) can depend on unreleased
   #   lince-data. Libraries only: no installers, and no lince-desktop fat jar
-  #   (~400 MB per push that nothing consumes). Waits for `test`, not `build`.
+  #   (~400 MB that nothing consumes). Waits for `test`; `build` is skipped
+  #   on this kind of run. Not automatic on push, to save runner minutes.
   # ---------------------------------------------------------------------------
   snapshot:
     name: Deploy snapshot
     needs: [ compile, test ]
-    if: needs.compile.outputs.develop == 'true' && contains(needs.compile.outputs.version, 'SNAPSHOT')
+    if: github.event_name == 'workflow_dispatch' && inputs.snapshot && needs.compile.outputs.develop == 'true' && contains(needs.compile.outputs.version, 'SNAPSHOT')
     runs-on: ubuntu-latest
     environment:
       name: cicd

@@ -15,7 +15,7 @@ Maven build, and the website can be published without cutting a release.
 ```
 compile -> test  -> deploy -> (dispatches Site: publish)
         -> build ->
-        -> test  -> snapshot
+        -> test  -> snapshot        manual: "Run workflow" on develop, `snapshot` ticked
 ```
 
 | Job | What it does |
@@ -23,7 +23,7 @@ compile -> test  -> deploy -> (dispatches Site: publish)
 | `compile` | Compiles the reactor, resolves the version, tiers the run |
 | `test` | Unit suite, JUnit report as a check. Gates `deploy` |
 | `build` | Install4j installers, verified to exist. Runs alongside `test` |
-| `snapshot` | `mvn deploy` of the SNAPSHOT libraries to GitHub Packages. Waits for `test` only, not for `build` |
+| `snapshot` | Manual. `mvn deploy` of the SNAPSHOT libraries to GitHub Packages. Waits for `test`; `build` is skipped on that run |
 | `deploy` | Checks `lince-version.json`, `mvn deploy` to GitHub Packages, publishes the `v<version>` release with the four installers, then dispatches the Site workflow |
 
 How far a run goes:
@@ -31,7 +31,8 @@ How far a run goes:
 | Trigger | Jobs |
 | --- | --- |
 | Feature branch push, or any PR | `compile` -> `test` |
-| `develop` | ... + `build` (installers verified, **not** uploaded) + `snapshot` (SNAPSHOT jars to GitHub Packages) |
+| `develop` | ... + `build` (installers verified, **not** uploaded) |
+| `develop`, "Run workflow" with `snapshot` ticked | `compile` -> `test` -> `snapshot` (SNAPSHOT jars to GitHub Packages, no installers) |
 | `master`, non-SNAPSHOT | ... + `deploy` |
 
 A **release build** is a non-SNAPSHOT version on `master`. A SNAPSHOT on
@@ -42,15 +43,23 @@ it targets `master` with a release version.
 
 ### Snapshots from `develop`
 
-Every push to `develop` with a `-SNAPSHOT` version deploys the Maven
-artifacts to GitHub Packages: the parent pom, `lince-data`, `lince-data-fx`
-(with its test-jar), `lince-ai`, `lince-math` and `lince-transcoding`. It does
-not build installers (`-Plocal` keeps Install4j out of the `install` phase)
-and it leaves out `lince-desktop`, whose Spring Boot fat jar is about 400 MB
-and has no consumer; drop `-pl '!lince-desktop'` from the job if that changes.
+Snapshots are deployed on demand, not on every push, to save runner minutes.
+Open Actions -> CI -> "Run workflow", pick `develop`, tick `snapshot` and run,
+or from a terminal:
 
-A non-SNAPSHOT version on `develop` is skipped, so a release version can never
-be overwritten from `develop`. Each deploy adds a new timestamped file set
+```
+gh workflow run ci.yml --ref develop -f snapshot=true
+```
+
+That run does `compile` -> `test` -> `snapshot` and skips the installer
+`build`. It deploys the parent pom, `lince-data`, `lince-data-fx` (with its
+test-jar), `lince-ai`, `lince-math` and `lince-transcoding` to GitHub Packages.
+`-Plocal` keeps Install4j out of the `install` phase, and `lince-desktop` is
+left out because its Spring Boot fat jar is about 400 MB and has no consumer;
+drop `-pl '!lince-desktop'` from the job if that changes.
+
+The job refuses to run from any branch other than `develop` or with a
+non-SNAPSHOT version, so a release version can never be overwritten this way. Each deploy adds a new timestamped file set
 under the same `-SNAPSHOT` version, and the version's `maven-metadata.xml`
 points at the latest one.
 
