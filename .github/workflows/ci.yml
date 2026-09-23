@@ -85,8 +85,8 @@ jobs:
           distribution: 'liberica'
           cache: maven
           server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          server-username-env-var: GITHUB_ACTOR
+          server-password-env-var: GITHUB_TOKEN
 
       - name: Resolve version
         id: version
@@ -154,8 +154,8 @@ jobs:
           distribution: 'liberica'
           cache: maven
           server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          server-username-env-var: GITHUB_ACTOR
+          server-password-env-var: GITHUB_TOKEN
 
       - name: Run tests
         run: cd src && mvn -B -Plocal test
@@ -207,8 +207,8 @@ jobs:
           distribution: 'liberica'
           cache: maven
           server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          server-username-env-var: GITHUB_ACTOR
+          server-password-env-var: GITHUB_TOKEN
 
       - name: Set up Install4j
         run: |
@@ -297,8 +297,8 @@ jobs:
           distribution: 'liberica'
           cache: maven
           server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          server-username-env-var: GITHUB_ACTOR
+          server-password-env-var: GITHUB_TOKEN
 
       # -Plocal keeps Install4j out of the `install` phase that `deploy` runs
       # through. `-pl '!lince-desktop'` leaves the Spring Boot fat jar out of
@@ -361,8 +361,8 @@ jobs:
           distribution: 'liberica'
           cache: maven
           server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          server-username-env-var: GITHUB_ACTOR
+          server-password-env-var: GITHUB_TOKEN
 
       # -Plocal: the default profile binds Install4j to `install`, which
       # `deploy` runs through, and this job has no Install4j. The installers
