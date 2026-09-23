@@ -20,5 +20,5 @@ target
 /site/dist/
 /site/.astro/
 
-# Browser source maps are dead weight in the desktop jar (LO-318 bundle + deprecated v3 app)
+# Browser source maps are dead weight in the desktop jar (JupyterLite bundle)
 /src/lince-desktop/src/main/resources/public/**/*.map

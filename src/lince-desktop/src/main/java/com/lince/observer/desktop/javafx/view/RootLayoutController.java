@@ -362,17 +362,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
 
-//    /**
-//     * Opens the deprecated (legacy) frontend in the browser.
-//     * This method opens /deprecated/index.html which contains the old React app.
-//     */
-//    @FXML
-//    private void handleOpenBrowserDeprecated() {
-//        String url = mainLinceApp.getServerURL() + "/deprecated/index.html";
-//        JavaFXLogHelper.addLogInfo(i18n("open_browser", url));
-//        ServerValuesHelper.openLANLinceBrowser(url, false);
-//    }
-
     /**
      * Opens the new frontend in the browser.
      * This method opens /index.html which contains the new React app.
