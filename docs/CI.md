@@ -215,6 +215,13 @@ later): nothing on the website has changed yet.
 
 ## Notes
 
+- CI jobs run on a pinned `ubuntu-24.04` image, not `ubuntu-latest`: that
+  label moves to Ubuntu 26 on 2026-10-19 and the Install4j `.deb` is only
+  verified on 24.04. Upgrade all jobs together. The Site workflow stays on
+  `ubuntu-latest`; it only needs Node.
+- `.github/dependabot.yml` opens a monthly grouped PR when an action in the
+  workflows has a newer major, so runtime deprecations (Node 20 -> 24 and the
+  like) arrive as a PR instead of a warning on every run.
 - `concurrency` never cancels a CI run on `master` or `develop`, so a second
   push cannot cancel a release midway. On feature branches superseded runs are
   cancelled, which also collapses the duplicate `push` + `pull_request` run of
