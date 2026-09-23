@@ -382,6 +382,8 @@
                     <!-- LO-343: *.properties are already copied (filtered) by the block above;
                          copying them again unfiltered left a literal @version@ in target/classes -->
                     <exclude>**/*.properties</exclude>
+                    <!-- Browser source maps: never ship them in the jar even if a frontend drop re-adds them -->
+                    <exclude>**/*.map</exclude>
                 </excludes>
             </resource>
         </resources>

@@ -14,20 +14,13 @@ import java.util.List;
 
 /**
  * Web configuration for serving static resources.
- * Configures resource handlers to serve both new frontend (public/) and deprecated frontend (public/deprecated/).
- *
- * Created for frontend migration - serves new React app from public/ root
- * and legacy desktop.html from public/deprecated/
+ * Serves the React app from public/ (with SPA fallback) and the embedded desktop page from public/desktop/.
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Serve deprecated resources at /deprecated/** path
-        registry.addResourceHandler("/deprecated/**")
-                .addResourceLocations("classpath:/public/deprecated/");
-
         // Serve desktop resources at /desktop/** path
         registry.addResourceHandler("/desktop/**")
                 .addResourceLocations("classpath:/public/desktop/");
