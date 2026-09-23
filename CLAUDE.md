@@ -87,7 +87,7 @@ Key external dependencies:
 ## CI/CD
 
 Two GitHub Actions workflows (see `docs/CI.md`):
-- `ci.yml` (**CI**): `compile` -> `test` / `build` -> `deploy`. Java 17 (Liberica). Installers for Windows, macOS ARM/x86 and Linux on `develop` and `master`; on `master` with a non-SNAPSHOT version it deploys to GitHub Packages, publishes the release and dispatches the Site workflow. Ignores site/docs-only changes.
+- `ci.yml` (**CI**): `compile` -> `test` / `build` -> `snapshot` / `deploy`. Java 17 (Liberica). Installers for Windows, macOS ARM/x86 and Linux on `develop` and `master`; on `develop` with a SNAPSHOT version it deploys the library jars (not `lince-desktop`, no installers) to GitHub Packages; on `master` with a non-SNAPSHOT version it deploys to GitHub Packages, publishes the release and dispatches the Site workflow. Ignores site/docs-only changes.
 - `site.yml` (**Site**): `build` -> `check` -> `publish` for the Astro website under `site/`, plus an optional surge.sh `preview`. Publishes to GitHub Pages from `master` on push or manual run, without needing a release.
 
 ## Special Notes

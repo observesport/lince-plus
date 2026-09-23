@@ -4,9 +4,12 @@ name: CI
 #
 #   compile -> test  -> deploy
 #           -> build ->
+#           -> test  -> snapshot
 #
 #   feature branches / PRs   compile + test
 #   develop                  ... + build (installers verified, not uploaded)
+#                            ... + snapshot (SNAPSHOT jars to GitHub Packages,
+#                            no installer, no lince-desktop fat jar)
 #   master (non-SNAPSHOT)    ... + deploy (GitHub Packages + GitHub release),
 #                            then dispatches the Site workflow to publish
 #
@@ -252,6 +255,56 @@ jobs:
             src/installer/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
 
   # ---------------------------------------------------------------------------
+  # SNAPSHOT - develop only. Pushes the SNAPSHOT Maven artifacts to GitHub
+  #   Packages so other projects (lince-server) can depend on unreleased
+  #   lince-data. Libraries only: no installers, and no lince-desktop fat jar
+  #   (~400 MB per push that nothing consumes). Waits for `test`, not `build`.
+  # ---------------------------------------------------------------------------
+  snapshot:
+    name: Deploy snapshot
+    needs: [ compile, test ]
+    if: needs.compile.outputs.develop == 'true' && contains(needs.compile.outputs.version, 'SNAPSHOT')
+    runs-on: ubuntu-latest
+    environment:
+      name: cicd
+      url: ${{ github.server_url }}/${{ github.repository }}/packages
+    permissions:
+      contents: read
+      packages: write
+    env:
+      VERSION: ${{ needs.compile.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      # -Plocal keeps Install4j out of the `install` phase that `deploy` runs
+      # through. `-pl '!lince-desktop'` leaves the Spring Boot fat jar out of
+      # the snapshot repository; drop that flag if a consumer ever needs it.
+      - name: Deploy snapshot to GitHub Packages
+        run: cd src && mvn -B --update-snapshots -Plocal deploy -DskipTests -pl '!lince-desktop'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          {
+            echo "### Snapshot ${VERSION} deployed"
+            echo ""
+            echo "- Maven artifacts in GitHub Packages: parent pom, lince-data, lince-data-fx, lince-ai, lince-math, lince-transcoding"
+            echo "- Not deployed: installers, lince-desktop fat jar"
+            echo "- Consumers need \`<snapshots><enabled>true</enabled></snapshots>\` on the \`github\` repository and \`mvn -U\` to pick up the latest timestamp"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
   # DEPLOY - release builds only. Pushes the Maven artifacts to GitHub
   #   Packages, publishes the v<version> release with the four installers,
   #   then asks the Site workflow to publish the website for it.
@@ -297,8 +350,11 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
 
+      # -Plocal: the default profile binds Install4j to `install`, which
+      # `deploy` runs through, and this job has no Install4j. The installers
+      # were already built in `build`; the jars are identical either way.
       - name: Deploy to GitHub Packages
-        run: cd src && mvn -B deploy -DskipTests
+        run: cd src && mvn -B -Plocal deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

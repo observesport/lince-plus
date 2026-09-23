@@ -4,17 +4,18 @@ Two workflows under `.github/workflows/`:
 
 | Workflow | File | What it covers |
 | --- | --- | --- |
-| **CI** | `ci.yml` | The Java desktop app: compile, test, installers, GitHub Packages, GitHub release |
+| **CI** | `ci.yml` | The Java desktop app: compile, test, installers, GitHub Packages (snapshots and releases), GitHub release |
 | **Site** | `site.yml` | The website under `site/`: build, check, optional preview, GitHub Pages |
 
 They are independent. A change that only touches the website never runs the
 Maven build, and the website can be published without cutting a release.
 
-## CI: `compile` -> `test` / `build` -> `deploy`
+## CI: `compile` -> `test` / `build` -> `snapshot` / `deploy`
 
 ```
 compile -> test  -> deploy -> (dispatches Site: publish)
         -> build ->
+        -> test  -> snapshot
 ```
 
 | Job | What it does |
@@ -22,6 +23,7 @@ compile -> test  -> deploy -> (dispatches Site: publish)
 | `compile` | Compiles the reactor, resolves the version, tiers the run |
 | `test` | Unit suite, JUnit report as a check. Gates `deploy` |
 | `build` | Install4j installers, verified to exist. Runs alongside `test` |
+| `snapshot` | `mvn deploy` of the SNAPSHOT libraries to GitHub Packages. Waits for `test` only, not for `build` |
 | `deploy` | Checks `lince-version.json`, `mvn deploy` to GitHub Packages, publishes the `v<version>` release with the four installers, then dispatches the Site workflow |
 
 How far a run goes:
@@ -29,7 +31,7 @@ How far a run goes:
 | Trigger | Jobs |
 | --- | --- |
 | Feature branch push, or any PR | `compile` -> `test` |
-| `develop` | ... + `build` (installers verified, **not** uploaded) |
+| `develop` | ... + `build` (installers verified, **not** uploaded) + `snapshot` (SNAPSHOT jars to GitHub Packages) |
 | `master`, non-SNAPSHOT | ... + `deploy` |
 
 A **release build** is a non-SNAPSHOT version on `master`. A SNAPSHOT on
@@ -37,6 +39,37 @@ A **release build** is a non-SNAPSHOT version on `master`. A SNAPSHOT on
 in-progress development version from publishing. On a pull request
 `GITHUB_REF` is `refs/pull/N/merge`, so a PR never gets past `test`, even when
 it targets `master` with a release version.
+
+### Snapshots from `develop`
+
+Every push to `develop` with a `-SNAPSHOT` version deploys the Maven
+artifacts to GitHub Packages: the parent pom, `lince-data`, `lince-data-fx`
+(with its test-jar), `lince-ai`, `lince-math` and `lince-transcoding`. It does
+not build installers (`-Plocal` keeps Install4j out of the `install` phase)
+and it leaves out `lince-desktop`, whose Spring Boot fat jar is about 400 MB
+and has no consumer; drop `-pl '!lince-desktop'` from the job if that changes.
+
+A non-SNAPSHOT version on `develop` is skipped, so a release version can never
+be overwritten from `develop`. Each deploy adds a new timestamped file set
+under the same `-SNAPSHOT` version, and the version's `maven-metadata.xml`
+points at the latest one.
+
+To consume a snapshot (for example `lince-data` from lince-server), enable
+snapshots on the `github` repository and refresh with `-U`:
+
+```xml
+<repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/observesport/lince-plus</url>
+    <snapshots>
+        <enabled>true</enabled>
+    </snapshots>
+</repository>
+```
+
+```
+mvn -U ...
+```
 
 CI ignores pushes that only touch `site/`, `docs/`, Markdown files or
 `.claude/`, so website and documentation edits do not pay for a Maven build.
