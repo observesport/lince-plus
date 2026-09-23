@@ -36,7 +36,7 @@ public class DesktopApplicationInfoService implements ApplicationInfoService {
     static final String UNFILTERED_VERSION_PLACEHOLDER = "@version@";
     static final String NAME_PROPERTY = "app.ui.title";
     static final String APPLICATION_NAME_PROPERTY = "spring.application.name";
-    static final String DEFAULT_NAME = "Lince PLUS";
+    static final String DEFAULT_NAME = "LINCE PLUS";
 
     private final Environment environment;
     private final ObjectProvider<BuildProperties> buildProperties;

@@ -49,11 +49,11 @@ class DesktopApplicationInfoServiceTest {
 
         ApplicationInfo info = service().getApplicationInfo();
 
-        assertEquals("4.1.1-SNAPSHOT", info.getVersion());
-        assertEquals("Lince PLUS Software for observation", info.getName());
-        assertEquals(ApplicationTarget.DESKTOP, info.getTarget());
-        assertNull(info.getBuild());
-        assertNull(info.getBuildTime());
+        assertEquals("4.1.1-SNAPSHOT", info.version());
+        assertEquals("Lince PLUS Software for observation", info.name());
+        assertEquals(ApplicationTarget.DESKTOP, info.target());
+        assertNull(info.build());
+        assertNull(info.buildTime());
     }
 
     @Test
@@ -63,8 +63,8 @@ class DesktopApplicationInfoServiceTest {
 
         ApplicationInfo info = service().getApplicationInfo();
 
-        assertEquals("4.1.1-SNAPSHOT", info.getVersion());
-        assertEquals("2026-09-23T10:00:00Z", info.getBuildTime());
+        assertEquals("4.1.1-SNAPSHOT", info.version());
+        assertEquals("2026-09-23T10:00:00Z", info.buildTime());
     }
 
     @Test
@@ -74,8 +74,8 @@ class DesktopApplicationInfoServiceTest {
 
         ApplicationInfo info = service().getApplicationInfo();
 
-        assertEquals("4.2.0", info.getVersion());
-        assertEquals("2026-09-23T10:00:00Z", info.getBuildTime());
+        assertEquals("4.2.0", info.version());
+        assertEquals("2026-09-23T10:00:00Z", info.buildTime());
     }
 
     @Test
@@ -84,15 +84,15 @@ class DesktopApplicationInfoServiceTest {
 
         ApplicationInfo info = service().getApplicationInfo();
 
-        assertNull(info.getVersion());
-        assertEquals(DesktopApplicationInfoService.DEFAULT_NAME, info.getName());
+        assertNull(info.version());
+        assertEquals(DesktopApplicationInfoService.DEFAULT_NAME, info.name());
     }
 
     @Test
     void healthIsUpForDesktop() {
         ApplicationHealth health = service().getHealth();
 
-        assertEquals(ApplicationHealth.STATUS_UP, health.getStatus());
-        assertEquals(ApplicationTarget.DESKTOP, health.getTarget());
+        assertEquals(ApplicationHealth.STATUS_UP, health.status());
+        assertEquals(ApplicationTarget.DESKTOP, health.target());
     }
 }

@@ -57,7 +57,7 @@ class InfoControllerImplTest {
         ResponseEntity<ApplicationHealth> response = controller.getHealth();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(ApplicationHealth.STATUS_UP, response.getBody().getStatus());
+        assertEquals(ApplicationHealth.STATUS_UP, response.getBody().status());
     }
 
     @Test

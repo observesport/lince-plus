@@ -43,8 +43,8 @@ from the `build-info` goal) and its own `InfoControllerImpl`, then whitelist the
 | Type | Package | Role |
 |------|---------|------|
 | `ApplicationTarget` | `com.lince.observer.data.bean.info` | enum `DESKTOP`/`CLOUD`, serialised lowercase |
-| `ApplicationInfo` | `com.lince.observer.data.bean.info` | DTO: `name`, `version`, `build`, `buildTime`, `target`; nulls omitted |
-| `ApplicationHealth` | `com.lince.observer.data.bean.info` | DTO: `status`, `target`; `ApplicationHealth.up(target)` factory |
+| `ApplicationInfo` | `com.lince.observer.data.bean.info` | record: `name`, `version`, `build`, `buildTime`, `target`; nulls omitted |
+| `ApplicationHealth` | `com.lince.observer.data.bean.info` | record: `status`, `target`; `ApplicationHealth.up(target)` factory |
 | `ApplicationInfoService` | `com.lince.observer.data.service` | interface: `getApplicationInfo()`, `getHealth()` |
 | `InfoController` | `com.lince.observer.data.controller` | interface, `RQ_MAPPING_NAME = "/info"`, `GET ""` and `GET /health` |
 
