@@ -59,7 +59,7 @@ public class StatsServiceImpl implements StatsService {
             Registro old2 = legacyConverterService.migrateRegisterToLegacy(secondRegister);
             Criterio[] criteriaList = InstrumentoObservacional.getInstance().getCriterios();
             List<Object> items = new ArrayList<>();
-            CollectionUtils.addAll(items, criteriaList);
+            CollectionUtils.addAll(items, (Object[]) criteriaList);
             List<Double> kappas = LegacyStatsHelper.getKappaValues(old1, old2, items);
             for (int i = 0; i < kappas.size(); i++) {
                 KeyValue<String, Double> data = new KeyValue<>();

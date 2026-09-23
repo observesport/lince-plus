@@ -36,7 +36,7 @@ public class Theme5ExportComponent extends GenericExportComponent {
 
     @Override
     protected List<Object> getSelectionItems() {
-        return List.of(InstrumentoObservacional.getInstance().getCriterios());
+        return List.of((Object[]) InstrumentoObservacional.getInstance().getCriterios());
     }
 
     @Override
