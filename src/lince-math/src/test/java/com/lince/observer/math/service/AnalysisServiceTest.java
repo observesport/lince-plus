@@ -6,6 +6,8 @@ import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.wrapper.SceneWrapper;
 import com.lince.observer.data.service.AnalysisService;
+import com.lince.observer.data.service.CategoryService;
+import com.lince.observer.data.service.ProfileService;
 import com.lince.observer.math.LinceServiceTestConfig;
 import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +40,12 @@ class AnalysisServiceTest {
     private static final Logger log = LoggerFactory.getLogger(AnalysisServiceTest.class);
     @Autowired
     private AnalysisService analysisService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private ProfileService profileService;
+    @Autowired
+    private DataHubService dataHubService;
 
     @Mock
     private List<RegisterItem> mockRegisterItems;
@@ -151,6 +159,121 @@ class AnalysisServiceTest {
         assertEquals(2, analysisService.getAllObservations().size());
     }
 
+
+    /**
+     * A register holding observations without id (old or imported files) used to send generateID into
+     * infinite recursion (StackOverflowError) on the next save of a new moment.
+     */
+    @Test
+    void testSaveNewObservationWithNullIdRowsInRegister() {
+        List<RegisterItem> register = analysisService.getAllObservations();
+        register.add(registerItem(null, 1.0));
+        register.add(registerItem(7, 2.0));
+        register.add(registerItem(null, 3.0));
+
+        boolean saved = assertDoesNotThrow(() -> analysisService.saveObservation(registerItem(null, 4.0)));
+
+        assertTrue(saved);
+        List<RegisterItem> result = analysisService.getAllObservations();
+        assertEquals(4, result.size());
+        List<Integer> ids = result.stream().map(RegisterItem::getId).toList();
+        assertTrue(ids.stream().allMatch(java.util.Objects::nonNull), "Every observation must have an id: " + ids);
+        assertEquals(4, ids.stream().distinct().count(), "Ids must be distinct: " + ids);
+        assertEquals(7, result.get(1).getId(), "Existing ids must be kept");
+    }
+
+    /**
+     * generateID used to call itself for every row without id before assigning anything, recursing until
+     * StackOverflowError ("Error executing action saveRegister" in production).
+     */
+    @Test
+    void testGenerateIdWithNullIdRowsDoesNotRecurse() {
+        List<RegisterItem> register = analysisService.getAllObservations();
+        register.add(registerItem(null, 1.0));
+        register.add(registerItem(7, 2.0));
+        register.add(registerItem(null, 3.0));
+        var service = new AnalysisServiceImpl(categoryService, profileService, dataHubService) {
+            @Override
+            public List<RegisterItem> getAllObservations() {
+                return dataHubService.getCurrentDataRegister(); // raw register, no repair on read
+            }
+
+            Integer nextId() {
+                return generateID();
+            }
+        };
+
+        Integer next = assertDoesNotThrow(service::nextId);
+
+        assertEquals(10, next, "Rows without id take 8 and 9, the next free id is 10");
+        assertEquals(List.of(8, 7, 9), register.stream().map(RegisterItem::getId).toList());
+    }
+
+    /**
+     * Rows without id get the next free ids in list order, so repeated reads agree.
+     */
+    @Test
+    void testMissingIdsAreAssignedDeterministicallyOnRead() {
+        List<RegisterItem> register = analysisService.getAllObservations();
+        register.add(registerItem(null, 1.0));
+        register.add(registerItem(4, 2.0));
+        register.add(registerItem(null, 3.0));
+
+        List<Integer> firstRead = analysisService.getAllObservations().stream().map(RegisterItem::getId).toList();
+        List<Integer> secondRead = analysisService.getAllObservations().stream().map(RegisterItem::getId).toList();
+
+        assertEquals(List.of(5, 4, 6), firstRead);
+        assertEquals(firstRead, secondRead);
+    }
+
+    /**
+     * A save on a moment that already has a row replaces it, and keeps the stored id when the incoming item has none.
+     */
+    @Test
+    void testSameMomentSaveWithoutIdKeepsStoredId() {
+        analysisService.getAllObservations().add(registerItem(5, 10.0));
+
+        RegisterItem incoming = registerItem(null, 10.0);
+        incoming.setName("replaced");
+        assertTrue(analysisService.saveObservation(incoming));
+
+        List<RegisterItem> result = analysisService.getAllObservations();
+        assertEquals(1, result.size());
+        assertEquals(5, result.get(0).getId());
+        assertEquals("replaced", result.get(0).getName());
+    }
+
+    /**
+     * pushRegister compared stored ids with equals() and threw NPE on a stored row without id.
+     */
+    @Test
+    void testPushRegisterWithNullIdStoredRowDoesNotThrow() {
+        List<RegisterItem> register = new ArrayList<>();
+        register.add(registerItem(null, 1.0));
+
+        boolean pushed = assertDoesNotThrow(() -> ((AnalysisServiceImpl) analysisService).pushRegister(register, 5.0));
+        assertTrue(pushed);
+        assertEquals(2, register.size());
+    }
+
+    @Test
+    void testDeleteByIdWithNullIdRowsInRegister() {
+        List<RegisterItem> register = analysisService.getAllObservations();
+        register.add(registerItem(null, 1.0));
+        register.add(registerItem(9, 2.0));
+
+        assertTrue(analysisService.deleteObservationById(9));
+        assertEquals(1, analysisService.getAllObservations().size());
+    }
+
+    private static RegisterItem registerItem(Integer id, double videoTime) {
+        RegisterItem item = new RegisterItem();
+        item.setId(id);
+        item.setVideoTime(videoTime);
+        // distinct save dates: pushRegister also matches rows by save date
+        item.setSaveDate(new java.util.Date((long) (videoTime * 1000)));
+        return item;
+    }
 
     @Test
     void testConvertSysMoment() {
