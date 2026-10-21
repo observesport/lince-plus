@@ -51,7 +51,8 @@ public enum HoisanVars {
    }
 
    public String getStringValue(Map<String, Object> row) {
-     return StringUtils.defaultString(this.getRawValue(row));
+     Object value = this.getRawValue(row);
+     return value == null ? StringUtils.EMPTY : String.valueOf(value);
    }
 
    public <T> T getRawValue(Map<String, Object> row) {

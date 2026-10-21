@@ -56,6 +56,16 @@ public class ControladorArchivos {
         }
     }
 
+    /**
+     * Same bytes {@link #guardar(File, Object)} writes, without a file (LO-349).
+     *
+     * @param datos object to encode
+     * @return UTF-8 XML
+     */
+    public byte[] serializar(Object datos) {
+        return PackageAwareXMLSerializer.encodeToXml(datos).getBytes(StandardCharsets.UTF_8);
+    }
+
     public Object cargar(File path) throws IOException {
         if (path == null || !path.exists()) {
             throw new FileNotFoundException("File does not exist: " + (path != null ? path.getAbsolutePath() : "null"));

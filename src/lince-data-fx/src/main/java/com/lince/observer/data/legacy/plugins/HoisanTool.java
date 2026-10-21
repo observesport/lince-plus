@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 
@@ -24,6 +25,7 @@ public class HoisanTool {
     private Logger log = LoggerFactory.getLogger(HoisanTool.class.getName());
     private static final String HOISAN_TEMPLATE_FILE = "hoisanTemplate.mdb";
     private static final int FRAME_WINDOW = 40;
+    private static final String LINCE_CRITERIA_TYPE = "Lince";
 
     private HashMap<Criterio, Integer> criteriaMap = new HashMap<Criterio, Integer>();
     private HashMap<Categoria, Integer> categoryMap = new HashMap<Categoria, Integer>();
@@ -31,28 +33,26 @@ public class HoisanTool {
     private Integer actorId;
 
     /**
-     * @param file
-     * @return
+     * Reads a HOISAN database and writes its instrument and one register per video as Lince 1 files in a free
+     * "Lince" folder next to it (legacy menu behaviour).
+     *
+     * @param file HOISAN .mdb file
+     * @return false when the file could not be read
      */
     public boolean importFile(File file) {
         if (file != null) {
             try {
-                Database db = Database.open(file);
-                Table criterios = db.getTable(HoisanVars.CRITERIA_TABLE_NAME.toString());
-                Table categorias = db.getTable(HoisanVars.CATEGORY_TABLE_NAME.toString());
-                Table tiempos = db.getTable(HoisanVars.OBSERVATION_TIMES_TABLE_NAME.toString());
-                Table tiempoCategorias = db.getTable(HoisanVars.OBSERVATION_CATEGORY_TABLE_NAME.toString());
-                InstrumentoObservacional instrumentoObservacional = generateInstrumentObservacional(criterios, categorias);
-                Map<String, Registro> registros = generateRegistros(tiempos, tiempoCategorias, criterios, categorias, instrumentoObservacional);
+                HoisanData data = read(file);
                 File parentFile = file.getParentFile();
                 //generamos una carpeta a mismo nivel de fichero seleccionado
                 File linceDir = getFreeFile(parentFile, "Lince", "");
                 linceDir.mkdir();
                 //guardamos el instrumento observacional en el fichero asociado
+                InstrumentoObservacional instrumentoObservacional = data.instrument();
                 instrumentoObservacional.setPath(getFreeFile(linceDir, file.getName(), ".ilince"));
                 instrumentoObservacional.save();
                 //generamos un nuevo fichero de registro para cada uno de los registros detectados
-                for (Map.Entry<String, Registro> row : registros.entrySet()) {
+                for (Map.Entry<String, Registro> row : data.registers().entrySet()) {
                     Registro registro = row.getValue();
                     registro.setPath(getFreeFile(linceDir, new File(row.getKey()).getName(), ".rlince"));
                     registro.save();
@@ -63,6 +63,47 @@ public class HoisanTool {
             }
         }
         return true;
+    }
+
+    /**
+     * Reads a HOISAN database into the legacy model without writing anything (LO-349). Replaces the
+     * {@link InstrumentoObservacional} and {@link Registro} singletons, so callers must hold the legacy model lock
+     * ({@code LegacyBridge.withLegacyModel}) while they read the result.
+     *
+     * @param file HOISAN .mdb file
+     * @return the instrument (the singleton) and one register per video name, in table order
+     * @throws IOException when the file is not a readable Access database with the HOISAN tables
+     */
+    public HoisanData read(File file) throws IOException {
+        Database db = Database.open(file, true);
+        try {
+            Table criterios = requireTable(db, HoisanVars.CRITERIA_TABLE_NAME);
+            Table categorias = requireTable(db, HoisanVars.CATEGORY_TABLE_NAME);
+            Table tiempos = requireTable(db, HoisanVars.OBSERVATION_TIMES_TABLE_NAME);
+            Table tiempoCategorias = requireTable(db, HoisanVars.OBSERVATION_CATEGORY_TABLE_NAME);
+            InstrumentoObservacional instrumentoObservacional = generateInstrumentObservacional(criterios, categorias);
+            Map<String, Registro> registros = generateRegistros(tiempos, tiempoCategorias, criterios, categorias, instrumentoObservacional);
+            return new HoisanData(instrumentoObservacional, registros);
+        } finally {
+            db.close();
+        }
+    }
+
+    private static Table requireTable(Database db, HoisanVars name) throws IOException {
+        Table table = db.getTable(name.toString());
+        if (table == null) {
+            throw new IOException("Not a HOISAN database, missing table " + name);
+        }
+        return table;
+    }
+
+    /**
+     * Legacy model read from a HOISAN database.
+     *
+     * @param instrument the instrument (the {@link InstrumentoObservacional} singleton when read)
+     * @param registers  one register per HOISAN video name, in table order
+     */
+    public record HoisanData(InstrumentoObservacional instrument, Map<String, Registro> registers) {
     }
 
     /**
@@ -98,6 +139,7 @@ public class HoisanTool {
             //storeObservationData(db, registro, tTiempoCategorias);
             log.warn("Finalizado");
             db.flush();
+            db.close();
             return null;
         } catch (Exception e) {
             log.error("Error copying file ", e);
@@ -227,13 +269,14 @@ public class HoisanTool {
      * @throws IOException
      */
     private File createValidEmptyHoisanFile(File outputFile) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("template/" + HOISAN_TEMPLATE_FILE).getFile());
-        if (file == null || !file.exists()) {
-            //buscamos en la misma ubicación del jar
-            file = new File("./template/" + HOISAN_TEMPLATE_FILE);
+        try (InputStream template = getClass().getClassLoader().getResourceAsStream("template/" + HOISAN_TEMPLATE_FILE)) {
+            if (template != null) {
+                FileUtils.copyInputStreamToFile(template, outputFile);
+            } else {
+                //buscamos en la misma ubicación del jar
+                FileUtils.copyFile(new File("./template/" + HOISAN_TEMPLATE_FILE), outputFile);
+            }
         }
-        FileUtils.copyFile(file, outputFile);
         File rtn = new File(StringUtils.substringBeforeLast(outputFile.getPath(), ".") + ".mdb");
         outputFile.renameTo(rtn);
         return rtn;
@@ -277,7 +320,8 @@ public class HoisanTool {
                         , HoisanVars.CRITERIA_NAME.getStringValue(row));
                 NodoInformacion[] datos = instrumentoObservacional.getDatosFijos();
                 datos[datos.length - 1].setDescripcion(HoisanVars.CRITERIA_DESCRIPTION.getStringValue(row));
-            } else if (HoisanVars.CRITERIA_TYPE_NORMAL.equals(type)) {
+            } else if (HoisanVars.CRITERIA_TYPE_NORMAL.equals(type) || LINCE_CRITERIA_TYPE.equals(type)) {
+                //"Lince" is the type exportFile writes for every criterion
                 //(type.equals("Normal")) {
                 InstrumentoObservacional.getInstance().addHijo(variable, HoisanVars.CRITERIA_NAME.getStringValue(row));
                 Criterio[] cs = instrumentoObservacional.getCriterios();
@@ -299,7 +343,7 @@ public class HoisanTool {
     private void generateCategorias(Criterio criterio, Integer criterioId, Table categorias) {
         for (Map<String, Object> row : categorias) {
             String currentCriteriaFK = HoisanVars.CATEGORY_CRITERIA_ID.getStringValue(row);
-            if (currentCriteriaFK.equals(criterioId)) {
+            if (currentCriteriaFK.equals(String.valueOf(criterioId))) {
                 InstrumentoObservacional.getInstance().addHijo(criterio, HoisanVars.CATEGORY_DESCRIPTION.getStringValue(row));
                 Categoria categoria = (Categoria) criterio.getChildAt(criterio.getChildCount() - 1);
                 categoria.setCodigo(HoisanVars.CATEGORY_NAME.getStringValue(row));
@@ -317,7 +361,7 @@ public class HoisanTool {
      * @return
      */
     private Map<String, Registro> generateRegistros(Table tiempos, Table tiempoCategorias, Table criterios, Table categorias, InstrumentoObservacional instrumentoObservacional) {
-        Map<String, Registro> registros = new HashMap<String, Registro>();
+        Map<String, Registro> registros = new LinkedHashMap<String, Registro>();
         for (Map<String, Object> row : tiempos) {
             String nombre = HoisanVars.TIME_VIDEO_NAME.getStringValue(row);
             Integer timeID = HoisanVars.TIME_ID.getIntValue(row);

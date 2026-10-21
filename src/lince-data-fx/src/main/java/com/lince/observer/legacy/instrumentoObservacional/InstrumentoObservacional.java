@@ -105,9 +105,18 @@ public class InstrumentoObservacional implements TreeModelListener {
     }
 
 
+    /**
+     * What {@link #save()} writes to a .ilince file (LO-349: lets exporters serialise it without a file).
+     *
+     * @return the instrument tree root
+     */
+    public RootInstrumentoObservacional getSaveContent() {
+        return raiz;
+    }
+
     public void save() {
         try {
-            ControladorArchivos.getInstance().guardar(path, raiz);
+            ControladorArchivos.getInstance().guardar(path, getSaveContent());
             necesarySave = false;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(InstrumentoObservacional.class.getName()).log(Level.SEVERE, null, ex);
@@ -282,6 +291,34 @@ public class InstrumentoObservacional implements TreeModelListener {
             log.error("UUID issue adding children to legacy instrument",e);
         }
 
+    }
+
+    /**
+     * Appends a criterion under the "variables" node through the tree model, as {@link #addHijo} does.
+     * Lets headless callers (LegacyBridge, LO-349) build an instrument without touching Swing tree types.
+     *
+     * @param nombre criterion name
+     * @return the inserted criterion
+     */
+    public Criterio addCriterio(String nombre) {
+        getModel();
+        addHijo((DefaultMutableTreeNode) raiz.getChildAt(2), nombre);
+        Criterio[] criterios = getCriterios();
+        return criterios[criterios.length - 1];
+    }
+
+    /**
+     * Appends a category to a criterion through the tree model, as {@link #addHijo} does.
+     *
+     * @param criterio parent criterion, already inserted in this instrument
+     * @param nombre   category name
+     * @return the inserted category
+     */
+    public Categoria addCategoria(Criterio criterio, String nombre) {
+        getModel();
+        addHijo(criterio, nombre);
+        Categoria[] categorias = criterio.getCategoriasHijo();
+        return categorias[categorias.length - 1];
     }
 
     public void removeNodo(DefaultMutableTreeNode node) {

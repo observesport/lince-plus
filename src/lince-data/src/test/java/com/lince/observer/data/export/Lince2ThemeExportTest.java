@@ -9,7 +9,6 @@ import com.lince.observer.data.component.LinceFileImporter;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,16 +47,7 @@ class Lince2ThemeExportTest {
     }
 
     private String captureExport(List<RegisterItem> register) {
-        try {
-            java.io.File tempFile = java.io.File.createTempFile("lince_theme_test_", ".txt");
-            tempFile.deleteOnExit();
-            Lince2ThemeExport exporter = new Lince2ThemeExport(register);
-            exporter.createFile(new FileWriter(tempFile));
-            return new String(java.nio.file.Files.readAllBytes(tempFile.toPath()));
-        } catch (Exception e) {
-            fail("Failed to capture export: " + e.getMessage());
-            return "";
-        }
+        return new Lince2ThemeExport(register).exportToString();
     }
 
     // ============================================================
@@ -361,31 +351,6 @@ class Lince2ThemeExportTest {
     }
 
     // ============================================================
-    // Cross-validation: file extension
-    // ============================================================
-
-    @Test
-    void testCreateFile_UsesTxtExtension() throws Exception {
-        Category cat = makeCategory(1, "TEST", 1);
-        List<RegisterItem> register = List.of(makeRegisterItem(1.0, 25, cat));
-
-        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_test_").toFile();
-        tempDir.deleteOnExit();
-        String basePath = new java.io.File(tempDir, "export").getAbsolutePath();
-
-        Lince2ThemeExport exporter = new Lince2ThemeExport(register);
-        exporter.createFile(basePath);
-
-        java.io.File expectedFile = new java.io.File(basePath + ".txt");
-        assertTrue(expectedFile.exists(), "Export should create .txt file, not .vvt");
-        expectedFile.deleteOnExit();
-
-        // Verify .vvt was NOT created
-        java.io.File wrongFile = new java.io.File(basePath + ".vvt");
-        assertFalse(wrongFile.exists(), "Should NOT create .vvt file for register export");
-    }
-
-    // ============================================================
     // Empty register edge case
     // ============================================================
 
@@ -574,90 +539,6 @@ class Lince2ThemeExportTest {
     }
 
     // ============================================================
-    // Paired export: createFile(basePath, criteria) writes both files
-    // ============================================================
-
-    @Test
-    void testCreateFilePaired_WritesBothFiles() throws Exception {
-        Criteria post = new Criteria(1, "POST");
-        post.setInnerCategories(new LinkedList<>(List.of(
-            makeCategory(10, "STAND", 1),
-            makeCategory(11, "SIT", 1)
-        )));
-
-        Category stand = makeCategory(10, "STAND", 1);
-        Category sit = makeCategory(11, "SIT", 1);
-        List<RegisterItem> register = List.of(
-            makeRegisterItem(1.0, 25, stand),
-            makeRegisterItem(2.0, 50, sit)
-        );
-        List<Criteria> criteria = List.of(post);
-
-        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_vvt_test_").toFile();
-        tempDir.deleteOnExit();
-        String basePath = new java.io.File(tempDir, "export").getAbsolutePath();
-
-        Lince2ThemeExport exporter = new Lince2ThemeExport(register);
-        exporter.createFile(basePath, criteria);
-
-        java.io.File txtFile = new java.io.File(basePath + ".txt");
-        java.io.File vvtFile = new java.io.File(basePath + ".vvt");
-        txtFile.deleteOnExit();
-        vvtFile.deleteOnExit();
-
-        assertTrue(txtFile.exists(), "Paired export must create .txt file");
-        assertTrue(vvtFile.exists(), "Paired export must create .vvt file");
-
-        String txtContent = new String(java.nio.file.Files.readAllBytes(txtFile.toPath()));
-        String vvtContent = new String(java.nio.file.Files.readAllBytes(vvtFile.toPath()));
-
-        assertTrue(txtContent.contains("TIME\tEVENT"), ".txt must contain TIME\\tEVENT header");
-        assertTrue(vvtContent.contains("POST"), ".vvt must contain criterion name POST");
-        assertTrue(vvtContent.contains(" STAND"), ".vvt must contain indented category STAND");
-        assertTrue(vvtContent.contains(" SIT"), ".vvt must contain indented category SIT");
-    }
-
-    // ============================================================
-    // Paired export: .txt content matches single-file export
-    // ============================================================
-
-    @Test
-    void testCreateFilePaired_TxtContentMatchesSingleExport() throws Exception {
-        Criteria post = new Criteria(1, "POST");
-        post.setInnerCategories(new LinkedList<>(List.of(
-            makeCategory(10, "STAND", 1),
-            makeCategory(11, "SIT", 1)
-        )));
-
-        Category stand = makeCategory(10, "STAND", 1);
-        Category sit = makeCategory(11, "SIT", 1);
-        List<RegisterItem> register = List.of(
-            makeRegisterItem(1.0, 25, stand),
-            makeRegisterItem(2.0, 50, sit)
-        );
-        List<Criteria> criteria = List.of(post);
-
-        // Single export via captureExport
-        String singleExport = captureExport(register);
-
-        // Paired export
-        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_vvt_paired_").toFile();
-        tempDir.deleteOnExit();
-        String basePath = new java.io.File(tempDir, "export").getAbsolutePath();
-
-        Lince2ThemeExport exporter = new Lince2ThemeExport(register);
-        exporter.createFile(basePath, criteria);
-
-        java.io.File txtFile = new java.io.File(basePath + ".txt");
-        txtFile.deleteOnExit();
-
-        String pairedTxt = new String(java.nio.file.Files.readAllBytes(txtFile.toPath()));
-
-        assertEquals(singleExport, pairedTxt,
-            "Paired export .txt content must be identical to single-file export output");
-    }
-
-    // ============================================================
     // Integration test: real FCB_RMAD_0925 project file
     // ============================================================
 
@@ -682,7 +563,6 @@ class Lince2ThemeExportTest {
                 .toList();
         assertFalse(allItems.isEmpty(), "Register should have items");
 
-        Lince2ThemeExport exporter = new Lince2ThemeExport(allItems);
         String output = captureExport(allItems);
 
         // Must have header
@@ -756,43 +636,6 @@ class Lince2ThemeExportTest {
             assertEquals(expectedFrames[i], allItems.get(i).getFrames(),
                     "Frame mismatch at register item " + i);
         }
-    }
-
-    @Test
-    void testFcbRmadProject_PairedExportWritesBothFiles() throws Exception {
-        ILinceProject project = loadProject("FCB_RMAD_0925.xml");
-
-        List<RegisterItem> allItems = project.getRegister().stream()
-                .flatMap(r -> r.getRegisterData().stream())
-                .toList();
-        List<Criteria> criteria = project.getObservationTool();
-
-        java.io.File tempDir = java.nio.file.Files.createTempDirectory("lince_fcb_test_").toFile();
-        tempDir.deleteOnExit();
-        String basePath = new java.io.File(tempDir, "FCB_RMAD_0925").getAbsolutePath();
-
-        Lince2ThemeExport exporter = new Lince2ThemeExport(allItems);
-        exporter.createFile(basePath, criteria);
-
-        java.io.File txtFile = new java.io.File(basePath + ".txt");
-        java.io.File vvtFile = new java.io.File(basePath + ".vvt");
-        txtFile.deleteOnExit();
-        vvtFile.deleteOnExit();
-
-        assertTrue(txtFile.exists(), "Must create .txt file");
-        assertTrue(vvtFile.exists(), "Must create .vvt file");
-
-        String txtContent = new String(java.nio.file.Files.readAllBytes(txtFile.toPath()));
-        String vvtContent = new String(java.nio.file.Files.readAllBytes(vvtFile.toPath()));
-
-        // txt must have real data
-        String[] txtLines = txtContent.split("\r?\n");
-        assertTrue(txtLines.length >= 10,
-                "txt must have header+start+7 data+end = 10 lines, got " + txtLines.length);
-
-        // vvt must have criteria and categories
-        assertTrue(vvtContent.contains("EQUIPO"), "vvt must have EQUIPO");
-        assertTrue(vvtContent.contains(" FCB"), "vvt must have FCB");
     }
 
     // ============================================================

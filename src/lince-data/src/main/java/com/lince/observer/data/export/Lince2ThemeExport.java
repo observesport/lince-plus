@@ -8,10 +8,7 @@ import com.univocity.parsers.tsv.TsvWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileWriter;
 import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +18,9 @@ import java.util.stream.Collectors;
  * com.lince.observer.data.export
  * Class Lince2ThemeExport
  * 12/06/2019
+ * <p>
+ * Pure conversion to the Theme formats: register rows to the T-data {@code .txt} and the instrument to the
+ * {@code .vvt}. Writing files is the job of {@code com.lince.observer.data.transfer.exporters.Theme6Exporter}.
  *
  * @author berto (alberto.soto@gmail.com)
  */
@@ -36,10 +36,6 @@ public class Lince2ThemeExport {
         StringWriter stringWriter = new StringWriter();
         writeContent(stringWriter);
         return stringWriter.toString();
-    }
-
-    public void createFile(FileWriter fileWriter){
-        writeContent(fileWriter);
     }
 
     private void writeContent(java.io.Writer targetWriter){
@@ -68,27 +64,8 @@ public class Lince2ThemeExport {
                 writer.writeRow(String.valueOf(lastFrame + 1), "&");
             }
             writer.close();
-        } catch (Exception e) {
-            log.error("writing theme file", e);
-        }
-    }
-
-    public void createFile(String basePath) {
-        try {
-            FileWriter fileWriter = new FileWriter(basePath + ".txt");
-            createFile(fileWriter);
-        } catch (Exception e) {
-            log.error("writing theme file", e);
-        }
-    }
-
-    public void createFile(String basePath, List<Criteria> criteria) {
-        try {
-            createFile(new FileWriter(basePath + ".txt"));
-            String vvtContent = createVvtContent(criteria);
-            Files.write(Path.of(basePath + ".vvt"), vvtContent.getBytes());
-        } catch (Exception e) {
-            log.error("writing theme paired files", e);
+        } catch (RuntimeException e) {
+            throw new IllegalStateException("Could not write the Theme data", e);
         }
     }
 

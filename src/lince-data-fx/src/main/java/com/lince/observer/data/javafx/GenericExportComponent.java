@@ -1,36 +1,70 @@
 package com.lince.observer.data.javafx;
 
 import com.lince.observer.data.ILinceProject;
+import com.lince.observer.data.bean.categories.Criteria;
+import com.lince.observer.data.bean.transfer.ExportRequest;
+import com.lince.observer.data.bean.transfer.ExportedFile;
 import com.lince.observer.data.legacy.utiles.ResourceBundleHelper;
+import com.lince.observer.data.service.ExportService;
 import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
+import com.lince.observer.data.transfer.TransferException;
 import com.lince.observer.data.util.JavaFXLogHelper;
-import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
+ * Criteria selection dialog of the JavaFX export menu (LO-349). The panel lists the project's criteria; the export
+ * itself goes through {@link ExportService}, the same path {@code POST /api/export} takes, with the selected
+ * criteria and the observer chosen in the menu. This class only asks for the target file and writes the returned
+ * bytes ({@link ExportTargets}).
+ * <p>
  * Created by Alberto Soto. 7/11/24
  */
 public abstract class GenericExportComponent extends BorderPane {
     private static final Logger log = LoggerFactory.getLogger(GenericExportComponent.class);
-    ILinceProject linceProject = null;
+    private final ILinceProject linceProject;
     private final UUID researchUUID;
+    private final ExportService exportService;
+    private final String exportType;
+    private final String buttonLabelKey;
 
-    protected GenericExportComponent(UUID observerId) {
+    /**
+     * @param linceProject   the loaded project, source of the selectable criteria
+     * @param observerId     register to export, null for the default one
+     * @param exportService  export dispatcher
+     * @param exportType     export type id of the default button
+     * @param buttonLabelKey i18n key of the default button
+     */
+    protected GenericExportComponent(ILinceProject linceProject, UUID observerId, ExportService exportService,
+                                     String exportType, String buttonLabelKey) {
+        this.linceProject = Objects.requireNonNull(linceProject, "linceProject");
         this.researchUUID = observerId;
+        this.exportService = Objects.requireNonNull(exportService, "exportService");
+        this.exportType = Objects.requireNonNull(exportType, "exportType");
+        this.buttonLabelKey = buttonLabelKey;
         initComponents();
+    }
+
+    public String getExportType() {
+        return exportType;
     }
 
     public UUID getResearchUUID() {
@@ -39,10 +73,6 @@ public abstract class GenericExportComponent extends BorderPane {
 
     public ILinceProject getLinceProject() {
         return linceProject;
-    }
-
-    public void setLinceProject(ILinceProject linceProject) {
-        this.linceProject = linceProject;
     }
 
     void initComponents() {
@@ -62,180 +92,114 @@ public abstract class GenericExportComponent extends BorderPane {
         setMinHeight(400);
     }
 
-    abstract List<Node> getActions(SelectionPanelComponent selectionPanelComponent);
+    /**
+     * @return the panel buttons, by default one exporting the selected criteria as {@link #getExportType()}
+     */
+    protected List<Node> getActions(SelectionPanelComponent selectionPanelComponent) {
+        Button button = new Button(ResourceBundleHelper.getI18NLabel(buttonLabelKey));
+        button.setOnAction(e -> executeExport(selectedCriteriaIds(selectionPanelComponent), Map.of()));
+        return List.of(button);
+    }
 
-    abstract List<Object> getSelectionItems();
+    /**
+     * @return the items of the selection panel, by default the project's criteria
+     */
+    protected List<Object> getSelectionItems() {
+        return new ArrayList<>(Optional.ofNullable(linceProject.getObservationTool()).orElse(List.of()));
+    }
 
+    /**
+     * @return save dialog filter, e.g. {@code *.sds}
+     */
     abstract String getFileExtension();
 
     abstract String getExportTitle();
 
-    protected void executeExport(SelectionPanelComponent selectionPanelComponent,
-                                 ExportFunction exportFunction,
-                                 String fileExtension) {
-        List<Criterio> selectedData = selectionPanelComponent.getSelectedElements().stream()
-                .filter(Criterio.class::isInstance)
-                .map(Criterio.class::cast)
+    /**
+     * @return the export id of each selected criteria, in selection order
+     */
+    protected static List<String> selectedCriteriaIds(SelectionPanelComponent selectionPanelComponent) {
+        return selectionPanelComponent.getSelectedElements().stream()
+                .filter(Criteria.class::isInstance)
+                .map(Criteria.class::cast)
+                .map(GenericExportComponent::criteriaId)
                 .toList();
-
-        if (selectedData.isEmpty()) {
-            JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
-                    ResourceBundleHelper.getI18NLabel("LINCE"),
-                    ResourceBundleHelper.getI18NLabel("SELECT_AT_LEAST_ONE_CRITERIA"));
-            return;
-        }
-
-      /*  if (Registro.getInstance().getRowCount() == 0) {
-            JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
-                    ResourceBundleHelper.getI18NLabel("LINCE"),
-                    ResourceBundleHelper.getI18NLabel("CURRENT_REGISTER_HAS_NO_ROWS"));
-            return;
-        }*/
-
-        Platform.runLater(() -> {
-            File file = LinceDesktopFileHelper.openSaveFileDialog(fileExtension);
-            if (file != null) {
-                String content = exportFunction.apply(selectedData);
-                boolean success = writeContentToFile(file, content);
-                if (success) {
-                    JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
-                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                            ResourceBundleHelper.getI18NLabel("FILE_SAVED"));
-                } else {
-                    JavaFXLogHelper.showMessage(Alert.AlertType.ERROR,
-                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                            ResourceBundleHelper.getI18NLabel("ERROR_SAVING_FILE"));
-                }
-            }
-        });
-    }
-
-    protected void executePairedExport(SelectionPanelComponent selectionPanelComponent,
-                                       ExportFunction primaryExport, String primaryExtension,
-                                       ExportFunction secondaryExport, String secondaryExtension) {
-        List<Criterio> selectedData = selectionPanelComponent.getSelectedElements().stream()
-                .filter(Criterio.class::isInstance)
-                .map(Criterio.class::cast)
-                .toList();
-
-        if (selectedData.isEmpty()) {
-            JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
-                    ResourceBundleHelper.getI18NLabel("LINCE"),
-                    ResourceBundleHelper.getI18NLabel("SELECT_AT_LEAST_ONE_CRITERIA"));
-            return;
-        }
-
-        Platform.runLater(() -> {
-            File primaryFile = LinceDesktopFileHelper.openSaveFileDialog(primaryExtension);
-            if (primaryFile != null) {
-                String primaryContent = primaryExport.apply(selectedData);
-                boolean primaryOk = writeContentToFile(primaryFile, primaryContent);
-
-                File secondaryFile = deriveSiblingFile(primaryFile, primaryExtension, secondaryExtension);
-                String secondaryContent = secondaryExport.apply(selectedData);
-                boolean secondaryOk = writeContentToFile(secondaryFile, secondaryContent);
-
-                if (primaryOk && secondaryOk) {
-                    JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
-                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                            ResourceBundleHelper.getI18NLabel("FILE_SAVED"));
-                } else {
-                    JavaFXLogHelper.showMessage(Alert.AlertType.ERROR,
-                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                            ResourceBundleHelper.getI18NLabel("ERROR_SAVING_FILE"));
-                }
-            }
-        });
     }
 
     /**
-     * Save-As on the primary file; sibling file is written next to it with a
-     * fixed name. If the sibling already exists, ask the user to confirm
-     * overwrite — declining cancels the whole export (primary file is not
-     * written either).
+     * @return the id an {@link ExportRequest} uses for the criteria: its numeric id, or its code when it has none
      */
-    protected void executeFixedSiblingExport(String primaryExtension,
-                                              Supplier<String> primaryContent,
-                                              String fixedSiblingFileName,
-                                              Supplier<String> siblingContent) {
-        Platform.runLater(() -> {
-            File primaryFile = LinceDesktopFileHelper.openSaveFileDialog(primaryExtension);
-            if (primaryFile == null) {
-                return;
-            }
-            File siblingFile = new File(primaryFile.getParentFile(), fixedSiblingFileName);
-            if (siblingFile.exists()) {
-                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                        ResourceBundleHelper.getI18NLabel("THEME6_OVERWRITE_VVT_PROMPT")
-                                + "\n" + siblingFile.getAbsolutePath(),
-                        ButtonType.YES, ButtonType.NO);
-                confirm.setTitle(ResourceBundleHelper.getI18NLabel(getExportTitle()));
-                confirm.setHeaderText(null);
-                java.util.Optional<ButtonType> result = confirm.showAndWait();
-                if (result.isEmpty() || result.get() != ButtonType.YES) {
-                    return;
-                }
-            }
-            boolean primaryOk = writeContentToFile(primaryFile, primaryContent.get());
-            boolean siblingOk = writeContentToFile(siblingFile, siblingContent.get());
-            if (primaryOk && siblingOk) {
-                String body = ResourceBundleHelper.getI18NLabel("THEME6_BOTH_FILES_SAVED")
-                        + "\n\n"
-                        + "  • " + primaryFile.getName() + "\n    " + primaryFile.getAbsolutePath()
-                        + "\n\n"
-                        + "  • " + siblingFile.getName() + "\n    " + siblingFile.getAbsolutePath();
-                JavaFXLogHelper.showMessageDialog(Alert.AlertType.INFORMATION,
-                        ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                        body);
-            } else {
-                JavaFXLogHelper.showMessage(Alert.AlertType.ERROR,
-                        ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                        ResourceBundleHelper.getI18NLabel("ERROR_SAVING_FILE"));
-            }
-        });
+    protected static String criteriaId(Criteria criteria) {
+        return criteria.getId() != null ? String.valueOf(criteria.getId()) : criteria.getCode();
     }
 
-    protected void executeModernExport(Supplier<String> contentSupplier, String fileExtension) {
-        Platform.runLater(() -> {
-            File file = LinceDesktopFileHelper.openSaveFileDialog(fileExtension);
-            if (file != null) {
-                String content = contentSupplier.get();
-                boolean success = writeContentToFile(file, content);
-                if (success) {
-                    JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
-                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                            ResourceBundleHelper.getI18NLabel("FILE_SAVED"));
-                } else {
-                    JavaFXLogHelper.showMessage(Alert.AlertType.ERROR,
-                            ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                            ResourceBundleHelper.getI18NLabel("ERROR_SAVING_FILE"));
-                }
-            }
-        });
-    }
-
-    static File deriveSiblingFile(File primaryFile, String primaryExt, String siblingExt) {
-        String cleanPrimary = primaryExt.replace("*", "");
-        String cleanSibling = siblingExt.replace("*", "");
-        String path = primaryFile.getAbsolutePath();
-        if (path.endsWith(cleanPrimary)) {
-            path = path.substring(0, path.length() - cleanPrimary.length());
+    /**
+     * Exports the criteria through {@link ExportService}, then asks for the file and writes the result. Errors are
+     * shown before the save dialog opens.
+     *
+     * @param criteriaIds selected criteria, at least one
+     * @param options     per-type options
+     */
+    protected void executeExport(List<String> criteriaIds, Map<String, String> options) {
+        if (criteriaIds.isEmpty()) {
+            JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION,
+                    ResourceBundleHelper.getI18NLabel("LINCE"),
+                    ResourceBundleHelper.getI18NLabel("SELECT_AT_LEAST_ONE_CRITERIA"));
+            return;
         }
-        return new File(path + cleanSibling);
-    }
-
-    protected boolean writeContentToFile(File file, String content) {
+        List<ExportedFile> files;
         try {
-            java.nio.file.Files.write(file.toPath(), content.getBytes());
-            return true;
+            files = exportService.export(new ExportRequest(exportType, researchUUID, criteriaIds, options));
+        } catch (TransferException e) {
+            log.warn("{} export: {} {}", exportType, e.getReason(), e.getMessage());
+            JavaFXLogHelper.showMessage(Alert.AlertType.ERROR, ResourceBundleHelper.getI18NLabel(getExportTitle()),
+                    e.getMessage());
+            return;
+        }
+        Platform.runLater(() -> saveFiles(files));
+    }
+
+    private void saveFiles(List<ExportedFile> files) {
+        File chosen = LinceDesktopFileHelper.openSaveFileDialog(getFileExtension());
+        if (chosen == null) {
+            return;
+        }
+        List<ExportTargets.Target> targets = ExportTargets.resolve(chosen, files);
+        if (!confirmOverwrite(ExportTargets.existingFixedNames(targets))) {
+            return;
+        }
+        String title = ResourceBundleHelper.getI18NLabel(getExportTitle());
+        try {
+            ExportTargets.write(targets);
         } catch (Exception e) {
-            log.error("Error writing content to file: {}", file.getAbsolutePath(), e);
-            return false;
+            log.error("Error writing the {} export", getExportTitle(), e);
+            JavaFXLogHelper.showMessage(Alert.AlertType.ERROR, title, ResourceBundleHelper.getI18NLabel("ERROR_SAVING_FILE"));
+            return;
+        }
+        if (targets.size() == 1) {
+            JavaFXLogHelper.showMessage(Alert.AlertType.INFORMATION, title, ResourceBundleHelper.getI18NLabel("FILE_SAVED"));
+        } else {
+            JavaFXLogHelper.showMessageDialog(Alert.AlertType.INFORMATION, title,
+                    ResourceBundleHelper.getI18NLabel("FILES_SAVED") + "\n\n" + targets.stream()
+                            .map(t -> "  • " + t.file().getName() + "\n    " + t.file().getAbsolutePath())
+                            .collect(Collectors.joining("\n\n")));
         }
     }
 
-    @FunctionalInterface
-    protected interface ExportFunction {
-        String apply(List<Criterio> selectedData);
+    /**
+     * A fixed-name sibling (Theme 6 {@code vvt.vvt}) that already exists needs confirmation; declining cancels the
+     * whole export.
+     */
+    private boolean confirmOverwrite(List<File> existing) {
+        if (existing.isEmpty()) {
+            return true;
+        }
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                ResourceBundleHelper.getI18NLabel("OVERWRITE_FILE_PROMPT") + "\n"
+                        + existing.stream().map(File::getAbsolutePath).collect(Collectors.joining("\n")),
+                ButtonType.YES, ButtonType.NO);
+        confirm.setTitle(ResourceBundleHelper.getI18NLabel(getExportTitle()));
+        confirm.setHeaderText(null);
+        return confirm.showAndWait().filter(ButtonType.YES::equals).isPresent();
     }
 }

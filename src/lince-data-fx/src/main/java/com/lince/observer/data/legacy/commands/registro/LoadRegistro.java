@@ -22,12 +22,15 @@ import com.lince.observer.data.base.ILinceAppProvider;
 import com.lince.observer.data.legacy.Command;
 import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
-import com.lince.observer.legacy.Registro;
-import com.lince.observer.legacy.RegistroException;
+import com.lince.observer.data.transfer.ImportException;
+import com.lince.observer.data.transfer.importers.Lince1RegisterImporter;
+import com.lince.observer.data.transfer.legacy.LegacyBridge;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Alberto Soto-Fernandez
@@ -50,11 +53,17 @@ public class LoadRegistro extends Command {
         File f = LinceDesktopFileHelper.openSingleFileDialogBasic(linceApp, new MutablePair<>(label, "*.rlince"));
         if (f != null) {
             if (f.canRead()) {
+                String errors;
                 try {
-                    Registro.loadInstance(f);
-                } catch (RegistroException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Lince", JOptionPane.INFORMATION_MESSAGE);
-                    JavaFXLogHelper.addLogInfo("El instrumento o registro importado contenia los siguientes errores:\n "+ ex.getMessage());
+                    List<String> problems = new ArrayList<>();
+                    Lince1RegisterImporter.loadLegacyRegister(new LegacyBridge(), f, problems);
+                    errors = problems.isEmpty() ? null : String.join("\n", problems) + "\n";
+                } catch (ImportException ex) {
+                    errors = ex.getMessage();
+                }
+                if (errors != null) {
+                    JOptionPane.showMessageDialog(null, errors, "Lince", JOptionPane.INFORMATION_MESSAGE);
+                    JavaFXLogHelper.addLogInfo("El instrumento o registro importado contenia los siguientes errores:\n "+ errors);
                 }
             } else {
                 JOptionPane.showMessageDialog(null, java.util.ResourceBundle.getBundle("i18n.Bundle").getString("EL ARCHIVO ") + f.getName() + java.util.ResourceBundle.getBundle("i18n.Bundle").getString(" NO EXISTE."), java.util.ResourceBundle.getBundle("i18n.Bundle").getString("LINCE"), JOptionPane.INFORMATION_MESSAGE);

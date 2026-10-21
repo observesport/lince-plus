@@ -92,6 +92,16 @@ public class Registro extends ModeloDeTablaLince implements Observer {
             throw new RegistroException(string.toString());
         }
     }
+    /**
+     * Makes an already loaded register the current one, as {@link #loadInstance(File)} does after loading
+     * (LO-349: lets importers validate the load before replacing the singleton).
+     *
+     * @param registro register returned by {@link #cargarRegistro(File, List)}
+     */
+    public static void useInstance(Registro registro) {
+        cambiarInstancia(registro);
+    }
+
     private static void cambiarInstancia(Registro newInstance) {
         if (instance == null) {
             instance = new Registro();
@@ -233,14 +243,23 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         return valores;
     }
 
+    /**
+     * What {@link #save()} writes to a .rlince file (LO-349: lets exporters serialise it without a file).
+     *
+     * @return instrument name, criteria, fixed data and rows
+     */
+    public Map<String, Object> getSaveContent() {
+        Map<String, Object> map = new HashMap<String, Object>(3);
+        map.put(NOMBRE_INSTRUMENTO_OBSERVACIONAL, InstrumentoObservacional.getInstance().getName());
+        map.put(CRITERIOS, datos);
+        map.put(DATOS_FIJOS, datosFijos);
+        map.put(DATOS_VARIABLES, datosVariables);
+        return map;
+    }
+
     public void save() {
         try {
-            Map<String, Object> map = new HashMap<String, Object>(3);
-            map.put(NOMBRE_INSTRUMENTO_OBSERVACIONAL, InstrumentoObservacional.getInstance().getName());
-            map.put(CRITERIOS, datos);
-            map.put(DATOS_FIJOS, datosFijos);
-            map.put(DATOS_VARIABLES, datosVariables);
-            ControladorArchivos.getInstance().guardar(path, map);
+            ControladorArchivos.getInstance().guardar(path, getSaveContent());
             necesarySave = false;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Registro.class.getName()).log(Level.SEVERE, null, ex);

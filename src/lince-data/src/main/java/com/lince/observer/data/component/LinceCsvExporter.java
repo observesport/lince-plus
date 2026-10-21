@@ -26,16 +26,20 @@ public class LinceCsvExporter implements ILinceFileExporter {
     private static final String LINE_SEPARATOR = System.lineSeparator(); //= "\r\n"; //System.lineSeparator()
     private UUID researchUUID;
 
+    /**
+     * The time columns, in the order of {@link #getDefaultColumnDefinitions}.
+     */
+    public static final List<String> TIME_COLUMNS = List.of(
+            LinceDataConstants.ColumnType.EVENT_TIME_FRAMES.toString(),
+            LinceDataConstants.ColumnType.EVENT_DURATION_FRAMES.toString(),
+            LinceDataConstants.ColumnType.EVENT_TIME_SECONDS.toString(),
+            LinceDataConstants.ColumnType.EVENT_DURATION_SECONDS.toString(),
+            LinceDataConstants.ColumnType.EVENT_TIME_MS.toString(),
+            LinceDataConstants.ColumnType.EVENT_DURATION_MS.toString());
+
     @Override
     public List<String> getDefaultColumnDefinitions(ILinceProject linceProject) {
-        List<String> columns = new ArrayList<>(Arrays.asList(
-                LinceDataConstants.ColumnType.EVENT_TIME_FRAMES.toString(),
-                LinceDataConstants.ColumnType.EVENT_DURATION_FRAMES.toString(),
-                LinceDataConstants.ColumnType.EVENT_TIME_SECONDS.toString(),
-                LinceDataConstants.ColumnType.EVENT_DURATION_SECONDS.toString(),
-                LinceDataConstants.ColumnType.EVENT_TIME_MS.toString(),
-                LinceDataConstants.ColumnType.EVENT_DURATION_MS.toString()
-        ));
+        List<String> columns = new ArrayList<>(TIME_COLUMNS);
         linceProject.getObservationTool().stream().map(Criteria::getCode).forEach(columns::add);
         return columns;
     }
