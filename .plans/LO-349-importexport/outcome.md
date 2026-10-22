@@ -1,6 +1,7 @@
 # Outcome: LO-349 — import/export over REST (frontend handover)
 
 As of 2026-10-22. Branch `feat/lo-349-importexport`, draft PR https://github.com/observesport/lince-plus/pull/153.
+Shareable copy of this handover as a Claude Doc: https://claude.ai/artifact/1Nv6akr46HZtmtnNxUE9MU (this file is the source of truth).
 The two endpoints exist in **lince-desktop** (the JavaFX app's embedded server). The JavaFX menu entries
 (Data > Import / Export) go through the same services, so what the menu produces is what the API produces.
 Verified by hand in the running app on 2026-10-22; 98 + 183 + 90 unit tests green (lince-data, lince-data-fx, lince-desktop).
