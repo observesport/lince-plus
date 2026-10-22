@@ -13,8 +13,9 @@ import com.lince.observer.data.transfer.LinceImporter;
 import com.lince.observer.data.transfer.TransferException;
 import com.lince.observer.data.transfer.legacy.LegacyBridge;
 import com.lince.observer.legacy.Registro;
-import com.lince.observer.legacy.RegistroException;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -25,7 +26,8 @@ import java.util.Map;
 
 /**
  * Imports a Lince 1 register ({@code .rlince}) as a new observer of the target project (LO-349). Headless
- * version of the "Import Lince 1 register" menu entry ({@code LoadRegistro} + {@code ensureImportCompatibility()}).
+ * version of the "Import Lince 1 register" menu entry (the former {@code LoadRegistro} command followed by
+ * {@code ensureImportCompatibility()}).
  * <p>
  * A Lince 1 register only stores category codes, which the legacy loader resolves against the current legacy
  * instrument, so the target project must already have an instrument: its criteria are installed as the legacy
@@ -39,10 +41,12 @@ import java.util.Map;
 @Component
 public class Lince1RegisterImporter implements LinceImporter {
 
+    private static final Logger log = LoggerFactory.getLogger(Lince1RegisterImporter.class);
+
     public static final String TYPE_ID = "lince1-register";
     public static final String EXTENSION = "rlince";
     /**
-     * User name of the observer created for the imported rows, as {@code LegacyConverterService} names it.
+     * User name of the observer created for the imported rows, the name the Lince 1 register import has always used.
      */
     public static final String OBSERVER_NAME = "Lince v1 observer";
 
@@ -75,7 +79,7 @@ public class Lince1RegisterImporter implements LinceImporter {
                 if (!rows.isEmpty()) {
                     LegacyImportSupport.addObserver(target, OBSERVER_NAME, rows);
                 }
-                return LegacyImportSupport.outcome(target, rows.size(), warnings);
+                return ImportOutcome.of(target, rows.size(), warnings);
             });
         } finally {
             FileUtils.deleteQuietly(file);
@@ -93,23 +97,32 @@ public class Lince1RegisterImporter implements LinceImporter {
      * @return the loaded register
      * @throws ImportException UNREADABLE when the file is not a Lince 1 register; the current register is kept
      */
-    public static Registro loadLegacyRegister(LegacyBridge bridge, File file, List<String> problems) {
+    private static Registro loadLegacyRegister(LegacyBridge bridge, File file, List<String> problems) {
         return bridge.withLegacyModel(() -> {
             List<LegacyToolException> errors = new ArrayList<>();
             Registro registro;
             try {
                 registro = Registro.cargarRegistro(file, errors);
-            } catch (RegistroException | RuntimeException e) {
-                throw new ImportException(TransferException.Reason.UNREADABLE, "Not a Lince 1 register: " + e.getMessage(), e);
+            } catch (RuntimeException e) {
+                throw unreadable(file, e);
+            }
+            if (registro == null) {
+                throw unreadable(file, errors.isEmpty() ? null : errors.get(0));
             }
             List<String> messages = errors.stream().map(Throwable::getMessage).toList();
-            if (registro == null) {
-                throw new ImportException(TransferException.Reason.UNREADABLE,
-                        "Not a Lince 1 register: " + String.join("; ", messages));
-            }
             Registro.useInstance(registro);
             problems.addAll(messages);
             return registro;
         });
+    }
+
+    /**
+     * The client sees a generic message: the legacy loaders name the spool file, whose absolute path reveals the
+     * server's temp folder (and the OS user on Windows). The path and the cause stay in the log.
+     */
+    private static ImportException unreadable(File file, Exception cause) {
+        log.warn("Cannot read Lince 1 register {}", file.getAbsolutePath(), cause);
+        return new ImportException(TransferException.Reason.UNREADABLE,
+                "Cannot read Lince 1 register file: not a Lince 1 register", cause);
     }
 }

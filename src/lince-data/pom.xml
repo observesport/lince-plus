@@ -95,6 +95,12 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Test only: reproduces how lince-server's Spring Data MongoDB reads these beans back (LO-345) -->
         <dependency>
             <groupId>org.springframework.data</groupId>

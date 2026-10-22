@@ -14,6 +14,8 @@ import com.lince.observer.data.transfer.legacy.LegacyImport;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -25,8 +27,8 @@ import java.util.Map;
 
 /**
  * Imports a Lince 1 observation instrument ({@code .ilince}) as the target project's observation tool (LO-349).
- * Headless version of the "Import Lince 1 tool" menu entry (the former {@code LoadInstrumentoObservacional} command followed by
- * {@code ensureImportCompatibility()}).
+ * Headless version of the "Import Lince 1 tool" menu entry (the former {@code LoadInstrumentoObservacional}
+ * command followed by {@code ensureImportCompatibility()}).
  * <p>
  * The import replaces the instrument, as the menu does; criteria without categories are skipped and, when none
  * is left, the instrument is kept. Existing observations are not touched and keep referring to the previous
@@ -37,6 +39,8 @@ import java.util.Map;
  */
 @Component
 public class Lince1ToolImporter implements LinceImporter {
+
+    private static final Logger log = LoggerFactory.getLogger(Lince1ToolImporter.class);
 
     public static final String TYPE_ID = "lince1-tool";
     public static final String EXTENSION = "ilince";
@@ -73,7 +77,7 @@ public class Lince1ToolImporter implements LinceImporter {
                     }
                     target.setObservationTool(new ArrayList<Criteria>(imported.criteria()));
                 }
-                return LegacyImportSupport.outcome(target, 0, warnings);
+                return ImportOutcome.of(target, 0, warnings);
             });
         } finally {
             FileUtils.deleteQuietly(file);
@@ -90,12 +94,15 @@ public class Lince1ToolImporter implements LinceImporter {
      * @return the loaded instrument (the singleton)
      * @throws ImportException UNREADABLE when the file is not a Lince 1 instrument
      */
-    public static InstrumentoObservacional loadLegacyTool(LegacyBridge bridge, File file) {
+    private static InstrumentoObservacional loadLegacyTool(LegacyBridge bridge, File file) {
         return bridge.withLegacyModel(() -> {
             try {
                 InstrumentoObservacional.loadInstance(file);
             } catch (IOException | RuntimeException e) {
-                throw new ImportException(TransferException.Reason.UNREADABLE, "Not a Lince 1 tool: " + e.getMessage(), e);
+                // The loader messages name the spool file; its path reveals the server temp folder, so it is only logged
+                log.warn("Cannot read Lince 1 tool {}", file.getAbsolutePath(), e);
+                throw new ImportException(TransferException.Reason.UNREADABLE,
+                        "Cannot read Lince 1 tool file: not a Lince 1 observation instrument", e);
             }
             Registro.loadNewInstance();
             return InstrumentoObservacional.getInstance();

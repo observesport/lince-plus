@@ -45,6 +45,9 @@ public class DesktopImportService implements ImportService {
 
     private static final Logger log = LoggerFactory.getLogger(DesktopImportService.class);
 
+    /** Longest client file name repeated in an error message. */
+    static final int MAX_ECHOED_NAME = 80;
+
     private final List<LinceImporter> importers;
     private final CurrentProjectProvider projectProvider;
     private final DataHubService dataHubService;
@@ -81,16 +84,34 @@ public class DesktopImportService implements ImportService {
             LinceImporter importer = importers.stream()
                     .filter(candidate -> id.equalsIgnoreCase(candidate.descriptor().id()))
                     .findFirst()
-                    .orElseThrow(() -> new ImportException(Reason.UNKNOWN_TYPE, "Unknown import type: " + id));
+                    .orElseThrow(() -> new ImportException(Reason.UNKNOWN_TYPE, "Unknown import type: " + displayName(id)));
             if (!importer.supports(fileName) && detect(fileName).isPresent()) {
                 throw new ImportException(Reason.TYPE_MISMATCH,
-                        "Import type " + id + " does not read " + fileName);
+                        "Import type " + displayName(id) + " does not read " + displayName(fileName));
             }
             return importer;
         }
         return detect(fileName).orElseThrow(() -> new ImportException(Reason.UNKNOWN_TYPE,
-                "Cannot detect the import type of " + StringUtils.defaultIfBlank(fileName, "the file")
+                "Cannot detect the import type of " + StringUtils.defaultIfBlank(displayName(fileName), "the file")
                         + "; send 'type' (" + String.join(", ", typeIds()) + ")"));
+    }
+
+    /**
+     * A client value (file name or type) as echoed in error messages: control characters (below 0x20 and 0x7F) removed and at
+     * most {@value #MAX_ECHOED_NAME} characters, the rest replaced by an ellipsis.
+     */
+    static String displayName(String fileName) {
+        if (fileName == null) {
+            return null;
+        }
+        StringBuilder clean = new StringBuilder(Math.min(fileName.length(), MAX_ECHOED_NAME + 1));
+        for (int i = 0; i < fileName.length(); i++) {
+            char c = fileName.charAt(i);
+            if (c >= 0x20 && c != 0x7F) {
+                clean.append(c);
+            }
+        }
+        return clean.length() <= MAX_ECHOED_NAME ? clean.toString() : clean.substring(0, MAX_ECHOED_NAME) + "\u2026";
     }
 
     private Optional<LinceImporter> detect(String fileName) {

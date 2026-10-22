@@ -139,4 +139,28 @@ class Lince1RegisterImporterTest {
         assertTrue(project.getRegister().isEmpty());
         assertFalse(before == null);
     }
+
+    @Test
+    void unreadableContentDoesNotLeakTheSpoolPath() {
+        for (String content : List.of("not xml", "<java/>", "")) {
+            ImportException ex = assertThrows(ImportException.class, () -> importer.importInto(project,
+                    new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), ImportScope.FULL, Map.of()));
+
+            assertEquals(TransferException.Reason.UNREADABLE, ex.getReason());
+            assertTrue(ex.getMessage().startsWith("Cannot read Lince 1 register file"), ex.getMessage());
+            assertNoSpoolPath(ex);
+        }
+    }
+
+    /**
+     * A 400 body must not reveal the server spool path (it names the OS user on Windows).
+     */
+    static void assertNoSpoolPath(ImportException ex) {
+        String message = String.valueOf(ex.getMessage());
+        String tmp = System.getProperty("java.io.tmpdir").replaceAll("[/\\\\]+$", "");
+        assertFalse(message.contains("lince-import-"), message);
+        assertFalse(message.contains(tmp), message);
+        assertFalse(message.contains(new java.io.File(tmp).getAbsolutePath()), message);
+    }
 }
+

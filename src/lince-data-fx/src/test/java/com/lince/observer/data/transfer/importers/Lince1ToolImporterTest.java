@@ -116,6 +116,10 @@ class Lince1ToolImporterTest {
 
         assertEquals(TransferException.Reason.UNREADABLE, garbage.getReason());
         assertEquals(TransferException.Reason.UNREADABLE, register.getReason());
+        for (ImportException ex : List.of(garbage, register)) {
+            assertTrue(ex.getMessage().startsWith("Cannot read Lince 1 tool file"), ex.getMessage());
+            Lince1RegisterImporterTest.assertNoSpoolPath(ex);
+        }
         assertTrue(project.getObservationTool().isEmpty());
     }
 }
