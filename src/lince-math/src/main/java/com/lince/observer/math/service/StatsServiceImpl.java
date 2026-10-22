@@ -7,6 +7,7 @@ import com.lince.observer.data.bean.agreement.AgreementResult;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.service.StatsService;
+import com.lince.observer.data.transfer.legacy.LegacyBridge;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
@@ -33,19 +34,24 @@ public class StatsServiceImpl implements StatsService {
 
     private final DataHubService dataHubService;
     private final LegacyConverterService legacyConverterService;
+    private final LegacyBridge legacyBridge;
 
 
     @Autowired
-    public StatsServiceImpl(DataHubService dataHubService, LegacyConverterService legacyConverterService) {
+    public StatsServiceImpl(DataHubService dataHubService, LegacyConverterService legacyConverterService,
+                            LegacyBridge legacyBridge) {
         this.dataHubService = dataHubService;
         this.legacyConverterService = legacyConverterService;
+        this.legacyBridge = legacyBridge;
     }
 
     private LinceDkproAdapter getAdapter(UUID... uuids) {
         return new LinceDkproAdapter(getDataRegister(), getObservationTool(), uuids);
     }
     /**
-     * Legacy method, using Lince 1 version
+     * Legacy method, using Lince 1 version.
+     * Both migrations and the instrument read run under the {@link LegacyBridge} lock, so no other conversion
+     * replaces the legacy singletons in between (LO-349).
      *
      * @param firstRegister  valid uuid in register
      * @param secondRegister valid uuid in register
@@ -53,6 +59,10 @@ public class StatsServiceImpl implements StatsService {
      */
     @Override
     public List<KeyValue<String, Double>> calculateLegacyKappa(UUID firstRegister, UUID secondRegister) {
+        return legacyBridge.withLegacyModel(() -> calculateLegacyKappaLocked(firstRegister, secondRegister));
+    }
+
+    private List<KeyValue<String, Double>> calculateLegacyKappaLocked(UUID firstRegister, UUID secondRegister) {
         try {
             List<KeyValue<String, Double>> response = new ArrayList<>();
             Registro old1 = legacyConverterService.migrateRegisterToLegacy(firstRegister);

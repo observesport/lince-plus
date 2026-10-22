@@ -69,8 +69,8 @@ class FileLoaderTest {
         loadFileTest();
         LinceRegisterWrapper wrapper = linceApp.getDataHubService().getDataRegister().get(0);
         Assertions.assertNotNull(wrapper);
-        Lince2ThemeExport export = new Lince2ThemeExport(wrapper.getRegisterData());
-        export.createFile(GenericFileUtils.getWriter("transCodingRegisterToTheme2.vvt"));
+        String content = new Lince2ThemeExport(wrapper.getRegisterData()).exportToString();
+        Assertions.assertTrue(content.startsWith("TIME\tEVENT"), content);
     }
 
 

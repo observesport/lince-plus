@@ -45,7 +45,8 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
     public FilaRegistro(int milis, Map<Criterio, Categoria> categoriasSeleccionadas, Map<NodoInformacion, String> datosMixtos, Double fps) {
         this.milis = milis;
         this.registro = categoriasSeleccionadas;
-        this.datosMixtos = datosMixtos;
+        //files saved without the mixed data property (LO-349) load with none
+        this.datosMixtos = datosMixtos != null ? datosMixtos : new HashMap<>();
         this.fps = fps != null? fps : TimeCalculations.DEFAULT_FPS;
     }
 
@@ -140,6 +141,16 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
         }
     }
 
+    /**
+     * Property read by the XML persistence delegate ({@code milis, registro, datosMixtos}); without it saved
+     * registers had no mixed data and could not be loaded back (LO-349).
+     *
+     * @return mixed information node values of this row
+     */
+    public Map<NodoInformacion, String> getDatosMixtos() {
+        return datosMixtos;
+    }
+
     public String getDatoMixto(NodoInformacion nodoInformacion) {
         return datosMixtos.get(nodoInformacion);
     }
@@ -166,9 +177,5 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
     @Override
     public int compareTo(FilaRegistro o) {
         return this.milis - o.milis;
-    }
-
-    public double getFps() {
-        return fps;
     }
 }

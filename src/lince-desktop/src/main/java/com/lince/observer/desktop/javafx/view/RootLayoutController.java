@@ -2,27 +2,31 @@ package com.lince.observer.desktop.javafx.view;
 
 import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.LinceDataConstants;
-import com.lince.observer.data.bean.user.ResearchProfile;
+import com.lince.observer.data.bean.transfer.ExportRequest;
+import com.lince.observer.data.bean.transfer.ImportResult;
+import com.lince.observer.data.bean.transfer.ImportScope;
 import com.lince.observer.data.bean.user.UserProfile;
-import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
 import com.lince.observer.data.javafx.*;
-import com.lince.observer.data.legacy.Command;
-import com.lince.observer.data.legacy.commands.importar.AbrirImportarHoisan;
-import com.lince.observer.data.legacy.commands.instrumento.LoadInstrumentoObservacional;
-import com.lince.observer.data.legacy.commands.instrumento.SaveInstrumentoObservacionalAs;
-import com.lince.observer.data.legacy.commands.registro.LoadRegistro;
-import com.lince.observer.data.legacy.commands.registro.SaveRegistroAs;
-import com.lince.observer.data.legacy.exportar.*;
+import com.lince.observer.data.service.ExportService;
+import com.lince.observer.data.service.ImportService;
 import com.lince.observer.data.system.operations.LinceDesktopFileHelper;
+import com.lince.observer.data.transfer.TransferException;
+import com.lince.observer.data.transfer.exporters.HoisanExporter;
+import com.lince.observer.data.transfer.exporters.Lince1RegisterExporter;
+import com.lince.observer.data.transfer.exporters.Lince1ToolExporter;
+import com.lince.observer.data.transfer.importers.HoisanImporter;
+import com.lince.observer.data.transfer.importers.Lince1RegisterImporter;
+import com.lince.observer.data.transfer.importers.Lince1ToolImporter;
+import com.lince.observer.data.transfer.importers.LinceProjectImporter;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.ServerAppParams;
 import com.lince.observer.desktop.helper.ServerValuesHelper;
 import com.lince.observer.desktop.javafx.JavaFXLoader;
 import com.lince.observer.desktop.javafx.components.JavaFXBrowser;
 import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
+import com.lince.observer.desktop.spring.service.CurrentProjectProvider;
 import com.lince.observer.desktop.spring.service.ExternalLinkService;
-import com.lince.observer.legacy.Registro;
-import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
+import com.lince.observer.legacy.export.GseqExporterFactory.GseqFormatType;
 import com.lince.observer.math.service.DataHubService;
 import com.lince.observer.transcoding.TranscodingProvider;
 import javafx.beans.binding.Bindings;
@@ -48,8 +52,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.swing.*;
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -69,11 +74,26 @@ import javafx.geometry.Insets;
 @Component
 public class RootLayoutController extends JavaFXLinceBaseController {
 
+    /* LO-349 import type ids, see GET /api/import/types */
+    private static final FileChooser.ExtensionFilter XML_FILTER = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+    private static final FileChooser.ExtensionFilter RLINCE_FILTER = new FileChooser.ExtensionFilter("Lince 1 (*.rlince)", "*.rlince");
+    private static final FileChooser.ExtensionFilter ILINCE_FILTER = new FileChooser.ExtensionFilter("Lince 1 (*.ilince)", "*.ilince");
+    private static final FileChooser.ExtensionFilter MDB_FILTER = new FileChooser.ExtensionFilter("HOISAN (*.mdb)", "*.mdb");
+
     @Autowired
     protected DataHubService dataHubService;
 
     @Autowired
     protected ExternalLinkService externalLinkService;
+
+    @Autowired
+    protected ImportService importService;
+
+    @Autowired
+    protected ExportService exportService;
+
+    @Autowired
+    protected CurrentProjectProvider currentProjectProvider;
 
     protected TranscodingProvider transcodingProvider = null;
 
@@ -108,7 +128,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     public void lazyInit() {
         try {
             getMainLinceApp().getPrimaryStage().setOnCloseRequest(confirmCloseEventHandler);
-            dataHubService = getMainLinceApp().getDataHubService();
             videoPlaylistView.setItems(dataHubService.getUserPlayList());
             videoPlaylistView.setCellFactory(lv -> {
                 ListCell<String> cell = new ListCell<>() {
@@ -153,7 +172,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         dataHubService.clearData();
         mainLinceApp.getAnalysisService().getAllObservations().clear();
         mainLinceApp.getCategoryService().clearSelectedObservationTool();
-        Registro.loadNewInstance();//legacy
+        currentProjectProvider.resetLegacyRegister();//legacy, under the LegacyBridge lock
         LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         fileHelper.setLinceProjectPath(null, mainLinceApp);
         JavaFXLogHelper.addLogInfo("Nuevo proyecto");
@@ -165,13 +184,22 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      * @param f Consumer that accepts a File object
      */
     private void doOpenLincePlusProject(Consumer<File> f) {
+        doOpenFile(XML_FILTER, f);
+    }
+
+    /**
+     * Opens a FileChooser filtered by one extension and runs the consumer with the selected file
+     *
+     * @param filter extension filter
+     * @param f      Consumer that accepts a File object
+     */
+    private void doOpenFile(FileChooser.ExtensionFilter filter, Consumer<File> f) {
         try {
             LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
             FileChooser fileChooser = fileHelper.getFileChooser();
 
             // Set extension filter
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
-            fileChooser.getExtensionFilters().add(extFilter);
+            fileChooser.getExtensionFilters().add(filter);
             // Show save file dialog
             File file = fileChooser.showOpenDialog(mainLinceApp.getPrimaryStage());
             if (file != null) {
@@ -180,6 +208,33 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         } catch (Exception e) {
             JavaFXLogHelper.addLogError("Error opening lince Project", e);
         }
+    }
+
+    /**
+     * Imports the selected file through {@link ImportService} (LO-349), the same path {@code POST /api/import} uses
+     *
+     * @param title       i18n title for log lines and error dialogs
+     * @param filter      extension filter
+     * @param type        import type id
+     * @param scope       import scope
+     * @param doneMessage log line on success
+     */
+    private void doImportFile(String title, FileChooser.ExtensionFilter filter, String type, ImportScope scope,
+                              String doneMessage) {
+        doOpenFile(filter, file -> {
+            try (InputStream in = Files.newInputStream(file.toPath())) {
+                ImportResult result = importService.importFile(file.getName(), in, type, scope, Map.of());
+                JavaFXLogHelper.addLogInfo(doneMessage + " (" + file.getName() + "): "
+                        + result.criteriaCount() + " criterios, " + result.registerCount() + " observadores, "
+                        + result.observationCount() + " observaciones");
+                result.warnings().forEach(warning -> JavaFXLogHelper.addLogInfo(title + ": " + warning));
+            } catch (TransferException e) {
+                log.warn("{}: {} {}", title, e.getReason(), e.getMessage());
+                JavaFXLogHelper.showMessage(AlertType.ERROR, title, e.getMessage());
+            } catch (Exception e) {
+                JavaFXLogHelper.addLogError(title, e);
+            }
+        });
     }
 
     /**
@@ -201,13 +256,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportLincePlusProject() {
-        doOpenLincePlusProject(file -> {
-                    LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
-                    fileHelper.addBaseProjectInfo(file, mainLinceApp);
-                    dataHubService.reloadResearchProfileDataFromRegister();
-                    JavaFXLogHelper.addLogInfo("Se ha cargado el instrumento y la observación del proyecto seleccionado");
-                }
-        );
+        doImportFile(getMainLinceApp().getMessage("panel_import_custom", "Lince PLUS"), XML_FILTER,
+                LinceProjectImporter.TYPE_ID, ImportScope.FULL,
+                "Se ha cargado el instrumento y la observación del proyecto seleccionado");
     }
 
 
@@ -217,12 +268,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportLincePlusObserver() {
-        doOpenLincePlusProject(file -> {
-                    LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
-                    fileHelper.addObservations(file, mainLinceApp);
-                    JavaFXLogHelper.addLogInfo("Se han importado los datos de observación del proyecto seleccionado");
-                }
-        );
+        doImportFile(getMainLinceApp().getMessage("panel_import_custom", "Lince PLUS"), XML_FILTER,
+                LinceProjectImporter.TYPE_ID, ImportScope.OBSERVATIONS,
+                "Se han importado los datos de observación del proyecto seleccionado");
     }
 
     /**
@@ -434,26 +482,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
     /**
-     * Ensures data compatibility for export operations by migrating current data to legacy format.
-     * This method initializes legacy instances and performs the migration process.
-     *
-     * @return Optional containing the selected research UUID if successful, empty Optional otherwise
-     */
-    private Optional<UUID> ensureExportCompatibility() {
-        UUID researchId = getResearchSelection();
-        return getMainLinceApp().getLegacyConverterService().ensureExportCompatibility(researchId);
-    }
-
-    /**
-     * Ensures data compatibility for import operations by migrating legacy data to current format.
-     * This method initializes legacy instances and performs the migration process.
-     */
-    private void ensureImportCompatibility() {
-        getMainLinceApp().getLegacyConverterService().ensureImportCompatibility();
-    }
-
-
-    /**
      * Muestra un panel para seleccionar el observador si existe más de uno en el proyecto.
      * En caso contrario devuelve null
      *
@@ -461,16 +489,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     private UUID getResearchSelection() {
         try {
-            List<ResearchProfile> researchers = getMainLinceApp().getProfileService().getAllResearchInfo();
-            if (researchers.isEmpty()) {
-                return null;
-            }
-            List<UserProfile> allUserProfiles = researchers.stream()
-                    .flatMap(profile -> profile.getUserProfiles().stream())
-                    .toList();
-
+            List<UserProfile> allUserProfiles = currentProjectProvider.userProfiles();
             if (allUserProfiles.size() <= 1) {
-                return allUserProfiles.isEmpty() ? null : allUserProfiles.get(0).getRegisterCode();
+                return currentProjectProvider.currentResearchId();
             }
             Map<UUID, String> uuidToNameMap = allUserProfiles.stream()
                     .collect(Collectors.toMap(
@@ -504,21 +525,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
     /**
-     * Data integration to Export issues
+     * Shows an export panel ({@link GenericExportComponent}) as a modal window
      *
-     * @param cmd   Legacy command
-     * @param panel Legacy panel
-     * @param key   i18n id
-     * @param label i18n adddon
-     */
-    private void doExport(Command cmd, JPanel panel, String key, String label) {
-        doDataIntegration(cmd, panel, key, label, true);
-    }
-
-    /**
-     * Handles the export process for JavaFX components
-     *
-     * @param component JavaFX component to display
+     * @param component export panel
      * @param key       i18n key
      * @param label     i18n addon
      */
@@ -542,48 +551,22 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     }
 
     /**
-     * data Integration to Import issues
+     * Exports a whole-project type (no criteria panel) through {@link ExportService} (LO-349), the same path
+     * {@code POST /api/export} uses, and writes it to the file chosen in a save {@link FileChooser} through
+     * {@link ExportSaveFlow}, as the export panels do. The dialog comes first, so cancelling exports nothing.
      *
-     * @param cmd   Legacy command
-     * @param panel Legacy panel
-     * @param key   i18n id
-     * @param label i18n adddon
+     * @param type        export type id
+     * @param researchId  observer to export, null for the default one
+     * @param title       i18n title for log lines and dialogs
+     * @param filter      extension filter
      */
-    private void doImport(Command cmd, JPanel panel, String key, String label) {
-        doDataIntegration(cmd, panel, key, label, false);
-    }
-
-    /**
-     * To avoid multiple same lines. Integrates all data encapsulatino to legacy ways
-     *
-     * @param cmd      Legacy command
-     * @param panel    Legacy panel
-     * @param key      i18n id
-     * @param label    i18n adddon
-     * @param isExport is Export or import
-     */
-    private void doDataIntegration(Command cmd, JPanel panel, String key, String label, boolean isExport) {
-        String i18n = getMainLinceApp().getMessage(key, label);
-        try {
-            Registro.loadNewInstance();
-            if (isExport) {
-                ensureExportCompatibility();
-            } else {
-                ensureImportCompatibility();
-            }
-            if (cmd != null) {
-                cmd.execute();
-            } else {
-                openEmbedded(panel, i18n);
-            }
-            if (!isExport) {
-                //solo es el caso de Hoisan y de ficheros de carga
-                ensureImportCompatibility();
-            }
-            JavaFXLogHelper.addLogInfo(i18n);
-        } catch (Exception e) {
-            JavaFXLogHelper.addLogError(i18n, e);
-        }
+    private void doExportFile(String type, UUID researchId, String title, FileChooser.ExtensionFilter filter) {
+        FileChooser fileChooser = new LinceDesktopFileHelper().getFileChooser();
+        fileChooser.getExtensionFilters().add(filter);
+        Stage stage = mainLinceApp.getPrimaryStage();
+        ExportSaveFlow.javaFx(stage).run(title,
+                () -> exportService.export(new ExportRequest(type, researchId, List.of(), Map.of())),
+                fileChooser.showSaveDialog(stage));
     }
 
     /**
@@ -591,8 +574,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportRegisterLince1() {
-        ensureImportCompatibility();//para importar tenemos que migrar el instrumento!
-        doImport(new LoadRegistro(), null, "panel_import_custom", i18n("import.lince-1.register"));
+        String title = getMainLinceApp().getMessage("panel_import_custom", i18n("import.lince-1.register"));
+        doImportFile(title, RLINCE_FILTER, Lince1RegisterImporter.TYPE_ID, ImportScope.FULL, title);
     }
 
     /**
@@ -600,7 +583,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportToolLince1() {
-        doImport(new LoadInstrumentoObservacional(), null, "panel_import_custom", i18n("import.lince-1.observationTool"));
+        String title = getMainLinceApp().getMessage("panel_import_custom", i18n("import.lince-1.observationTool"));
+        doImportFile(title, ILINCE_FILTER, Lince1ToolImporter.TYPE_ID, ImportScope.FULL, title);
     }
 
 
@@ -609,8 +593,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportRegisterLince1() {
-        ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(new SaveRegistroAs(), null, "panel_export_custom", i18n("import.lince-1.register"));
+        doExportFile(Lince1RegisterExporter.TYPE_ID, getResearchSelection(),
+                getMainLinceApp().getMessage("panel_export_custom", i18n("import.lince-1.register")),
+                RLINCE_FILTER);
     }
 
     /**
@@ -618,8 +603,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportToolLince1() {
-        ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(new SaveInstrumentoObservacionalAs(), null, "panel_export_custom", i18n("import.lince-1.observationTool"));
+        doExportFile(Lince1ToolExporter.TYPE_ID, null,
+                getMainLinceApp().getMessage("panel_export_custom", i18n("import.lince-1.observationTool")),
+                ILINCE_FILTER);
     }
 
     /**
@@ -627,7 +613,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleImportHoisan() {
-        doImport(new AbrirImportarHoisan(), null, "panel_import_custom", "Hoisan");
+        String title = getMainLinceApp().getMessage("panel_import_custom", "Hoisan");
+        doImportFile(title, MDB_FILTER, HoisanImporter.TYPE_ID, ImportScope.FULL, title);
     }
 
     /**
@@ -635,142 +622,84 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      */
     @FXML
     private void handleExportHoisan() {
-        ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExport(new AbrirExportarHoisan(), null, "panel_export_custom", "Hoisan");
+        doExportFile(HoisanExporter.TYPE_ID, getResearchSelection(),
+                getMainLinceApp().getMessage("panel_export_custom", "Hoisan"), MDB_FILTER);
     }
 
     /***
-     * Valid export to theme 5.
-     * Opens a legacy dialog with all previous Lince behaviour
+     * Theme 5 export (.csv register + .vvt instrument) through {@link ExportService}
      */
     @FXML
     private void handleExportTheme5() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        projectId.ifPresent(id -> doExportFX(new Theme5ExportComponent(projectId.get()), "panel_export_custom", "Theme 5"));
+        doExportFX(new Theme5ExportComponent(getCurrentProjectDetails(), getResearchSelection(), exportService),
+                "panel_export_custom", "Theme 5");
     }
 
     /***
-     * Valid export to theme 6.
-     * Uses modern API directly from ILinceProject, no legacy Registro needed.
+     * Theme 6 export (.txt register + vvt.vvt instrument) through {@link ExportService}
      */
     @FXML
     private void handleExportTheme6() {
-        doExportFX(new CustomTheme6ExportComponent(getResearchSelection()), "panel_export_custom", "Theme 6");
-    }
-
-    private class CustomTheme6ExportComponent extends Theme6ExportComponent {
-        protected CustomTheme6ExportComponent(UUID observerId) {
-            super(observerId);
-        }
-
-        @Override
-        protected List<Object> getSelectionItems() {
-            setLinceProject(getCurrentProjectDetails());
-            return super.getSelectionItems();
-        }
+        doExportFX(new Theme6ExportComponent(getCurrentProjectDetails(), getResearchSelection(), exportService),
+                "panel_export_custom", "Theme 6");
     }
 
     /***
-     * Valid export to SAS
-     * Opens a legacy dialog with all previous Lince behaviour
+     * SAS export through {@link ExportService}
      */
     @FXML
     private void handleExportSAS() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        projectId.ifPresent(id ->
-                doExportFX(new SasExportComponent(projectId.get()), "panel_export_custom", "SAS")
-        );
+        doExportFX(new SasExportComponent(getCurrentProjectDetails(), getResearchSelection(), exportService),
+                "panel_export_custom", "SAS");
     }
 
     /***
-     * Valid export to excel with csv file
-     * Opens a legacy dialog with all previous Lince behaviour
+     * CSV (Excel compatible) export through {@link ExportService}
      */
     @FXML
     private void handleExportExcel() {
-        doExportFX(new CustomCsvExportComponent(getResearchSelection()), "panel_export_custom", "Excel");
+        doExportFX(new CsvExportComponent(getCurrentProjectDetails(), getResearchSelection(), exportService),
+                "panel_export_custom", "Excel");
     }
 
-    private class CustomCsvExportComponent extends CsvExportComponent {
-
-        protected CustomCsvExportComponent(UUID observerId) {
-            super(observerId);
-        }
-
-        @Override
-        protected List<Object> getSelectionItems() {
-            setLinceProject(getCurrentProjectDetails());
-            return super.getSelectionItems();
-        }
-    }
-
-
-    public ILinceProject getCurrentProjectDetails() {
-        ILinceProject linceProject = new LinceFileProjectWrapper();
-        linceProject.setProfiles(dataHubService.getUserData());
-        linceProject.setRegister(dataHubService.getDataRegister());
-        linceProject.setObservationTool(dataHubService.getCriteria());
-        linceProject.setVideoPlayList(dataHubService.getVideoPlayList());
-        linceProject.setYoutubeVideoPlayList(dataHubService.getYoutubeVideoPlayList());
-        return linceProject;
+    private ILinceProject getCurrentProjectDetails() {
+        return currentProjectProvider.current();
     }
 
     /***
-     * Valid export to SDIS
-     * Opens a legacy dialog with all previous Lince behaviour
+     * SDIS-GSEQ export in one format through {@link ExportService}
+     *
+     * @param format SDIS-GSEQ format
+     * @param label  window title addon
      */
+    private void doExportSdisGseq(GseqFormatType format, String label) {
+        doExportFX(new SdisGseqExportComponent(getCurrentProjectDetails(), getResearchSelection(), exportService, format),
+                "panel_export_custom", label);
+    }
+
     @FXML
     private void handleExportSDISGSEQEstado() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        projectId.ifPresent(id ->
-                doExportFX(new RegistroSdisGseqEstadoExport(projectId.get()), "panel_export_custom", "SDIS Seq por estados")
-        );
+        doExportSdisGseq(GseqFormatType.STATE, "SDIS Seq por estados");
     }
 
-    /***
-     * Valid export to SDIS
-     * Opens a legacy dialog with all previous Lince behaviour
-     */
     @FXML
     private void handleExportSDISGSEQEvent() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        projectId.ifPresent(id ->
-                doExportFX(new RegistroSdisGseqEventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos")
-        );
+        doExportSdisGseq(GseqFormatType.EVENT, "SDIS Seq por eventos");
     }
 
-    /***
-     * Valid export to SDIS
-     * Opens a legacy dialog with all previous Lince behaviour
-     */
     @FXML
     private void handleExportSDISGSEQTimeEvent() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        projectId.ifPresent(id ->
-                doExportFX(new RegistroSdisGseqTimedEventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos y tiempo")
-        );
+        doExportSdisGseq(GseqFormatType.TIMED, "SDIS Seq por eventos y tiempo");
     }
 
-    /***
-     * Valid export to SDIS
-     * Opens a legacy dialog with all previous Lince behaviour
-     */
     @FXML
     private void handleExportSDISGSEQInterval() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        projectId.ifPresent(id ->
-                doExportFX(new RegistroSdisGseqIntervalExport(projectId.get()), "panel_export_custom", "SDIS Seq por intérvalos")
-        );
+        doExportSdisGseq(GseqFormatType.INTERVAL, "SDIS Seq por intérvalos");
     }
 
-    /***
-     * Valid export to SDIS.
-     * Opens a legacy dialog with all previous Lince behaviour
-     */
     @FXML
     private void handleExportSDISGSEQMultiEvent() {
-        Optional<UUID> projectId = ensureExportCompatibility();//el new panel ya hace copia de contenido y necesita los datos legacy
-        doExportFX(new RegistroSdisGseqMultieventExport(projectId.get()), "panel_export_custom", "SDIS Seq por eventos múltiples");
+        doExportSdisGseq(GseqFormatType.MULTIEVENT, "SDIS Seq por eventos múltiples");
     }
 
     private final EventHandler<WindowEvent> confirmCloseEventHandler = event -> {

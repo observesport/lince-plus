@@ -3,11 +3,9 @@ package com.lince.observer.data;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import com.lince.observer.legacy.Registro;
-import com.lince.observer.legacy.RegistroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.*;
 
 /**
@@ -48,20 +46,6 @@ public class LegacyStatsHelper {
         return kappas;
     }
 
-
-    /**
-     * Extracted Original method at Lince 1.4
-     *
-     * @param otroRegistroFile
-     * @param criterios
-     * @return
-     * @throws RegistroException
-     */
-    public static List<Double> calcularKappa(Registro register, File otroRegistroFile, List<Object> criterios) throws RegistroException {
-        List<LegacyToolException> exceptions = new ArrayList<>();
-        Registro otroRegistro = Registro.cargarRegistro(otroRegistroFile, exceptions);
-        return getKappaValues(register, otroRegistro, criterios);
-    }
 
     /**
      * Notas 2018

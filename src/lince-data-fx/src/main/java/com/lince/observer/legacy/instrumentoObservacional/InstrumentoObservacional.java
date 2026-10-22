@@ -105,9 +105,18 @@ public class InstrumentoObservacional implements TreeModelListener {
     }
 
 
+    /**
+     * What {@link #save()} writes to a .ilince file (LO-349: lets exporters serialise it without a file).
+     *
+     * @return the instrument tree root
+     */
+    public RootInstrumentoObservacional getSaveContent() {
+        return raiz;
+    }
+
     public void save() {
         try {
-            ControladorArchivos.getInstance().guardar(path, raiz);
+            ControladorArchivos.getInstance().guardar(path, getSaveContent());
             necesarySave = false;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(InstrumentoObservacional.class.getName()).log(Level.SEVERE, null, ex);
@@ -284,69 +293,32 @@ public class InstrumentoObservacional implements TreeModelListener {
 
     }
 
-    public void removeNodo(DefaultMutableTreeNode node) {
-        modelo.removeNodeFromParent(node);
+    /**
+     * Appends a criterion under the "variables" node through the tree model, as {@link #addHijo} does.
+     * Lets headless callers (LegacyBridge, LO-349) build an instrument without touching Swing tree types.
+     *
+     * @param nombre criterion name
+     * @return the inserted criterion
+     */
+    public Criterio addCriterio(String nombre) {
+        getModel();
+        addHijo((DefaultMutableTreeNode) raiz.getChildAt(2), nombre);
+        Criterio[] criterios = getCriterios();
+        return criterios[criterios.length - 1];
     }
 
     /**
-     * Checks children in sourceTree nodes and creates new ones into subRoot
-     * <p>
-     * Asoto : 18/01/2015
+     * Appends a category to a criterion through the tree model, as {@link #addHijo} does.
      *
-     * @param subRoot    destination mutable tree to place inside data
-     * @param sourceTree source mutable tree with interesting inner children
-     * @return modified tree
-     * @throws CloneNotSupportedException
+     * @param criterio parent criterion, already inserted in this instrument
+     * @param nombre   category name
+     * @return the inserted category
      */
-    public DefaultMutableTreeNode copySubTree(DefaultMutableTreeNode subRoot, DefaultMutableTreeNode sourceTree) throws CloneNotSupportedException {
-        if (sourceTree == null) {
-            return subRoot;
-        }
-        for (int i = 0; i < sourceTree.getChildCount(); i++) {
-            DefaultMutableTreeNode child = (DefaultMutableTreeNode) sourceTree.getChildAt(i);
-            DefaultMutableTreeNode clone = (DefaultMutableTreeNode) child.clone();
-            //new DefaultMutableTreeNode(child.getUserObject()); // better than toString()
-            subRoot.add(clone);
-            copySubTree(clone, child);
-        }
-        return subRoot;
-    }
-
-    /**
-     * Move a node inside a tree up or down with their siblings
-     * Inner children will be duplicated recursively
-     *
-     * @param node         current node to move
-     * @param isMoveToUp   move up or down this node inside same tree level
-     * @param doCopyValues if true, values will be replicated, and original item will be deleted
-     */
-    public void moveNode(DefaultMutableTreeNode node, boolean isMoveToUp, boolean doCopyValues) {
-        int parentPosition = node.getParent().getIndex(node);
-        boolean hasCondition = isMoveToUp ? (parentPosition > 0) : ((parentPosition + 1) < node.getParent().getChildCount());
-        if (hasCondition) {
-            int newPosition = parentPosition - 1;
-            if (!isMoveToUp) {
-                //si es dirección inferior tenemos que saltar el nodo siguiente
-                //o 2 si queremos saltar el que queremos borrar
-                newPosition = (doCopyValues) ? (parentPosition + 2) : (parentPosition + 1);
-            }
-            DefaultMutableTreeNode newObj = null;
-            if (doCopyValues) {
-                try {
-                    newObj = copySubTree((DefaultMutableTreeNode) node.clone(), node);
-                } catch (CloneNotSupportedException e) {
-                    Logger.getLogger(InstrumentoObservacional.class.getName()).log(Level.SEVERE, null, e);
-                }
-            }
-            modelo.insertNodeInto(doCopyValues ? newObj : node, (DefaultMutableTreeNode) node.getParent(), newPosition);
-            if (doCopyValues) {
-                //si borramos el nodo, afectamos a los listener, eso implica jtable de datos
-                //dejamos como alternativa para otros usos de replica de tablas
-                ((DefaultMutableTreeNode) node.getParent()).remove(node.getParent().getIndex(node));
-            }
-            necesarySave = true;
-            observable.notifyObservers("load");
-        }
+    public Categoria addCategoria(Criterio criterio, String nombre) {
+        getModel();
+        addHijo(criterio, nombre);
+        Categoria[] categorias = criterio.getCategoriasHijo();
+        return categorias[categorias.length - 1];
     }
 
 

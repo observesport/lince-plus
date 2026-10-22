@@ -110,6 +110,16 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <!-- LO-349: the legacy importers/exporters must run without a display (REST, CI) -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.awt.headless>true</java.awt.headless>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <!--<build>

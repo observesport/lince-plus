@@ -2,7 +2,6 @@ package com.lince.observer.data.base;
 
 import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
-import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.util.LinceFileHelper;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import javafx.scene.control.Alert;
@@ -12,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
@@ -175,34 +173,6 @@ public class LinceFileHelperFx extends LinceFileHelper {
             JavaFXLogHelper.showMessage(Alert.AlertType.ERROR
                     , "Could not save data"
                     , "Could not save data to file:\n" + file.getPath());
-        }
-    }
-
-
-    public void addObservations(File file, ILinceApp myLinceApp) {
-        try {
-            readProjectFile(file, projectWrapper -> {
-                List<LinceRegisterWrapper> newItems = projectWrapper.getRegister();
-                myLinceApp.getDataHubService().addDataRegister(newItems);
-                //myLinceApp.getDataHubService().getDataRegister().addAll(newItems);
-            });
-        } catch (Exception e) {
-            JavaFXLogHelper.showMessage(Alert.AlertType.ERROR
-                    , "Could not load data"
-                    , "addObservations - Could not load data from file:\n" + file.getPath());
-        }
-    }
-
-    public void addBaseProjectInfo(File file, ILinceApp myLinceApp) {
-        try {
-            readProjectFile(file, projectWrapper -> {
-                myLinceApp.getDataHubService().getCriteria().setAll(projectWrapper.getObservationTool());
-                myLinceApp.getDataHubService().setAllDataRegister(projectWrapper.getRegister());
-            });
-        } catch (Exception e) {
-            JavaFXLogHelper.showMessage(Alert.AlertType.ERROR
-                    , "Could not load data"
-                    , "addBaseProjectInfo - Could not load data from file:\n" + file.getPath());
         }
     }
 }

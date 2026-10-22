@@ -18,12 +18,9 @@
 package com.lince.observer.data.legacy.datos;
 
 import com.lince.observer.data.component.PackageAwareXMLSerializer;
-import com.lince.observer.data.legacy.utiles.PathArchivos;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -56,6 +53,16 @@ public class ControladorArchivos {
         }
     }
 
+    /**
+     * Same bytes {@link #guardar(File, Object)} writes, without a file (LO-349).
+     *
+     * @param datos object to encode
+     * @return UTF-8 XML
+     */
+    public byte[] serializar(Object datos) {
+        return PackageAwareXMLSerializer.encodeToXml(datos).getBytes(StandardCharsets.UTF_8);
+    }
+
     public Object cargar(File path) throws IOException {
         if (path == null || !path.exists()) {
             throw new FileNotFoundException("File does not exist: " + (path != null ? path.getAbsolutePath() : "null"));
@@ -76,33 +83,6 @@ public class ControladorArchivos {
             throw new IOException("Error reading from file: " + path.getAbsolutePath(), e);
         } catch (Exception e) {
             throw new IOException("Unexpected error while reading file: " + path.getAbsolutePath(), e);
-        }
-    }
-
-    public void guardarSerializable(File path, Serializable datos) throws IOException {
-        ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(path));
-        salida.writeObject(datos);
-        salida.close();
-    }
-
-    public Object cargarSerializable(File path) throws IOException, ClassNotFoundException {
-        ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(path));
-        Object data = entrada.readObject();
-
-        entrada.close();
-
-        return data;
-    }
-
-    public void crearArchivoDeTexto(File f, String contenido) {
-        try {
-            //"Windows-1252"
-            //final String fileEncoding = "UTF-8";
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), StandardCharsets.UTF_8));
-            bw.write(contenido);
-            bw.close();
-        } catch (IOException ex) {
-            Logger.getLogger(PathArchivos.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

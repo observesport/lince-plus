@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DUMMY fixture: the entity points at a file that does not exist. -->
+<!DOCTYPE java [<!ENTITY dummy SYSTEM "file:///nonexistent/lince-dummy-entity.txt">]>
+<java version="17" class="java.beans.XMLDecoder">
+ <string>&dummy;</string>
+</java>

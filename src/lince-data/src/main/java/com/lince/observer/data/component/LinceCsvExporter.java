@@ -5,14 +5,12 @@ import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.Criteria;
-import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.util.TimeCalculations;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -24,24 +22,23 @@ public class LinceCsvExporter implements ILinceFileExporter {
     private boolean isComma = true;
     TimeCalculations timeCalculations = new TimeCalculations();
     private static final String LINE_SEPARATOR = System.lineSeparator(); //= "\r\n"; //System.lineSeparator()
-    private UUID researchUUID;
+
+    /**
+     * The time columns, in the order of {@link #getDefaultColumnDefinitions}.
+     */
+    public static final List<String> TIME_COLUMNS = List.of(
+            LinceDataConstants.ColumnType.EVENT_TIME_FRAMES.toString(),
+            LinceDataConstants.ColumnType.EVENT_DURATION_FRAMES.toString(),
+            LinceDataConstants.ColumnType.EVENT_TIME_SECONDS.toString(),
+            LinceDataConstants.ColumnType.EVENT_DURATION_SECONDS.toString(),
+            LinceDataConstants.ColumnType.EVENT_TIME_MS.toString(),
+            LinceDataConstants.ColumnType.EVENT_DURATION_MS.toString());
 
     @Override
     public List<String> getDefaultColumnDefinitions(ILinceProject linceProject) {
-        List<String> columns = new ArrayList<>(Arrays.asList(
-                LinceDataConstants.ColumnType.EVENT_TIME_FRAMES.toString(),
-                LinceDataConstants.ColumnType.EVENT_DURATION_FRAMES.toString(),
-                LinceDataConstants.ColumnType.EVENT_TIME_SECONDS.toString(),
-                LinceDataConstants.ColumnType.EVENT_DURATION_SECONDS.toString(),
-                LinceDataConstants.ColumnType.EVENT_TIME_MS.toString(),
-                LinceDataConstants.ColumnType.EVENT_DURATION_MS.toString()
-        ));
+        List<String> columns = new ArrayList<>(TIME_COLUMNS);
         linceProject.getObservationTool().stream().map(Criteria::getCode).forEach(columns::add);
         return columns;
-    }
-
-    public void setResearchUUID(UUID researchUUID) {
-        this.researchUUID = researchUUID;
     }
 
     @Override
@@ -100,16 +97,7 @@ public class LinceCsvExporter implements ILinceFileExporter {
     }
 
     private List<RegisterItem> getSelectedRegisters(ILinceProject linceProject) {
-        List<RegisterItem> registerData;
-        if (researchUUID != null) {
-            registerData = linceProject.getRegister().stream()
-                    .filter(register -> register.getId().equals(researchUUID))
-                    .findFirst()
-                    .map(LinceRegisterWrapper::getRegisterData)
-                    .orElse(linceProject.getRegister().get(0).getRegisterData());
-        } else {
-            registerData = linceProject.getRegister().get(0).getRegisterData();
-        }
+        List<RegisterItem> registerData = linceProject.getRegister().get(0).getRegisterData();
         // Sort RegisterItems by videoTime (RegisterItem implements Comparable based on videoTime)
         return registerData.stream()
                 .sorted()

@@ -78,7 +78,7 @@ class RegistroTest {
     }
 
     @Test
-    void testCargarRegistroFileNotFoundException() throws RegistroException {
+    void testCargarRegistroFileNotFoundException() {
         // Arrange
         File nonExistentFile = new File("nonexistent.xml");
 
