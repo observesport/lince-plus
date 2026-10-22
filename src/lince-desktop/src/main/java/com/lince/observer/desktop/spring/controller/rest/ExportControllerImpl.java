@@ -92,13 +92,27 @@ public class ExportControllerImpl implements ExportController {
                 ExportedFile file = files.get(0);
                 return attachment(file.name(), mediaType(file.mimeType()), file.content());
             }
-            return attachment(request.type() + ZIP_SUFFIX, ZIP_MEDIA_TYPE, zip(files));
+            return attachment(zipName(request.type()), ZIP_MEDIA_TYPE, zip(files));
         } catch (TransferException e) {
             return TransferResponses.failure(e, log, RQ_MAPPING_NAME);
         } catch (Exception e) {
             log.error(RQ_MAPPING_NAME, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Names the zip after the exporter id that matched the request (same trimmed, case-insensitive match as the
+     * service), so {@code " Theme6"} gives {@code theme6-export.zip}; the trimmed request type otherwise.
+     */
+    private String zipName(String requestedType) {
+        String type = StringUtils.trimToEmpty(requestedType);
+        String id = exportService.types().stream()
+                .map(ExportTypeDescriptor::id)
+                .filter(type::equalsIgnoreCase)
+                .findFirst()
+                .orElse(type);
+        return id + ZIP_SUFFIX;
     }
 
     private static ResponseEntity<byte[]> attachment(String fileName, MediaType mediaType, byte[] content) {

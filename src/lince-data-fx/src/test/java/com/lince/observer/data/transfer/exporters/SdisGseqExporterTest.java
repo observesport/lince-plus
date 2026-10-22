@@ -40,6 +40,15 @@ class SdisGseqExporterTest {
     }
 
     @Test
+    void eachFormatMatchesItsGoldenFile() {
+        for (GseqFormatType format : GseqFormatType.values()) {
+            ExportedFile file = new SdisGseqExporter(fixture.bridge, format).export(fixture.selection(), Map.of()).get(0);
+
+            Golden.assertMatches(file.name(), file.content());
+        }
+    }
+
+    @Test
     void intervalSecondsOptionOverridesTheComputedInterval() {
         String expected = fixture.expected((registro, criterios) ->
                 GseqExporterFactory.createIntervalExporter(7).export(criterios, registro.datosVariables));

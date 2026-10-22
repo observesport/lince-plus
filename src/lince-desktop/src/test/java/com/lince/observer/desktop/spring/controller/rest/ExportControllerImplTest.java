@@ -113,6 +113,20 @@ class ExportControllerImplTest {
     }
 
     @Test
+    void zipIsNamedAfterTheMatchedExporterIdNotTheRawRequestType() {
+        ExportRequest request = new ExportRequest("  Theme6 ", null, null, null);
+        when(exportService.types()).thenReturn(List.of(descriptor("csv"), descriptor("theme6")));
+        when(exportService.export(request)).thenReturn(List.of(
+                new ExportedFile("project.txt", "text/plain", new byte[]{1}),
+                new ExportedFile("vvt.vvt", "text/plain", new byte[]{2})));
+
+        ResponseEntity<byte[]> response = controller.export(request);
+
+        assertEquals("attachment; filename=\"theme6-export.zip\"",
+                response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+    }
+
+    @Test
     void unknownTypeIs400OnPost() {
         ExportRequest request = new ExportRequest("excel", null, null, null);
         when(exportService.export(request)).thenThrow(new ExportException(Reason.UNKNOWN_TYPE, "Unknown export type: excel"));

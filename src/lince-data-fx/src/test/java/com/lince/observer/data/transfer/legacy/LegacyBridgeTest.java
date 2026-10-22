@@ -14,6 +14,7 @@ import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -189,6 +192,52 @@ class LegacyBridgeTest {
 
         assertEquals(List.of("Pase", "Zona"), back.stream().map(Criteria::getName).toList());
         assertEquals(List.of("Z1", "Z2"), back.get(1).getInnerCategories().stream().map(Category::getCode).toList());
+    }
+
+    /**
+     * Deterministic: the second thread is observed parked on the lock (no sleep), and the latches bound every wait.
+     */
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.SECONDS)
+    void aSecondWithLegacyModelWaitsUntilTheFirstReleases() throws Exception {
+        CountDownLatch firstInside = new CountDownLatch(1);
+        CountDownLatch releaseFirst = new CountDownLatch(1);
+        CountDownLatch secondInside = new CountDownLatch(1);
+        Thread first = new Thread(() -> bridge.withLegacyModel(() -> {
+            firstInside.countDown();
+            awaitQuietly(releaseFirst);
+            return null;
+        }), "legacy-first");
+        Thread second = new Thread(() -> bridge.withLegacyModel(() -> {
+            secondInside.countDown();
+            return null;
+        }), "legacy-second");
+        try {
+            first.start();
+            assertTrue(firstInside.await(500, TimeUnit.MILLISECONDS), "first holds the lock");
+            second.start();
+            while (second.getState() != Thread.State.BLOCKED && second.getState() != Thread.State.WAITING) {
+                assertTrue(second.isAlive(), "second finished without waiting for the lock");
+                Thread.onSpinWait();
+            }
+            assertEquals(1, secondInside.getCount(), "second must not enter while the first holds the lock");
+
+            releaseFirst.countDown();
+
+            assertTrue(secondInside.await(500, TimeUnit.MILLISECONDS), "second enters once the first releases");
+            first.join(500);
+            second.join(500);
+        } finally {
+            releaseFirst.countDown();
+        }
+    }
+
+    private static void awaitQuietly(CountDownLatch latch) {
+        try {
+            latch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Test

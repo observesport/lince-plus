@@ -46,6 +46,14 @@ class Theme5ExporterTest {
     }
 
     @Test
+    void matchesTheGoldenFiles() {
+        List<ExportedFile> files = exporter.export(fixture.selection(), Map.of());
+
+        Golden.assertMatches("theme5.csv", files.get(0).content());
+        Golden.assertMatches("theme5.vvt", files.get(1).content());
+    }
+
+    @Test
     void anEmptyRegisterExportsHeadersOnly() {
         List<ExportedFile> files = exporter.export(ExporterFixture.withoutObservations(fixture.project), Map.of());
 

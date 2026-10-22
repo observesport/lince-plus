@@ -147,15 +147,20 @@ public abstract class GenericExportComponent extends BorderPane {
                     ResourceBundleHelper.getI18NLabel("SELECT_AT_LEAST_ONE_CRITERIA"));
             return;
         }
-        List<ExportedFile> files;
-        try {
-            files = exportService.export(new ExportRequest(exportType, researchUUID, criteriaIds, options));
-        } catch (TransferException e) {
-            log.warn("{} export: {} {}", exportType, e.getReason(), e.getMessage());
+        ExportAttempt.Result result = ExportAttempt.run(
+                () -> exportService.export(new ExportRequest(exportType, researchUUID, criteriaIds, options)));
+        if (result.failed()) {
+            if (result.unexpected()) {
+                JavaFXLogHelper.addLogError(exportType + " export failed", result.error());
+            } else {
+                TransferException e = (TransferException) result.error();
+                log.warn("{} export: {} {}", exportType, e.getReason(), e.getMessage());
+            }
             JavaFXLogHelper.showMessage(Alert.AlertType.ERROR, ResourceBundleHelper.getI18NLabel(getExportTitle()),
-                    e.getMessage());
+                    result.message());
             return;
         }
+        List<ExportedFile> files = result.files();
         Platform.runLater(() -> saveFiles(files));
     }
 
@@ -165,7 +170,7 @@ public abstract class GenericExportComponent extends BorderPane {
             return;
         }
         List<ExportTargets.Target> targets = ExportTargets.resolve(chosen, files);
-        if (!confirmOverwrite(ExportTargets.existingFixedNames(targets))) {
+        if (!confirmOverwrite(ExportTargets.toConfirm(chosen, targets))) {
             return;
         }
         String title = ResourceBundleHelper.getI18NLabel(getExportTitle());
@@ -187,8 +192,8 @@ public abstract class GenericExportComponent extends BorderPane {
     }
 
     /**
-     * A fixed-name sibling (Theme 6 {@code vvt.vvt}) that already exists needs confirmation; declining cancels the
-     * whole export.
+     * Any existing target other than the file the save dialog returned (a sibling, or the primary with its
+     * extension appended) needs confirmation; declining cancels the whole export.
      */
     private boolean confirmOverwrite(List<File> existing) {
         if (existing.isEmpty()) {

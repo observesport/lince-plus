@@ -26,7 +26,7 @@ public record ImportOutcome(int criteriaCount, int registerCount, int observatio
 
     /**
      * @param type  import type id actually used
-     * @param scope scope applied, null for types that ignore it
+     * @param scope scope applied; {@link ImportScope#FULL} for types that ignore it
      * @return the REST response body
      */
     public ImportResult toResult(String type, ImportScope scope) {

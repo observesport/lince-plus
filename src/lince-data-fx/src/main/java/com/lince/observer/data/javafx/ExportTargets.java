@@ -14,8 +14,8 @@ import java.util.Locale;
  * Where the JavaFX menu writes the files an exporter returns (LO-349). The first file goes to the file the user
  * chose, with the exporter's extension appended when missing. Every other file is a sibling in the same folder:
  * when it shares the first file's base name ({@code theme5.csv} / {@code theme5.vvt}) it takes the chosen base
- * name, otherwise it keeps its own fixed name ({@code vvt.vvt} next to a Theme 6 {@code .txt}) and the caller asks
- * before overwriting it. No UI here.
+ * name, otherwise it keeps its own fixed name ({@code vvt.vvt} next to a Theme 6 {@code .txt}). The caller asks
+ * before overwriting any existing target other than the chosen file ({@link #toConfirm}). No UI here.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
@@ -53,10 +53,17 @@ public final class ExportTargets {
     }
 
     /**
-     * @return the fixed-name targets that already exist on disk
+     * @param chosen  file picked in the save dialog, which already confirmed overwriting it
+     * @param targets resolved targets
+     * @return every target that already exists on disk, except the chosen file itself: fixed-name and paired
+     * siblings, and the primary when its extension was appended
      */
-    public static List<File> existingFixedNames(List<Target> targets) {
-        return targets.stream().filter(Target::fixedName).map(Target::file).filter(File::exists).toList();
+    public static List<File> toConfirm(File chosen, List<Target> targets) {
+        File confirmed = chosen.getAbsoluteFile();
+        return targets.stream().map(Target::file)
+                .filter(f -> !f.getAbsoluteFile().equals(confirmed))
+                .filter(File::exists)
+                .toList();
     }
 
     /**

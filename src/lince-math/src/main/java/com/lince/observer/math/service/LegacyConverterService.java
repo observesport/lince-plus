@@ -11,6 +11,7 @@ import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.component.PackageAwareXMLSerializer;
 import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
+import com.lince.observer.data.transfer.legacy.LegacyBridge;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.legacy.FilaRegistro;
 import com.lince.observer.legacy.Registro;
@@ -45,6 +46,9 @@ record LegacyMigrationResult(
  * @author berto (alberto.soto@gmail.com)in 29/02/2016.
  * Description:
  * <p>
+ * Every public method that reads or replaces the legacy {@link Registro} / {@link InstrumentoObservacional}
+ * singletons runs under {@link LegacyBridge#withLegacyModel}, the lock the LO-349 legacy importers and exporters
+ * hold, so a legacy kappa or migration never swaps the singletons in the middle of a REST legacy export.
  */
 @Service
 public class LegacyConverterService {
@@ -53,14 +57,24 @@ public class LegacyConverterService {
     private final CategoryService categoryService;
     private final AnalysisService analysisService;
     private final DataHubService dataHubService;
+    private final LegacyBridge legacyBridge;
 
     @Autowired
     public LegacyConverterService(@DesktopQualifier CategoryService categoryService,
                                   @DesktopQualifier AnalysisService analysisService,
-                                  @DesktopQualifier DataHubService dataHubService) {
+                                  @DesktopQualifier DataHubService dataHubService,
+                                  LegacyBridge legacyBridge) {
         this.categoryService = categoryService;
         this.analysisService = analysisService;
         this.dataHubService = dataHubService;
+        this.legacyBridge = legacyBridge;
+    }
+
+    private void withLegacyModel(Runnable work) {
+        legacyBridge.withLegacyModel(() -> {
+            work.run();
+            return null;
+        });
     }
 
     /**
@@ -69,6 +83,10 @@ public class LegacyConverterService {
      * @param forceClean if true, forces creation of new instances
      */
     public void initializeLegacyInstances(boolean forceClean) {
+        withLegacyModel(() -> initializeLegacyInstancesLocked(forceClean));
+    }
+
+    private void initializeLegacyInstancesLocked(boolean forceClean) {
         if (!forceClean) {
             Registro.getInstance();
             InstrumentoObservacional.getInstance();
@@ -86,6 +104,10 @@ public class LegacyConverterService {
      * @return Optional containing the research UUID if successful, empty Optional otherwise
      */
     public Optional<UUID> ensureExportCompatibility(UUID researchId) {
+        return legacyBridge.withLegacyModel(() -> ensureExportCompatibilityLocked(researchId));
+    }
+
+    private Optional<UUID> ensureExportCompatibilityLocked(UUID researchId) {
         try {
             initializeLegacyInstances(true);
             migrateDataToLegacy(researchId);
@@ -101,6 +123,10 @@ public class LegacyConverterService {
      * This method initializes legacy instances and performs the migration process.
      */
     public void ensureImportCompatibility() {
+        withLegacyModel(this::ensureImportCompatibilityLocked);
+    }
+
+    private void ensureImportCompatibilityLocked() {
         try {
             initializeLegacyInstances(false);
             migrateDataFromLegacy();
@@ -113,8 +139,10 @@ public class LegacyConverterService {
      * Loads into the system loaded legacy data
      */
     public void migrateDataFromLegacy() {
-        migrateDataFromLegacyInstrument();
-        migrateDataFromLegacyRegister();
+        withLegacyModel(() -> {
+            migrateDataFromLegacyInstrument();
+            migrateDataFromLegacyRegister();
+        });
     }
 
     /**
@@ -123,9 +151,11 @@ public class LegacyConverterService {
      * @return LegacyMigrationResult containing both migrated register and instrument
      */
     public LegacyMigrationResult migrateDataToLegacy(UUID registerId) {
-        InstrumentoObservacional instrument = migrateDataToLegacyInstrument();
-        Registro register = migrateDataToLegacyRegister(true, registerId);
-        return new LegacyMigrationResult(register, instrument);
+        return legacyBridge.withLegacyModel(() -> {
+            InstrumentoObservacional instrument = migrateDataToLegacyInstrument();
+            Registro register = migrateDataToLegacyRegister(true, registerId);
+            return new LegacyMigrationResult(register, instrument);
+        });
     }
 
     /**
@@ -252,6 +282,10 @@ public class LegacyConverterService {
      * from legacy structure
      */
     public InstrumentoObservacional migrateDataFromLegacyInstrument(InputStream inputStream) {
+        return legacyBridge.withLegacyModel(() -> migrateDataFromLegacyInstrumentLocked(inputStream));
+    }
+
+    private InstrumentoObservacional migrateDataFromLegacyInstrumentLocked(InputStream inputStream) {
         try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(inputStream)) {
             Object obj = decoder.readObject();
             if (obj instanceof RootInstrumentoObservacional) {
@@ -322,6 +356,10 @@ public class LegacyConverterService {
     }
 
     public Registro migrateDataFromLegacyRegister(InputStream inputStream) {
+        return legacyBridge.withLegacyModel(() -> migrateDataFromLegacyRegisterLocked(inputStream));
+    }
+
+    private Registro migrateDataFromLegacyRegisterLocked(InputStream inputStream) {
         try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(inputStream)) {
             Object obj = decoder.readObject();
             if (obj instanceof HashMap) {
@@ -426,6 +464,10 @@ public class LegacyConverterService {
      * Based on HoisanTool::import
      */
     public InstrumentoObservacional migrateDataToLegacyInstrument() {
+        return legacyBridge.withLegacyModel(this::migrateDataToLegacyInstrumentLocked);
+    }
+
+    private InstrumentoObservacional migrateDataToLegacyInstrumentLocked() {
         InstrumentoObservacional.loadNewInstance();
         InstrumentoObservacional i = InstrumentoObservacional.getInstance();
         RootInstrumentoObservacional root = (RootInstrumentoObservacional) i.getModel().getRoot();
@@ -515,6 +557,10 @@ public class LegacyConverterService {
      * @param doCriteriaInstrumentSearch bool
      */
     public Registro migrateDataToLegacyRegister(boolean doCriteriaInstrumentSearch, UUID uuid) {
+        return legacyBridge.withLegacyModel(() -> migrateDataToLegacyRegisterLocked(doCriteriaInstrumentSearch, uuid));
+    }
+
+    private Registro migrateDataToLegacyRegisterLocked(boolean doCriteriaInstrumentSearch, UUID uuid) {
         try {
             Registro.loadNewInstance();
             Registro r = Registro.getInstance();

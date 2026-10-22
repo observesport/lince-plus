@@ -4,6 +4,7 @@ import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.data.service.ProfileService;
 import com.lince.observer.data.service.SessionService;
+import com.lince.observer.data.transfer.legacy.LegacyBridge;
 import com.lince.observer.math.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +49,7 @@ public class LinceServiceTestConfig {
 
     @Bean
     public LegacyConverterService legacyConverterService(AnalysisService analysisService,DataHubService dataHubService,CategoryService categoryService) {
-        return new LegacyConverterService( categoryService, analysisService, dataHubService);
+        return new LegacyConverterService( categoryService, analysisService, dataHubService, new LegacyBridge());
     }
 
 }

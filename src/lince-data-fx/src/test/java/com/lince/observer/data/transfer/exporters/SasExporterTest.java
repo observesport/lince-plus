@@ -41,6 +41,11 @@ class SasExporterTest {
     }
 
     @Test
+    void matchesTheGoldenFile() {
+        Golden.assertMatches("sas.sds", exporter.export(fixture.selection(), Map.of()).get(0).content());
+    }
+
+    @Test
     void needsAtLeastOneCriterion() {
         ExportException ex = assertThrows(ExportException.class,
                 () -> exporter.export(ExporterFixture.withoutCriteria(), Map.of()));

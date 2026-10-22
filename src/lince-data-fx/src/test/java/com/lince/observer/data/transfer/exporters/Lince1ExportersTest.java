@@ -91,6 +91,16 @@ class Lince1ExportersTest {
                 back.getObservationTool().stream().map(Criteria::getName).toList());
     }
 
+    /**
+     * The .ilince has no identity-ordered maps, so its bytes are stable across runs apart from the JDK version
+     * in the XMLEncoder header; the .rlince is only checked by re-import (see above).
+     */
+    @Test
+    void toolMatchesTheGoldenFile() {
+        Golden.assertXmlEncoderMatches("tool.ilince",
+                new Lince1ToolExporter(fixture.bridge).export(fixture.selection(), Map.of()).get(0).content());
+    }
+
     private static byte[] readBytes(File file) {
         try {
             return Files.readAllBytes(file.toPath());

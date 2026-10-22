@@ -28,13 +28,10 @@ import java.util.Map;
  * Headless version of the "Import Lince 1 tool" menu entry (the former {@code LoadInstrumentoObservacional} command followed by
  * {@code ensureImportCompatibility()}).
  * <p>
- * Scope {@link ImportScope#FULL} (the default) replaces the instrument, as the menu does; criteria without
- * categories are skipped and, when none is left, the instrument is kept. Existing observations are not touched
- * and keep referring to the previous categories, as in the menu; a warning says so.
- * <p>
- * Scope {@link ImportScope#OBSERVATIONS} imports nothing: a tool file has no observations, and replacing the
- * instrument is exactly what that scope promises not to do. The project is left unchanged and the outcome
- * carries a warning.
+ * The import replaces the instrument, as the menu does; criteria without categories are skipped and, when none
+ * is left, the instrument is kept. Existing observations are not touched and keep referring to the previous
+ * categories, as in the menu; a warning says so. The scope is ignored: the import service always passes
+ * {@link ImportScope#FULL} for this type.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
@@ -58,10 +55,6 @@ public class Lince1ToolImporter implements LinceImporter {
 
     @Override
     public ImportOutcome importInto(ILinceProject target, InputStream in, ImportScope scope, Map<String, String> options) {
-        if (scope == ImportScope.OBSERVATIONS) {
-            return LegacyImportSupport.outcome(target, 0,
-                    List.of("A Lince 1 tool has no observations: nothing imported (use scope full to replace the instrument)"));
-        }
         File file = LegacyImportSupport.spool(in, "." + EXTENSION);
         try {
             return bridge.withLegacyModel(() -> {

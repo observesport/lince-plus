@@ -8,6 +8,7 @@ import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.transfer.ImportException;
 import com.lince.observer.data.transfer.ImportOutcome;
 import com.lince.observer.data.transfer.TransferException;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,14 +35,16 @@ final class LegacyImportSupport {
      * @param in     upload content, not closed here
      * @param suffix temp file suffix, with the dot
      * @return a temp file holding the content; the caller deletes it with {@code FileUtils.deleteQuietly}
-     * @throws ImportException IO when the temp file cannot be written
+     * @throws ImportException IO when the temp file cannot be written; the partial temp file is deleted first
      */
     static File spool(InputStream in, String suffix) {
+        Path tmp = null;
         try {
-            Path tmp = Files.createTempFile("lince-import-", suffix);
+            tmp = Files.createTempFile("lince-import-", suffix);
             Files.copy(in, tmp, StandardCopyOption.REPLACE_EXISTING);
             return tmp.toFile();
         } catch (IOException e) {
+            FileUtils.deleteQuietly(tmp == null ? null : tmp.toFile());
             throw new ImportException(TransferException.Reason.IO, "Cannot buffer the uploaded file", e);
         }
     }

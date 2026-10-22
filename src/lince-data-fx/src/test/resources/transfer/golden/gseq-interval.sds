@@ -1,0 +1,21 @@
+Interval=1'
+  tiempoprevioaldesplazamientoprerutina,enelquelanadadoraseencuentrapreparadaenlazonadesalida. = ESPERA
+  desplazamientoquerealizalanadadoradesdelazonadesalidahastaelpuntodondeiniciarálarutina.empiezaconelprimermovimientodedesplazamientoyfinalizaenelinstanteenquelanadadoradejadeavanzar. = DPRE RUTINA
+  seiniciaenelmomentoenelquelanadadoradejadeavanzaryterminacuandoempiezaelacompañamientomusical. = PREPARACIÓN
+  desdeelmomentoenqueseinicialamúsica,hastaqueéstafinaliza. = RUTINA
+  englobadesdeelmomentoenelqueterminaelacompañamientomusicalhastaquelanadadoraapoyalosdospiesenlaplayadelapiscina. = DPOST RUTINA
+  lanadadoraestáencontactoconelsuelo. = PLAYA
+  momentosdesaltoosuspensiónfueradelagua.ningunapartedelcuerpoestáencontactoconelsuelooconelagua. = AEREA
+  desdeelmomentoenquelacara(boca)delanadadorasaledelagua,hastaquevuelveaquedarsumergida.sevaloraráelprimerframeenelqueaparezcalanadadoraconlabocafueradelagua,hastaquedesaparezca. = ACUÁTICA
+  desdeelmomentoenquelacara(boca)delanadadoraentraenelagua,hastaquevuelveasalir.primerframeenelquesevealabocadelanadadoradentrodelagua. = SUBACUÁTICA
+  lacabezapermaneceporencimadelascaderasenrelaciónalsuelo(independientementedelaposicióndelaspiernas). = SUPERIOR
+  lacabezapermanecepordebajodelascaderasenrelaciónalsuelo.eltroncoseencuentraenunaposicióninvertida. = INFERIOR
+  lacabezaseencuentraalaalturadelascaderasomuslos,máximoalaalturadelasrodillas.lareferenciaquetomaremosserálaposiciónhorizontaldeltronco,quepuedellegaratenerunaligerainclinación.paraqueseconsidereposiciónhorizontal,estainclinaciónnopuedesituarlacabezaporencimadelasrodillas,enesecasopasaríaasersuperior. = HORIZONTAL
+  inmersióncompletadelacara.barbilla–frente. = CARA DENTRO
+  caraparcialocompletamentefueradelagua. = CARA FUERA
+* Metadata;
+
+<S01>
+*0,ESPERA AEREA SUPERIOR,*1901,DPRE RUTINA AEREA SUPERIOR CARA DENTRO,*1249,RUTINA AEREA INFERIOR CARA FUERA,*1250,PREPARACIÓN AEREA SUPERIOR CARA DENTRO,*1500,DPOST RUTINA ACUÁTICA INFERIOR CARA FUERA,*1250,PREPARACIÓN SUBACUÁTICA INFERIOR CARA FUERA,*1251,RUTINA AEREA INFERIOR CARA FUERA,*1677,DPRE RUTINA AEREA SUPERIOR
+
+(Session)/

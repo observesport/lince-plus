@@ -83,20 +83,24 @@ class Lince1ToolImporterTest {
         assertSame(register, project.getRegister().get(0));
     }
 
+    /**
+     * The import service forces {@link ImportScope#FULL} for every type but lince-plus, so this importer ignores
+     * the scope: any value replaces the instrument.
+     */
     @Test
-    void observationsScopeLeavesTheProjectUntouched() throws Exception {
-        LinceFileProjectWrapper project = new LinceFileProjectWrapper();
-        List<Criteria> before = new ArrayList<>(List.of(new Criteria(9, "Old")));
-        project.setObservationTool(before);
-
-        ImportOutcome outcome;
-        try (InputStream in = Lince1Fixtures.stream(Lince1Fixtures.TOOL)) {
-            outcome = importer.importInto(project, in, ImportScope.OBSERVATIONS, Map.of());
+    void scopeIsIgnored() throws Exception {
+        List<String> names = new ArrayList<>();
+        for (ImportScope scope : ImportScope.values()) {
+            LinceFileProjectWrapper project = new LinceFileProjectWrapper();
+            project.setObservationTool(new ArrayList<>(List.of(new Criteria(9, "Old"))));
+            try (InputStream in = Lince1Fixtures.stream(Lince1Fixtures.TOOL)) {
+                importer.importInto(project, in, scope, Map.of());
+            }
+            assertFalse(project.getObservationTool().stream().anyMatch(c -> "Old".equals(c.getName())), scope.name());
+            names.add(project.getObservationTool().stream().map(Criteria::getName).toList().toString());
         }
 
-        assertSame(before, project.getObservationTool());
-        assertEquals(1, project.getObservationTool().size());
-        assertEquals(1, outcome.warnings().size());
+        assertEquals(1, names.stream().distinct().count(), names.toString());
     }
 
     @Test

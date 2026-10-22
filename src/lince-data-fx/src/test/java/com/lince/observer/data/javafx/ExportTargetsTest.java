@@ -65,12 +65,42 @@ class ExportTargetsTest {
     }
 
     @Test
-    void existingFixedNamesAreReportedForTheOverwritePrompt() throws Exception {
+    void existingFixedNameSiblingNeedsConfirmation() throws Exception {
         Files.writeString(dir.resolve("vvt.vvt"), "old");
-        List<ExportTargets.Target> targets = ExportTargets.resolve(dir.resolve("a.txt").toFile(),
+        File chosen = dir.resolve("a.txt").toFile();
+        List<ExportTargets.Target> targets = ExportTargets.resolve(chosen,
                 List.of(file("theme6.txt", "r"), file("vvt.vvt", "i")));
 
-        assertEquals(List.of(dir.resolve("vvt.vvt").toFile()), ExportTargets.existingFixedNames(targets));
+        assertEquals(List.of(dir.resolve("vvt.vvt").toFile()), ExportTargets.toConfirm(chosen, targets));
+    }
+
+    @Test
+    void existingPairedSiblingNeedsConfirmation() throws Exception {
+        Files.writeString(dir.resolve("match.vvt"), "old");
+        File chosen = dir.resolve("match.csv").toFile();
+        List<ExportTargets.Target> targets = ExportTargets.resolve(chosen,
+                List.of(file("theme5.csv", "r"), file("theme5.vvt", "i")));
+
+        assertEquals(List.of(dir.resolve("match.vvt").toFile()), ExportTargets.toConfirm(chosen, targets));
+    }
+
+    @Test
+    void existingPrimaryWithAppendedExtensionNeedsConfirmation() throws Exception {
+        Files.writeString(dir.resolve("out.mdb"), "old");
+        File chosen = dir.resolve("out").toFile();
+        List<ExportTargets.Target> targets = ExportTargets.resolve(chosen, List.of(file("hoisan.mdb", "x")));
+
+        assertEquals(List.of(dir.resolve("out.mdb").toFile()), ExportTargets.toConfirm(chosen, targets));
+    }
+
+    @Test
+    void theChosenFileIsNotAskedAgain() throws Exception {
+        Files.writeString(dir.resolve("match.csv"), "old");
+        File chosen = dir.resolve("match.csv").toFile();
+        List<ExportTargets.Target> targets = ExportTargets.resolve(chosen,
+                List.of(file("theme5.csv", "r"), file("theme5.vvt", "i")));
+
+        assertEquals(List.of(), ExportTargets.toConfirm(chosen, targets), "the save dialog already confirmed it");
     }
 
     @Test

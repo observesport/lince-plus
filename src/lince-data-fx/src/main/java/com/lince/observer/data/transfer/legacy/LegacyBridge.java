@@ -50,6 +50,10 @@ import java.util.function.Supplier;
  * singletons; a REST export while one of them is open replaces what it shows, exactly as the menu export does
  * today.
  * <p>
+ * <b>Other callers.</b> {@code LegacyConverterService} (every public method), {@code StatsServiceImpl.calculateLegacyKappa}
+ * and {@code RootLayoutController.handleNew} (through {@code CurrentProjectProvider.resetLegacyRegister}) hold this
+ * lock too, and any new code that touches {@link Registro} or {@link InstrumentoObservacional} must do the same.
+ * <p>
  * Created by Alberto Soto. 21/10/26
  */
 @Component

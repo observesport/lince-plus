@@ -107,44 +107,58 @@ public class HoisanTool {
     }
 
     /**
-     * @param outputFile
-     * @return
+     * Writes the current legacy instrument and register as a HOISAN database. The database is closed whether the
+     * write succeeds or not.
+     *
+     * @param outputFile target, its extension is forced to .mdb
+     * @return null on success, otherwise the error
      */
     public String exportFile(File outputFile) {
         try {
             File realBaseFile = createValidEmptyHoisanFile(outputFile);
             //tablas vacias
-            Database db = Database.open(realBaseFile);
-            Table tCriterios = db.getTable(HoisanVars.CRITERIA_TABLE_NAME.toString());
-            Table tCategorias = db.getTable(HoisanVars.CATEGORY_TABLE_NAME.toString());
-            Table tTiempos = db.getTable(HoisanVars.OBSERVATION_TIMES_TABLE_NAME.toString());
-            Table tTiempoCategorias = db.getTable(HoisanVars.OBSERVATION_CATEGORY_TABLE_NAME.toString());
-
-            //usado para obtener cuadros de dialogo en logica brais
-            String[] otros = {LinceDataConstants.COL_TFRAMES, LinceDataConstants.COL_DURACION_FR, LinceDataConstants.COL_TSEGUNDOS, LinceDataConstants.COL_DURACION_SEC, LinceDataConstants.COL_TMILISEGUNDOS, LinceDataConstants.COL_DURACION_MS};
-            //desde criterios tenemos toda la jerarquia de elementos a insertar en tables criterio y categoria
-            List<Criterio> criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
-            List<NodoInformacion> datosMixtos = List.of(InstrumentoObservacional.getInstance().getDatosMixtos());
-            List<NodoInformacion> datosFijos = List.of(InstrumentoObservacional.getInstance().getDatosFijos());
-            //usado para exportar e importar en codigo brais
-            //en registro -> datos variables, tendriamos todos los datos necesarios para el registro temporal
-            Registro registro = Registro.getInstance();
-            //tCriterios.addRow(Column.AUTO_NUMBER,"tst","Lince","loren ipsum")
-            this.actorId = storeActor(db);
-            log.warn("empezando");
-            storeCriteria(db, tCriterios, criterios, tCategorias);
-            log.warn("guardados criterios");
-            storeObservationTimes(db, registro, tTiempos, tTiempoCategorias);
-            log.warn("guardados tiempos");
-            //storeObservationData(db, registro, tTiempoCategorias);
-            log.warn("Finalizado");
-            db.flush();
-            db.close();
+            try (Database db = Database.open(realBaseFile)) {
+                store(db);
+            }
             return null;
         } catch (Exception e) {
             log.error("Error copying file ", e);
             return e.toString();
         }
+    }
+
+    /**
+     * Writes the current legacy instrument and register into the empty HOISAN tables of {@code db} and flushes it.
+     * The caller closes the database.
+     *
+     * @param db database copied from the HOISAN template
+     * @throws IOException when the database cannot be written
+     */
+    protected void store(Database db) throws IOException {
+        Table tCriterios = db.getTable(HoisanVars.CRITERIA_TABLE_NAME.toString());
+        Table tCategorias = db.getTable(HoisanVars.CATEGORY_TABLE_NAME.toString());
+        Table tTiempos = db.getTable(HoisanVars.OBSERVATION_TIMES_TABLE_NAME.toString());
+        Table tTiempoCategorias = db.getTable(HoisanVars.OBSERVATION_CATEGORY_TABLE_NAME.toString());
+
+        //usado para obtener cuadros de dialogo en logica brais
+        String[] otros = {LinceDataConstants.COL_TFRAMES, LinceDataConstants.COL_DURACION_FR, LinceDataConstants.COL_TSEGUNDOS, LinceDataConstants.COL_DURACION_SEC, LinceDataConstants.COL_TMILISEGUNDOS, LinceDataConstants.COL_DURACION_MS};
+        //desde criterios tenemos toda la jerarquia de elementos a insertar en tables criterio y categoria
+        List<Criterio> criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
+        List<NodoInformacion> datosMixtos = List.of(InstrumentoObservacional.getInstance().getDatosMixtos());
+        List<NodoInformacion> datosFijos = List.of(InstrumentoObservacional.getInstance().getDatosFijos());
+        //usado para exportar e importar en codigo brais
+        //en registro -> datos variables, tendriamos todos los datos necesarios para el registro temporal
+        Registro registro = Registro.getInstance();
+        //tCriterios.addRow(Column.AUTO_NUMBER,"tst","Lince","loren ipsum")
+        this.actorId = storeActor(db);
+        log.warn("empezando");
+        storeCriteria(db, tCriterios, criterios, tCategorias);
+        log.warn("guardados criterios");
+        storeObservationTimes(db, registro, tTiempos, tTiempoCategorias);
+        log.warn("guardados tiempos");
+        //storeObservationData(db, registro, tTiempoCategorias);
+        log.warn("Finalizado");
+        db.flush();
     }
 
 

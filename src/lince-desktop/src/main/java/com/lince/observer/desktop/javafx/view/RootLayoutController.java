@@ -23,7 +23,6 @@ import com.lince.observer.desktop.javafx.components.JavaFXBrowser;
 import com.lince.observer.desktop.javafx.generic.JavaFXLinceBaseController;
 import com.lince.observer.desktop.spring.service.CurrentProjectProvider;
 import com.lince.observer.desktop.spring.service.ExternalLinkService;
-import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.export.GseqExporterFactory.GseqFormatType;
 import com.lince.observer.math.service.DataHubService;
 import com.lince.observer.transcoding.TranscodingProvider;
@@ -175,7 +174,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
         dataHubService.clearData();
         mainLinceApp.getAnalysisService().getAllObservations().clear();
         mainLinceApp.getCategoryService().clearSelectedObservationTool();
-        Registro.loadNewInstance();//legacy
+        currentProjectProvider.resetLegacyRegister();//legacy, under the LegacyBridge lock
         LinceDesktopFileHelper fileHelper = new LinceDesktopFileHelper();
         fileHelper.setLinceProjectPath(null, mainLinceApp);
         JavaFXLogHelper.addLogInfo("Nuevo proyecto");
@@ -555,7 +554,9 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     /**
      * Exports a whole-project type (no criteria panel) through {@link ExportService} (LO-349), the same path
-     * {@code POST /api/export} uses, and writes it to the file chosen in a save {@link FileChooser}
+     * {@code POST /api/export} uses, and writes it to the file chosen in a save {@link FileChooser}. As in
+     * {@code GenericExportComponent.saveFiles}: the dialog comes first (cancelling exports nothing), and any
+     * existing target other than the chosen file ({@link ExportTargets#toConfirm}) is confirmed before writing.
      *
      * @param type        export type id
      * @param researchId  observer to export, null for the default one
@@ -563,6 +564,12 @@ public class RootLayoutController extends JavaFXLinceBaseController {
      * @param filter      extension filter
      */
     private void doExportFile(String type, UUID researchId, String title, FileChooser.ExtensionFilter filter) {
+        FileChooser fileChooser = new LinceDesktopFileHelper().getFileChooser();
+        fileChooser.getExtensionFilters().add(filter);
+        File file = fileChooser.showSaveDialog(mainLinceApp.getPrimaryStage());
+        if (file == null) {
+            return;
+        }
         List<ExportedFile> files;
         try {
             files = exportService.export(new ExportRequest(type, researchId, List.of(), Map.of()));
@@ -575,19 +582,33 @@ public class RootLayoutController extends JavaFXLinceBaseController {
             return;
         }
         try {
-            FileChooser fileChooser = new LinceDesktopFileHelper().getFileChooser();
-            fileChooser.getExtensionFilters().add(filter);
-            File file = fileChooser.showSaveDialog(mainLinceApp.getPrimaryStage());
-            if (file == null) {
+            List<ExportTargets.Target> targets = ExportTargets.resolve(file, files);
+            if (!confirmOverwrite(title, ExportTargets.toConfirm(file, targets))) {
                 return;
             }
-            List<ExportTargets.Target> targets = ExportTargets.resolve(file, files);
             ExportTargets.write(targets);
             JavaFXLogHelper.addLogInfo(title + ": " + targets.get(0).file().getAbsolutePath());
             JavaFXLogHelper.showMessage(AlertType.INFORMATION, title, i18n("FILE_SAVED"));
         } catch (Exception e) {
             JavaFXLogHelper.addLogError(title, e);
         }
+    }
+
+    /**
+     * Asks before overwriting existing export targets other than the file the save dialog already confirmed.
+     *
+     * @return true when there is nothing to confirm or the user accepts
+     */
+    private boolean confirmOverwrite(String title, List<File> existing) {
+        if (existing.isEmpty()) {
+            return true;
+        }
+        Alert confirm = new Alert(AlertType.CONFIRMATION, i18n("OVERWRITE_FILE_PROMPT") + "\n"
+                + existing.stream().map(File::getAbsolutePath).collect(Collectors.joining("\n")),
+                ButtonType.YES, ButtonType.NO);
+        confirm.setTitle(title);
+        confirm.setHeaderText(null);
+        return confirm.showAndWait().filter(ButtonType.YES::equals).isPresent();
     }
 
     /**

@@ -6,6 +6,7 @@ import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.transfer.ExportedFile;
 import com.lince.observer.data.bean.transfer.ImportScope;
 import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
+import com.lince.observer.data.legacy.plugins.HoisanTool;
 import com.lince.observer.data.transfer.Lince1Fixtures;
 import com.lince.observer.data.transfer.importers.HoisanImporter;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * The .mdb carries dates and auto numbers, so it is compared by content, not bytes.
@@ -72,5 +75,23 @@ class HoisanExporterTest {
                 ImportScope.FULL, Map.of());
         assertEquals(names, back.getObservationTool().stream().map(Criteria::getName).toList());
         assertEquals(rows, back.getRegister().get(0).getRegisterData().size());
+    }
+
+    @Test
+    void legacyWriterClosesTheDatabaseWhenAStoreStepFails() {
+        Database[] opened = new Database[1];
+        HoisanTool failing = new HoisanTool() {
+            @Override
+            protected void store(Database db) throws IOException {
+                opened[0] = db;
+                throw new IOException("forced store failure");
+            }
+        };
+
+        String error = failing.exportFile(dir.resolve("broken.mdb").toFile());
+
+        assertNotNull(error);
+        assertNotNull(opened[0], "store step reached");
+        assertFalse(opened[0].getPageChannel().isOpen(), "database closed after the failure");
     }
 }
