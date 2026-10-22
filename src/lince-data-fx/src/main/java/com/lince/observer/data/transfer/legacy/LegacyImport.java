@@ -8,11 +8,10 @@ import java.util.List;
  * Result of converting a legacy instrument into modern criteria (LO-349).
  *
  * @param criteria converted criteria, ids from 1
- * @param mapping  modern ↔ legacy criteria link
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
-public record LegacyImport(List<Criteria> criteria, CriteriaMapping mapping) {
+public record LegacyImport(List<Criteria> criteria) {
 
     public LegacyImport {
         criteria = List.copyOf(criteria);

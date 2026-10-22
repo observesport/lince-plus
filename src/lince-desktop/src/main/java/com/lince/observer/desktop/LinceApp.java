@@ -84,8 +84,6 @@ public class LinceApp extends Application implements ILinceApp {
     @Autowired
     ApplicationContextProvider applicationContextProvider;
     @Autowired
-    LegacyConverterService legacyConverterService;
-    @Autowired
     protected CategoryService categoryService;
     @Autowired
     protected AnalysisService analysisService;
@@ -151,10 +149,6 @@ public class LinceApp extends Application implements ILinceApp {
 
     public ExternalLinkService getExternalLinkService() {
         return externalLinkService;
-    }
-
-    public LegacyConverterService getLegacyConverterService() {
-        return legacyConverterService;
     }
 
     public CategoryService getCategoryService() {

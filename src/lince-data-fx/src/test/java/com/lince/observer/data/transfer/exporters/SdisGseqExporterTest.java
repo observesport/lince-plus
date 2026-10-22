@@ -35,6 +35,7 @@ class SdisGseqExporterTest {
 
             assertEquals(1, files.size(), format.name());
             assertEquals("gseq-" + format.name().toLowerCase() + ".sds", files.get(0).name());
+            assertEquals("text/plain; charset=" + Charset.defaultCharset().name(), files.get(0).mimeType());
             assertEquals(expected, new String(files.get(0).content(), Charset.defaultCharset()), format.name());
         }
     }
@@ -71,14 +72,6 @@ class SdisGseqExporterTest {
             assertEquals(TransferException.Reason.INVALID_OPTION, ex.getReason());
             assertEquals(List.of(SdisGseqExporter.OPTION_INTERVAL_SECONDS), ex.getOffendingIds());
         }
-    }
-
-    @Test
-    void needsAtLeastOneCriterion() {
-        ExportException ex = assertThrows(ExportException.class, () -> new SdisGseqExporter(fixture.bridge,
-                GseqFormatType.EVENT).export(ExporterFixture.withoutCriteria(), Map.of()));
-
-        assertEquals(TransferException.Reason.EMPTY_SELECTION, ex.getReason());
     }
 
     @Test

@@ -3,7 +3,6 @@ package com.lince.observer.desktop.javafx.view;
 import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.bean.transfer.ExportRequest;
-import com.lince.observer.data.bean.transfer.ExportedFile;
 import com.lince.observer.data.bean.transfer.ImportResult;
 import com.lince.observer.data.bean.transfer.ImportScope;
 import com.lince.observer.data.bean.user.UserProfile;
@@ -15,6 +14,10 @@ import com.lince.observer.data.transfer.TransferException;
 import com.lince.observer.data.transfer.exporters.HoisanExporter;
 import com.lince.observer.data.transfer.exporters.Lince1RegisterExporter;
 import com.lince.observer.data.transfer.exporters.Lince1ToolExporter;
+import com.lince.observer.data.transfer.importers.HoisanImporter;
+import com.lince.observer.data.transfer.importers.Lince1RegisterImporter;
+import com.lince.observer.data.transfer.importers.Lince1ToolImporter;
+import com.lince.observer.data.transfer.importers.LinceProjectImporter;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.ServerAppParams;
 import com.lince.observer.desktop.helper.ServerValuesHelper;
@@ -72,10 +75,6 @@ import javafx.geometry.Insets;
 public class RootLayoutController extends JavaFXLinceBaseController {
 
     /* LO-349 import type ids, see GET /api/import/types */
-    private static final String IMPORT_TYPE_LINCE_PLUS = "lince-plus";
-    private static final String IMPORT_TYPE_LINCE1_REGISTER = "lince1-register";
-    private static final String IMPORT_TYPE_LINCE1_TOOL = "lince1-tool";
-    private static final String IMPORT_TYPE_HOISAN = "hoisan";
     private static final FileChooser.ExtensionFilter XML_FILTER = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
     private static final FileChooser.ExtensionFilter RLINCE_FILTER = new FileChooser.ExtensionFilter("Lince 1 (*.rlince)", "*.rlince");
     private static final FileChooser.ExtensionFilter ILINCE_FILTER = new FileChooser.ExtensionFilter("Lince 1 (*.ilince)", "*.ilince");
@@ -129,7 +128,6 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     public void lazyInit() {
         try {
             getMainLinceApp().getPrimaryStage().setOnCloseRequest(confirmCloseEventHandler);
-            dataHubService = getMainLinceApp().getDataHubService();
             videoPlaylistView.setItems(dataHubService.getUserPlayList());
             videoPlaylistView.setCellFactory(lv -> {
                 ListCell<String> cell = new ListCell<>() {
@@ -259,7 +257,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportLincePlusProject() {
         doImportFile(getMainLinceApp().getMessage("panel_import_custom", "Lince PLUS"), XML_FILTER,
-                IMPORT_TYPE_LINCE_PLUS, ImportScope.FULL,
+                LinceProjectImporter.TYPE_ID, ImportScope.FULL,
                 "Se ha cargado el instrumento y la observación del proyecto seleccionado");
     }
 
@@ -271,7 +269,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportLincePlusObserver() {
         doImportFile(getMainLinceApp().getMessage("panel_import_custom", "Lince PLUS"), XML_FILTER,
-                IMPORT_TYPE_LINCE_PLUS, ImportScope.OBSERVATIONS,
+                LinceProjectImporter.TYPE_ID, ImportScope.OBSERVATIONS,
                 "Se han importado los datos de observación del proyecto seleccionado");
     }
 
@@ -554,9 +552,8 @@ public class RootLayoutController extends JavaFXLinceBaseController {
 
     /**
      * Exports a whole-project type (no criteria panel) through {@link ExportService} (LO-349), the same path
-     * {@code POST /api/export} uses, and writes it to the file chosen in a save {@link FileChooser}. As in
-     * {@code GenericExportComponent.saveFiles}: the dialog comes first (cancelling exports nothing), and any
-     * existing target other than the chosen file ({@link ExportTargets#toConfirm}) is confirmed before writing.
+     * {@code POST /api/export} uses, and writes it to the file chosen in a save {@link FileChooser} through
+     * {@link ExportSaveFlow}, as the export panels do. The dialog comes first, so cancelling exports nothing.
      *
      * @param type        export type id
      * @param researchId  observer to export, null for the default one
@@ -566,49 +563,10 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     private void doExportFile(String type, UUID researchId, String title, FileChooser.ExtensionFilter filter) {
         FileChooser fileChooser = new LinceDesktopFileHelper().getFileChooser();
         fileChooser.getExtensionFilters().add(filter);
-        File file = fileChooser.showSaveDialog(mainLinceApp.getPrimaryStage());
-        if (file == null) {
-            return;
-        }
-        List<ExportedFile> files;
-        try {
-            files = exportService.export(new ExportRequest(type, researchId, List.of(), Map.of()));
-        } catch (TransferException e) {
-            log.warn("{}: {} {}", title, e.getReason(), e.getMessage());
-            JavaFXLogHelper.showMessage(AlertType.ERROR, title, e.getMessage());
-            return;
-        } catch (Exception e) {
-            JavaFXLogHelper.addLogError(title, e);
-            return;
-        }
-        try {
-            List<ExportTargets.Target> targets = ExportTargets.resolve(file, files);
-            if (!confirmOverwrite(title, ExportTargets.toConfirm(file, targets))) {
-                return;
-            }
-            ExportTargets.write(targets);
-            JavaFXLogHelper.addLogInfo(title + ": " + targets.get(0).file().getAbsolutePath());
-            JavaFXLogHelper.showMessage(AlertType.INFORMATION, title, i18n("FILE_SAVED"));
-        } catch (Exception e) {
-            JavaFXLogHelper.addLogError(title, e);
-        }
-    }
-
-    /**
-     * Asks before overwriting existing export targets other than the file the save dialog already confirmed.
-     *
-     * @return true when there is nothing to confirm or the user accepts
-     */
-    private boolean confirmOverwrite(String title, List<File> existing) {
-        if (existing.isEmpty()) {
-            return true;
-        }
-        Alert confirm = new Alert(AlertType.CONFIRMATION, i18n("OVERWRITE_FILE_PROMPT") + "\n"
-                + existing.stream().map(File::getAbsolutePath).collect(Collectors.joining("\n")),
-                ButtonType.YES, ButtonType.NO);
-        confirm.setTitle(title);
-        confirm.setHeaderText(null);
-        return confirm.showAndWait().filter(ButtonType.YES::equals).isPresent();
+        Stage stage = mainLinceApp.getPrimaryStage();
+        ExportSaveFlow.javaFx(stage).run(title,
+                () -> exportService.export(new ExportRequest(type, researchId, List.of(), Map.of())),
+                fileChooser.showSaveDialog(stage));
     }
 
     /**
@@ -617,7 +575,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportRegisterLince1() {
         String title = getMainLinceApp().getMessage("panel_import_custom", i18n("import.lince-1.register"));
-        doImportFile(title, RLINCE_FILTER, IMPORT_TYPE_LINCE1_REGISTER, ImportScope.FULL, title);
+        doImportFile(title, RLINCE_FILTER, Lince1RegisterImporter.TYPE_ID, ImportScope.FULL, title);
     }
 
     /**
@@ -626,7 +584,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportToolLince1() {
         String title = getMainLinceApp().getMessage("panel_import_custom", i18n("import.lince-1.observationTool"));
-        doImportFile(title, ILINCE_FILTER, IMPORT_TYPE_LINCE1_TOOL, ImportScope.FULL, title);
+        doImportFile(title, ILINCE_FILTER, Lince1ToolImporter.TYPE_ID, ImportScope.FULL, title);
     }
 
 
@@ -656,7 +614,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
     @FXML
     private void handleImportHoisan() {
         String title = getMainLinceApp().getMessage("panel_import_custom", "Hoisan");
-        doImportFile(title, MDB_FILTER, IMPORT_TYPE_HOISAN, ImportScope.FULL, title);
+        doImportFile(title, MDB_FILTER, HoisanImporter.TYPE_ID, ImportScope.FULL, title);
     }
 
     /**
@@ -704,7 +662,7 @@ public class RootLayoutController extends JavaFXLinceBaseController {
                 "panel_export_custom", "Excel");
     }
 
-    public ILinceProject getCurrentProjectDetails() {
+    private ILinceProject getCurrentProjectDetails() {
         return currentProjectProvider.current();
     }
 

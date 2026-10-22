@@ -1,5 +1,6 @@
 package com.lince.observer.data.bean.transfer;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -18,6 +19,21 @@ public record ExportedFile(String name, String mimeType, byte[] content) {
     public ExportedFile {
         Objects.requireNonNull(name, "name");
         content = content == null ? new byte[0] : content;
+    }
+
+    /**
+     * A text file encoded with the platform default charset, so it is byte-identical with what the JavaFX menu
+     * writes, and that charset named in the MIME type.
+     *
+     * @param name     file name including extension
+     * @param mimeType MIME type without charset, e.g. {@code text/csv}
+     * @param content  text content
+     * @return the file, MIME type {@code <mimeType>; charset=<platform charset>}
+     */
+    public static ExportedFile text(String name, String mimeType, String content) {
+        Charset charset = Charset.defaultCharset();
+        return new ExportedFile(name, mimeType + "; charset=" + charset.name(),
+                content == null ? null : content.getBytes(charset));
     }
 
     @Override

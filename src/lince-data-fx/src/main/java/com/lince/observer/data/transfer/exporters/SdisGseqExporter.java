@@ -24,7 +24,8 @@ import java.util.Objects;
 /**
  * SDIS-GSEQ export (LO-349), one bean per {@link GseqFormatType} (see {@link SdisGseqExporterConfiguration}):
  * {@code sdis-gseq-event}, {@code -state}, {@code -interval}, {@code -multievent}, {@code -timed}, each producing
- * the {@code .sds} the former {@code RegistroSdisGseq*Export} panel wrote (now {@code SdisGseqExportComponent}). Needs at least one criterion.
+ * the {@code .sds} the former {@code RegistroSdisGseq*Export} panel wrote (now {@code SdisGseqExportComponent}).
+ * The export service rejects an empty criteria selection.
  * <p>
  * The interval type takes an optional {@value #OPTION_INTERVAL_SECONDS} integer option; omitted, the interval is
  * computed from the observations, as the panel does.
@@ -44,10 +45,6 @@ public class SdisGseqExporter implements LinceExporter {
         this.format = Objects.requireNonNull(format, "format");
     }
 
-    public GseqFormatType getFormat() {
-        return format;
-    }
-
     /**
      * @return {@code sdis-gseq-event}, {@code sdis-gseq-state}, {@code sdis-gseq-interval},
      * {@code sdis-gseq-multievent} or {@code sdis-gseq-timed}
@@ -59,8 +56,8 @@ public class SdisGseqExporter implements LinceExporter {
     @Override
     public ExportTypeDescriptor descriptor() {
         List<TransferOption> options = format == GseqFormatType.INTERVAL
-                ? List.of(new TransferOption(OPTION_INTERVAL_SECONDS, ResourceBundleHelper.getI18NLabel("INTERVALO"),
-                TransferOption.Type.INTEGER, null, null, true))
+                ? List.of(TransferOption.integer(OPTION_INTERVAL_SECONDS, ResourceBundleHelper.getI18NLabel("INTERVALO"),
+                (Integer) null))
                 : List.of();
         return new ExportTypeDescriptor(typeId(format), ResourceBundleHelper.getI18NLabel(labelKey(format)), "sds",
                 LegacyExportSupport.TEXT_PLAIN, true, false, options);
@@ -68,11 +65,10 @@ public class SdisGseqExporter implements LinceExporter {
 
     @Override
     public List<ExportedFile> export(ExportSelection selection, Map<String, String> options) {
-        selection.requireCriteria();
         Integer intervalSeconds = format == GseqFormatType.INTERVAL ? intervalSeconds(options) : null;
         return bridge.export(selection, legacy -> {
             LegacyExportSupport.logWarnings(typeId(format), legacy);
-            return List.of(LegacyExportSupport.text("gseq-" + format.name().toLowerCase(Locale.ROOT) + ".sds",
+            return List.of(ExportedFile.text("gseq-" + format.name().toLowerCase(Locale.ROOT) + ".sds",
                     LegacyExportSupport.TEXT_PLAIN,
                     content(format, legacy.register(), legacy.selectedCriterios(), intervalSeconds)));
         });
@@ -83,7 +79,7 @@ public class SdisGseqExporter implements LinceExporter {
      *
      * @param intervalSeconds only for {@link GseqFormatType#INTERVAL}: null computes it from the observations
      */
-    public static String content(GseqFormatType format, Registro registro, List<Criterio> criterios, Integer intervalSeconds) {
+    private static String content(GseqFormatType format, Registro registro, List<Criterio> criterios, Integer intervalSeconds) {
         return switch (format) {
             case EVENT -> registro.exportToSdisGseqEvento(criterios);
             case STATE -> registro.exportToSdisGseqEstado(criterios);

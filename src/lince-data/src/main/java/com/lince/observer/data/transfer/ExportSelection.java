@@ -39,7 +39,6 @@ public final class ExportSelection {
     private final ILinceProject project;
     private final LinceRegisterWrapper register;
     private final List<Criteria> criteria;
-    private final boolean allCriteria;
 
     /**
      * @param project     project to export, never null
@@ -50,12 +49,7 @@ public final class ExportSelection {
     public ExportSelection(ILinceProject project, UUID researchId, List<String> criteriaIds) {
         this.project = Objects.requireNonNull(project, "project");
         this.register = resolveRegister(project, researchId);
-        this.allCriteria = criteriaIds == null || criteriaIds.isEmpty();
         this.criteria = Collections.unmodifiableList(resolveCriteria(project, criteriaIds));
-    }
-
-    public static ExportSelection of(ILinceProject project, UUID researchId, List<String> criteriaIds) {
-        return new ExportSelection(project, researchId, criteriaIds);
     }
 
     /**
@@ -73,13 +67,6 @@ public final class ExportSelection {
     }
 
     /**
-     * @return id of the selected register, null when the project has none
-     */
-    public UUID getResearchId() {
-        return register == null ? null : register.getId();
-    }
-
-    /**
      * @return the observation rows of the selected register, empty when there is none
      */
     public List<RegisterItem> getRows() {
@@ -94,20 +81,6 @@ public final class ExportSelection {
      */
     public List<Criteria> getCriteria() {
         return criteria;
-    }
-
-    /**
-     * @return {@code Criteria.getId()} of the selected criteria, in selection order
-     */
-    public List<Integer> getCriteriaIds() {
-        return criteria.stream().map(Criteria::getId).toList();
-    }
-
-    /**
-     * @return true when the request did not restrict the criteria
-     */
-    public boolean isAllCriteria() {
-        return allCriteria;
     }
 
     /**

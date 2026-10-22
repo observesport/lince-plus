@@ -107,7 +107,7 @@ public class LinceProjectImporter implements LinceImporter {
             research.getUserProfiles().add(register.getUserProfile());
         }
         int observations = registers.stream().mapToInt(LinceProjectImporter::rows).sum();
-        return outcome(target, observations, List.of());
+        return ImportOutcome.of(target, observations, List.of());
     }
 
     private ImportOutcome mergeObservations(ILinceProject target, ILinceProject source) {
@@ -156,7 +156,7 @@ public class LinceProjectImporter implements LinceImporter {
         }
         targetRegisters.addAll(incoming);
         target.setRegister(targetRegisters);
-        return outcome(target, observations, warnings(unknownCodes, skippedRows));
+        return ImportOutcome.of(target, observations, warnings(unknownCodes, skippedRows));
     }
 
     /**
@@ -231,11 +231,6 @@ public class LinceProjectImporter implements LinceImporter {
                     skippedRows, skippedRows == 1 ? "" : "s"));
         }
         return warnings;
-    }
-
-    private static ImportOutcome outcome(ILinceProject target, int observations, List<String> warnings) {
-        return new ImportOutcome(nonNull(target.getObservationTool()).size(), nonNull(target.getRegister()).size(),
-                observations, nonNull(target.getProfiles()).size(), warnings);
     }
 
     private static int rows(LinceRegisterWrapper register) {

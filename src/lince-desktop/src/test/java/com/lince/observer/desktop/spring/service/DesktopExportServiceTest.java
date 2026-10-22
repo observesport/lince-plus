@@ -115,7 +115,7 @@ class DesktopExportServiceTest {
     @Test
     void criteriaIdsAreResolvedAndUnknownOnesFail() {
         service.export(new ExportRequest("csv", null, List.of("C7"), null));
-        assertEquals(List.of(7), csv.lastSelection.getCriteriaIds());
+        assertEquals(List.of(7), csv.lastSelection.getCriteria().stream().map(Criteria::getId).toList());
 
         ExportException e = assertThrows(ExportException.class,
                 () -> service.export(new ExportRequest("csv", null, List.of("99"), null)));

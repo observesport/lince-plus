@@ -27,7 +27,7 @@ class HeadlessTransferTest {
         LegacyBridge bridge = new LegacyBridge();
 
         ILinceProject project = Lince1Fixtures.project(bridge);
-        List<ExportedFile> files = new Theme5Exporter(bridge).export(ExportSelection.of(project, null, List.of("1")), Map.of());
+        List<ExportedFile> files = new Theme5Exporter(bridge).export(new ExportSelection(project, null, List.of("1")), Map.of());
 
         assertEquals(1, project.getRegister().size());
         assertFalse(project.getRegister().get(0).getRegisterData().isEmpty());

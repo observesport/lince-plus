@@ -27,7 +27,8 @@ import java.util.Map;
 
 /**
  * Imports a HOISAN Access database ({@code .mdb}) into the target project (LO-349). Headless version of the
- * "Import HOISAN" menu entry (the former {@code AbrirImportarHoisan} command + {@code ensureImportCompatibility()}).
+ * "Import HOISAN" menu entry (the former {@code AbrirImportarHoisan} command followed by
+ * {@code ensureImportCompatibility()}).
  * <p>
  * The upload is spooled to a temp file (the reader needs a {@link File}) that is deleted afterwards. The HOISAN
  * criteria replace the instrument, as in the menu (kept when the database has no criteria with categories), and
@@ -78,7 +79,7 @@ public class HoisanImporter implements LinceImporter {
                         observations += rows.size();
                     }
                 }
-                return LegacyImportSupport.outcome(target, observations, warnings);
+                return ImportOutcome.of(target, observations, warnings);
             });
         } finally {
             FileUtils.deleteQuietly(file);

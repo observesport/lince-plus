@@ -17,7 +17,6 @@ import com.lince.observer.data.transfer.TransferException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -72,8 +71,7 @@ public class CsvExporter implements LinceExporter {
         csv.setUseCsvComma(comma);
 
         String content = csv.executeFormatConversion(view, columns);
-        return List.of(new ExportedFile(FILE_NAME, MIME_TYPE + "; charset=" + Charset.defaultCharset().name(),
-                content.getBytes()));
+        return List.of(ExportedFile.text(FILE_NAME, MIME_TYPE, content));
     }
 
     /**

@@ -12,7 +12,6 @@ import com.lince.observer.data.transfer.LinceExporter;
 import com.lince.observer.data.transfer.TransferException;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +50,6 @@ public class Theme6Exporter implements LinceExporter {
 
     @Override
     public List<ExportedFile> export(ExportSelection selection, Map<String, String> options) {
-        selection.requireCriteria();
         List<Criteria> criteria = selection.getCriteria();
         boolean everyCriteria = criteria.size() == selection.getProject().getObservationTool().size();
         List<RegisterItem> rows = everyCriteria ? selection.getRows() : filterRows(selection.getRows(), criteria);
@@ -64,9 +62,8 @@ public class Theme6Exporter implements LinceExporter {
         } catch (RuntimeException e) {
             throw new ExportException(TransferException.Reason.IO, "Could not write the Theme 6 files", e);
         }
-        String mimeType = MIME_TYPE + "; charset=" + Charset.defaultCharset().name();
-        return List.of(new ExportedFile(FILE_NAME, mimeType, txt.getBytes()),
-                new ExportedFile(VVT_FILE_NAME, mimeType, vvt.getBytes()));
+        return List.of(ExportedFile.text(FILE_NAME, MIME_TYPE, txt),
+                ExportedFile.text(VVT_FILE_NAME, MIME_TYPE, vvt));
     }
 
     /**

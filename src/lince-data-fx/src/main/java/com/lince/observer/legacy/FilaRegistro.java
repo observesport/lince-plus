@@ -178,8 +178,4 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
     public int compareTo(FilaRegistro o) {
         return this.milis - o.milis;
     }
-
-    public double getFps() {
-        return fps;
-    }
 }

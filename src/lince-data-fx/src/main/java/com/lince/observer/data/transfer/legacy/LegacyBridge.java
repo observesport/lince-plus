@@ -27,15 +27,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Headless replacement for {@code RootLayoutController.ensureExportCompatibility()} /
+ * Headless replacement for the former {@code RootLayoutController.ensureExportCompatibility()} /
  * {@code ensureImportCompatibility()} (LO-349): converts an {@code ILinceProject} into the legacy
  * {@link InstrumentoObservacional} / {@link Registro} state that the Lince 1, Theme 5, SAS, SDIS-GSEQ and HOISAN
  * code reads, and converts legacy instruments and rows back into modern {@link Criteria} and
  * {@link RegisterItem}s. It keeps a {@link CriteriaMapping} so the criteria ids selected through the API map to
  * the right {@link Criterio} objects.
  * <p>
- * The conversion rules are ported from {@code LegacyConverterService} (lince-math), but driven by the project
- * passed in instead of the live {@code CategoryService} / {@code AnalysisService}, so the same code serves the
+ * The conversion rules are ported from the import and export compatibility methods {@code LegacyConverterService}
+ * (lince-math) had before LO-349, but driven by the project passed in instead of the live {@code CategoryService} / {@code AnalysisService}, so the same code serves the
  * desktop REST service, the JavaFX menu and the cloud edition. It has no UI: no JavaFX, Swing, AWT or dialogs.
  * <p>
  * <b>Singletons and concurrency.</b> The legacy model is global: {@code InstrumentoObservacional.getInstance()}
@@ -87,7 +87,7 @@ public class LegacyBridge {
 
     /**
      * Replaces the legacy singletons with the selection's instrument and register (the headless
-     * {@code ensureExportCompatibility()}). Rows whose categories cannot be resolved are kept without them and
+     * version of the former {@code ensureExportCompatibility()}). Rows whose categories cannot be resolved are kept without them and
      * reported in {@link LegacyProject#warnings()}.
      *
      * @param selection resolved project, register and criteria
@@ -105,7 +105,7 @@ public class LegacyBridge {
             for (RegisterItem row : selection.getRows()) {
                 addLegacyRow(register, instrument, tool, row, warnings);
             }
-            return new LegacyProject(instrument, register, mapping, mapping.toLegacy(selection.getCriteria()), warnings);
+            return new LegacyProject(instrument, register, mapping.toLegacy(selection.getCriteria()), warnings);
         }
     }
 
@@ -114,33 +114,28 @@ public class LegacyBridge {
      * files are validated against the current instrument when loaded, so register importers call this first.
      *
      * @param tool criteria of the target project
-     * @return the legacy state with an empty register and every criterion selected
      */
-    public LegacyProject installInstrument(List<Criteria> tool) {
+    public void installInstrument(List<Criteria> tool) {
         synchronized (LOCK) {
-            List<Criteria> criteria = nullSafe(tool);
-            CriteriaMapping mapping = buildInstrument(criteria);
+            buildInstrument(nullSafe(tool));
             Registro.loadNewInstance();
-            return new LegacyProject(InstrumentoObservacional.getInstance(), Registro.getInstance(), mapping,
-                    mapping.toLegacy(criteria), List.of());
         }
     }
 
     /**
      * Converts a legacy instrument into modern criteria (the instrument half of
-     * {@code ensureImportCompatibility()}). Criteria without categories are skipped, as before. Criteria ids
+     * the former {@code ensureImportCompatibility()}). Criteria without categories are skipped, as before. Criteria ids
      * start at 1 (0 is falsy in the dashboard) and category ids are {@code criteriaId * 10 + position}, as before.
      * Criteria codes are the name without non alphanumeric characters plus the criteria id, made unique; the
      * previous code used a random suffix.
      *
      * @param instrument legacy instrument, usually the singleton just loaded
-     * @return criteria and the mapping to the legacy ones
+     * @return the converted criteria
      */
     public LegacyImport fromLegacyInstrument(InstrumentoObservacional instrument) {
         Objects.requireNonNull(instrument, "instrument");
         synchronized (LOCK) {
             List<Criteria> result = new ArrayList<>();
-            CriteriaMapping mapping = new CriteriaMapping();
             int id = 1;
             for (Criterio criterio : instrument.getCriterios()) {
                 if (criterio == null || criterio.empty() || criterio.getCategoriasHijo().length == 0) {
@@ -165,16 +160,15 @@ public class LegacyBridge {
                 }
                 criteria.setInnerCategories(categories);
                 result.add(criteria);
-                mapping.put(criteria, criterio);
                 id++;
             }
-            return new LegacyImport(result, mapping);
+            return new LegacyImport(result);
         }
     }
 
     /**
      * Converts legacy register rows into modern observations (the register half of
-     * {@code ensureImportCompatibility()}). Categories are resolved by code against {@code tool}; an unresolved
+     * the former {@code ensureImportCompatibility()}). Categories are resolved by code against {@code tool}; an unresolved
      * category is dropped from its row and reported in {@code warnings} (the previous code attached it to a
      * synthetic "recovery" criteria).
      *

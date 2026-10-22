@@ -13,14 +13,13 @@ import java.util.List;
  *
  * @param instrument         the legacy instrument (singleton)
  * @param register           the legacy register of the selected research (singleton), empty for imports
- * @param mapping            modern ↔ legacy criteria link
  * @param selectedCriterios  legacy criteria for the export selection, in selection order; what the
  *                           {@code Registro.exportTo*} / {@code InstrumentoObservacional.exportTo*} methods take
  * @param warnings           rows categories that could not be converted
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
-public record LegacyProject(InstrumentoObservacional instrument, Registro register, CriteriaMapping mapping,
+public record LegacyProject(InstrumentoObservacional instrument, Registro register,
                             List<Criterio> selectedCriterios, List<String> warnings) {
 
     public LegacyProject {

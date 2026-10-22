@@ -2,8 +2,6 @@ package com.lince.observer.data.transfer.exporters;
 
 import com.lince.observer.data.bean.transfer.ExportTypeDescriptor;
 import com.lince.observer.data.bean.transfer.ExportedFile;
-import com.lince.observer.data.transfer.ExportException;
-import com.lince.observer.data.transfer.TransferException;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Theme5ExporterTest {
@@ -38,7 +35,7 @@ class Theme5ExporterTest {
 
         assertEquals(2, files.size());
         assertEquals("theme5.csv", files.get(0).name());
-        assertEquals("text/csv", files.get(0).mimeType());
+        assertEquals("text/csv; charset=" + Charset.defaultCharset().name(), files.get(0).mimeType());
         assertEquals(csv, new String(files.get(0).content(), Charset.defaultCharset()));
         assertEquals("theme5.vvt", files.get(1).name());
         assertEquals(vvt, new String(files.get(1).content(), Charset.defaultCharset()));
@@ -58,13 +55,5 @@ class Theme5ExporterTest {
         List<ExportedFile> files = exporter.export(ExporterFixture.withoutObservations(fixture.project), Map.of());
 
         assertEquals("TIME;EVENT\r\n", new String(files.get(0).content(), Charset.defaultCharset()));
-    }
-
-    @Test
-    void needsAtLeastOneCriterion() {
-        ExportException ex = assertThrows(ExportException.class,
-                () -> exporter.export(ExporterFixture.withoutCriteria(), Map.of()));
-
-        assertEquals(TransferException.Reason.EMPTY_SELECTION, ex.getReason());
     }
 }

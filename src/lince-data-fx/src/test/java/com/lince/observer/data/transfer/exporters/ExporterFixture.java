@@ -30,7 +30,7 @@ final class ExporterFixture {
             .toList();
 
     ExportSelection selection() {
-        return ExportSelection.of(project, null, selectedIds);
+        return new ExportSelection(project, null, selectedIds);
     }
 
     /**
@@ -47,15 +47,9 @@ final class ExporterFixture {
         return export.apply(registro, criterios);
     }
 
-    static ExportSelection withoutCriteria() {
-        LinceFileProjectWrapper empty = new LinceFileProjectWrapper();
-        empty.setObservationTool(new ArrayList<>());
-        return ExportSelection.of(empty, null, List.of());
-    }
-
     static ExportSelection withoutObservations(ILinceProject source) {
         LinceFileProjectWrapper project = new LinceFileProjectWrapper();
         project.setObservationTool(source.getObservationTool());
-        return ExportSelection.of(project, null, List.of());
+        return new ExportSelection(project, null, List.of());
     }
 }

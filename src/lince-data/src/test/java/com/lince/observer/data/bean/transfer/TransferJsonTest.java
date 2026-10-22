@@ -3,6 +3,7 @@ package com.lince.observer.data.bean.transfer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,14 +37,20 @@ class TransferJsonTest {
 
     @Test
     void transferOptionTypeIsLowercaseAndNullsAreOmitted() throws Exception {
-        TransferOption option = TransferOption.bool("header", "Header", true);
+        TransferOption withDefault = TransferOption.integer("interval", "Interval", 2);
+        TransferOption withoutDefault = TransferOption.integer("interval", "Interval", null);
 
-        String json = mapper.writeValueAsString(option);
+        String json = mapper.writeValueAsString(withDefault);
+        String nullableJson = mapper.writeValueAsString(withoutDefault);
 
-        assertTrue(json.contains("\"type\":\"boolean\""), json);
-        assertTrue(json.contains("\"defaultValue\":\"true\""), json);
+        assertTrue(json.contains("\"type\":\"integer\""), json);
+        assertTrue(json.contains("\"defaultValue\":\"2\""), json);
         assertFalse(json.contains("values"), json);
-        assertEquals(option, mapper.readValue(json, TransferOption.class));
+        assertFalse(withDefault.nullable());
+        assertTrue(withoutDefault.nullable());
+        assertFalse(nullableJson.contains("defaultValue"), nullableJson);
+        assertEquals(withDefault, mapper.readValue(json, TransferOption.class));
+        assertEquals(withoutDefault, mapper.readValue(nullableJson, TransferOption.class));
     }
 
     @Test
@@ -120,5 +127,16 @@ class TransferJsonTest {
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
         assertArrayEquals(new byte[]{1, 2}, a.content());
+    }
+
+    @Test
+    void textFileUsesThePlatformCharsetAndNamesItInTheMimeType() {
+        String content = "Pase;Zona\n\u00f1and\u00fa\n";
+
+        ExportedFile file = ExportedFile.text("a.csv", "text/csv", content);
+
+        assertEquals("a.csv", file.name());
+        assertEquals("text/csv; charset=" + Charset.defaultCharset().name(), file.mimeType());
+        assertArrayEquals(content.getBytes(Charset.defaultCharset()), file.content());
     }
 }

@@ -20,7 +20,6 @@ package com.lince.observer.legacy;
 import com.lince.observer.data.LegacyToolException;
 import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.legacy.datos.ControladorArchivos;
-import com.lince.observer.data.util.TimeCalculations;
 import com.lince.observer.legacy.export.GseqExporter;
 import com.lince.observer.legacy.export.GseqExporterFactory;
 import com.lince.observer.legacy.instrumentoObservacional.Categoria;
@@ -49,7 +48,6 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     static final String DATOS_FIJOS = "datosEstaticos";
     static final String DATOS_VARIABLES = "datosVariables";
 
-    private final TimeCalculations timeCalculations = new TimeCalculations();
 
     private static Registro instance = new Registro(); //asd 2017: to avoid null pointer exception
     private static double fps = LinceDataConstants.DEFAULT_FPS;
@@ -79,21 +77,8 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     public static void loadNewInstance() {
         cambiarInstancia(new Registro());
     }
-
-    public static void loadInstance(File f) throws RegistroException {
-        List<LegacyToolException> exceptions = new ArrayList<>();
-        Registro registro = cargarRegistro(f, exceptions);
-        cambiarInstancia(registro);
-        if (!exceptions.isEmpty()) {
-            StringBuilder string = new StringBuilder();
-            for (LegacyToolException exception : exceptions) {
-                string.append(exception.getMessage()).append("\n");
-            }
-            throw new RegistroException(string.toString());
-        }
-    }
     /**
-     * Makes an already loaded register the current one, as {@link #loadInstance(File)} does after loading
+     * Makes an already loaded register the current one
      * (LO-349: lets importers validate the load before replacing the singleton).
      *
      * @param registro register returned by {@link #cargarRegistro(File, List)}
@@ -121,7 +106,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         return instance;
     }
 
-    public static Registro cargarRegistro(File f, List<LegacyToolException> exceptions) throws RegistroException {
+    public static Registro cargarRegistro(File f, List<LegacyToolException> exceptions) {
         try {
             Map<String, Object> datosGuardados = (Map<String, Object>) ControladorArchivos.getInstance().cargar(f);
             Criterio[] criterios = (Criterio[]) datosGuardados.get(CRITERIOS);
@@ -395,92 +380,6 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         }
 
         return contenido;
-    }
-
-    public String exportToCsv(List<Object> columnas, boolean isComma) {
-        String contenido = cabeceraCsv(columnas, isComma);
-        int numColumnas = columnas.size();
-        List<String[]> tabla = new ArrayList<>(datosVariables.size());
-        FilaRegistro frAnterior = null;
-        for (FilaRegistro frActual : datosVariables) {
-            String f[] = new String[numColumnas];
-            int i = 0;
-            for (Object columna : columnas) {
-                //"TFrames", "DuraciónFr", "TSegundos", "DuraciónSeg", "TMilisegundos", "DuraciónMiliseg"
-                if (columna instanceof String) {
-                    if (StringUtils.equals(LinceDataConstants.COL_TFRAMES, columna.toString())) {
-                        f[i] = frActual.getRegisterFrameValue() + "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_TSEGUNDOS, columna.toString())) {
-                        f[i] = timeCalculations.formatTimeWithAllComponents(frActual.getMilis());
-                    } else if (StringUtils.equals(LinceDataConstants.COL_TMILISEGUNDOS, columna.toString())) {
-                        f[i] = frActual.getMilis() + "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_FR, columna.toString()) && frAnterior != null) {
-                        String fila[] = tabla.get(tabla.size() - 1);
-                        fila[i] = timeCalculations.convertMsToFPS(frActual.getMilis() - frAnterior.getMilis(), frActual.getFps()) + "";
-                        f[i] = "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_SEC, columna.toString()) && frAnterior != null) {
-                        String fila[] = tabla.get(tabla.size() - 1);
-                        fila[i] = timeCalculations.formatTimeWithAllComponents(frActual.getMilis() - frAnterior.getMilis());
-                        f[i] = "";
-                    } else if (StringUtils.equals(LinceDataConstants.COL_DURACION_MS, columna.toString()) && frAnterior != null) {
-                        String fila[] = tabla.get(tabla.size() - 1);
-                        fila[i] = (frActual.getMilis() - frAnterior.getMilis()) + "";
-                        f[i] = "";
-                    }
-                } else if (columna instanceof Criterio) {
-                    Categoria categoria = frActual.getCategoria((Criterio) columna);
-                    if (categoria != null) {
-                        //Support for static information nodes
-                        if (!StringUtils.endsWith(categoria.getCodigo(), LinceDataConstants.CATEGORY_INFO_SUFIX)) {
-                            f[i] = categoria.getCodigo();
-                        } else {
-                            f[i] = categoria.getDescripcion();
-                        }
-                    } else {
-                        f[i] = "";
-                    }
-                } else if (columna instanceof NodoInformacion) {
-                    NodoInformacion nodoInformacion = (NodoInformacion) columna;
-                    String valor = datosFijos.get(nodoInformacion);
-                    if (valor == null) {
-                        valor = frActual.getDatoMixto(nodoInformacion);
-                        if (valor == null) {
-                            valor = "";
-                        }
-                    }
-                    f[i] = valor;
-                }
-                i++;
-            }
-            tabla.add(f);
-            frAnterior = frActual;
-        }
-
-        String valueSeparator = isComma ? LinceDataConstants.CSV_CHAR_SEPARATOR_COMMA : LinceDataConstants.CSV_CHAR_SEPARATOR_SEMICOLON;
-        for (String[] sArray : tabla) {
-            for (String s : sArray) {
-                contenido += s + valueSeparator;
-            }
-            contenido += "\r\n";
-        }
-
-        return contenido;
-    }
-
-    private String cabeceraCsv(List<Object> columnas, boolean isComma) {
-        String contenido = "";
-        boolean isFirst = true;
-        String valueSeparator = isComma ? LinceDataConstants.CSV_CHAR_SEPARATOR_COMMA : LinceDataConstants.CSV_CHAR_SEPARATOR_SEMICOLON;
-        for (Object columna : columnas) {
-            if (isFirst) {
-                isFirst = false;
-            } else {
-                contenido += valueSeparator;
-            }
-            contenido += columna;
-        }
-
-        return contenido + "\r\n";
     }
 
     private boolean sonIguales(String[] fila1, String[] fila2) {

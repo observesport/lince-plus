@@ -34,10 +34,10 @@ final class Golden {
 
     /**
      * @param name   golden file name
-     * @param actual exporter output written in {@link LegacyExportSupport#CHARSET}
+     * @param actual exporter output written in the platform default charset ({@code ExportedFile.text})
      */
     static void assertMatches(String name, byte[] actual) {
-        assertMatches(name, actual, LegacyExportSupport.CHARSET);
+        assertMatches(name, actual, Charset.defaultCharset());
     }
 
     /**

@@ -57,7 +57,7 @@ class CsvExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.SINGLE);
         Criteria first = project.getObservationTool().get(0);
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, null, List.of(first.getCode())),
+        ExportedFile file = single(exporter.export(new ExportSelection(project, null, List.of(first.getCode())),
                 Map.of("separator", "comma", "timeColumns", "TSegundos, TFrames")));
 
         LinceCsvExporter csv = new LinceCsvExporter();
@@ -65,12 +65,12 @@ class CsvExporterTest {
         assertArrayEquals(csv.executeFormatConversion(project, List.of("TSegundos", "TFrames", first.getCode())).getBytes(),
                 file.content());
 
-        ExportedFile noTime = single(exporter.export(ExportSelection.of(project, null, List.of(first.getCode())),
+        ExportedFile noTime = single(exporter.export(new ExportSelection(project, null, List.of(first.getCode())),
                 Map.of("timeColumns", "")));
         assertEquals(first.getCode(), new String(noTime.content(), Charset.defaultCharset()).lines().findFirst().orElseThrow());
 
         ExportException invalid = assertThrows(ExportException.class, () -> exporter.export(
-                ExportSelection.of(project, null, List.of(first.getCode())), Map.of("timeColumns", "TFrames,CRI0")));
+                new ExportSelection(project, null, List.of(first.getCode())), Map.of("timeColumns", "TFrames,CRI0")));
         assertEquals(TransferException.Reason.INVALID_OPTION, invalid.getReason());
         assertEquals(List.of("timeColumns"), invalid.getOffendingIds());
     }
@@ -79,7 +79,7 @@ class CsvExporterTest {
     void allCriteriaWithCommaIsByteIdenticalToTheFxCommand() throws IOException {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.MULTIPLE);
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, null, List.of()), Map.of("separator", "comma")));
+        ExportedFile file = single(exporter.export(new ExportSelection(project, null, List.of()), Map.of("separator", "comma")));
 
         assertTrue(file.name().endsWith(".csv"));
         assertArrayEquals(fxCommand(project, true, null, project.getObservationTool()), file.content());
@@ -91,7 +91,7 @@ class CsvExporterTest {
     void defaultSeparatorIsSemicolon() throws IOException {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.MULTIPLE);
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, null, null), Map.of()));
+        ExportedFile file = single(exporter.export(new ExportSelection(project, null, null), Map.of()));
 
         assertArrayEquals(fxCommand(project, false, null, project.getObservationTool()), file.content());
         String expected = readResource("multipleObserverExample-export-25fps.csv")
@@ -106,7 +106,7 @@ class CsvExporterTest {
         Criteria third = tool.get(2);
         Criteria first = tool.get(0);
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, null,
+        ExportedFile file = single(exporter.export(new ExportSelection(project, null,
                 List.of(String.valueOf(third.getId()), first.getCode())), Map.of("separator", "SEMICOLON")));
 
         assertArrayEquals(fxCommand(project, false, null, List.of(third, first)), file.content());
@@ -119,7 +119,7 @@ class CsvExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.MULTIPLE);
         UUID second = project.getRegister().get(1).getId();
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, second, List.of()), Map.of()));
+        ExportedFile file = single(exporter.export(new ExportSelection(project, second, List.of()), Map.of()));
 
         assertArrayEquals(fxCommand(project, false, second, project.getObservationTool()), file.content());
         assertEquals(project.getRegister().get(1).getRegisterData().size() + 2,
@@ -131,7 +131,7 @@ class CsvExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.SINGLE);
         project.setRegister(new ArrayList<>());
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, null, List.of()), Map.of()));
+        ExportedFile file = single(exporter.export(new ExportSelection(project, null, List.of()), Map.of()));
 
         List<String> lines = new String(file.content(), Charset.defaultCharset()).lines().toList();
         assertEquals(1, lines.size());
@@ -143,7 +143,7 @@ class CsvExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.SINGLE);
         project.setObservationTool(new ArrayList<>());
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, null, List.of()),
+        ExportedFile file = single(exporter.export(new ExportSelection(project, null, List.of()),
                 Map.of("separator", "comma", "timeColumns", "TFrames")));
 
         List<String> lines = new String(file.content(), Charset.defaultCharset()).lines().toList();
@@ -157,7 +157,7 @@ class CsvExporterTest {
         project.setObservationTool(new ArrayList<>());
 
         ExportException e = assertThrows(ExportException.class,
-                () -> exporter.export(ExportSelection.of(project, null, List.of()), Map.of("timeColumns", "")));
+                () -> exporter.export(new ExportSelection(project, null, List.of()), Map.of("timeColumns", "")));
 
         assertEquals(TransferException.Reason.EMPTY_SELECTION, e.getReason());
     }
@@ -166,7 +166,7 @@ class CsvExporterTest {
     void mimeTypeNamesTheCharset() {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.SINGLE);
 
-        ExportedFile file = single(exporter.export(ExportSelection.of(project, null, List.of()), Map.of()));
+        ExportedFile file = single(exporter.export(new ExportSelection(project, null, List.of()), Map.of()));
 
         assertEquals("text/csv; charset=" + Charset.defaultCharset().name(), file.mimeType());
     }
@@ -177,23 +177,31 @@ class CsvExporterTest {
 
         String code = project.getObservationTool().get(0).getCode();
         ExportException e = assertThrows(ExportException.class,
-                () -> exporter.export(ExportSelection.of(project, null, List.of(code)), Map.of("separator", "tab")));
+                () -> exporter.export(new ExportSelection(project, null, List.of(code)), Map.of("separator", "tab")));
         assertEquals(TransferException.Reason.INVALID_OPTION, e.getReason());
         assertEquals(List.of("separator"), e.getOffendingIds());
     }
 
     /**
      * What the JavaFX {@code CsvExportComponent} exports: time columns of the selection panel followed by the selected
-     * criteria codes, {@code String.getBytes()} with the platform charset.
+     * criteria codes, {@code String.getBytes()} with the platform charset. A non null {@code research} exports that
+     * register only, the way the JavaFX menu hands {@link LinceCsvExporter} a one-register project.
      */
     private static byte[] fxCommand(LinceFileProjectWrapper project, boolean comma, UUID research, List<Criteria> criteria) {
         LinceCsvExporter csv = new LinceCsvExporter();
         csv.setUseCsvComma(comma);
-        csv.setResearchUUID(research);
         List<String> columns = Stream.concat(
                 csv.getDefaultColumnDefinitions(project).stream().limit(LinceDataConstants.ColumnType.values().length),
                 criteria.stream().map(Criteria::getCode)).toList();
-        return csv.executeFormatConversion(project, columns).getBytes();
+        LinceFileProjectWrapper source = project;
+        if (research != null) {
+            source = new LinceFileProjectWrapper();
+            source.setObservationTool(project.getObservationTool());
+            source.setProfiles(project.getProfiles());
+            source.setRegister(new ArrayList<>(project.getRegister().stream()
+                    .filter(r -> research.equals(r.getId())).toList()));
+        }
+        return csv.executeFormatConversion(source, columns).getBytes();
     }
 
     private static ExportedFile single(List<ExportedFile> files) {

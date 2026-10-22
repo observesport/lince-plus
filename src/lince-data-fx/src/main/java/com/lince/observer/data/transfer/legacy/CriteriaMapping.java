@@ -4,33 +4,25 @@ import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.transfer.ExportException;
 import com.lince.observer.data.transfer.TransferException;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Two-way link between modern {@link Criteria} and legacy {@link Criterio} built by {@link LegacyBridge} during a
- * conversion (LO-349). Lookups are by instance first: neither class has a hash code consistent with its
- * {@code equals} (Criteria compares code or id, Criterio compares name), so both directions use identity maps.
- * {@link #toModern(Criterio)} falls back to the legacy notion of identity, the criterion name, because legacy
- * register rows may hold detached {@code Criterio} copies.
+ * Link from modern {@link Criteria} to the legacy {@link Criterio} built by {@link LegacyBridge} during an export
+ * conversion (LO-349). Lookups are by instance: {@code Criteria} has no hash code consistent with its
+ * {@code equals} (it compares code or id), so the map is an identity map.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
 public final class CriteriaMapping {
 
     private final Map<Criteria, Criterio> modernToLegacy = new IdentityHashMap<>();
-    private final Map<Criterio, Criteria> legacyToModern = new IdentityHashMap<>();
-    private final List<Criteria> modernOrder = new ArrayList<>();
 
     void put(Criteria modern, Criterio legacy) {
         modernToLegacy.put(modern, legacy);
-        legacyToModern.put(legacy, modern);
-        modernOrder.add(modern);
     }
 
     /**
@@ -62,29 +54,5 @@ public final class CriteriaMapping {
                     "Criteria not present in the legacy instrument: " + String.join(", ", missing), missing);
         }
         return result;
-    }
-
-    /**
-     * @param legacy a legacy criterion, converted or a detached copy with the same name
-     * @return the modern criteria, null when none matches
-     */
-    public Criteria toModern(Criterio legacy) {
-        Criteria modern = legacyToModern.get(legacy);
-        if (modern != null || legacy == null) {
-            return modern;
-        }
-        for (Map.Entry<Criterio, Criteria> entry : legacyToModern.entrySet()) {
-            if (StringUtils.equals(entry.getKey().getNombre(), legacy.getNombre())) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return converted modern criteria in conversion order
-     */
-    public List<Criteria> modernCriteria() {
-        return Collections.unmodifiableList(modernOrder);
     }
 }

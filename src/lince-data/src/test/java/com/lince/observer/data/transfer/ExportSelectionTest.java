@@ -41,29 +41,27 @@ class ExportSelectionTest {
 
     @Test
     void emptyIdsSelectAllCriteriaInProjectOrder() {
-        ExportSelection selection = ExportSelection.of(project, first.getId(), List.of());
+        ExportSelection selection = new ExportSelection(project, first.getId(), List.of());
 
         assertEquals(List.of(pase, zona, resultado), selection.getCriteria());
         assertSame(project, selection.getProject());
-        assertTrue(selection.isAllCriteria());
     }
 
     @Test
     void nullIdsSelectAllCriteria() {
-        assertEquals(3, ExportSelection.of(project, null, null).getCriteria().size());
+        assertEquals(3, new ExportSelection(project, null, null).getCriteria().size());
     }
 
     @Test
     void subsetKeepsRequestOrderAndIgnoresDuplicates() {
-        ExportSelection selection = ExportSelection.of(project, null, List.of("3", "1", "3"));
+        ExportSelection selection = new ExportSelection(project, null, List.of("3", "1", "3"));
 
         assertEquals(List.of(resultado, pase), selection.getCriteria());
-        assertEquals(List.of(3, 1), selection.getCriteriaIds());
     }
 
     @Test
     void criteriaCanBeSelectedByCodeWhenNoIdMatches() {
-        ExportSelection selection = ExportSelection.of(project, null, List.of("Z", " 1 "));
+        ExportSelection selection = new ExportSelection(project, null, List.of("Z", " 1 "));
 
         assertEquals(List.of(zona, pase), selection.getCriteria());
     }
@@ -71,7 +69,7 @@ class ExportSelectionTest {
     @Test
     void unknownCriteriaIdsAreAllReported() {
         ExportException ex = assertThrows(ExportException.class,
-                () -> ExportSelection.of(project, null, List.of("1", "99", "nope")));
+                () -> new ExportSelection(project, null, List.of("1", "99", "nope")));
 
         assertEquals(ExportException.Reason.UNKNOWN_CRITERIA, ex.getReason());
         assertEquals(List.of("99", "nope"), ex.getOffendingIds());
@@ -80,10 +78,9 @@ class ExportSelectionTest {
 
     @Test
     void researchIdSelectsThatRegister() {
-        ExportSelection selection = ExportSelection.of(project, second.getId(), List.of());
+        ExportSelection selection = new ExportSelection(project, second.getId(), List.of());
 
         assertSame(second, selection.getRegister());
-        assertEquals(second.getId(), selection.getResearchId());
         assertEquals(5, selection.getRows().size());
     }
 
@@ -92,14 +89,14 @@ class ExportSelectionTest {
         UUID code = UUID.randomUUID();
         second.getUserProfile().setRegisterCode(code);
 
-        assertSame(second, ExportSelection.of(project, code, List.of()).getRegister());
+        assertSame(second, new ExportSelection(project, code, List.of()).getRegister());
     }
 
     @Test
     void unknownResearchIdIsRejected() {
         UUID unknown = UUID.randomUUID();
         ExportException ex = assertThrows(ExportException.class,
-                () -> ExportSelection.of(project, unknown, List.of()));
+                () -> new ExportSelection(project, unknown, List.of()));
 
         assertEquals(ExportException.Reason.UNKNOWN_RESEARCH, ex.getReason());
         assertEquals(List.of(unknown.toString()), ex.getOffendingIds());
@@ -109,7 +106,7 @@ class ExportSelectionTest {
     void nullResearchWithOneRegisterUsesIt() {
         project.setRegister(new ArrayList<>(List.of(second)));
 
-        ExportSelection selection = ExportSelection.of(project, null, List.of("2"));
+        ExportSelection selection = new ExportSelection(project, null, List.of("2"));
 
         assertSame(second, selection.getRegister());
         assertEquals(5, selection.getRows().size());
@@ -118,24 +115,23 @@ class ExportSelectionTest {
 
     @Test
     void nullResearchWithSeveralRegistersUsesTheFirst() {
-        assertSame(first, ExportSelection.of(project, null, List.of()).getRegister());
+        assertSame(first, new ExportSelection(project, null, List.of()).getRegister());
     }
 
     @Test
     void projectWithoutRegistersExportsNoRows() {
         project.setRegister(new ArrayList<>());
 
-        ExportSelection selection = ExportSelection.of(project, null, List.of());
+        ExportSelection selection = new ExportSelection(project, null, List.of());
 
         assertEquals(null, selection.getRegister());
         assertEquals(List.of(), selection.getRows());
-        assertEquals(null, selection.getResearchId());
     }
 
     @Test
     void requireCriteriaFailsOnEmptyInstrument() {
         project.setObservationTool(new ArrayList<>());
-        ExportSelection selection = ExportSelection.of(project, null, List.of());
+        ExportSelection selection = new ExportSelection(project, null, List.of());
 
         ExportException ex = assertThrows(ExportException.class, selection::requireCriteria);
         assertEquals(ExportException.Reason.EMPTY_SELECTION, ex.getReason());

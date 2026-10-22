@@ -35,8 +35,7 @@ class LegacyConverterServiceLockTest {
         });
         when(analysisService.getObservationById(any())).thenReturn(List.of());
         LegacyBridge bridge = new LegacyBridge();
-        LegacyConverterService service = new LegacyConverterService(categoryService, analysisService,
-                mock(DataHubService.class), bridge);
+        LegacyConverterService service = new LegacyConverterService(categoryService, analysisService, bridge);
 
         Thread migration;
         try (LegacyLockHolder ignored = new LegacyLockHolder(bridge)) {

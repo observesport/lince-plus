@@ -15,9 +15,9 @@ import java.util.Map;
 
 /**
  * SAS export (LO-349): the register as a tab separated {@code sas.sds} with identical rows collapsed and counted,
- * what {@code SasExportComponent} writes. Needs at least one criterion. The panel also offered the fixed and mixed
- * information nodes of a Lince 1 instrument; a converted project has none, so only criteria are selectable. The
- * panel refused an empty register; here an empty register exports an empty file.
+ * what {@code SasExportComponent} writes. The export service rejects an empty criteria selection. The panel also
+ * offered the fixed and mixed information nodes of a Lince 1 instrument; a converted project has none, so only
+ * criteria are selectable. The panel refused an empty register; here an empty register exports an empty file.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
@@ -41,10 +41,9 @@ public class SasExporter implements LinceExporter {
 
     @Override
     public List<ExportedFile> export(ExportSelection selection, Map<String, String> options) {
-        selection.requireCriteria();
         return bridge.export(selection, legacy -> {
             LegacyExportSupport.logWarnings(TYPE_ID, legacy);
-            return List.of(LegacyExportSupport.text(FILE_NAME, LegacyExportSupport.TEXT_PLAIN,
+            return List.of(ExportedFile.text(FILE_NAME, LegacyExportSupport.TEXT_PLAIN,
                     content(legacy.register(), new ArrayList<>(legacy.selectedCriterios()))));
         });
     }
@@ -53,7 +52,7 @@ public class SasExporter implements LinceExporter {
      * @param columns criteria ({@code Criterio}) and information nodes ({@code NodoInformacion}) in column order
      * @return the SAS content
      */
-    public static String content(Registro registro, List<Object> columns) {
+    private static String content(Registro registro, List<Object> columns) {
         return registro.exportToSas(columns);
     }
 }

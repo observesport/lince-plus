@@ -39,7 +39,7 @@ class LinceProjectExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.MULTIPLE);
 
         // criteria selection is ignored: the whole project is written
-        List<ExportedFile> files = exporter.export(ExportSelection.of(project, null,
+        List<ExportedFile> files = exporter.export(new ExportSelection(project, null,
                 List.of(project.getObservationTool().get(0).getCode())), Map.of());
 
         assertEquals(1, files.size());
@@ -63,7 +63,7 @@ class LinceProjectExporterTest {
         try {
             new LinceFileHelper().writeProjectFile(file, project);
 
-            ExportedFile exported = exporter.export(ExportSelection.of(project, null, null), Map.of()).get(0);
+            ExportedFile exported = exporter.export(new ExportSelection(project, null, null), Map.of()).get(0);
 
             assertArrayEquals(Files.readAllBytes(file.toPath()), exported.content());
         } finally {

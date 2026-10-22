@@ -46,7 +46,7 @@ class Theme6ExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.SINGLE);
         assertEquals(1, project.getRegister().size(), "fixture has one observer");
 
-        List<ExportedFile> files = exporter.export(ExportSelection.of(project, null, List.of()), Map.of());
+        List<ExportedFile> files = exporter.export(new ExportSelection(project, null, List.of()), Map.of());
 
         assertEquals(2, files.size());
         ExportedFile txt = files.get(0);
@@ -66,7 +66,7 @@ class Theme6ExporterTest {
         Set<String> allowed = selected.getInnerCategories().stream().map(Category::getCode).collect(Collectors.toSet());
 
         List<ExportedFile> files = exporter.export(
-                ExportSelection.of(project, null, List.of(selected.getCode())), Map.of());
+                new ExportSelection(project, null, List.of(selected.getCode())), Map.of());
 
         assertArrayEquals(Lince2ThemeExport.createVvtContent(List.of(selected)).getBytes(), files.get(1).content());
         List<String> lines = new String(files.get(0).content(), Charset.defaultCharset()).lines().toList();
@@ -83,22 +83,11 @@ class Theme6ExporterTest {
     }
 
     @Test
-    void emptySelectionFails() {
-        LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.SINGLE);
-        project.setObservationTool(new ArrayList<>());
-
-        ExportException e = assertThrows(ExportException.class,
-                () -> exporter.export(ExportSelection.of(project, null, List.of()), Map.of()));
-
-        assertEquals(TransferException.Reason.EMPTY_SELECTION, e.getReason());
-    }
-
-    @Test
     void projectWithoutObservationsExportsHeaderOnly() {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.SINGLE);
         project.setRegister(new ArrayList<>());
 
-        List<ExportedFile> files = exporter.export(ExportSelection.of(project, null, List.of()), Map.of());
+        List<ExportedFile> files = exporter.export(new ExportSelection(project, null, List.of()), Map.of());
 
         assertEquals("TIME\tEVENT\r\n", new String(files.get(0).content(), Charset.defaultCharset()));
     }
@@ -111,7 +100,7 @@ class Theme6ExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load("FCB_RMAD_0925.xml");
         int rows = project.getRegister().get(0).getRegisterData().size();
 
-        List<ExportedFile> files = exporter.export(ExportSelection.of(project, null, List.of()), Map.of());
+        List<ExportedFile> files = exporter.export(new ExportSelection(project, null, List.of()), Map.of());
 
         List<String> txt = new String(files.get(0).content(), Charset.defaultCharset()).lines().toList();
         assertEquals(rows + 3, txt.size(), "header + start marker + rows + end marker");
@@ -128,7 +117,7 @@ class Theme6ExporterTest {
         LinceFileProjectWrapper project = TransferFixtures.load(TransferFixtures.MULTIPLE);
         List<String> everyId = project.getObservationTool().stream().map(c -> String.valueOf(c.getId())).toList();
 
-        List<ExportedFile> files = exporter.export(ExportSelection.of(project, null, everyId), Map.of());
+        List<ExportedFile> files = exporter.export(new ExportSelection(project, null, everyId), Map.of());
 
         List<RegisterItem> rows = project.getRegister().get(0).getRegisterData();
         assertArrayEquals(new Lince2ThemeExport(rows).exportToString().getBytes(), files.get(0).content());
@@ -154,7 +143,7 @@ class Theme6ExporterTest {
         register.getRegisterData().add(row(50, sit));
         project.setRegister(new ArrayList<>(List.of(register)));
 
-        List<ExportedFile> files = exporter.export(ExportSelection.of(project, null, List.of()), Map.of());
+        List<ExportedFile> files = exporter.export(new ExportSelection(project, null, List.of()), Map.of());
 
         assertEquals("TIME\tEVENT\r\n24\t:\r\n25\tSTAND\r\n50\tSIT\r\n51\t&\r\n",
                 new String(files.get(0).content(), Charset.defaultCharset()));
@@ -168,7 +157,7 @@ class Theme6ExporterTest {
         project.getRegister().get(0).getRegisterData().get(1).setFrames(null);
 
         ExportException e = assertThrows(ExportException.class,
-                () -> exporter.export(ExportSelection.of(project, null, List.of()), Map.of()));
+                () -> exporter.export(new ExportSelection(project, null, List.of()), Map.of()));
 
         assertEquals(TransferException.Reason.IO, e.getReason());
     }
@@ -179,7 +168,7 @@ class Theme6ExporterTest {
         project.getRegister().get(0).getRegisterData().get(1).setRegister(null);
 
         ExportException e = assertThrows(ExportException.class,
-                () -> exporter.export(ExportSelection.of(project, null, List.of()), Map.of()));
+                () -> exporter.export(new ExportSelection(project, null, List.of()), Map.of()));
 
         assertEquals(TransferException.Reason.IO, e.getReason());
     }

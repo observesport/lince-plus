@@ -6,7 +6,6 @@ import com.lince.observer.data.bean.user.ResearchProfile;
 import com.lince.observer.data.bean.user.UserProfile;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.transfer.ImportException;
-import com.lince.observer.data.transfer.ImportOutcome;
 import com.lince.observer.data.transfer.TransferException;
 import org.apache.commons.io.FileUtils;
 
@@ -22,7 +21,7 @@ import java.util.UUID;
 
 /**
  * Shared plumbing of the legacy importers (LO-349): spooling the upload to a temp file for the legacy loaders
- * that need a {@link File}, adding an imported observer to the target project, and building the outcome.
+ * that need a {@link File} and adding an imported observer to the target project.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
@@ -82,23 +81,8 @@ final class LegacyImportSupport {
         return register;
     }
 
-    /**
-     * @param target       project after the import
-     * @param observations observations imported
-     * @param warnings     non fatal issues
-     * @return counts of the target project
-     */
-    static ImportOutcome outcome(ILinceProject target, int observations, List<String> warnings) {
-        return new ImportOutcome(size(target.getObservationTool()), size(target.getRegister()), observations,
-                size(target.getProfiles()), warnings);
-    }
-
     static boolean hasObservations(ILinceProject target) {
         return target.getRegister() != null && target.getRegister().stream()
                 .anyMatch(r -> r.getRegisterData() != null && !r.getRegisterData().isEmpty());
-    }
-
-    private static int size(List<?> list) {
-        return list == null ? 0 : list.size();
     }
 }

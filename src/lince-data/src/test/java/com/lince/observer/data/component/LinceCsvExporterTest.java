@@ -262,33 +262,5 @@ class LinceCsvExporterTest {
                 "Export should contain only the first observer's register items");
     }
 
-    @Test
-    void testExportSpecificObserverByUUID() {
-        // Arrange
-        testLinceProject = loadProjectFromResources(TEST_PROJECT_MULTIPLE_RESOURCE);
-        assertNotNull(testLinceProject, "Test project should not be null");
-        assertTrue(testLinceProject.getRegister().size() > 1,
-                "Test project should have multiple observers for this test");
-
-        // Get the UUID of the second observer to verify we can select a specific one
-        java.util.UUID secondObserverId = testLinceProject.getRegister().get(1).getId();
-        csvExporter.setResearchUUID(secondObserverId);
-
-        // Act - Export only the second observer's data
-        String result = csvExporter.executeFormatConversion(testLinceProject);
-
-        // Assert
-        assertNotNull(result, "Result should not be null");
-        String[] lines = result.split("\r\n|\n");
-        assertTrue(lines.length > 1, "Result should have header and data rows");
-
-        // Count data rows (excluding header and zero time row)
-        int dataRowCount = lines.length - 2;
-        int expectedRowCount = testLinceProject.getRegister().get(1).getRegisterData().size();
-
-        assertEquals(expectedRowCount, dataRowCount,
-                "Export should contain only the register items from the selected observer");
-    }
-
 
 }

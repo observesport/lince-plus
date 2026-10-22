@@ -16,8 +16,8 @@ import java.util.Map;
 
 /**
  * Theme 5 export (LO-349): the register as {@code theme5.csv} and the instrument as {@code theme5.vvt}, the two
- * files the "Theme 5" panel writes with its two buttons. Both carry the same base name, the pairing rule of
- * {@code GenericExportComponent.executePairedExport}. Needs at least one criterion.
+ * files the "Theme 5" panel writes with its two buttons. Both carry the same base name, so the JavaFX menu pairs
+ * them ({@code ExportTargets}). The export service rejects an empty criteria selection.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
@@ -41,14 +41,13 @@ public class Theme5Exporter implements LinceExporter {
 
     @Override
     public List<ExportedFile> export(ExportSelection selection, Map<String, String> options) {
-        selection.requireCriteria();
         return bridge.export(selection, legacy -> {
             LegacyExportSupport.logWarnings(TYPE_ID, legacy);
             List<Criterio> criterios = legacy.selectedCriterios();
             return List.of(
-                    LegacyExportSupport.text(BASE_NAME + ".csv", LegacyExportSupport.TEXT_CSV,
+                    ExportedFile.text(BASE_NAME + ".csv", LegacyExportSupport.TEXT_CSV,
                             registerContent(legacy.register(), criterios)),
-                    LegacyExportSupport.text(BASE_NAME + ".vvt", LegacyExportSupport.TEXT_PLAIN,
+                    ExportedFile.text(BASE_NAME + ".vvt", LegacyExportSupport.TEXT_PLAIN,
                             toolContent(legacy.instrument(), criterios)));
         });
     }
@@ -56,14 +55,14 @@ public class Theme5Exporter implements LinceExporter {
     /**
      * @return the Theme 5 register (.csv) for the criteria, what the "export register" button writes
      */
-    public static String registerContent(Registro registro, List<Criterio> criterios) {
+    private static String registerContent(Registro registro, List<Criterio> criterios) {
         return registro.exportToTheme5(criterios);
     }
 
     /**
      * @return the Theme instrument (.vvt) for the criteria, what the "export instrument" button writes
      */
-    public static String toolContent(InstrumentoObservacional instrument, List<Criterio> criterios) {
+    private static String toolContent(InstrumentoObservacional instrument, List<Criterio> criterios) {
         return instrument.exportToTheme(criterios);
     }
 }

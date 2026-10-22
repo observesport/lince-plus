@@ -30,7 +30,7 @@ import java.util.Map;
 public class HoisanExporter implements LinceExporter {
 
     public static final String TYPE_ID = "hoisan";
-    public static final String MIME_TYPE = "application/x-msaccess";
+    private static final String MIME_TYPE = "application/x-msaccess";
     static final String FILE_NAME = "hoisan.mdb";
 
     private final LegacyBridge bridge;
@@ -70,7 +70,7 @@ public class HoisanExporter implements LinceExporter {
      * @param file   target, its extension is forced to .mdb by the legacy writer
      * @throws ExportException IO when the database cannot be written
      */
-    public static void writeTo(LegacyBridge bridge, File file) {
+    private static void writeTo(LegacyBridge bridge, File file) {
         String error = bridge.withLegacyModel(() -> new HoisanTool().exportFile(file));
         if (error != null) {
             throw new ExportException(TransferException.Reason.IO, "HOISAN export failed: " + error);

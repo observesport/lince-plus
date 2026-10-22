@@ -241,57 +241,6 @@ class RegistroExportTest {
     }
 
     // ============================================================
-    // CSV Export Tests
-    // ============================================================
-
-    @Test
-    void testExportToCsv_WithCommaDelimiter() {
-        // Arrange
-        List<Object> columnas = new ArrayList<>(criterios);
-
-        // Act
-        String result = registro.exportToCsv(columnas, true);
-
-        // Assert
-        assertNotNull(result, "Export result should not be null");
-        assertFalse(result.isEmpty(), "Export result should not be empty");
-        assertTrue(result.contains(","), "Should use comma delimiter");
-
-        // Should have header row
-        String[] lines = result.split("\r\n");
-        assertTrue(lines.length > 0, "Should have at least a header row");
-    }
-
-    @Test
-    void testExportToCsv_WithSemicolonDelimiter() {
-        // Arrange
-        List<Object> columnas = new ArrayList<>(criterios);
-
-        // Act
-        String result = registro.exportToCsv(columnas, false);
-
-        // Assert
-        assertNotNull(result, "Export result should not be null");
-        assertFalse(result.isEmpty(), "Export result should not be empty");
-        assertTrue(result.contains(";"), "Should use semicolon delimiter");
-
-        // Should have header row
-        String[] lines = result.split("\r\n");
-        assertTrue(lines.length > 0, "Should have at least a header row");
-    }
-
-    @Test
-    void testExportToCsv_EmptyList() {
-        // Act
-        String result = registro.exportToCsv(new ArrayList<>(), true);
-
-        // Assert
-        assertNotNull(result);
-        // Empty list may result in just a header or empty string, both are valid
-        // Just verify it doesn't throw an exception (already done by getting here)
-    }
-
-    // ============================================================
     // General Export Tests
     // ============================================================
 
@@ -311,10 +260,6 @@ class RegistroExportTest {
             "exportToSdisGseqEstado should not throw");
         assertDoesNotThrow(() -> registro.exportToTheme5(criterios),
             "exportToTheme5 should not throw");
-        assertDoesNotThrow(() -> registro.exportToCsv(new ArrayList<>(criterios), true),
-            "exportToCsv with comma should not throw");
-        assertDoesNotThrow(() -> registro.exportToCsv(new ArrayList<>(criterios), false),
-            "exportToCsv with semicolon should not throw");
     }
 
     @Test
@@ -336,10 +281,6 @@ class RegistroExportTest {
         result1 = registro.exportToTheme5(criterios);
         result2 = registro.exportToTheme5(criterios);
         assertEquals(result1, result2, "exportToTheme5 should be deterministic");
-
-        result1 = registro.exportToCsv(new ArrayList<>(criterios), true);
-        result2 = registro.exportToCsv(new ArrayList<>(criterios), true);
-        assertEquals(result1, result2, "exportToCsv should be deterministic");
     }
 
     @Test
@@ -348,9 +289,6 @@ class RegistroExportTest {
 
         String intervalExport = registro.exportToSdisGseqIntervalo(criterios);
         assertTrue(intervalExport.contains("\r\n"), "Should use Windows line endings");
-
-        String csvExport = registro.exportToCsv(new ArrayList<>(criterios), true);
-        assertTrue(csvExport.contains("\r\n"), "Should use Windows line endings");
     }
 
     // ============================================================

@@ -4,24 +4,16 @@ import com.lince.observer.data.LinceDataConstants;
 import com.lince.observer.data.LinceQualifier.DesktopQualifier;
 import com.lince.observer.data.bean.RegisterItem;
 import com.lince.observer.data.bean.categories.Category;
-import com.lince.observer.data.bean.categories.CategoryData;
 import com.lince.observer.data.bean.categories.Criteria;
-import com.lince.observer.data.bean.user.UserProfile;
-import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
-import com.lince.observer.data.component.PackageAwareXMLSerializer;
 import com.lince.observer.data.service.AnalysisService;
 import com.lince.observer.data.service.CategoryService;
 import com.lince.observer.data.transfer.legacy.LegacyBridge;
-import com.lince.observer.data.util.JavaFXLogHelper;
-import com.lince.observer.legacy.FilaRegistro;
 import com.lince.observer.legacy.Registro;
 import com.lince.observer.legacy.instrumentoObservacional.Categoria;
 import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
 import com.lince.observer.legacy.instrumentoObservacional.RootInstrumentoObservacional;
 
-import java.io.InputStream;
-import javafx.collections.FXCollections;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
@@ -56,93 +48,15 @@ public class LegacyConverterService {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     private final CategoryService categoryService;
     private final AnalysisService analysisService;
-    private final DataHubService dataHubService;
     private final LegacyBridge legacyBridge;
 
     @Autowired
     public LegacyConverterService(@DesktopQualifier CategoryService categoryService,
                                   @DesktopQualifier AnalysisService analysisService,
-                                  @DesktopQualifier DataHubService dataHubService,
                                   LegacyBridge legacyBridge) {
         this.categoryService = categoryService;
         this.analysisService = analysisService;
-        this.dataHubService = dataHubService;
         this.legacyBridge = legacyBridge;
-    }
-
-    private void withLegacyModel(Runnable work) {
-        legacyBridge.withLegacyModel(() -> {
-            work.run();
-            return null;
-        });
-    }
-
-    /**
-     * Initializes the required legacy instances for data migration.
-     *
-     * @param forceClean if true, forces creation of new instances
-     */
-    public void initializeLegacyInstances(boolean forceClean) {
-        withLegacyModel(() -> initializeLegacyInstancesLocked(forceClean));
-    }
-
-    private void initializeLegacyInstancesLocked(boolean forceClean) {
-        if (!forceClean) {
-            Registro.getInstance();
-            InstrumentoObservacional.getInstance();
-        } else {
-            Registro.loadNewInstance();
-            InstrumentoObservacional.loadNewInstance();
-        }
-    }
-
-    /**
-     * Ensures data compatibility for export operations by migrating current data to legacy format.
-     * This method initializes legacy instances and performs the migration process.
-     *
-     * @param researchId the UUID of the research to migrate
-     * @return Optional containing the research UUID if successful, empty Optional otherwise
-     */
-    public Optional<UUID> ensureExportCompatibility(UUID researchId) {
-        return legacyBridge.withLegacyModel(() -> ensureExportCompatibilityLocked(researchId));
-    }
-
-    private Optional<UUID> ensureExportCompatibilityLocked(UUID researchId) {
-        try {
-            initializeLegacyInstances(true);
-            migrateDataToLegacy(researchId);
-            return Optional.ofNullable(researchId);
-        } catch (Exception e) {
-            JavaFXLogHelper.addLogError("Failed to ensure export compatibility", e);
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Ensures data compatibility for import operations by migrating legacy data to current format.
-     * This method initializes legacy instances and performs the migration process.
-     */
-    public void ensureImportCompatibility() {
-        withLegacyModel(this::ensureImportCompatibilityLocked);
-    }
-
-    private void ensureImportCompatibilityLocked() {
-        try {
-            initializeLegacyInstances(false);
-            migrateDataFromLegacy();
-        } catch (Exception e) {
-            JavaFXLogHelper.addLogError("Failed to ensure import compatibility", e);
-        }
-    }
-
-    /**
-     * Loads into the system loaded legacy data
-     */
-    public void migrateDataFromLegacy() {
-        withLegacyModel(() -> {
-            migrateDataFromLegacyInstrument();
-            migrateDataFromLegacyRegister();
-        });
     }
 
     /**
@@ -165,266 +79,6 @@ public class LegacyConverterService {
      */
     public Registro migrateRegisterToLegacy(UUID registerId) {
         return migrateDataToLegacy(registerId).register();
-    }
-
-    /**
-     * Creates a new user profile, sets as current and stores new UserData
-     *
-     * @param observerName observer name
-     * @param lst          register
-     */
-    public void saveRegisterForNewUser(String observerName, List<RegisterItem> lst) {
-        try {
-            if (lst != null && !lst.isEmpty()) {
-                UserProfile profile = new UserProfile();
-                profile.setUserName(StringUtils.defaultIfEmpty(observerName, "New observer"));
-                List<LinceRegisterWrapper> newItems = new ArrayList<>();
-                LinceRegisterWrapper aux = new LinceRegisterWrapper();
-                aux.setRegisterData(FXCollections.observableArrayList(lst));
-                aux.setUserProfile(profile);
-                newItems.add(aux);
-                dataHubService.addDataRegister(newItems);
-            }
-        } catch (Exception e) {
-            log.error("Saving imported data", e);
-        }
-    }
-
-    /**
-     * Cast old categoria into from Legacy new System Category
-     *
-     * @param c Legacy Category
-     * @return new Category
-     */
-    private Category getCategoryFromLegacy(Criteria cri, Categoria c, Integer id) {
-        try {
-            Category newCat = new Category();
-            newCat.setDescription(c.getDescripcion());
-            newCat.setName(c.getNombre());
-            newCat.setCode(c.getCodigo());
-            newCat.setParent(cri.getId()); //it's very important setting the parent criteria to link it
-            if (id != null) {
-                newCat.setId(id);
-            }
-            return newCat;
-        } catch (Exception e) {
-            log.error(getClass().getEnclosingMethod().toString(), e);
-            return null;
-        }
-    }
-
-    /**
-     * Returns a non-existing-generated code for the criteria
-     *
-     * @param c criteria
-     * @param l currentlist
-     * @return no existing code in the list
-     */
-    private String getValidCode(Criterio c, List<Criteria> l) {
-        boolean isValid = true;
-        try {
-            int random = (int) (Math.random() * 100 + 1);
-            String value = c.getNombre().replaceAll("[^a-zA-Z0-9]", "");
-            value += random;
-            //let's check if exists
-            for (Criteria cri : l) {
-                if (StringUtils.equals(value, cri.getCode())) {
-                    isValid = false;
-                }
-            }
-            //recursividad al canto. Ojo condicion de salida
-            if (!isValid) {
-                return getValidCode(c, l);
-            }
-            return value;
-        } catch (Exception e) {
-            return StringUtils.EMPTY;
-        }
-    }
-
-    /**
-     * Cast old Criteria and inner categories from Legacy into new System Criteria
-     *
-     * @param c legacy Criteria
-     * @return Criteria
-     */
-    private Criteria getCriteriaFromLegacy(Criterio c, Integer id, List<Criteria> l) {
-        try {
-            if (!c.empty() && c.getCategoriasHijo().length > 0) {
-                Criteria crit = new Criteria();
-                crit.setName(c.getNombre());
-                if (id != null) {
-                    crit.setId(id);
-                }
-                crit.setCode(getValidCode(c, l));
-                crit.setDescription(c.getDescripcion());
-                LinkedList<Category> innerCategories = new LinkedList<>();
-                int catId = 1;
-                for (Categoria cat : c.getCategoriasHijo()) {
-                    if (id != null) {
-                        innerCategories.add(getCategoryFromLegacy(crit, cat, id * 10 + catId));
-                    } else {
-                        innerCategories.add(getCategoryFromLegacy(crit, cat, null));
-                    }
-                    catId++;
-                }
-                crit.setInnerCategories(innerCategories);
-                return crit;
-            }
-        } catch (Exception e) {
-            log.error(getClass().getEnclosingMethod().toString(), e);
-        }
-        return null;
-    }
-
-    /**
-     * Clears the internal categoryService filling it with the contents of the instrumento observacional
-     * from legacy structure
-     */
-    public InstrumentoObservacional migrateDataFromLegacyInstrument(InputStream inputStream) {
-        return legacyBridge.withLegacyModel(() -> migrateDataFromLegacyInstrumentLocked(inputStream));
-    }
-
-    private InstrumentoObservacional migrateDataFromLegacyInstrumentLocked(InputStream inputStream) {
-        try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(inputStream)) {
-            Object obj = decoder.readObject();
-            if (obj instanceof RootInstrumentoObservacional) {
-                RootInstrumentoObservacional root = (RootInstrumentoObservacional) obj;
-                InstrumentoObservacional i = new InstrumentoObservacional(root, null);
-                if (i != null) {
-                    Criterio[] criterios = i.getCriterios();
-                    if (criterios != null && criterios.length > 0) {
-                        List<Criteria> l = new ArrayList<>();
-                        int id = 1;//si fuera 0 en js se evalua a false y no se puede abrir (flipa)
-                        for (Criterio c : i.getCriterios()) {
-                            Criteria aux = getCriteriaFromLegacy(c, id, l);
-                            if (aux != null) {
-                                l.add(aux);
-                                id++;
-                            }
-                        }
-                        if (!l.isEmpty()) {
-                            categoryService.clearSelectedObservationTool();
-                            categoryService.saveObservationTool(l);
-                        }
-                    }
-                }
-                return i;
-            }
-        } catch (Exception e) {
-            log.error("Error migrating legacy instrument", e);
-        }
-        return null;
-    }
-
-    private void migrateDataFromLegacyInstrument() {
-        try {
-            InstrumentoObservacional i = InstrumentoObservacional.getInstance();
-            if (i != null) {
-                Criterio[] criterios = i.getCriterios();
-                if (criterios != null && criterios.length > 0) {
-                    List<Criteria> l = new ArrayList<>();
-                    int id = 1;//si fuera 0 en js se evalua a false y no se puede abrir (flipa)
-                    for (Criterio c : i.getCriterios()) {
-                        Criteria aux = getCriteriaFromLegacy(c, id, l);
-                        if (aux != null) {
-                            l.add(aux);
-                            id++;
-                        }
-                    }
-                    if (!l.isEmpty()) {
-                        categoryService.clearSelectedObservationTool();
-                        categoryService.saveObservationTool(l);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error(getClass().getEnclosingMethod().toString(), e);
-        }
-    }
-
-    /**
-     * Uses previous loaded tool and loads all registered data from legacy into the new structure
-     */
-    private void migrateDataFromLegacyRegister() {
-        try {
-            Registro r = Registro.getInstance();
-            processRegisterData(r);
-        } catch (Exception e) {
-            log.error(getClass().getEnclosingMethod().toString(), e);
-        }
-    }
-
-    public Registro migrateDataFromLegacyRegister(InputStream inputStream) {
-        return legacyBridge.withLegacyModel(() -> migrateDataFromLegacyRegisterLocked(inputStream));
-    }
-
-    private Registro migrateDataFromLegacyRegisterLocked(InputStream inputStream) {
-        try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(inputStream)) {
-            Object obj = decoder.readObject();
-            if (obj instanceof HashMap) {
-                HashMap<String, Object> data = (HashMap<String, Object>) obj;
-                if (data.containsKey("datosVariables") && data.get("datosVariables") instanceof ArrayList) {
-                    Registro registro = Registro.getInstance();
-                    registro.datosVariables = (ArrayList<FilaRegistro>) data.get("datosVariables");
-                    processRegisterData(registro);
-                    return registro;
-                }
-            }
-        } catch (Exception e) {
-            log.error("Error migrating legacy register", e);
-        }
-        return null;
-    }
-
-    private void processRegisterData(Registro r) {
-        if (r == null || r.datosVariables == null) {
-            return;
-        }
-
-        int id = 1;
-        List<RegisterItem> lst = new ArrayList<>();
-        for (FilaRegistro entry : r.datosVariables) {
-            RegisterItem register = new RegisterItem((double) (entry.getMilis() / 1000));
-            register.setId(id);
-            register.setSaveDate(new Date());
-            register.setDescription(StringUtils.EMPTY);
-            register.setName("f." + entry.getRegisterFrameValue());
-            register.setFrames(entry.getRegisterFrameValue());
-            List<Category> categories = new ArrayList<>();
-            for (Map.Entry<Criterio, Categoria> data : entry.getRegistro().entrySet()) {
-                try {
-                    Categoria cat = data.getValue();
-                    if (cat != null) {
-                        Pair<Criteria, Category> pairCat = categoryService.findToolEntryByIdentifier(null, cat.getCodigo(), null);
-                        if (pairCat != null && pairCat.getValue() != null) {
-                            categories.add(pairCat.getValue());
-                        } else {
-                            log.warn("Category not found for code: " + cat.getCodigo() + ". Using recovery criteria.");
-                            Criteria aux = Criteria.getRecoveryCriteria();
-                            CategoryData tempData = categoryService.findCategoryByCode(aux.getCode());
-                            if (tempData == null) {
-                                categoryService.getObservationTool().add(aux);
-                            }
-                            Pair<Criteria, Category> recoveryPair = categoryService.findToolEntryByIdentifier(null, aux.getCode(), null);
-                            if (recoveryPair != null && recoveryPair.getValue() != null) {
-                                categories.add(recoveryPair.getValue());
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("Error processing category: " + e.getMessage());
-                }
-            }
-            if (!categories.isEmpty()) {
-                register.setRegister(categories);
-            }
-            lst.add(register);
-            id++;
-        }
-        if (!lst.isEmpty()) {
-            saveRegisterForNewUser("Lince v1 observer", lst);
-        }
     }
 
     /**

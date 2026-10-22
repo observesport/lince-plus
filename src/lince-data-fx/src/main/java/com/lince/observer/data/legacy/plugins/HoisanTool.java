@@ -33,39 +33,6 @@ public class HoisanTool {
     private Integer actorId;
 
     /**
-     * Reads a HOISAN database and writes its instrument and one register per video as Lince 1 files in a free
-     * "Lince" folder next to it (legacy menu behaviour).
-     *
-     * @param file HOISAN .mdb file
-     * @return false when the file could not be read
-     */
-    public boolean importFile(File file) {
-        if (file != null) {
-            try {
-                HoisanData data = read(file);
-                File parentFile = file.getParentFile();
-                //generamos una carpeta a mismo nivel de fichero seleccionado
-                File linceDir = getFreeFile(parentFile, "Lince", "");
-                linceDir.mkdir();
-                //guardamos el instrumento observacional en el fichero asociado
-                InstrumentoObservacional instrumentoObservacional = data.instrument();
-                instrumentoObservacional.setPath(getFreeFile(linceDir, file.getName(), ".ilince"));
-                instrumentoObservacional.save();
-                //generamos un nuevo fichero de registro para cada uno de los registros detectados
-                for (Map.Entry<String, Registro> row : data.registers().entrySet()) {
-                    Registro registro = row.getValue();
-                    registro.setPath(getFreeFile(linceDir, new File(row.getKey()).getName(), ".rlince"));
-                    registro.save();
-                }
-            } catch (IOException ex) {
-                log.error("Importing Hoisan File", ex);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Reads a HOISAN database into the legacy model without writing anything (LO-349). Replaces the
      * {@link InstrumentoObservacional} and {@link Registro} singletons, so callers must hold the legacy model lock
      * ({@code LegacyBridge.withLegacyModel}) while they read the result.
@@ -296,23 +263,6 @@ public class HoisanTool {
         return rtn;
     }
 
-
-    /**
-     * Old function for managing existing files
-     *
-     * @param dir
-     * @param name
-     * @param extension
-     * @return
-     */
-    public File getFreeFile(File dir, String name, String extension) {
-        File f = new File(dir, name + extension);
-        int i = 2;
-        while (f.exists()) {
-            f = new File(dir, name + " (" + i++ + ")" + extension);
-        }
-        return f;
-    }
 
     /**
      * @param criterios

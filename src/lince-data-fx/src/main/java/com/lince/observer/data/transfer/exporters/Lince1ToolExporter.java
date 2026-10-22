@@ -47,7 +47,7 @@ public class Lince1ToolExporter implements LinceExporter {
     /**
      * @return the .ilince bytes of the instrument, identical to what {@link InstrumentoObservacional#save()} writes
      */
-    public static byte[] content(InstrumentoObservacional instrument) {
+    private static byte[] content(InstrumentoObservacional instrument) {
         return ControladorArchivos.getInstance().serializar(instrument.getSaveContent());
     }
 }

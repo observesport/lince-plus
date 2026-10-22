@@ -48,8 +48,8 @@ public class LinceServiceTestConfig {
     }
 
     @Bean
-    public LegacyConverterService legacyConverterService(AnalysisService analysisService,DataHubService dataHubService,CategoryService categoryService) {
-        return new LegacyConverterService( categoryService, analysisService, dataHubService, new LegacyBridge());
+    public LegacyConverterService legacyConverterService(AnalysisService analysisService, CategoryService categoryService) {
+        return new LegacyConverterService(categoryService, analysisService, new LegacyBridge());
     }
 
 }

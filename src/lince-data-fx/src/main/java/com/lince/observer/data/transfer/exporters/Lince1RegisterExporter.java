@@ -49,7 +49,7 @@ public class Lince1RegisterExporter implements LinceExporter {
     /**
      * @return the .rlince bytes of the register, identical to what {@link Registro#save()} writes
      */
-    public static byte[] content(Registro registro) {
+    static byte[] content(Registro registro) {
         return ControladorArchivos.getInstance().serializar(registro.getSaveContent());
     }
 }

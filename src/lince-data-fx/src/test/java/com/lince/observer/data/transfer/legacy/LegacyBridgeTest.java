@@ -63,7 +63,7 @@ class LegacyBridgeTest {
 
     @Test
     void exportBuildsTheLegacyInstrumentInProjectOrder() {
-        LegacyProject legacy = bridge.toLegacy(ExportSelection.of(project, null, List.of()));
+        LegacyProject legacy = bridge.toLegacy(new ExportSelection(project, null, List.of()));
 
         assertSame(InstrumentoObservacional.getInstance(), legacy.instrument());
         Criterio[] criterios = legacy.instrument().getCriterios();
@@ -75,18 +75,16 @@ class LegacyBridgeTest {
 
     @Test
     void selectedModernCriteriaMapToTheirLegacyCriterioInSelectionOrder() {
-        LegacyProject legacy = bridge.toLegacy(ExportSelection.of(project, null, List.of("2", "1")));
+        LegacyProject legacy = bridge.toLegacy(new ExportSelection(project, null, List.of("2", "1")));
 
         Criterio[] criterios = legacy.instrument().getCriterios();
         assertEquals(List.of(criterios[1], criterios[0]), legacy.selectedCriterios());
         assertSame(criterios[1], legacy.selectedCriterios().get(0));
-        assertSame(criterios[0], legacy.mapping().toLegacy(pase));
-        assertSame(zona, legacy.mapping().toModern(criterios[1]));
     }
 
     @Test
     void registerRowsComeFromTheSelectedResearch() {
-        LegacyProject legacy = bridge.toLegacy(ExportSelection.of(project, first.getId(), List.of()));
+        LegacyProject legacy = bridge.toLegacy(new ExportSelection(project, first.getId(), List.of()));
 
         Registro registro = legacy.register();
         assertSame(Registro.getInstance(), registro);
@@ -99,7 +97,7 @@ class LegacyBridgeTest {
         assertSame(criterios[1].getCategoriasHijo()[1], fila.getCategoria(criterios[1]));
         assertEquals(List.of("PL", ""), List.of(registro.getColumna(criterios[0])[1], registro.getColumna(criterios[1])[1]));
 
-        LegacyProject other = bridge.toLegacy(ExportSelection.of(project, second.getId(), List.of()));
+        LegacyProject other = bridge.toLegacy(new ExportSelection(project, second.getId(), List.of()));
         assertEquals(1, other.register().datosVariables.size());
         assertEquals(4000, other.register().datosVariables.get(0).getMilis());
     }
@@ -110,7 +108,7 @@ class LegacyBridgeTest {
         orphan.setCode("ORF");
         first.getRegisterData().add(row(3.0, orphan));
 
-        LegacyProject legacy = bridge.toLegacy(ExportSelection.of(project, first.getId(), List.of()));
+        LegacyProject legacy = bridge.toLegacy(new ExportSelection(project, first.getId(), List.of()));
 
         assertEquals(3, legacy.register().datosVariables.size());
         assertEquals(1, legacy.warnings().size());
@@ -119,10 +117,13 @@ class LegacyBridgeTest {
 
     @Test
     void mappingRejectsCriteriaThatAreNotInTheInstrument() {
-        LegacyProject legacy = bridge.toLegacy(ExportSelection.of(project, null, List.of()));
+        CriteriaMapping mapping = new CriteriaMapping();
+        Criterio legacyPase = new Criterio("Pase");
+        mapping.put(pase, legacyPase);
         Criteria foreign = criteria(7, "Foreign", "F", "F1");
 
-        ExportException ex = assertThrows(ExportException.class, () -> legacy.mapping().toLegacy(List.of(pase, foreign)));
+        assertEquals(List.of(legacyPase), mapping.toLegacy(List.of(pase)));
+        ExportException ex = assertThrows(ExportException.class, () -> mapping.toLegacy(List.of(pase, foreign)));
 
         assertEquals(ExportException.Reason.UNKNOWN_CRITERIA, ex.getReason());
         assertEquals(List.of("7"), ex.getOffendingIds());
@@ -147,10 +148,6 @@ class LegacyBridgeTest {
         assertEquals(1, golpe.getInnerCategories().get(0).getParent());
         assertEquals(2, criteria.get(1).getId());
         assertTrue(criteria.stream().map(Criteria::getCode).distinct().count() == 2, "codes are unique");
-
-        Criterio legacyGolpe = instrument.getCriterios()[0];
-        assertSame(golpe, imported.mapping().toModern(legacyGolpe));
-        assertSame(legacyGolpe, imported.mapping().toLegacy(golpe));
     }
 
     @Test
@@ -186,7 +183,7 @@ class LegacyBridgeTest {
 
     @Test
     void modernCriteriaSurviveARoundTripThroughTheLegacyModel() {
-        LegacyProject legacy = bridge.toLegacy(ExportSelection.of(project, null, List.of()));
+        LegacyProject legacy = bridge.toLegacy(new ExportSelection(project, null, List.of()));
 
         List<Criteria> back = bridge.fromLegacyInstrument(legacy.instrument()).criteria();
 
@@ -243,7 +240,7 @@ class LegacyBridgeTest {
     @Test
     void withLegacyModelIsReentrant() {
         String result = bridge.withLegacyModel(() -> bridge.withLegacyModel(() ->
-                bridge.export(ExportSelection.of(project, null, List.of("1")), l -> l.selectedCriterios().get(0).getNombre())));
+                bridge.export(new ExportSelection(project, null, List.of("1")), l -> l.selectedCriterios().get(0).getNombre())));
 
         assertEquals("Pase", result);
     }

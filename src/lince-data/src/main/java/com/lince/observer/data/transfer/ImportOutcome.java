@@ -1,5 +1,6 @@
 package com.lince.observer.data.transfer;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.bean.transfer.ImportResult;
 import com.lince.observer.data.bean.transfer.ImportScope;
 
@@ -22,6 +23,23 @@ public record ImportOutcome(int criteriaCount, int registerCount, int observatio
 
     public ImportOutcome {
         warnings = warnings == null ? List.of() : List.copyOf(warnings);
+    }
+
+    /**
+     * Counts the target project after an import; null lists count as empty.
+     *
+     * @param target       project after the import
+     * @param observations observations imported
+     * @param warnings     non fatal issues, null for none
+     * @return the outcome
+     */
+    public static ImportOutcome of(ILinceProject target, int observations, List<String> warnings) {
+        return new ImportOutcome(size(target.getObservationTool()), size(target.getRegister()), observations,
+                size(target.getProfiles()), warnings);
+    }
+
+    private static int size(List<?> list) {
+        return list == null ? 0 : list.size();
     }
 
     /**

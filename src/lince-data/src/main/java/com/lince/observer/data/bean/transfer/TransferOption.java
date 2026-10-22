@@ -26,16 +26,16 @@ public record TransferOption(String key, String label, Type type, String default
         values = values == null ? null : List.copyOf(values);
     }
 
-    public static TransferOption bool(String key, String label, boolean defaultValue) {
-        return new TransferOption(key, label, Type.BOOLEAN, String.valueOf(defaultValue), null, false);
-    }
-
     public static TransferOption choice(String key, String label, String defaultValue, List<String> values) {
         return new TransferOption(key, label, Type.ENUM, defaultValue, values, false);
     }
 
-    public static TransferOption integer(String key, String label, int defaultValue) {
-        return new TransferOption(key, label, Type.INTEGER, String.valueOf(defaultValue), null, false);
+    /**
+     * @param defaultValue default, null for none (the option is then nullable)
+     */
+    public static TransferOption integer(String key, String label, Integer defaultValue) {
+        return new TransferOption(key, label, Type.INTEGER, defaultValue == null ? null : defaultValue.toString(), null,
+                defaultValue == null);
     }
 
     public static TransferOption string(String key, String label, String defaultValue) {

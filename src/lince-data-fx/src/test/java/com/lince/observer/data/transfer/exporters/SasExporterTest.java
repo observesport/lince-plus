@@ -1,8 +1,6 @@
 package com.lince.observer.data.transfer.exporters;
 
 import com.lince.observer.data.bean.transfer.ExportedFile;
-import com.lince.observer.data.transfer.ExportException;
-import com.lince.observer.data.transfer.TransferException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
@@ -12,7 +10,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SasExporterTest {
@@ -36,6 +33,7 @@ class SasExporterTest {
 
         assertEquals(1, files.size());
         assertEquals("sas.sds", files.get(0).name());
+        assertEquals("text/plain; charset=" + Charset.defaultCharset().name(), files.get(0).mimeType());
         assertEquals(expected, new String(files.get(0).content(), Charset.defaultCharset()));
         assertFalse(expected.isEmpty());
     }
@@ -43,13 +41,5 @@ class SasExporterTest {
     @Test
     void matchesTheGoldenFile() {
         Golden.assertMatches("sas.sds", exporter.export(fixture.selection(), Map.of()).get(0).content());
-    }
-
-    @Test
-    void needsAtLeastOneCriterion() {
-        ExportException ex = assertThrows(ExportException.class,
-                () -> exporter.export(ExporterFixture.withoutCriteria(), Map.of()));
-
-        assertEquals(TransferException.Reason.EMPTY_SELECTION, ex.getReason());
     }
 }
