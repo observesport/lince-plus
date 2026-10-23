@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +48,7 @@ class Lince1ToolImporterTest {
         List<Criterio> expected = Lince1Fixtures.convertibleCriterios();
         LinceFileProjectWrapper project = new LinceFileProjectWrapper();
         project.setObservationTool(new ArrayList<>(List.of(new Criteria(9, "Old"))));
-        long tempsBefore = Lince1Fixtures.tempFiles("lince-import-");
+        Set<String> tempsBefore = Lince1Fixtures.tempFileNames("lince-import-");
 
         ImportOutcome outcome;
         try (InputStream in = Lince1Fixtures.stream(Lince1Fixtures.TOOL)) {
@@ -64,7 +65,7 @@ class Lince1ToolImporterTest {
         }
         assertEquals(tool.size(), outcome.criteriaCount());
         assertEquals(0, outcome.observationCount());
-        assertEquals(tempsBefore, Lince1Fixtures.tempFiles("lince-import-"), "temp file deleted");
+        assertEquals(Set.of(), Lince1Fixtures.newTempFiles(tempsBefore, "lince-import-"), "temp file deleted");
     }
 
     @Test

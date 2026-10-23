@@ -52,8 +52,8 @@ gh workflow run ci.yml --ref develop -f snapshot=true
 ```
 
 That run does `compile` -> `test` -> `snapshot` and skips the installer
-`build`. It deploys the parent pom, `lince-data`, `lince-data-fx` (with its
-test-jar), `lince-ai`, `lince-math` and `lince-transcoding` to GitHub Packages.
+`build`. It deploys the parent pom, `lince-data`, `lince-legacy` and `lince-data-fx`
+(both with their test-jars), `lince-ai`, `lince-math` and `lince-transcoding` to GitHub Packages.
 `-Plocal` keeps Install4j out of the `install` phase, and `lince-desktop` is
 left out because its Spring Boot fat jar is about 400 MB and has no consumer;
 drop `-pl '!lince-desktop'` from the job if that changes.

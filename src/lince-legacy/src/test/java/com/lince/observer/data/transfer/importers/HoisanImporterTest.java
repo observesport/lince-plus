@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,7 +61,7 @@ class HoisanImporterTest {
         File mdb = dir.resolve("study.mdb").toFile();
         assertNull(new HoisanTool().exportFile(mdb));
         LinceFileProjectWrapper project = new LinceFileProjectWrapper();
-        long tempsBefore = Lince1Fixtures.tempFiles("lince-import-");
+        Set<String> tempsBefore = Lince1Fixtures.tempFileNames("lince-import-");
 
         ImportOutcome outcome;
         try (InputStream in = Files.newInputStream(mdb.toPath())) {
@@ -75,7 +76,7 @@ class HoisanImporterTest {
         assertTrue(items.stream().anyMatch(i -> !i.getRegister().isEmpty()), "categories resolved");
         List<FilaRegistro> legacyRows = registro.datosVariables;
         assertEquals(legacyRows.get(0).getRegisterFrameValue(), items.get(0).getFrames());
-        assertEquals(tempsBefore, Lince1Fixtures.tempFiles("lince-import-"), "temp file deleted");
+        assertEquals(Set.of(), Lince1Fixtures.newTempFiles(tempsBefore, "lince-import-"), "temp file deleted");
         assertEquals(List.of("study.mdb"), Stream.of(dir.toFile().list()).toList(), "no Lince 1 files written");
     }
 

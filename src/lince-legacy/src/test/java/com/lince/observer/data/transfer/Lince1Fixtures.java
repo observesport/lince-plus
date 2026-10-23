@@ -21,6 +21,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -85,11 +88,24 @@ public final class Lince1Fixtures {
         return project;
     }
 
-    public static long tempFiles(String prefix) {
+    /**
+     * Names of the files in the temp dir starting with {@code prefix}. Tests compare the set before and after an
+     * import/export instead of a count, so a spool file deleted or created by another process at the same time
+     * (another test JVM, the running app) cannot make the assertion flake.
+     */
+    public static Set<String> tempFileNames(String prefix) {
         try (Stream<Path> files = Files.list(Path.of(System.getProperty("java.io.tmpdir")))) {
-            return files.filter(p -> p.getFileName().toString().startsWith(prefix)).count();
+            return files.map(p -> p.getFileName().toString()).filter(n -> n.startsWith(prefix))
+                    .collect(Collectors.toCollection(TreeSet::new));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /** Files with {@code prefix} that exist now but did not in {@code before}: the spool files a test left behind. */
+    public static Set<String> newTempFiles(Set<String> before, String prefix) {
+        Set<String> now = tempFileNames(prefix);
+        now.removeAll(before);
+        return now;
     }
 }

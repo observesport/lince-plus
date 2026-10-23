@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +63,7 @@ class Lince1RegisterImporterTest {
     void rowsBecomeANewObserverResolvedAgainstTheProjectInstrument() throws Exception {
         List<FilaRegistro> legacyRows = Lince1Fixtures.loadLegacy().datosVariables;
         List<Criteria> tool = project.getObservationTool();
-        long tempsBefore = Lince1Fixtures.tempFiles("lince-import-");
+        Set<String> tempsBefore = Lince1Fixtures.tempFileNames("lince-import-");
 
         ImportOutcome outcome;
         try (InputStream in = Lince1Fixtures.stream(Lince1Fixtures.REGISTER)) {
@@ -97,7 +98,7 @@ class Lince1RegisterImporterTest {
         }
         assertTrue(outcome.warnings().stream().anyMatch(w -> w.contains("BAJA SUP")),
                 "sub-categories are not part of the converted instrument and are reported: " + outcome.warnings());
-        assertEquals(tempsBefore, Lince1Fixtures.tempFiles("lince-import-"), "temp file deleted");
+        assertEquals(Set.of(), Lince1Fixtures.newTempFiles(tempsBefore, "lince-import-"), "temp file deleted");
     }
 
     @Test

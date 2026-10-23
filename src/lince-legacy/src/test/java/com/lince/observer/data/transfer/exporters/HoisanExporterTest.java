@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -48,13 +49,13 @@ class HoisanExporterTest {
     void writesEveryCriterionAndObservationOfTheSelectedObserver() throws Exception {
         List<String> names = fixture.project.getObservationTool().stream().map(Criteria::getName).toList();
         int rows = fixture.project.getRegister().get(0).getRegisterData().size();
-        long tempsBefore = Lince1Fixtures.tempFiles("lince-export-");
+        Set<String> tempsBefore = Lince1Fixtures.tempFileNames("lince-export-");
 
         List<ExportedFile> files = exporter.export(fixture.selection(), Map.of());
 
         assertEquals(1, files.size());
         assertEquals("hoisan.mdb", files.get(0).name());
-        assertEquals(tempsBefore, Lince1Fixtures.tempFiles("lince-export-"), "temp file deleted");
+        assertEquals(Set.of(), Lince1Fixtures.newTempFiles(tempsBefore, "lince-export-"), "temp file deleted");
         File mdb = dir.resolve("out.mdb").toFile();
         Files.write(mdb.toPath(), files.get(0).content());
         Database db = Database.open(mdb, true);

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +33,7 @@ class LegacyImportSupportTest {
 
     @Test
     void spoolDeletesTheTempFileWhenTheUploadAborts() {
-        long before = Lince1Fixtures.tempFiles(PREFIX);
+        Set<String> before = Lince1Fixtures.tempFileNames(PREFIX);
         InputStream aborting = new InputStream() {
             private int read;
 
@@ -48,6 +49,6 @@ class LegacyImportSupportTest {
         ImportException e = assertThrows(ImportException.class, () -> LegacyImportSupport.spool(aborting, ".mdb"));
 
         assertEquals(TransferException.Reason.IO, e.getReason());
-        assertEquals(before, Lince1Fixtures.tempFiles(PREFIX), "temp file deleted");
+        assertEquals(Set.of(), Lince1Fixtures.newTempFiles(before, PREFIX), "temp file deleted");
     }
 }

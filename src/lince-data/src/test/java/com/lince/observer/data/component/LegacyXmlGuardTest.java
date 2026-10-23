@@ -27,20 +27,20 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class LegacyXmlGuardTest {
 
-    private static final Path FX_RES = Path.of("../lince-data-fx/src/test/resources");
+    private static final Path LEGACY_RES = Path.of("../lince-legacy/src/test/resources");
     private static final Path MATH_RES = Path.of("../lince-math/src/test/resources");
 
     static Stream<Path> realFixtures() {
         return Stream.of(
-                FX_RES.resolve("lince1/RandomLinceLegacy.ilince"),
-                FX_RES.resolve("lince1/RandomLinceLegacy.rlince"),
-                FX_RES.resolve("lince1/import/Instrumento_prueba.ilince"),
-                FX_RES.resolve("lince1/import/Registro_prueba.rlince"),
-                FX_RES.resolve("lince1/instrumentoObservacional-adv.ilince"),
-                FX_RES.resolve("lince1/registroObservacional-adv.rlince"),
-                FX_RES.resolve("prj/template.ilince"),
-                FX_RES.resolve("prj/template.rlince"),
-                FX_RES.resolve("transfer/golden/tool.ilince"),
+                LEGACY_RES.resolve("lince1/RandomLinceLegacy.ilince"),
+                LEGACY_RES.resolve("lince1/RandomLinceLegacy.rlince"),
+                LEGACY_RES.resolve("lince1/import/Instrumento_prueba.ilince"),
+                LEGACY_RES.resolve("lince1/import/Registro_prueba.rlince"),
+                LEGACY_RES.resolve("lince1/instrumentoObservacional-adv.ilince"),
+                LEGACY_RES.resolve("lince1/registroObservacional-adv.rlince"),
+                LEGACY_RES.resolve("prj/template.ilince"),
+                LEGACY_RES.resolve("prj/template.rlince"),
+                LEGACY_RES.resolve("transfer/golden/tool.ilince"),
                 MATH_RES.resolve("template.ilince"),
                 MATH_RES.resolve("template.rlince"));
     }
@@ -56,7 +56,7 @@ class LegacyXmlGuardTest {
 
     @Test
     void registerFixtureDecodesToAMap() throws IOException {
-        // the legacy bean classes live in lince-data-fx, so only the outer map is checked here
+        // the legacy bean classes live in lince-legacy, so only the outer map is checked here
         byte[] xml = Files.readAllBytes(MATH_RES.resolve("template.rlince"));
         try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(new ByteArrayInputStream(xml))) {
             Object decoded = decoder.readObject();
