@@ -45,6 +45,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -243,14 +246,24 @@ final class TransferApiHarness {
     }
 
     /**
-     * @return number of upload spool files currently in the temp folder
+     * Names of the upload spool files currently in the temp folder. Tests compare the set before and after a request
+     * instead of a count, so a spool file another process (another test JVM, the running app) creates or deletes in
+     * the shared {@code java.io.tmpdir} at the same time cannot make the assertion flake.
      */
-    static long spoolFiles() {
+    static Set<String> spoolFileNames() {
         try (Stream<Path> files = Files.list(Path.of(TMP_DIR))) {
-            return files.filter(p -> p.getFileName().toString().startsWith(SPOOL_PREFIX)).count();
+            return files.map(p -> p.getFileName().toString()).filter(n -> n.startsWith(SPOOL_PREFIX))
+                    .collect(Collectors.toCollection(TreeSet::new));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /** Spool files that exist now but did not in {@code before}: what a request left behind. */
+    static Set<String> newSpoolFiles(Set<String> before) {
+        Set<String> now = spoolFileNames();
+        now.removeAll(before);
+        return now;
     }
 
     static String text(MvcResult result) throws Exception {

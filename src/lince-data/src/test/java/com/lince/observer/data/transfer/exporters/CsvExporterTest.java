@@ -1,23 +1,30 @@
 package com.lince.observer.data.transfer.exporters;
 
 import com.lince.observer.data.LinceDataConstants;
+import com.lince.observer.data.bean.RegisterItem;
+import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.transfer.ExportTypeDescriptor;
 import com.lince.observer.data.bean.transfer.ExportedFile;
 import com.lince.observer.data.bean.transfer.TransferOption;
 import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
+import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.component.LinceCsvExporter;
 import com.lince.observer.data.transfer.ExportException;
 import com.lince.observer.data.transfer.ExportSelection;
 import com.lince.observer.data.transfer.TransferException;
 import com.lince.observer.data.transfer.TransferFixtures;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -41,7 +48,7 @@ class CsvExporterTest {
         assertEquals("text/csv", d.mimeType());
         assertTrue(d.supportsCriteriaSelection());
         assertFalse(d.multiFile());
-        assertEquals(2, d.options().size());
+        assertEquals(3, d.options().size());
         TransferOption separator = d.options().get(0);
         assertEquals("separator", separator.key());
         assertEquals(TransferOption.Type.ENUM, separator.type());
@@ -50,6 +57,88 @@ class CsvExporterTest {
         TransferOption timeColumns = d.options().get(1);
         assertEquals("timeColumns", timeColumns.key());
         assertEquals("TFrames,DuracionFr,TSegundos,DuracionSeg,TMilisegundos,DuracionMiliseg", timeColumns.defaultValue());
+        TransferOption excelSafe = d.options().get(2);
+        assertEquals("excelSafe", excelSafe.key());
+        assertEquals("Excel-safe cells", excelSafe.label());
+        assertEquals(TransferOption.Type.BOOLEAN, excelSafe.type());
+        assertEquals("false", excelSafe.defaultValue());
+        assertFalse(excelSafe.nullable());
+    }
+
+    @Test
+    void fieldsWithSeparatorQuoteOrLineBreakRoundTripThroughACsvParser() {
+        String criteriaCode = "CRI,0;\"main\"\r\nnext";
+        List<String> categoryCodes = List.of("a,b", "c;d", "say \"hi\"", "line\nbreak", "cr\rlf\r\n", "plain",
+                "\"", ",;\"\n");
+        for (String separator : List.of("comma", "semicolon")) {
+            LinceFileProjectWrapper project = oneCriteriaProject(criteriaCode, categoryCodes);
+            project.getRegister().get(0).getUserProfile().setUserName("Observer, \"one\"; \nsecond line");
+
+            ExportedFile file = single(exporter.export(new ExportSelection(project, null, List.of()),
+                    Map.of("separator", separator, "timeColumns", "TMilisegundos")));
+
+            List<String[]> rows = parse(new String(file.content(), Charset.defaultCharset()),
+                    "comma".equals(separator) ? ',' : ';');
+            assertEquals(categoryCodes.size() + 2, rows.size(), separator);
+            rows.forEach(row -> assertEquals(2, row.length, separator + ": " + String.join("|", row)));
+            List<String> column = rows.stream().map(row -> row[1]).toList();
+            List<String> expected = new ArrayList<>(List.of(criteriaCode, ""));
+            expected.addAll(categoryCodes);
+            assertEquals(expected, column, separator);
+            assertEquals("TMilisegundos", rows.get(0)[0]);
+        }
+    }
+
+    @Test
+    void plainFieldsAreNotQuoted() {
+        LinceFileProjectWrapper project = oneCriteriaProject("CRI", List.of("A-1", "B 2", "'quoted'"));
+
+        String content = new String(single(exporter.export(new ExportSelection(project, null, List.of()),
+                Map.of("separator", "comma", "timeColumns", ""))).content(), Charset.defaultCharset());
+
+        assertEquals(List.of("CRI", "", "A-1", "B 2", "'quoted'"), content.lines().toList());
+    }
+
+    @Test
+    void excelSafePrefixesFormulaLeadingCellsWithAQuote() {
+        List<String> codes = List.of("=1+1", "+1", "-", "@x", "\tTAB", "\rCR", "=a,b", "safe", "a=b");
+        LinceFileProjectWrapper project = oneCriteriaProject("=HEADER", codes);
+
+        String safe = new String(single(exporter.export(new ExportSelection(project, null, List.of()),
+                Map.of("separator", "comma", "timeColumns", "", "excelSafe", "TRUE"))).content(), Charset.defaultCharset());
+        String raw = new String(single(exporter.export(new ExportSelection(project, null, List.of()),
+                Map.of("separator", "comma", "timeColumns", "", "excelSafe", "false"))).content(), Charset.defaultCharset());
+        String byDefault = new String(single(exporter.export(new ExportSelection(project, null, List.of()),
+                Map.of("separator", "comma", "timeColumns", ""))).content(), Charset.defaultCharset());
+
+        List<String> safeLines = safe.lines().toList();
+        assertEquals("'=HEADER", safeLines.get(0));
+        assertEquals("'=1+1", safeLines.get(2));
+        assertEquals("'+1", safeLines.get(3));
+        assertEquals("'-", safeLines.get(4));
+        assertEquals("'@x", safeLines.get(5));
+        assertEquals("'\tTAB", safeLines.get(6));
+        assertEquals(List.of("'=HEADER", "", "'=1+1", "'+1", "'-", "'@x", "'\tTAB", "'\rCR", "'=a,b", "safe", "a=b"),
+                parse(safe, ',').stream().map(CsvExporterTest::first).toList());
+        assertTrue(safe.contains("\"'\rCR\""), "a CR cell is quoted after the prefix");
+        assertTrue(safe.contains("\"'=a,b\""), "the prefix goes inside the quotes");
+
+        assertEquals(raw, byDefault);
+        List<String> rawColumn = new ArrayList<>(List.of("=HEADER", ""));
+        rawColumn.addAll(codes);
+        assertEquals(rawColumn, parse(raw, ',').stream().map(CsvExporterTest::first).toList());
+        assertEquals("=1+1", raw.lines().toList().get(2));
+    }
+
+    @Test
+    void excelSafeAcceptsOnlyBooleans() {
+        LinceFileProjectWrapper project = oneCriteriaProject("CRI", List.of("A"));
+        for (String value : List.of("yes", "1", "", "on")) {
+            ExportException e = assertThrows(ExportException.class, () -> exporter.export(
+                    new ExportSelection(project, null, List.of()), Map.of("excelSafe", value)), value);
+            assertEquals(TransferException.Reason.INVALID_OPTION, e.getReason(), value);
+            assertEquals(List.of("excelSafe"), e.getOffendingIds(), value);
+        }
     }
 
     @Test
@@ -202,6 +291,54 @@ class CsvExporterTest {
                     .filter(r -> research.equals(r.getId())).toList()));
         }
         return csv.executeFormatConversion(source, columns).getBytes();
+    }
+
+    /**
+     * A project with one criteria and one register holding one row per category, in order.
+     */
+    private static LinceFileProjectWrapper oneCriteriaProject(String criteriaCode, List<String> categoryCodes) {
+        Criteria criteria = new Criteria(1, "criteria");
+        criteria.setCode(criteriaCode);
+        LinkedList<Category> categories = new LinkedList<>();
+        LinceRegisterWrapper register = new LinceRegisterWrapper();
+        int id = 10;
+        double time = 1;
+        for (String code : categoryCodes) {
+            Category category = new Category(++id, "name of " + code, 1);
+            category.setCode(code);
+            categories.add(category);
+            register.getRegisterData().add(new RegisterItem(time++, category));
+        }
+        criteria.setInnerCategories(categories);
+        LinceFileProjectWrapper project = new LinceFileProjectWrapper();
+        project.setObservationTool(new ArrayList<>(List.of(criteria)));
+        project.setRegister(new ArrayList<>(List.of(register)));
+        return project;
+    }
+
+    /**
+     * Parses with univocity, keeping whitespace, line endings inside quotes and empty fields as they are.
+     */
+    private static List<String[]> parse(String content, char delimiter) {
+        CsvParserSettings settings = new CsvParserSettings();
+        settings.getFormat().setDelimiter(delimiter);
+        settings.getFormat().setLineSeparator(System.lineSeparator());
+        settings.setNormalizeLineEndingsWithinQuotes(false);
+        settings.setIgnoreLeadingWhitespaces(false);
+        settings.setIgnoreTrailingWhitespaces(false);
+        settings.setIgnoreLeadingWhitespacesInQuotes(false);
+        settings.setIgnoreTrailingWhitespacesInQuotes(false);
+        settings.setNullValue("");
+        settings.setEmptyValue("");
+        settings.setSkipEmptyLines(false);
+        return new CsvParser(settings).parseAll(new StringReader(content));
+    }
+
+    /**
+     * @return the first field, empty for a blank line (which the parser reads as no field at all)
+     */
+    private static String first(String[] row) {
+        return row.length == 0 || row[0] == null ? "" : row[0];
     }
 
     private static ExportedFile single(List<ExportedFile> files) {

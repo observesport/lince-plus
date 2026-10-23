@@ -17,7 +17,8 @@ import java.util.UUID;
 /**
  * CSV export (LO-349). The panel lists the time columns and the criteria codes of {@link LinceCsvExporter}; the
  * selection becomes the criteria ids and the {@code timeColumns} option of {@link CsvExporter}, called through
- * {@link ExportService} with the separator of the pressed button. At least one criteria is required.
+ * {@link ExportService} with the separator of the pressed button. At least one criteria is required. This is the
+ * "Excel" menu entry, so it always exports with {@code excelSafe=true}: formula-leading cells get a single quote.
  * <p>
  * Created by Alberto Soto. 7/11/24
  */
@@ -45,7 +46,8 @@ public class CsvExportComponent extends GenericExportComponent {
                     .filter(Objects::nonNull)
                     .toList();
             executeExport(criteriaIds, Map.of(CsvExporter.OPTION_SEPARATOR, separator,
-                    CsvExporter.OPTION_TIME_COLUMNS, String.join(",", timeColumns)));
+                    CsvExporter.OPTION_TIME_COLUMNS, String.join(",", timeColumns),
+                    CsvExporter.OPTION_EXCEL_SAFE, Boolean.TRUE.toString()));
         });
         return button;
     }

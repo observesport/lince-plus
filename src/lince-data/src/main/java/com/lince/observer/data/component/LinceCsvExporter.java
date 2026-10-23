@@ -15,11 +15,17 @@ import java.util.stream.Collectors;
 
 /**
  * Exporter component for CSV with support for , and ; as a delimiter based on LinceProject settings.
+ * <p>
+ * Every field goes through {@link #csvField}: RFC 4180 quoting when the field holds the separator, a double quote, CR
+ * or LF; other fields are written as they are. With {@link #setExcelSafe(boolean)} a field starting with {@code =},
+ * {@code +}, {@code -}, {@code @}, tab or CR is first prefixed with a single quote, so spreadsheets do not evaluate it
+ * as a formula (OWASP CSV injection).
  * Created by Alberto Soto. 7/11/24
  */
 public class LinceCsvExporter implements ILinceFileExporter {
 
     private boolean isComma = true;
+    private boolean excelSafe = false;
     TimeCalculations timeCalculations = new TimeCalculations();
     private static final String LINE_SEPARATOR = System.lineSeparator(); //= "\r\n"; //System.lineSeparator()
 
@@ -50,14 +56,47 @@ public class LinceCsvExporter implements ILinceFileExporter {
         this.isComma = useComma;
     }
 
+    /**
+     * @param excelSafe true to prefix formula-leading fields with a single quote (default false)
+     */
+    public void setExcelSafe(boolean excelSafe) {
+        this.excelSafe = excelSafe;
+    }
+
+    /**
+     * Writes one CSV field.
+     *
+     * @param value     raw value, null written as empty
+     * @param separator active separator
+     * @param excelSafe true to prefix a value starting with {@code =}, {@code +}, {@code -}, {@code @}, tab or CR with
+     *                  a single quote, before quoting
+     * @return the value, wrapped in double quotes with inner quotes doubled when it holds the separator, a double
+     * quote, CR or LF
+     */
+    public static String csvField(String value, String separator, boolean excelSafe) {
+        String field = value == null ? StringUtils.EMPTY : value;
+        if (excelSafe && !field.isEmpty() && "=+-@\t\r".indexOf(field.charAt(0)) >= 0) {
+            field = "'" + field;
+        }
+        if (field.contains(separator) || field.indexOf('"') >= 0 || field.indexOf('\r') >= 0 || field.indexOf('\n') >= 0) {
+            return '"' + field.replace("\"", "\"\"") + '"';
+        }
+        return field;
+    }
+
+    private String joinFields(List<String> fields) {
+        String separator = getSeparatorValue();
+        return fields.stream()
+                .map(field -> csvField(field, separator, excelSafe))
+                .collect(Collectors.joining(separator));
+    }
+
     private String getSeparatorValue() {
         return isComma ? LinceDataConstants.CSV_CHAR_SEPARATOR_COMMA : LinceDataConstants.CSV_CHAR_SEPARATOR_SEMICOLON;
     }
 
     private String createCsvHeader(List<String> columns) {
-        return columns.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(getSeparatorValue())) + LINE_SEPARATOR;
+        return joinFields(columns) + LINE_SEPARATOR;
     }
 
     @Override
@@ -69,14 +108,14 @@ public class LinceCsvExporter implements ILinceFileExporter {
         if (!selectedRegisters.isEmpty()) {
             RegisterItem zeroRegister = new RegisterItem(0.0);
             String[] firstRow = generateRow(columnDefinitions, zeroRegister, selectedRegisters.get(0), fps, linceProject);
-            content.append(String.join(getSeparatorValue(), firstRow)).append(LINE_SEPARATOR);
+            content.append(joinFields(Arrays.asList(firstRow))).append(LINE_SEPARATOR);
         }
 
         for (int i = 0; i < selectedRegisters.size(); i++) {
             RegisterItem currentRegister = selectedRegisters.get(i);
             RegisterItem nextRegister = (i < selectedRegisters.size() - 1) ? selectedRegisters.get(i + 1) : null;
             String[] row = generateRow(columnDefinitions, currentRegister, nextRegister, fps, linceProject);
-            content.append(String.join(getSeparatorValue(), row)).append(LINE_SEPARATOR);
+            content.append(joinFields(Arrays.asList(row))).append(LINE_SEPARATOR);
         }
         return content.toString();
     }

@@ -25,7 +25,7 @@ final class TransferResponses {
             case TYPE_MISMATCH -> HttpStatus.UNSUPPORTED_MEDIA_TYPE;
             case IO -> HttpStatus.INTERNAL_SERVER_ERROR;
             case UNKNOWN_TYPE, UNREADABLE, INSTRUMENT_REQUIRED, EMPTY_SELECTION, UNKNOWN_CRITERIA, UNKNOWN_RESEARCH,
-                 INVALID_OPTION ->
+                 INVALID_OPTION, EMPTY_PROJECT ->
                     HttpStatus.BAD_REQUEST;
         };
     }

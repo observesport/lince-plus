@@ -1,0 +1,296 @@
+/*
+ *  LINCE PLUS - Automatizacion de datos observacionales. Inherited from legacy Lince 1.2.
+ *  Copyright (C) 2025  Alberto Soto-Fernandez
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.lince.observer.legacy.instrumentoObservacional;
+
+import com.lince.observer.data.legacy.datos.ControladorArchivos;
+import com.lince.observer.data.legacy.utiles.MyObservable;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * @author Alberto Soto-Fernandez
+ */
+public class InstrumentoObservacional implements TreeModelListener {
+
+    // Line ending constants
+    private static final String LINE_SEPARATOR = "\r\n";
+
+    private static InstrumentoObservacional instance = null;
+    private static Observable observable = new MyObservable();
+    private RootInstrumentoObservacional raiz;
+    private transient DefaultTreeModel modelo = null;
+    protected final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
+
+    public static synchronized InstrumentoObservacional getInstance() {
+        if (instance == null) {
+            loadNewInstance();
+        }
+        return instance;
+    }
+
+    public static void loadNewInstance() {
+        instance = new InstrumentoObservacional(getNewRootInstrumentObservacional());
+        observable.notifyObservers("new");
+    }
+
+    public static void loadInstance(File f) throws IOException {
+        try {
+            RootInstrumentoObservacional arbol = (RootInstrumentoObservacional) ControladorArchivos.getInstance().cargar(f);
+            instance = new InstrumentoObservacional(arbol);
+            observable.notifyObservers("load");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(InstrumentoObservacional.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static RootInstrumentoObservacional getNewRootInstrumentObservacional() {
+        RootInstrumentoObservacional r = new RootInstrumentoObservacional(java.util.ResourceBundle.getBundle("i18n.Bundle").getString("NUEVO I. OBSERVACIONAL"));
+        r.add(new DefaultMutableTreeNode(java.util.ResourceBundle.getBundle("i18n.Bundle").getString("FIJOS")));
+        r.add(new DefaultMutableTreeNode(java.util.ResourceBundle.getBundle("i18n.Bundle").getString("MIXTOS")));
+        r.add(new DefaultMutableTreeNode(java.util.ResourceBundle.getBundle("i18n.Bundle").getString("VARIABLES")));
+        return r;
+    }
+
+    public InstrumentoObservacional(RootInstrumentoObservacional arbol) {
+        this.raiz = arbol;
+        this.modelo = null;
+    }
+
+    public static void addObservador(Observer observer) {
+        observable.addObserver(observer);
+    }
+
+    public static void removeObservador(Observer observer) {
+        observable.deleteObserver(observer);
+    }
+
+
+    /**
+     * What the Lince 1 {@code save()} wrote to a .ilince file (LO-349: lets exporters serialise it without a file).
+     *
+     * @return the instrument tree root
+     */
+    public RootInstrumentoObservacional getSaveContent() {
+        return raiz;
+    }
+
+    public DefaultTreeModel getModel() {
+        if (modelo == null) {
+            modelo = new DefaultTreeModel(raiz);
+            modelo.addTreeModelListener(this);
+        }
+        return modelo;
+    }
+
+    public void treeNodesChanged(TreeModelEvent e) {
+        observable.notifyObservers();
+    }
+
+    public void treeNodesInserted(TreeModelEvent e) {
+        observable.notifyObservers();
+    }
+
+    public void treeNodesRemoved(TreeModelEvent e) {
+        observable.notifyObservers();
+    }
+
+    public void treeStructureChanged(TreeModelEvent e) {
+        observable.notifyObservers();
+    }
+
+    public Criterio[] getCriterios() {
+        TreeNode variables = raiz.getChildAt(2);
+        int numCriterios = variables.getChildCount();
+        Criterio criterios[] = new Criterio[numCriterios];
+        for (int i = 0; i < numCriterios; i++) {
+            try {
+                criterios[i] = (Criterio) variables.getChildAt(i);
+            } catch (Exception e) {
+                log.error("adding criteria", e);
+            }
+
+        }
+        return criterios;
+    }
+
+    public NodoInformacion[] getDatosFijos() {
+        TreeNode variables = raiz.getChildAt(0);
+        int numNodoInformacion = variables.getChildCount();
+        NodoInformacion nodoInformacion[] = new NodoInformacion[numNodoInformacion];
+        for (int i = 0; i < numNodoInformacion; i++) {
+            nodoInformacion[i] = (NodoInformacion) variables.getChildAt(i);
+        }
+        return nodoInformacion;
+    }
+
+    public NodoInformacion[] getDatosMixtos() {
+        TreeNode variables = raiz.getChildAt(1);
+        int numNodoInformacion = variables.getChildCount();
+        NodoInformacion nodoInformacion[] = new NodoInformacion[numNodoInformacion];
+        for (int i = 0; i < numNodoInformacion; i++) {
+            nodoInformacion[i] = (NodoInformacion) variables.getChildAt(i);
+        }
+        return nodoInformacion;
+    }
+
+    public String getName() {
+        return raiz.getNombre();
+    }
+
+    /**
+     * Export variable declarations for GSEQ Interval format
+     * Format: "  fullname = code" (one per line, indented)
+     */
+    public String exportToSdisGseq(List<Criterio> criterios) {
+        String contenido = "";
+        // Generate variable declarations in format: "  fullname = code"
+        for (Criterio criterio : criterios) {
+            List<Categoria> categorias = criterio.getCategoriasHoja();
+            for (Categoria categoria : categorias) {
+                String code = categoria.getCodigo();
+
+                // Try to use description if available, otherwise use name, or construct from criterion + code
+                String fullName;
+                if (categoria.getDescripcion() != null && !categoria.getDescripcion().isEmpty()) {
+                    fullName = categoria.getDescripcion().replaceAll("\\s+", "").toLowerCase();
+                } else if (categoria.getNombre() != null && !categoria.getNombre().isEmpty()) {
+                    fullName = categoria.getNombre().replaceAll("\\s+", "").toLowerCase();
+                } else {
+                    // Fallback: use criterion name + code
+                    fullName = criterio.getNombre().replaceAll("\\s+", "").toLowerCase() + code.toLowerCase();
+                }
+
+                // Format: two spaces, full name, equals, code
+                contenido += "  " + fullName + " = " + code + "\r\n";
+            }
+        }
+        // Add metadata line placeholder
+        contenido += "* Metadata;\r\n";
+        return contenido;
+    }
+
+    /**
+     * Export variable declarations for GSEQ Event/Multievent/Timed/State formats
+     * Format: "($CriterionName = code1 code2 ...)" (grouped by criterion)
+     */
+    public String exportToSdisGseqOldFormat(List<Criterio> criterios) {
+        String contenido = LINE_SEPARATOR;
+        int criterioCount = criterios.size();
+        int index = 0;
+        for (Criterio criterio : criterios) {
+            contenido += "($" + criterio.getNombre() + " =";
+            List<Categoria> categorias = criterio.getCategoriasHoja();
+            for (Categoria categoria : categorias) {
+                contenido += " " + categoria.getCodigo();
+            }
+            // Last declaration ends with ");", others with just ")"
+            index++;
+            if (index == criterioCount) {
+                contenido += ");" + LINE_SEPARATOR;
+            } else {
+                contenido += ")" + LINE_SEPARATOR;
+            }
+        }
+        return contenido + LINE_SEPARATOR;
+    }
+
+    public String exportToTheme(List<Criterio> criterios) {
+        String contenido = "";
+        for (Criterio criterio : criterios) {
+            contenido += criterio.getNombre() + "\r\n";
+            List<Categoria> categorias = criterio.getCategoriasHoja();
+            for (Categoria categoria : categorias) {
+                contenido += " " + categoria.getCodigo() + "\r\n";
+            }
+        }
+
+        return contenido;
+    }
+
+    /**
+     * Genera nombre adicional
+     *
+     * @param parent
+     * @param nombre
+     */
+    public void addHijo(DefaultMutableTreeNode parent, String nombre) {
+        try{
+            String nodeName = nombre;//TODO 2020 asf review -- uuid issue + " " +  (parent.getChildCount() +1);
+            if (modelo.getPathToRoot(parent).length > 2) { //
+                //pq 2? se trata de una categoría!
+                modelo.insertNodeInto(new Categoria(nodeName), parent, parent.getChildCount());
+            } else {
+                int index = raiz.getIndex(parent);
+                switch (index) {
+                    case 0:
+                    case 1://fijo?
+                        modelo.insertNodeInto(new NodoInformacion(nodeName), parent, parent.getChildCount());
+                        break;
+                    case 2://mixto?
+                        modelo.insertNodeInto(new Criterio(nodeName), parent, parent.getChildCount());
+                }
+            }
+        }catch (Exception e){
+            log.error("UUID issue adding children to legacy instrument",e);
+        }
+
+    }
+
+    /**
+     * Appends a criterion under the "variables" node through the tree model, as {@link #addHijo} does.
+     * Lets headless callers (LegacyBridge, LO-349) build an instrument without touching Swing tree types.
+     *
+     * @param nombre criterion name
+     * @return the inserted criterion
+     */
+    public Criterio addCriterio(String nombre) {
+        getModel();
+        addHijo((DefaultMutableTreeNode) raiz.getChildAt(2), nombre);
+        Criterio[] criterios = getCriterios();
+        return criterios[criterios.length - 1];
+    }
+
+    /**
+     * Appends a category to a criterion through the tree model, as {@link #addHijo} does.
+     *
+     * @param criterio parent criterion, already inserted in this instrument
+     * @param nombre   category name
+     * @return the inserted category
+     */
+    public Categoria addCategoria(Criterio criterio, String nombre) {
+        getModel();
+        addHijo(criterio, nombre);
+        Categoria[] categorias = criterio.getCategoriasHijo();
+        return categorias[categorias.length - 1];
+    }
+
+
+}

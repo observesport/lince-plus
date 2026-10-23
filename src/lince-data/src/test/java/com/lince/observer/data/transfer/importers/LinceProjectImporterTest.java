@@ -212,6 +212,53 @@ class LinceProjectImporterTest {
     }
 
     @Test
+    void fullWithNoInstrumentAndNoObservationsIsRefusedAndLeavesTheTargetUntouched() throws Exception {
+        LinceFileProjectWrapper target = TransferFixtures.load(TransferFixtures.SINGLE);
+        List<String> tool = codes(target.getObservationTool());
+        List<UUID> registers = ids(target.getRegister());
+        int rows = observations(target);
+        LinceFileProjectWrapper emptyRegisters = projectWith(List.of(), new LinceRegisterWrapper(), new LinceRegisterWrapper());
+
+        for (ByteArrayInputStream content : List.of(
+                new ByteArrayInputStream("<linceProject/>".getBytes(StandardCharsets.UTF_8)),
+                toStream(emptyRegisters))) {
+            ImportException e = assertThrows(ImportException.class,
+                    () -> importer.importInto(target, content, ImportScope.FULL, Map.of()));
+            assertEquals(TransferException.Reason.EMPTY_PROJECT, e.getReason());
+            assertEquals("The file holds no instrument and no observations", e.getMessage());
+        }
+
+        assertEquals(tool, codes(target.getObservationTool()));
+        assertEquals(registers, ids(target.getRegister()));
+        assertEquals(rows, observations(target));
+    }
+
+    @Test
+    void fullWithInstrumentButNoObservationsIsAccepted() throws Exception {
+        LinceFileProjectWrapper target = TransferFixtures.load(TransferFixtures.SINGLE);
+        LinceFileProjectWrapper source = projectWith(List.of(criteria(7, "NEW", "NEW-1")), new LinceRegisterWrapper());
+
+        ImportOutcome outcome = importer.importInto(target, toStream(source), ImportScope.FULL, Map.of());
+
+        assertEquals(List.of("NEW"), codes(target.getObservationTool()));
+        assertEquals(0, observations(target));
+        assertEquals(1, outcome.criteriaCount());
+    }
+
+    @Test
+    void observationsFromAnEmptyFileImportNothingWithoutError() {
+        LinceFileProjectWrapper target = TransferFixtures.load(TransferFixtures.SINGLE);
+        int rows = observations(target);
+
+        ImportOutcome outcome = importer.importInto(target,
+                new ByteArrayInputStream("<linceProject/>".getBytes(StandardCharsets.UTF_8)), ImportScope.OBSERVATIONS, Map.of());
+
+        assertEquals(rows, observations(target));
+        assertEquals(0, outcome.observationCount());
+        assertTrue(outcome.warnings().isEmpty());
+    }
+
+    @Test
     void unreadableContentFails() {
         LinceFileProjectWrapper target = TransferFixtures.load(TransferFixtures.SINGLE);
         for (String content : List.of("not xml", "<other/>", "<?xml version=\"1.0\"?><!DOCTYPE x [<!ENTITY e SYSTEM \"file:///etc/passwd\">]><linceProject>&e;</linceProject>")) {

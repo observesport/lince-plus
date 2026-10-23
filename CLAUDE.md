@@ -24,7 +24,8 @@ Lince PLUS is a software for systematic observation studies of sports and health
 This is a multi-module Maven project with the following modules:
 
 - **lince-data**: Core data models, services, and business logic
-- **lince-data-fx**: JavaFX-specific data components and adapters
+- **lince-legacy**: JavaFX-free legacy Lince 1 model and the legacy import/export types (Theme 5, SAS, SDIS-GSEQ, HOISAN, Lince 1); depends on `lince-data` only, usable headless and by lince-server
+- **lince-data-fx**: JavaFX-specific data components and adapters (export panels); depends on `lince-legacy`
 - **lince-desktop**: Main JavaFX desktop application (`LinceAppFx` entry point)
 - **lince-ai**: AI and statistical analysis components (includes agreement analysis using DKPro)
 - **lince-math**: Mathematical calculations using Renjin R engine integration
@@ -78,6 +79,7 @@ Key external dependencies:
 - Test execution: `mvn test` (from `src/` directory)
 - Tests are skipped in installer build (`-DskipTests`)
 - The `lince-data-fx` module provides a test-jar with test utilities (includes `EmptyLinceApp` for testing)
+- The `lince-legacy` module provides a test-jar with the Lince 1 fixtures (`Lince1Fixtures`, `ExporterFixture`, `lince1/**`, `prj/template.*`)
 
 ## Build Profiles
 
