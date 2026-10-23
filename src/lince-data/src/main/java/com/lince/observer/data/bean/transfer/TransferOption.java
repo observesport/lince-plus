@@ -26,6 +26,10 @@ public record TransferOption(String key, String label, Type type, String default
         values = values == null ? null : List.copyOf(values);
     }
 
+    public static TransferOption bool(String key, String label, boolean defaultValue) {
+        return new TransferOption(key, label, Type.BOOLEAN, Boolean.toString(defaultValue), null, false);
+    }
+
     public static TransferOption choice(String key, String label, String defaultValue, List<String> values) {
         return new TransferOption(key, label, Type.ENUM, defaultValue, values, false);
     }

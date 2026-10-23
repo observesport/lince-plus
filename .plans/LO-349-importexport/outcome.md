@@ -37,6 +37,7 @@ Scope (only `lince-plus` honours it, the legacy types always import as a full re
 
 - `full` = "Import Lince PLUS project": replaces the instrument and the registers with the file's, rebuilds the
   user profiles from the registers. The research profile (fps, names) is kept; videos are never imported.
+  A file with no criteria and no observations is refused with 400 `empty_project` (the project is untouched).
 - `observations` = "Import observer": keeps the instrument, appends the file's registers with fresh ids and
   registers each observer. Categories whose code is not in the loaded instrument are dropped and reported as
   warnings. Requires a loaded instrument → 400 `instrument_required` otherwise.
@@ -89,7 +90,7 @@ never hard-code it.
 | id | label | file | criteria selection | multiFile | options |
 |---|---|---|---|---|---|
 | `lince-plus` | Lince PLUS project | `.xml` | no | no | |
-| `csv` | CSV (Excel) | `.csv` | yes | no | `separator` = `comma` or `semicolon` (default `semicolon`); `timeColumns` = comma-separated time column ids to include (default: all; empty string = none, but at least one criterion or one time column is required) |
+| `csv` | CSV (Excel) | `.csv` | yes | no | `separator` = `comma` or `semicolon` (default `semicolon`); `timeColumns` = comma-separated time column ids to include (default: all; empty string = none, but at least one criterion or one time column is required); `excelSafe` = `true` or `false` (boolean, default `false`): when `true`, every cell (headers included) starting with `=`, `+`, `-`, `@`, tab or CR is prefixed with `'` so Excel does not evaluate it as a formula; the JavaFX "Excel" menu entry always exports with `excelSafe=true` |
 | `theme6` | Theme 6 | `.txt` + `vvt.vvt` | yes | yes (zip) | |
 | `theme5` | Theme 5 | `.csv` + `.vvt` | yes | yes (zip) | |
 | `sas` | SAS | `.sds` | yes | no | |
@@ -105,6 +106,18 @@ never hard-code it.
 Always read the list from `GET /api/export/types`; the table is a snapshot of the current build.
 Theme 6 exports the selected observer only (the old menu exported every observer).
 
+Behaviour changes in CSV and full import (LO-349 legacy-module follow-up):
+
+- CSV fields are now RFC 4180 quoted: a field holding the active separator, a double quote, CR or LF is wrapped
+  in double quotes with inner quotes doubled. Fields without those characters are written exactly as before, so
+  existing outputs with plain codes are byte-identical.
+- `excelSafe=true` prefixes formula-leading cells with a single quote before quoting. A code that is only `-`
+  or starts with `+` is prefixed too, which is the documented trade-off; the API default stays `false` so R and
+  scripts read raw codes.
+- A full import of a project file with no criteria and no observations is refused with 400 `empty_project`
+  and the loaded project is left untouched. A file with criteria but no observations is still accepted, and
+  `scope=observations` on an empty file still imports nothing without error.
+
 ## Errors
 
 4xx answers carry `{ "reason": "<code>", "message": "<text>", "ids": [..] }` (`ids` only when the error points at
@@ -115,6 +128,7 @@ specific ids: unknown criteria, invalid option key). 500 answers have an empty b
 | 400 | `unknown_type` | type id not known, or extension not recognised on import |
 | 400 | `unreadable` | the file could not be parsed, or is empty |
 | 400 | `instrument_required` | `scope=observations` into a project without an instrument |
+| 400 | `empty_project` | `scope=full` import of a `lince-plus` file with no criteria and no observations; the loaded project is untouched |
 | 400 | `empty_selection` | nothing to export (no observations, or CSV with no column at all) |
 | 400 | `unknown_criteria` | a `criteriaIds` entry is not in the project; `ids` lists them |
 | 400 | `unknown_research` | `researchId` has no register |

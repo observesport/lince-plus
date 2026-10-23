@@ -36,7 +36,8 @@ import java.util.UUID;
  *     file's ones and rebuilds the user profiles of the first research profile from the registers, as the former
  *     {@code LinceFileHelperFx.addBaseProjectInfo} followed by {@code reloadResearchProfileDataFromRegister()} did
  *     (this class replaces it).
- *     The research profile itself (fps, names) is kept; videos are never imported.</li>
+ *     The research profile itself (fps, names) is kept; videos are never imported. A file with no criteria and no
+ *     observations is refused ({@code EMPTY_PROJECT}) instead of emptying the loaded project.</li>
  *     <li>{@link ImportScope#OBSERVATIONS} ("Import observer"): keeps the instrument and appends the file's registers
  *     with fresh ids, registering each observer in the first research profile, as the former
  *     {@code LinceFileHelperFx.addObservations} did through {@code DataHubServiceBase.addDataRegister}.
@@ -87,7 +88,9 @@ public class LinceProjectImporter implements LinceImporter {
      * @param source parsed file
      * @param scope  what to merge
      * @return counts and warnings
-     * @throws ImportException INSTRUMENT_REQUIRED for {@link ImportScope#OBSERVATIONS} into a project without instrument
+     * @throws ImportException INSTRUMENT_REQUIRED for {@link ImportScope#OBSERVATIONS} into a project without instrument;
+     *                         EMPTY_PROJECT for {@link ImportScope#FULL} from a source with no criteria and no register
+     *                         rows, before the target is touched
      */
     public ImportOutcome merge(ILinceProject target, ILinceProject source, ImportScope scope) {
         if (scope == ImportScope.OBSERVATIONS) {
@@ -98,6 +101,11 @@ public class LinceProjectImporter implements LinceImporter {
 
     private ImportOutcome mergeFull(ILinceProject target, ILinceProject source) {
         List<LinceRegisterWrapper> registers = new ArrayList<>(nonNull(source.getRegister()));
+        if (nonNull(source.getObservationTool()).isEmpty()
+                && registers.stream().mapToInt(LinceProjectImporter::rows).sum() == 0) {
+            throw new ImportException(TransferException.Reason.EMPTY_PROJECT,
+                    "The file holds no instrument and no observations");
+        }
         target.setObservationTool(new ArrayList<>(nonNull(source.getObservationTool())));
         target.setRegister(registers);
         ResearchProfile research = firstResearchProfile(target);
@@ -234,7 +242,7 @@ public class LinceProjectImporter implements LinceImporter {
     }
 
     private static int rows(LinceRegisterWrapper register) {
-        return register.getRegisterData() == null ? 0 : register.getRegisterData().size();
+        return register == null || register.getRegisterData() == null ? 0 : register.getRegisterData().size();
     }
 
     private static <T> List<T> nonNull(List<T> list) {

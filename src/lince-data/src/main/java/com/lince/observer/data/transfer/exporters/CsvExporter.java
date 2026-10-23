@@ -9,10 +9,8 @@ import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
 import com.lince.observer.data.bean.wrapper.LinceRegisterWrapper;
 import com.lince.observer.data.component.LinceCsvExporter;
 import com.lince.observer.data.transfer.ExportException;
-import com.lince.observer.data.transfer.ExportException;
 import com.lince.observer.data.transfer.ExportSelection;
 import com.lince.observer.data.transfer.LinceExporter;
-import com.lince.observer.data.transfer.TransferException;
 import com.lince.observer.data.transfer.TransferException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -30,8 +28,10 @@ import java.util.Map;
  * <p>
  * Options: {@code separator}, {@code comma} or {@code semicolon} (default); {@code timeColumns}, the time columns
  * to write before the criteria, comma separated labels of {@link LinceDataConstants.ColumnType} in output order
- * (default all of them in the selection panel order, empty for none). An unknown value fails with
- * {@code INVALID_OPTION}.
+ * (default all of them in the selection panel order, empty for none); {@code excelSafe}, {@code true} to prefix cells
+ * starting with {@code =}, {@code +}, {@code -}, {@code @}, tab or CR with a single quote so spreadsheets do not run
+ * them as formulas (default {@code false}, raw values for R and scripts). An unknown value fails with
+ * {@code INVALID_OPTION}. Fields are RFC 4180 quoted (see {@link LinceCsvExporter#csvField}).
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
@@ -43,6 +43,7 @@ public class CsvExporter implements LinceExporter {
     public static final String SEPARATOR_COMMA = "comma";
     public static final String SEPARATOR_SEMICOLON = "semicolon";
     public static final String OPTION_TIME_COLUMNS = "timeColumns";
+    public static final String OPTION_EXCEL_SAFE = "excelSafe";
     static final String MIME_TYPE = "text/csv";
     static final String FILE_NAME = "lince-export.csv";
 
@@ -50,7 +51,8 @@ public class CsvExporter implements LinceExporter {
             true, false, List.of(
             TransferOption.choice(OPTION_SEPARATOR, "Separator", SEPARATOR_SEMICOLON,
                     List.of(SEPARATOR_COMMA, SEPARATOR_SEMICOLON)),
-            TransferOption.string(OPTION_TIME_COLUMNS, "Time columns", String.join(",", LinceCsvExporter.TIME_COLUMNS))));
+            TransferOption.string(OPTION_TIME_COLUMNS, "Time columns", String.join(",", LinceCsvExporter.TIME_COLUMNS)),
+            TransferOption.bool(OPTION_EXCEL_SAFE, "Excel-safe cells", false)));
 
     @Override
     public ExportTypeDescriptor descriptor() {
@@ -60,6 +62,7 @@ public class CsvExporter implements LinceExporter {
     @Override
     public List<ExportedFile> export(ExportSelection selection, Map<String, String> options) {
         boolean comma = parseSeparator(options.get(OPTION_SEPARATOR));
+        boolean excelSafe = parseExcelSafe(options.get(OPTION_EXCEL_SAFE));
         List<String> columns = new ArrayList<>(timeColumns(options.get(OPTION_TIME_COLUMNS)));
         selection.getCriteria().stream().map(Criteria::getCode).forEach(columns::add);
         if (columns.isEmpty()) {
@@ -69,6 +72,7 @@ public class CsvExporter implements LinceExporter {
 
         LinceCsvExporter csv = new LinceCsvExporter();
         csv.setUseCsvComma(comma);
+        csv.setExcelSafe(excelSafe);
 
         String content = csv.executeFormatConversion(view, columns);
         return List.of(ExportedFile.text(FILE_NAME, MIME_TYPE, content));
@@ -131,6 +135,17 @@ public class CsvExporter implements LinceExporter {
             return false;
         }
         throw invalidOption(OPTION_SEPARATOR, "Unknown CSV separator: " + value + " (expected comma or semicolon)");
+    }
+
+    /**
+     * @return the {@code excelSafe} value, false when absent
+     */
+    private static boolean parseExcelSafe(String value) {
+        String flag = value == null ? Boolean.FALSE.toString() : value.trim();
+        if (!flag.equalsIgnoreCase("true") && !flag.equalsIgnoreCase("false")) {
+            throw invalidOption(OPTION_EXCEL_SAFE, "Invalid excelSafe value: " + value + " (expected true or false)");
+        }
+        return Boolean.parseBoolean(flag);
     }
 
     private static ExportException invalidOption(String key, String message) {

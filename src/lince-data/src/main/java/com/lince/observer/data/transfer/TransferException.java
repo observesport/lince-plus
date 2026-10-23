@@ -7,7 +7,7 @@ import java.util.List;
  * an HTTP status and the JavaFX menu maps to a message, plus the offending ids when the reason is about ids.
  * <p>
  * Suggested HTTP mapping: {@code UNKNOWN_TYPE}, {@code UNREADABLE}, {@code INSTRUMENT_REQUIRED},
- * {@code EMPTY_SELECTION}, {@code UNKNOWN_CRITERIA}, {@code UNKNOWN_RESEARCH}, {@code INVALID_OPTION} → 400; {@code TYPE_MISMATCH} → 415;
+ * {@code EMPTY_SELECTION}, {@code UNKNOWN_CRITERIA}, {@code UNKNOWN_RESEARCH}, {@code INVALID_OPTION}, {@code EMPTY_PROJECT} → 400; {@code TYPE_MISMATCH} → 415;
  * {@code IO} → 500.
  * <p>
  * Created by Alberto Soto. 21/10/26
@@ -34,6 +34,8 @@ public abstract class TransferException extends RuntimeException {
         UNKNOWN_RESEARCH,
         /** An option value is not valid for the type; the offending ids are the option keys. */
         INVALID_OPTION,
+        /** A full import of a project file holding no instrument and no observations, refused so the loaded project survives. */
+        EMPTY_PROJECT,
         /** Reading or writing failed. */
         IO
     }

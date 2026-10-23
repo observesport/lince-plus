@@ -21,11 +21,13 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.Arrays;
+import java.util.Set;
 
 import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.IMPORT;
 import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.assertNoLeak;
 import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.resource;
-import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.spoolFiles;
+import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.newSpoolFiles;
+import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.spoolFileNames;
 import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.text;
 import static com.lince.observer.desktop.spring.controller.rest.TransferApiHarness.upload;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,19 +52,19 @@ class ImportApiAbuseTest {
     private static final String PLUS_PROJECT = "/prj/template.xml";
 
     private TransferApiHarness api;
-    private long spoolBefore;
+    private Set<String> spoolBefore;
     private LiveState before;
 
     @BeforeEach
     void setUp() {
         api = new TransferApiHarness().withLince1Project();
-        spoolBefore = spoolFiles();
+        spoolBefore = spoolFileNames();
         before = api.liveState();
     }
 
     @AfterEach
     void noSpoolFileLeft() {
-        assertEquals(spoolBefore, spoolFiles(), "an upload spool file was left in java.io.tmpdir");
+        assertEquals(Set.of(), newSpoolFiles(spoolBefore), "an upload spool file was left in java.io.tmpdir");
     }
 
     private MvcResult rejected(MockMultipartFile file, int status, String reason, String... params) throws Exception {
@@ -120,18 +122,17 @@ class ImportApiAbuseTest {
     }
 
     /**
-     * Documents current behaviour, not a wish: an empty Lince PLUS root is a valid project, so a full import of it
-     * succeeds and replaces the instrument and the registers with nothing. Same as importing an empty project from
-     * the JavaFX menu; reported to the team for a product decision.
+     * An empty Lince PLUS root holds no instrument and no observations: a full import of it is refused instead of
+     * emptying the loaded project (LO-349 FR-9), whether the scope is the default or explicit.
      */
     @Test
-    void emptyLincePlusRootIsAcceptedAndEmptiesTheProject() throws Exception {
-        api.mvc.perform(multipart(IMPORT).file(upload("empty.xml", "<?xml version=\"1.0\"?><linceProject/>")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.criteriaCount").value(0))
-                .andExpect(jsonPath("$.registerCount").value(0));
-        assertTrue(api.criteria.isEmpty());
-        assertTrue(api.registers.isEmpty());
+    void emptyLincePlusRootIsRefusedAndLeavesTheProjectUntouched() throws Exception {
+        String empty = "<?xml version=\"1.0\"?><linceProject/>";
+        MvcResult result = rejected(upload("empty.xml", empty), 400, "empty_project");
+        assertTrue(result.getResponse().getContentAsString().contains("The file holds no instrument and no observations"),
+                result.getResponse().getContentAsString());
+        rejected(upload("empty.xml", empty), 400, "empty_project", "scope", "full");
+        assertFalse(api.criteria.isEmpty());
     }
 
     @Test
@@ -264,7 +265,7 @@ class ImportApiAbuseTest {
                 .andExpect(jsonPath("$.type").value("lince-plus"))
                 .andReturn();
         assertFalse(text(result).contains(name), "the client file name must not be echoed on success");
-        assertEquals(spoolBefore, spoolFiles());
+        assertEquals(Set.of(), newSpoolFiles(spoolBefore));
     }
 
     @Test
