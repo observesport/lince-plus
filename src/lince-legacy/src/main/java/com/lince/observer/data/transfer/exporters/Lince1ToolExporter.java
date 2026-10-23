@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * Lince 1 tool export (LO-349): the project's instrument as {@code tool.ilince}, the bytes
- * the former {@code SaveInstrumentoObservacionalAs} command wrote through {@code InstrumentoObservacional.save()}. The whole
+ * the former {@code SaveInstrumentoObservacionalAs} command wrote with {@code PackageAwareXMLSerializer}. The whole
  * instrument is written, so the criteria selection does not apply.
  * <p>
  * Created by Alberto Soto. 21/10/26
@@ -45,7 +45,7 @@ public class Lince1ToolExporter implements LinceExporter {
     }
 
     /**
-     * @return the .ilince bytes of the instrument, identical to what {@link InstrumentoObservacional#save()} writes
+     * @return the .ilince bytes of the instrument, the {@code PackageAwareXMLSerializer} encoding of {@link InstrumentoObservacional#getSaveContent()}
      */
     private static byte[] content(InstrumentoObservacional instrument) {
         return ControladorArchivos.getInstance().serializar(instrument.getSaveContent());

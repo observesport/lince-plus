@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * Lince 1 register export (LO-349): the selected observer's register as {@code register.rlince}, the bytes
- * the former {@code SaveRegistroAs} command wrote through {@code Registro.save()}. The legacy format stores every criterion, so the
+ * the former {@code SaveRegistroAs} command wrote with {@code PackageAwareXMLSerializer}. The legacy format stores every criterion, so the
  * criteria selection does not apply.
  * <p>
  * Created by Alberto Soto. 21/10/26
@@ -47,7 +47,7 @@ public class Lince1RegisterExporter implements LinceExporter {
     }
 
     /**
-     * @return the .rlince bytes of the register, identical to what {@link Registro#save()} writes
+     * @return the .rlince bytes of the register, the {@code PackageAwareXMLSerializer} encoding of {@link Registro#getSaveContent()}
      */
     static byte[] content(Registro registro) {
         return ControladorArchivos.getInstance().serializar(registro.getSaveContent());

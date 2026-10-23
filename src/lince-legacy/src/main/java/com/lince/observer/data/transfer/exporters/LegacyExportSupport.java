@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Text exports go through {@link com.lince.observer.data.bean.transfer.ExportedFile#text}: the JVM default charset, as the former Swing panels used
  * ({@code String.getBytes()}), named in the MIME type. The Lince 1 exporters are XML and always UTF-8, as
- * {@code Registro.save()} writes them.
+ * {@code PackageAwareXMLSerializer} writes them.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */
