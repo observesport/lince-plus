@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.5</version>
+        <version>3.5.16</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.lince.observer</groupId>
@@ -76,37 +76,39 @@
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
         <jakartaInject.version>2.0.0</jakartaInject.version>
         <junit5.version>5.12.2</junit5.version>
-        <jackson.version>2.18.9</jackson.version>
-        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
+        <jackson.version>2.18.12</jackson.version>
+        <!-- Keep every Jackson artifact (incl. Boot-managed datatype/dataformat modules) on the same 2.18.x line as jackson-databind -->
+        <jackson-bom.version>${jackson.version}</jackson-bom.version>
+        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <springdoc-openapi.version>2.1.0</springdoc-openapi.version>
+        <springdoc-openapi.version>2.8.17</springdoc-openapi.version>
         <!-- https://docs.awspring.io/spring-cloud-aws/docs/3.3.0/reference/html/index.html#spring-cloud-aws-s3  -->
-        <spring.cloud-aws.version>3.0.0</spring.cloud-aws.version>
-        <testcontainers.version>1.19.6</testcontainers.version>
+        <spring.cloud-aws.version>3.4.2</spring.cloud-aws.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <dkpro.version>2.2.1</dkpro.version>
-        <snakeYaml.version>2.2</snakeYaml.version>
-        <twelveMonkeysImageIo.version>3.10.1</twelveMonkeysImageIo.version>
+        <snakeYaml.version>2.4</snakeYaml.version>
+        <twelveMonkeysImageIo.version>3.15.3</twelveMonkeysImageIo.version>
         <fujionHighcharts.version>3.1.0</fujionHighcharts.version>
         <ffmpeg.version>6.1.1-1.5.10</ffmpeg.version>
         <!-- TODO 2024 jackcess Needs update but breaks! -->
         <jackcess.version>1.2.13</jackcess.version>
-        <tikaCore.version>3.2.2</tikaCore.version>
-        <apacheCommonsIo.version>2.16.0</apacheCommonsIo.version>
-        <apacheCommonsLang3.version>3.18.0</apacheCommonsLang3.version>
-        <apacheCommonsCollections4.version>4.4</apacheCommonsCollections4.version>
+        <tikaCore.version>3.3.3</tikaCore.version>
+        <apacheCommonsIo.version>2.22.0</apacheCommonsIo.version>
+        <apacheCommonsLang3.version>3.21.0</apacheCommonsLang3.version>
+        <apacheCommonsCollections4.version>4.5.0</apacheCommonsCollections4.version>
         <apacheCommonsMath.version>3.6.1</apacheCommonsMath.version>
-        <guava.version>33.1.0-jre</guava.version>
+        <guava.version>33.7.2-jre</guava.version>
         <univocityParsers.version>2.9.1</univocityParsers.version>
-        <gson.version>2.10.1</gson.version>
-        <org.json.version>20240303</org.json.version>
-        <google.zxing.version>3.5.3</google.zxing.version>
-        <jakartaActivation.version>2.1.3</jakartaActivation.version>
-        <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
-        <jaxbImpl.version>4.0.5</jaxbImpl.version>
+        <gson.version>2.14.0</gson.version>
+        <org.json.version>20260814</org.json.version>
+        <google.zxing.version>3.5.4</google.zxing.version>
+        <jakartaActivation.version>2.1.4</jakartaActivation.version>
+        <jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
+        <jaxbImpl.version>4.0.9</jaxbImpl.version>
         <start-class>com.lince.observer.desktop.LinceAppFx</start-class>
         <outputFolder>../lince-data/</outputFolder>
-        <ngrok.version>2.5.0</ngrok.version>
+        <ngrok.version>2.5.1</ngrok.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -361,6 +363,18 @@
                 <groupId>org.fujion</groupId>
                 <artifactId>fujion-highcharts</artifactId>
                 <version>${fujionHighcharts.version}</version>
+            </dependency>
+            <!-- Transitive security pins: fujion-core brings commons-beanutils 1.9.4 (CVE-2025-48734),
+                 renjin-core brings commons-compress 1.18 (CVE-2021-35515/35516/35517/36090, CVE-2024-25710, CVE-2024-26308) -->
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>1.11.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.28.0</version>
             </dependency>
             <!--        JavaFX inside jdk17-->
             <!-- https://mvnrepository.com/artifact/org.openjfx/javafx -->
