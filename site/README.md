@@ -15,7 +15,7 @@ npm run build      # writes dist/
 npm run preview    # serves dist/ at http://localhost:4321/lince-plus/
 ```
 
-Node 22.12 or later (see `.nvmrc`).
+Node 22.23.4 or later (see `.nvmrc`; Astro 7.4 requires it).
 
 When you add or update a dependency, regenerate `package-lock.json` on Linux so `npm ci` on
 the CI runner accepts it. A lock written on macOS can miss optional packages that sharp needs
