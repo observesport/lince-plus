@@ -122,11 +122,6 @@ public class IntervalExporter extends GseqExporter {
         return contenido.toString();
     }
 
-    @Override
-    public String getFormatName() {
-        return "Interval";
-    }
-
     /**
      * Calculates the average interval duration between observations in seconds.
      *
@@ -160,23 +155,5 @@ public class IntervalExporter extends GseqExporter {
 
         // Return at least 1 second
         return Math.max(1, avgIntervalSeconds);
-    }
-
-    /**
-     * Get the interval duration in seconds.
-     *
-     * @return Interval duration
-     */
-    public int getIntervalSeconds() {
-        return intervalSeconds;
-    }
-
-    /**
-     * Set the interval duration in seconds.
-     *
-     * @param intervalSeconds New interval duration
-     */
-    public void setIntervalSeconds(int intervalSeconds) {
-        this.intervalSeconds = intervalSeconds;
     }
 }

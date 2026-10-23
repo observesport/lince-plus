@@ -40,21 +40,8 @@ public class ControladorArchivos {
     private ControladorArchivos() {
     }
 
-    public void guardar(File path, Object datos) throws FileNotFoundException {
-//        deprecated part
-//        XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(path)));
-//        e.setPersistenceDelegate(FilaRegistro.class, new DefaultPersistenceDelegate(new String[]{"milis", "registro", "datosMixtos"}));
-//        e.writeObject(datos);
-//        e.close();
-        try {
-            PackageAwareXMLSerializer.encodeToFile(datos, path);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
     /**
-     * Same bytes {@link #guardar(File, Object)} writes, without a file (LO-349).
+     * The bytes the Lince 1 {@code guardar(File, Object)} wrote to a file (LO-349).
      *
      * @param datos object to encode
      * @return UTF-8 XML

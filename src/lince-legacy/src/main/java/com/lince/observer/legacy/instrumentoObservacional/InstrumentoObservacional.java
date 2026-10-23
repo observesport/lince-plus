@@ -46,8 +46,6 @@ public class InstrumentoObservacional implements TreeModelListener {
     private static InstrumentoObservacional instance = null;
     private static Observable observable = new MyObservable();
     private RootInstrumentoObservacional raiz;
-    private transient File path;
-    private transient boolean necesarySave;
     private transient DefaultTreeModel modelo = null;
     protected final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -59,14 +57,14 @@ public class InstrumentoObservacional implements TreeModelListener {
     }
 
     public static void loadNewInstance() {
-        instance = new InstrumentoObservacional(getNewRootInstrumentObservacional(), null);
+        instance = new InstrumentoObservacional(getNewRootInstrumentObservacional());
         observable.notifyObservers("new");
     }
 
     public static void loadInstance(File f) throws IOException {
         try {
             RootInstrumentoObservacional arbol = (RootInstrumentoObservacional) ControladorArchivos.getInstance().cargar(f);
-            instance = new InstrumentoObservacional(arbol, f);
+            instance = new InstrumentoObservacional(arbol);
             observable.notifyObservers("load");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(InstrumentoObservacional.class.getName()).log(Level.SEVERE, null, ex);
@@ -81,19 +79,9 @@ public class InstrumentoObservacional implements TreeModelListener {
         return r;
     }
 
-    public InstrumentoObservacional(RootInstrumentoObservacional arbol, File path) {
+    public InstrumentoObservacional(RootInstrumentoObservacional arbol) {
         this.raiz = arbol;
-        this.path = path;
-        this.necesarySave = false;
         this.modelo = null;
-    }
-
-    public File getPath() {
-        return path;
-    }
-
-    public void setPath(File path) {
-        this.path = path;
     }
 
     public static void addObservador(Observer observer) {
@@ -106,25 +94,12 @@ public class InstrumentoObservacional implements TreeModelListener {
 
 
     /**
-     * What {@link #save()} writes to a .ilince file (LO-349: lets exporters serialise it without a file).
+     * What the Lince 1 {@code save()} wrote to a .ilince file (LO-349: lets exporters serialise it without a file).
      *
      * @return the instrument tree root
      */
     public RootInstrumentoObservacional getSaveContent() {
         return raiz;
-    }
-
-    public void save() {
-        try {
-            ControladorArchivos.getInstance().guardar(path, getSaveContent());
-            necesarySave = false;
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(InstrumentoObservacional.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public boolean isNecesarySave() {
-        return necesarySave;
     }
 
     public DefaultTreeModel getModel() {
@@ -136,22 +111,18 @@ public class InstrumentoObservacional implements TreeModelListener {
     }
 
     public void treeNodesChanged(TreeModelEvent e) {
-        necesarySave = true;
         observable.notifyObservers();
     }
 
     public void treeNodesInserted(TreeModelEvent e) {
-        necesarySave = true;
         observable.notifyObservers();
     }
 
     public void treeNodesRemoved(TreeModelEvent e) {
-        necesarySave = true;
         observable.notifyObservers();
     }
 
     public void treeStructureChanged(TreeModelEvent e) {
-        necesarySave = true;
         observable.notifyObservers();
     }
 

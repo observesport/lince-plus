@@ -155,14 +155,6 @@ public class FilaRegistro implements Comparable<FilaRegistro>, Serializable {
         return datosMixtos.get(nodoInformacion);
     }
 
-    public void setCategoria(Criterio criterio, Categoria categoria) {
-        registro.put(criterio, categoria);
-    }
-
-    void setCategoria(NodoInformacion nodoInformacion, String string) {
-        datosMixtos.put(nodoInformacion, string);
-    }
-
     public int getRegisterFrameValue() {
        return (int) timeCalculations.convertMsToFPS(milis, this.fps);
     }

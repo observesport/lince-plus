@@ -42,7 +42,7 @@ public class HoisanTool {
      * @throws IOException when the file is not a readable Access database with the HOISAN tables
      */
     public HoisanData read(File file) throws IOException {
-        Database db = Database.open(file, true);
+        Database db = open(file, true);
         try {
             Table criterios = requireTable(db, HoisanVars.CRITERIA_TABLE_NAME);
             Table categorias = requireTable(db, HoisanVars.CATEGORY_TABLE_NAME);
@@ -54,6 +54,18 @@ public class HoisanTool {
         } finally {
             db.close();
         }
+    }
+
+    /**
+     * Opens an Access database that refuses linked tables: Jackcess would otherwise open the linked file named by the
+     * database (any local path or UNC share) read-write the first time a linked HOISAN table is read.
+     */
+    private static Database open(File file, boolean readOnly) throws IOException {
+        Database db = Database.open(file, readOnly);
+        db.setLinkResolver((linker, linkeeFileName) -> {
+            throw new IOException("Linked tables are not supported");
+        });
+        return db;
     }
 
     private static Table requireTable(Database db, HoisanVars name) throws IOException {
@@ -84,7 +96,7 @@ public class HoisanTool {
         try {
             File realBaseFile = createValidEmptyHoisanFile(outputFile);
             //tablas vacias
-            try (Database db = Database.open(realBaseFile)) {
+            try (Database db = open(realBaseFile, false)) {
                 store(db);
             }
             return null;
@@ -123,7 +135,6 @@ public class HoisanTool {
         log.warn("guardados criterios");
         storeObservationTimes(db, registro, tTiempos, tTiempoCategorias);
         log.warn("guardados tiempos");
-        //storeObservationData(db, registro, tTiempoCategorias);
         log.warn("Finalizado");
         db.flush();
     }
@@ -208,7 +219,7 @@ public class HoisanTool {
      * @param <T>
      * @return
      */
-    public <T extends DefaultMutableTreeNode> Integer getElementMapId(Map<T, Integer> data, T node) {
+    private <T extends DefaultMutableTreeNode> Integer getElementMapId(Map<T, Integer> data, T node) {
         for (Map.Entry<T, Integer> entry : data.entrySet()) {
             if (entry.getKey().equals(node)) {
                 return entry.getValue();
@@ -232,15 +243,6 @@ public class HoisanTool {
             }
         }
         return counter;
-    }
-
-    private void storeObservationData(Database db, Registro registro, Table tTiemposCategoria) {
-        int counter = 0;
-        for (Map.Entry<FilaRegistro, Integer> entry : this.timeMap.entrySet()) {
-            FilaRegistro key = entry.getKey();
-            Integer timeId = entry.getValue();
-            counter += storeObservationDataItem(db, tTiemposCategoria, key, timeId);
-        }
     }
 
     /**

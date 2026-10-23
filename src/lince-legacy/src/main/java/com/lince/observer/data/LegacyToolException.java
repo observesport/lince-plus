@@ -1,7 +1,6 @@
 package com.lince.observer.data;
 
 import com.lince.observer.legacy.instrumentoObservacional.Categoria;
-import com.lince.observer.legacy.instrumentoObservacional.Criterio;
 
 /**
  * com.lince.observer.data
@@ -12,7 +11,6 @@ import com.lince.observer.legacy.instrumentoObservacional.Criterio;
  */
 public class LegacyToolException extends Exception {
     private String message;
-    private Criterio criterio;
     private Categoria categoria;
 
     public LegacyToolException(String message){
@@ -32,18 +30,6 @@ public class LegacyToolException extends Exception {
     @Override
     public String getMessage() {
         return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Criterio getCriterio() {
-        return criterio;
-    }
-
-    public void setCriterio(Criterio criterio) {
-        this.criterio = criterio;
     }
 
     public Categoria getCategoria() {

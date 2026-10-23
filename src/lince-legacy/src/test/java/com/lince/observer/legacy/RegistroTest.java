@@ -60,7 +60,7 @@ class RegistroTest {
             }
         }
         assertTrue(exceptions.isEmpty(), "Expected no exceptions during loading");
-        assertTrue(result.getRowCount() > 0);
+        assertTrue(result.datosVariables.size() > 0);
     }
 
     @Test

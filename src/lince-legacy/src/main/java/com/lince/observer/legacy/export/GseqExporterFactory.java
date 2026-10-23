@@ -56,35 +56,6 @@ public class GseqExporterFactory {
     }
 
     /**
-     * Create an exporter for the specified format type.
-     *
-     * @param formatType The GSEQ format type
-     * @return Appropriate exporter instance
-     * @throws IllegalArgumentException if formatType is null or INTERVAL (use createIntervalExporter instead)
-     */
-    public static GseqExporter createExporter(GseqFormatType formatType) {
-        if (formatType == null) {
-            throw new IllegalArgumentException("Format type cannot be null");
-        }
-
-        switch (formatType) {
-            case EVENT:
-                return createEventExporter();
-            case MULTIEVENT:
-                return createMultieventExporter();
-            case TIMED:
-                return createTimedExporter();
-            case STATE:
-                return createStateExporter();
-            case INTERVAL:
-                throw new IllegalArgumentException(
-                    "Use createIntervalExporter() for INTERVAL format (requires interval duration)");
-            default:
-                throw new IllegalArgumentException("Unknown format type: " + formatType);
-        }
-    }
-
-    /**
      * Create an Event format exporter.
      *
      * @return EventExporter instance

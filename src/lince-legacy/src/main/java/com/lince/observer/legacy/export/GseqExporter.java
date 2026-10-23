@@ -172,13 +172,4 @@ public abstract class GseqExporter {
         }
         return cont.toString();
     }
-
-    /**
-     * Get the format name for this exporter.
-     * <p>
-     * Used for debugging and logging purposes.
-     *
-     * @return Format name (e.g., "Event", "Multievent", "Interval")
-     */
-    public abstract String getFormatName();
 }

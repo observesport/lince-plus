@@ -112,9 +112,4 @@ public class TimedExporter extends GseqExporter {
 
         return contenido.toString();
     }
-
-    @Override
-    public String getFormatName() {
-        return "Timed";
-    }
 }

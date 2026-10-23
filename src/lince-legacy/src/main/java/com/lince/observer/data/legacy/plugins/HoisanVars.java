@@ -33,8 +33,7 @@ public enum HoisanVars {
    CATEGORY_ID("ID_Categoria"),
    CATEGORY_NAME("Nombre_Categoria"),
    CATEGORY_CORE("Nucleo_Categorial"),
-   CATEGORY_DESCRIPTION("Descripcion"),
-   mode2("Mode2");
+   CATEGORY_DESCRIPTION("Descripcion");
 
    private final String name;
 
@@ -55,7 +54,7 @@ public enum HoisanVars {
      return value == null ? StringUtils.EMPTY : String.valueOf(value);
    }
 
-   public <T> T getRawValue(Map<String, Object> row) {
+   private <T> T getRawValue(Map<String, Object> row) {
       try {
          if (row != null) {
             return (T) row.get(name);

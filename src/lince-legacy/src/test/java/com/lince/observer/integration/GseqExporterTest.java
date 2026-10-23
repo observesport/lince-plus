@@ -101,72 +101,12 @@ class GseqExporterTest {
     }
 
     @Test
-    void testGseqExporterFactory_CreateEventExporter() {
-        GseqExporter exporter = GseqExporterFactory.createExporter(GseqExporterFactory.GseqFormatType.EVENT);
-        assertNotNull(exporter);
-        assertInstanceOf(EventExporter.class, exporter);
-        assertEquals("Event", exporter.getFormatName());
-    }
-
-    @Test
-    void testGseqExporterFactory_CreateMultieventExporter() {
-        GseqExporter exporter = GseqExporterFactory.createExporter(GseqExporterFactory.GseqFormatType.MULTIEVENT);
-        assertNotNull(exporter);
-        assertInstanceOf(MultieventExporter.class, exporter);
-        assertEquals("Multievent", exporter.getFormatName());
-    }
-
-    @Test
-    void testGseqExporterFactory_CreateTimedExporter() {
-        GseqExporter exporter = GseqExporterFactory.createExporter(GseqExporterFactory.GseqFormatType.TIMED);
-        assertNotNull(exporter);
-        assertInstanceOf(TimedExporter.class, exporter);
-        assertEquals("Timed", exporter.getFormatName());
-    }
-
-    @Test
-    void testGseqExporterFactory_CreateStateExporter() {
-        GseqExporter exporter = GseqExporterFactory.createExporter(GseqExporterFactory.GseqFormatType.STATE);
-        assertNotNull(exporter);
-        assertInstanceOf(StateExporter.class, exporter);
-        assertEquals("State", exporter.getFormatName());
-    }
-
-    @Test
-    void testGseqExporterFactory_IntervalRequiresSpecialMethod() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            GseqExporterFactory.createExporter(GseqExporterFactory.GseqFormatType.INTERVAL);
-        }, "Creating INTERVAL exporter via createExporter() should throw exception");
-    }
-
-    @Test
-    void testGseqExporterFactory_NullFormatTypeThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            GseqExporterFactory.createExporter(null);
-        }, "Creating exporter with null format type should throw exception");
-    }
-
-    @Test
     void testIntervalExporter_WithSpecificInterval() {
         IntervalExporter exporter = GseqExporterFactory.createIntervalExporter(15);
-        assertEquals(15, exporter.getIntervalSeconds());
 
         String output = exporter.export(criterios, registro.datosVariables);
         assertTrue(output.startsWith("Interval=15'"),
             "Output should start with specified interval duration");
-    }
-
-    @Test
-    void testIntervalExporter_SetIntervalSeconds() {
-        IntervalExporter exporter = GseqExporterFactory.createIntervalExporter(10);
-        assertEquals(10, exporter.getIntervalSeconds());
-
-        exporter.setIntervalSeconds(20);
-        assertEquals(20, exporter.getIntervalSeconds());
-
-        String output = exporter.export(criterios, registro.datosVariables);
-        assertTrue(output.startsWith("Interval=20'"),
-            "Output should reflect updated interval duration");
     }
 
     @Test
@@ -200,19 +140,19 @@ class GseqExporterTest {
 
             // All GSEQ formats must contain variable declarations
             assertTrue(output.contains("($") || output.contains("  "),
-                exporter.getFormatName() + " output should contain variable declarations");
+                exporter.getClass().getSimpleName() + " output should contain variable declarations");
 
             // All GSEQ formats must end with forward slash
             assertTrue(output.contains("/"),
-                exporter.getFormatName() + " output should contain sequence terminator (/)");
+                exporter.getClass().getSimpleName() + " output should contain sequence terminator (/)");
 
             // All GSEQ formats must use Windows line endings
             assertTrue(output.contains("\r\n"),
-                exporter.getFormatName() + " output should use Windows line endings (\\r\\n)");
+                exporter.getClass().getSimpleName() + " output should use Windows line endings (\\r\\n)");
 
             // Output should not be empty
             assertFalse(output.trim().isEmpty(),
-                exporter.getFormatName() + " output should not be empty");
+                exporter.getClass().getSimpleName() + " output should not be empty");
         }
     }
 }

@@ -16,6 +16,8 @@ import com.lince.observer.data.transfer.legacy.LegacyImport;
 import com.lince.observer.legacy.Registro;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -43,6 +45,9 @@ public class HoisanImporter implements LinceImporter {
 
     public static final String TYPE_ID = "hoisan";
     public static final String EXTENSION = "mdb";
+
+    private static final Logger LOG = LoggerFactory.getLogger(HoisanImporter.class);
+    private static final String NOT_HOISAN = "Not a HOISAN database";
 
     private final LegacyBridge bridge;
 
@@ -90,7 +95,9 @@ public class HoisanImporter implements LinceImporter {
         try {
             return new HoisanTool().read(file);
         } catch (IOException | RuntimeException e) {
-            throw new ImportException(TransferException.Reason.UNREADABLE, "Not a HOISAN database: " + e.getMessage(), e);
+            // the cause can name server paths (the upload spool, a linked table's file): log it, never echo it
+            LOG.warn("Unreadable HOISAN database", e);
+            throw new ImportException(TransferException.Reason.UNREADABLE, NOT_HOISAN, e);
         }
     }
 

@@ -91,9 +91,4 @@ public class MultieventExporter extends GseqExporter {
 
         return contenido.toString();
     }
-
-    @Override
-    public String getFormatName() {
-        return "Multievent";
-    }
 }

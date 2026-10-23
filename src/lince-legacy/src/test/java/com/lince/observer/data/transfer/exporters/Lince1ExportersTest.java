@@ -4,6 +4,7 @@ import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.transfer.ExportedFile;
 import com.lince.observer.data.bean.transfer.ImportScope;
 import com.lince.observer.data.bean.wrapper.LinceFileProjectWrapper;
+import com.lince.observer.data.component.PackageAwareXMLSerializer;
 import com.lince.observer.data.transfer.importers.Lince1RegisterImporter;
 import com.lince.observer.data.transfer.importers.Lince1ToolImporter;
 import org.junit.jupiter.api.Test;
@@ -47,16 +48,16 @@ class Lince1ExportersTest {
     /**
      * {@code Criterio} has no {@code hashCode}, so the row maps of a .rlince serialise in identity hash order: two
      * conversions of the same project (in the menu too) give equivalent files with entries in a different order.
-     * Bytes are therefore compared against {@code save()} on the same legacy state, and the exporter output by
+     * Bytes are therefore compared against what the legacy {@code save()} wrote
+     * ({@code PackageAwareXMLSerializer.encodeToFile} of the save content) on the same legacy state, and the exporter output by
      * re-importing it.
      */
     @Test
-    void registerBytesAreWhatRegistroSaveWrites() throws Exception {
+    void registerBytesAreWhatTheLegacySaveWrote() throws Exception {
         File saved = dir.resolve("saved.rlince").toFile();
         fixture.bridge.export(fixture.selection(), legacy -> {
-            legacy.register().setPath(saved);
-            legacy.register().save();
-            assertArrayEquals(readBytes(saved), Lince1RegisterExporter.content(legacy.register()));
+            assertArrayEquals(legacySave(legacy.register().getSaveContent(), saved),
+                    Lince1RegisterExporter.content(legacy.register()));
             return null;
         });
 
@@ -72,12 +73,10 @@ class Lince1ExportersTest {
     }
 
     @Test
-    void toolBytesAreWhatInstrumentoObservacionalSaveWrites() throws Exception {
+    void toolBytesAreWhatTheLegacySaveWrote() throws Exception {
         File saved = dir.resolve("saved.ilince").toFile();
         byte[] expected = fixture.bridge.export(fixture.selection(), legacy -> {
-            legacy.instrument().setPath(saved);
-            legacy.instrument().save();
-            return readBytes(saved);
+            return legacySave(legacy.instrument().getSaveContent(), saved);
         });
 
         List<ExportedFile> files = new Lince1ToolExporter(fixture.bridge).export(fixture.selection(), Map.of());
@@ -101,8 +100,14 @@ class Lince1ExportersTest {
                 new Lince1ToolExporter(fixture.bridge).export(fixture.selection(), Map.of()).get(0).content());
     }
 
-    private static byte[] readBytes(File file) {
+    /**
+     * What the legacy {@code Registro.save()} and {@code InstrumentoObservacional.save()} did with their content.
+     *
+     * @return the bytes written to {@code file}
+     */
+    private static byte[] legacySave(Object content, File file) {
         try {
+            PackageAwareXMLSerializer.encodeToFile(content, file);
             return Files.readAllBytes(file.toPath());
         } catch (Exception e) {
             throw new IllegalStateException(e);

@@ -28,20 +28,15 @@ import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacion
 import com.lince.observer.legacy.instrumentoObservacional.NodoInformacion;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Alberto Soto-Fernandez
  */
 @Deprecated
-public class Registro extends ModeloDeTablaLince implements Observer {
+public class Registro implements Observer {
 
     static final String NOMBRE_INSTRUMENTO_OBSERVACIONAL = "nombreInstrumentoObservacional";
     static final String CRITERIOS = "criterios";
@@ -51,27 +46,26 @@ public class Registro extends ModeloDeTablaLince implements Observer {
 
     private static Registro instance = new Registro(); //asd 2017: to avoid null pointer exception
     private static double fps = LinceDataConstants.DEFAULT_FPS;
+    public List<FilaRegistro> datosVariables;
+    protected NodoInformacion[] datosMixtos;
+    protected Criterio[] datos;
     private Map<NodoInformacion, String> datosFijos;
-    private transient boolean necesarySave;
-    private transient File path;
 
     Registro() {
-        initRegistro(new ArrayList<>(), new HashMap<>(), null);
+        initRegistro(new ArrayList<>(), new HashMap<>());
     }
 
-    Registro(List<FilaRegistro> datosVariables, Map<NodoInformacion, String> datosFijos, File path) {
-        initRegistro(datosVariables, datosFijos, path);
+    Registro(List<FilaRegistro> datosVariables, Map<NodoInformacion, String> datosFijos) {
+        initRegistro(datosVariables, datosFijos);
     }
 
-    private void initRegistro(List<FilaRegistro> datosVariables, Map<NodoInformacion, String> datosFijos, File path) {
+    private void initRegistro(List<FilaRegistro> datosVariables, Map<NodoInformacion, String> datosFijos) {
         InstrumentoObservacional.addObservador(this);
         InstrumentoObservacional instrumentoObservacional = InstrumentoObservacional.getInstance();
         this.datos = instrumentoObservacional.getCriterios();
         this.datosMixtos = instrumentoObservacional.getDatosMixtos();
         this.datosVariables = datosVariables;
         this.datosFijos = datosFijos;
-        this.path = path;
-        this.necesarySave = false;
     }
 
     public static void loadNewInstance() {
@@ -90,10 +84,6 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     private static void cambiarInstancia(Registro newInstance) {
         if (instance == null) {
             instance = new Registro();
-        }
-        TableModelListener listeners[] = instance.getTableModelListeners();
-        for (TableModelListener modelListener : listeners) {
-            ((JTable) modelListener).setModel(newInstance);
         }
         InstrumentoObservacional.removeObservador(instance);
         instance = newInstance;
@@ -115,7 +105,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
             comprobarCriterios(criterios, exceptions);
             List<FilaRegistro> datosVariablesGuardados = (List<FilaRegistro>) datosGuardados.get(DATOS_VARIABLES);
             List<FilaRegistro> datosVariables = cargarDatos(datosVariablesGuardados, exceptions, false);
-            return new Registro(datosVariables, datosFijos, exceptions.isEmpty() ? f : null);
+            return new Registro(datosVariables, datosFijos);
         } catch (IOException ex) {
             LegacyToolException exception = new LegacyToolException("Error loading file: " + f.getPath(), ex);
             exceptions.add(exception);
@@ -175,7 +165,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
 
     public static List<FilaRegistro> cargarDatos(List<FilaRegistro> list, List<LegacyToolException> exceptions, boolean resetContent) {
         if (resetContent) {
-            getInstance().initRegistro(list, null, null);
+            getInstance().initRegistro(list, null);
         }
         List<FilaRegistro> datos = new ArrayList<>();
         for (FilaRegistro filaRegistro : list) {
@@ -188,34 +178,11 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         return datosFijos.get(nodoInformacion);
     }
 
-    public void setValorFijo(NodoInformacion nodoInformacion, String valor) {
-        datosFijos.put(nodoInformacion, valor);
-        necesarySave = true;
-    }
-
     @Override
     public void update(Observable o, Object arg) {
         InstrumentoObservacional instrumentoObservacional = InstrumentoObservacional.getInstance();
         this.datos = instrumentoObservacional.getCriterios();
         this.datosMixtos = instrumentoObservacional.getDatosMixtos();
-        fireTableStructureChanged();
-    }
-
-    @Override
-    protected void necesarioSave() {
-        necesarySave = true;
-    }
-
-    public boolean isNecesarySave() {
-        return necesarySave;
-    }
-
-    public File getPath() {
-        return path;
-    }
-
-    public void setPath(File path) {
-        this.path = path;
     }
 
     public String[] getColumna(Criterio criterio) {
@@ -229,7 +196,7 @@ public class Registro extends ModeloDeTablaLince implements Observer {
     }
 
     /**
-     * What {@link #save()} writes to a .rlince file (LO-349: lets exporters serialise it without a file).
+     * What the Lince 1 {@code save()} wrote to a .rlince file (LO-349: lets exporters serialise it without a file).
      *
      * @return instrument name, criteria, fixed data and rows
      */
@@ -240,37 +207,6 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         map.put(DATOS_FIJOS, datosFijos);
         map.put(DATOS_VARIABLES, datosVariables);
         return map;
-    }
-
-    public void save() {
-        try {
-            ControladorArchivos.getInstance().guardar(path, getSaveContent());
-            necesarySave = false;
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Registro.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Devuelve el nombre del registro
-     *
-     * @return Actualmente devuelve el valor del primer valor fijo o "registro"
-     * si no existen valores fijos o el valor de este es null o "".
-     */
-    public String getName() {
-        NodoInformacion nodosInformacion[] = InstrumentoObservacional.getInstance().getDatosFijos();
-        NodoInformacion nodoInformacion;
-        String nombreRegistro;
-        if (nodosInformacion.length > 0) {
-            nodoInformacion = nodosInformacion[0];
-            nombreRegistro = datosFijos.get(nodoInformacion);
-            if (nombreRegistro == null || nombreRegistro.equals("")) {
-                nombreRegistro = ResourceBundle.getBundle("i18n.Bundle").getString("REGISTRO");
-            }
-        } else {
-            nombreRegistro = ResourceBundle.getBundle("i18n.Bundle").getString("REGISTRO");
-        }
-        return nombreRegistro;
     }
 
     public String exportToSdisGseqEvento(List<Criterio> criterios) {
@@ -421,10 +357,6 @@ public class Registro extends ModeloDeTablaLince implements Observer {
         FilaRegistro filaRegistro = new FilaRegistro(milis, categoriasSeleccionadas, datosMixtos, fps);
         datosVariables.add(filaRegistro);
         Collections.sort(datosVariables);
-        int indice = datosVariables.lastIndexOf(filaRegistro);
-        fireTableRowsInserted(indice, indice);
-        necesarioSave();
-        getTableModelListeners();
     }
 
     public static void setFps(double fps) {

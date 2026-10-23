@@ -112,9 +112,4 @@ public class EventExporter extends GseqExporter {
         contenido.append(LINE_SEPARATOR);
         return contenido.toString();
     }
-
-    @Override
-    public String getFormatName() {
-        return "Event";
-    }
 }

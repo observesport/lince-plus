@@ -34,15 +34,15 @@ import java.util.function.Supplier;
  * {@link RegisterItem}s. It keeps a {@link CriteriaMapping} so the criteria ids selected through the API map to
  * the right {@link Criterio} objects.
  * <p>
- * The conversion rules are ported from the import and export compatibility methods {@code LegacyConverterService}
- * (lince-math) had before LO-349, but driven by the project passed in instead of the live {@code CategoryService} / {@code AnalysisService}, so the same code serves the
- * desktop REST service, the JavaFX menu and the cloud edition. It has no UI: no JavaFX, Swing, AWT or dialogs.
+ * The conversion rules are ported from the import and export compatibility methods lince-math had before LO-349
+ * (its former {@code LegacyConverterService}, now deleted), but driven by the project passed in instead of the live
+ * {@code CategoryService} / {@code AnalysisService}, so the same code serves the desktop REST service, the JavaFX menu and the cloud edition. It has no UI: no JavaFX, Swing, AWT or dialogs.
  * <p>
  * <b>Singletons and concurrency.</b> The legacy model is global: {@code InstrumentoObservacional.getInstance()}
  * and {@code Registro.getInstance()} are static singletons, and legacy nodes call back into them (for example
  * {@code Criterio.setDescripcion} notifies {@code InstrumentoObservacional.getInstance()}). A conversion therefore
  * replaces the singletons, and anything that reads them afterwards (the {@code exportTo*} methods,
- * {@code Registro.getName()}, file loading that checks against the current instrument) must run before another
+ * {@code InstrumentoObservacional.getName()}, file loading that checks against the current instrument) must run before another
  * conversion replaces them again. Two conversions must never run concurrently. Every public method holds one
  * class-wide lock, and callers that convert and then read the legacy state must do both inside
  * {@link #withLegacyModel(Supplier)} or {@link #export(ExportSelection, Function)}, which hold that lock for the
@@ -50,9 +50,10 @@ import java.util.function.Supplier;
  * singletons; a REST export while one of them is open replaces what it shows, exactly as the menu export does
  * today.
  * <p>
- * <b>Other callers.</b> {@code LegacyConverterService} (every public method), {@code StatsServiceImpl.calculateLegacyKappa}
- * and {@code RootLayoutController.handleNew} (through {@code CurrentProjectProvider.resetLegacyRegister}) hold this
- * lock too, and any new code that touches {@link Registro} or {@link InstrumentoObservacional} must do the same.
+ * <b>Other callers.</b> {@code StatsServiceImpl.calculateLegacyKappa} (lince-math) holds this lock through
+ * {@link #withLegacyModel(Supplier)} while it converts both registers with {@link #toLegacy(ExportSelection)}.
+ * {@code RootLayoutController.handleNew} (through {@code CurrentProjectProvider.resetLegacyRegister}) holds it too,
+ * and any new code that touches {@link Registro} or {@link InstrumentoObservacional} must do the same.
  * <p>
  * Created by Alberto Soto. 21/10/26
  */

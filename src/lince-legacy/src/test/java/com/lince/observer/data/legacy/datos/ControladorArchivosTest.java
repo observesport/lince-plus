@@ -6,6 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,24 +30,14 @@ class ControladorArchivosTest {
     }
 
     @Test
-    void testGuardarYCargar(@TempDir Path tempDir) throws Exception {
+    void testSerializarYCargar(@TempDir Path tempDir) throws Exception {
         File testFile = tempDir.resolve("test.xml").toFile();
         String testData = "Test data";
 
-        controladorArchivos.guardar(testFile, testData);
+        Files.write(testFile.toPath(), controladorArchivos.serializar(testData));
         Object loadedData = controladorArchivos.cargar(testFile);
 
-        assertEquals(testData, loadedData, "Loaded data should match saved data");
-    }
-
-    @Test
-    void testGuardarFileNotFoundException(@TempDir Path tempDir) {
-        File nonExistentDir = tempDir.resolve("non-existent-dir").toFile();
-        File testFile = new File(nonExistentDir, "test.xml");
-
-        assertThrows(RuntimeException.class, () -> {
-            controladorArchivos.guardar(testFile, "Test data");
-        });
+        assertEquals(testData, loadedData, "Loaded data should match serialised data");
     }
 
     @Test
