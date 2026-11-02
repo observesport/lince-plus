@@ -132,6 +132,17 @@ What macOS needs:
   from Linux with the same certificate and API key, as a post-build step in the `build` job.
 - Until then, add the "Open Anyway" steps to the download page next to the Windows SAC note.
 
+Reusing the iOS app's Apple account (`lince-app-ios`, checked 2026-11-02):
+- Team `TV53BJ43KU`, individual paid membership, App Store Connect API key `WHY4PJ3PU5` already used by fastlane
+  and injected from Bitwarden Secrets in GitLab CI. No new Apple spend.
+- Missing: a "Developer ID Application" certificate (the keychain only has Apple Development / Apple Distribution,
+  which are App Store only and install4j rejects them). Account Holder creates it, export as `.p12` for CI.
+- Secrets for the `cicd` environment: `MAC_SIGNING_P12` (base64), `MAC_SIGNING_P12_PASSWORD`,
+  `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`. The API key role must be "Developer" or above.
+- install4j 10.0.9 signs macOS media on Linux but notarizes only on macOS; cross-platform notarization came in
+  install4j 11.0 (2024-09-12). So notarization waits for the same install4j upgrade as Windows, or runs via
+  `rcodesign notary-submit --staple` on the ubuntu runner with the same API key.
+
 ## Sources
 
 - Smart App Control overview (Microsoft): https://learn.microsoft.com/en-us/windows/apps/develop/smart-app-control/overview
