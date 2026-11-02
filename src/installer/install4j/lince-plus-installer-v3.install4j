@@ -22,12 +22,11 @@
       <fileEntry mountPoint="58" file="./branding/icon.png" overrideOverwriteMode="true" overrideUninstallMode="true" />
       <fileEntry mountPoint="58" file="./manuales/Manual de usuario.pdf" overrideOverwriteMode="true" overrideUninstallMode="true" />
       <fileEntry mountPoint="58" file="./manuales/Users manual.pdf" overrideOverwriteMode="true" overrideUninstallMode="true" />
-      <fileEntry mountPoint="58" file="./lince-os-launcher.sh" mode="755" overrideOverwriteMode="true" overrideUninstallMode="true" />
     </entries>
   </files>
   <launchers>
     <launcher name="${compiler:sys.shortName}" id="59" useCustomMacosExecutableName="true" customMacosExecutableName="${compiler:sys.fullName}">
-      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory=".${launcher:sys.launcherDirectory}" singleInstance="true">
+      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory="." singleInstance="true">
         <versionInfo include="true" fileDescription="${compiler:sys.version}" legalCopyright="Soto-Fernández, A., Camerino, O., Iglesias, X. et al. LINCE PLUS software for systematic observational studies in sports and health. Behav Res 54, 1263–1271 (2022). https://doi.org/10.3758/s13428-021-01642-1" internalName="${compiler:sys.fullName}" />
       </executable>
       <java mainClass="org.springframework.boot.loader.JarLauncher" vmParameters="-Dfile.encoding=UTF-8 -verbose &quot;-Dappdir={installer:sys:installationDir}&quot; --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=javafx.web --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-modules=ALL-MODULE-PATH --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web">
@@ -57,7 +56,7 @@
       </iconImageFiles>
     </launcher>
     <launcher name="${compiler:sys.shortName}-macIntel" id="336" useCustomMacosExecutableName="true" customMacosExecutableName="${compiler:sys.fullName}">
-      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory=".${launcher:sys.launcherDirectory}" singleInstance="true">
+      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory="." singleInstance="true">
         <versionInfo include="true" fileDescription="${compiler:sys.version}" legalCopyright="Soto-Fernández, A., Camerino, O., Iglesias, X. et al. LINCE PLUS software for systematic observational studies in sports and health. Behav Res 54, 1263–1271 (2022). https://doi.org/10.3758/s13428-021-01642-1" internalName="${compiler:sys.fullName}" />
       </executable>
       <java mainClass="org.springframework.boot.loader.JarLauncher" vmParameters="-Dfile.encoding=UTF-8 -verbose -Djavafx.platform=mac &quot;-Dappdir={installer:sys:installationDir}&quot; --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-modules=ALL-MODULE-PATH --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web --add-exports=javafx.graphics/com.sun.glass.ui.mac=ALL-UNNAMED">
@@ -223,25 +222,22 @@ return console.askOkCancel(message, true);
               <action id="17" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="quit" errorMessage="${i18n:FileCorrupted}" />
               <action id="900" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="continue">
                 <serializedBean>
-                  <property name="arguments">
-                    <add>
-                      <string>+x</string>
-                    </add>
-                    <add>
-                      <string>${installer:sys.installationDir}/${compiler:sys.shortName}</string>
-                    </add>
-                    <add>
-                      <string>${installer:sys.installationDir}/lince-os-launcher.sh</string>
-                    </add>
+                  <property name="arguments" type="array" elementType="string" length="2">
+                    <element index="0">+x</element>
+                    <element index="1">${installer:sys.installationDir}/${compiler:sys.shortName}</element>
                   </property>
-                  <property name="executable" type="string">/bin/chmod</property>
+                  <property name="executable">
+                    <object class="java.io.File">
+                      <string>/bin/chmod</string>
+                    </object>
+                  </property>
                   <property name="workingDirectory">
                     <object class="java.io.File">
                       <string>${installer:sys.installationDir}</string>
                     </object>
                   </property>
                 </serializedBean>
-                <condition>context.getVariable("sys.platform").toString().contains("unix")</condition>
+                <condition>!Util.isWindows()</condition>
               </action>
               <action id="18" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
@@ -615,7 +611,6 @@ return console.askYesNo(message, true);
       </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
-        <entry location="lince-os-launcher.sh" />
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
         <modules>
@@ -629,7 +624,6 @@ return console.askYesNo(message, true);
       </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
-        <entry location="lince-os-launcher.sh" />
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
     </macosFolder>
@@ -639,7 +633,6 @@ return console.askYesNo(message, true);
       </excludedLaunchers>
       <exclude>
         <entry location="lince-launcher.bat" />
-        <entry location="lince-os-launcher.sh" />
       </exclude>
       <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
     </macosFolder>

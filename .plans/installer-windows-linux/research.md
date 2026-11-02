@@ -61,6 +61,12 @@ re-sign and requires the installer and all PE files inside it to be Authenticode
 
 ### The common prerequisite: install4j 11 or newer
 
+**Status 2026-11-02:** done. install4j 13.1.1 is installed locally (`/Applications/install4j.app`), the new license is
+in `INSTALL4J_LICENSE` locally and in the `cicd` environment secret, `ci.yml` installs the 13.1.1 .deb under
+`/opt/install4j13`, and `src/pom.xml` uses the 13.1.1 Maven plugin. All four media built with 13.1.1 from the
+unmigrated 10.x project file; the Debian and Apple Silicon launch checks pass. The project file can be migrated to
+the 13 format by opening and saving it once in the install4j IDE, not required for the build.
+
 - We build with install4j **10.0.9** (`ci.yml` downloads the .deb, `install4j.version` 10.0.6 in `src/pom.xml`).
 - The "external executable for Windows code signing" option (`$EXECUTABLE`/`$OUTFILE` hook, runs for the launcher
   and the installer) arrived in **install4j 11.0** (2024-09). "Additional binaries to be signed" arrived in 12.0.
