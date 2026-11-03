@@ -96,7 +96,7 @@
         <apacheCommonsLang3.version>3.18.0</apacheCommonsLang3.version>
         <apacheCommonsCollections4.version>4.4</apacheCommonsCollections4.version>
         <apacheCommonsMath.version>3.6.1</apacheCommonsMath.version>
-        <guava.version>33.1.0-jre</guava.version>
+        <guava.version>33.7.1-jre</guava.version>
         <univocityParsers.version>2.9.1</univocityParsers.version>
         <gson.version>2.10.1</gson.version>
         <org.json.version>20240303</org.json.version>
