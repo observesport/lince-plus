@@ -1,11 +1,25 @@
 {
   "userInformation": [
     {
-      "title": "Subscribe to our youtube channel",
+      "title": "Try LINCE PLUS in the cloud for free",
+      "description": "Premium features and AI tools are free during the testing period. Start now in your browser, nothing to install: https://my.lince-plus.com",
+      "url": "https://my.lince-plus.com",
+      "start": "2026-11-03T00:00:00.000Z",
+      "end": "2027-05-03T23:59:59.000Z"
+    },
+    {
+      "title": "New tutorials in English",
+      "description": "Projects, videos, the observation tool, the player and the register, one feature per video: https://www.youtube.com/playlist?list=PLePPDj2Bo-Vs",
+      "url": "https://www.youtube.com/playlist?list=PLePPDj2Bo-Vs",
+      "start": "2026-11-03T00:00:00.000Z",
+      "end": "2027-05-03T23:59:59.000Z"
+    },
+    {
+      "title": "Subscribe to our YouTube channel",
       "description": "https://www.youtube.com/@linceplus9099",
-      "url": "",
-      "start": "2023-08-18T00:01:10.000Z",
-      "end": "2023-08-18T23:01:10.000Z"
+      "url": "https://www.youtube.com/@linceplus9099",
+      "start": "2026-11-03T00:00:00.000Z",
+      "end": "2027-05-03T23:59:59.000Z"
     }
   ]
 }
