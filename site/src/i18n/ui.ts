@@ -129,8 +129,10 @@ export const ui = {
       ctaResearch: 'See the publications',
     },
     sponsors: {
+      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
+      funding: 'The authors gratefully acknowledge the support of a Spanish government project LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, European Union).',
       label: 'Built with the support of',
-      note: 'Open-source licences provided by JetBrains and ej-technologies.',
+      note: 'Open-source licence provided by ej-technologies.',
     },
     footer: {
       tagline: 'Free, open-source software for systematic observation studies in sports and health. Developed with the collaboration of INEFC Catalunya.',
@@ -150,9 +152,6 @@ export const ui = {
       legacy: 'Legacy Lince 1.4 (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Interface in English, Spanish, Catalan and German',
       research: 'Cite us',
-      fundingLabel: 'Funding',
-      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
-      funding: 'The authors gratefully acknowledge the support of a Spanish government project LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, European Union).',
     },
     changelog: {
       eyebrow: 'Changelog',
@@ -302,8 +301,10 @@ export const ui = {
       ctaResearch: 'Ver las publicaciones',
     },
     sponsors: {
+      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
+      funding: 'Los autores agradecen el apoyo del proyecto del Gobierno Español LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, Unión Europea).',
       label: 'Con el apoyo de',
-      note: 'Licencias de código abierto cedidas por JetBrains y ej-technologies.',
+      note: 'Licencia de código abierto cedida por ej-technologies.',
     },
     footer: {
       tagline: 'Software libre y de código abierto para estudios de observación sistemática en deporte y salud. Desarrollado con la colaboración del INEFC Catalunya.',
@@ -323,9 +324,6 @@ export const ui = {
       legacy: 'Lince 1.4 clásico (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Interfaz en español, inglés, catalán y alemán',
       research: 'Cítanos',
-      fundingLabel: 'Financiación',
-      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
-      funding: 'Los autores agradecen el apoyo del proyecto del Gobierno Español LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, Unión Europea).',
     },
     changelog: {
       eyebrow: 'Versiones',
@@ -476,7 +474,7 @@ export const ui = {
     },
     sponsors: {
       label: 'Mit Unterstützung von',
-      note: 'Open-Source-Lizenzen bereitgestellt von JetBrains und ej-technologies.',
+      note: 'Open-Source-Lizenz bereitgestellt von ej-technologies.',
     },
     footer: {
       tagline: 'Kostenlose Open-Source-Software für systematische Beobachtungsstudien in Sport und Gesundheit. Entwickelt in Zusammenarbeit mit dem INEFC Catalunya.',
@@ -646,7 +644,7 @@ export const ui = {
     },
     sponsors: {
       label: 'Amb el suport de',
-      note: 'Llicències de codi obert cedides per JetBrains i ej-technologies.',
+      note: 'Llicència de codi obert cedida per ej-technologies.',
     },
     footer: {
       tagline: "Programari lliure i de codi obert per a estudis d'observació sistemàtica en esport i salut. Desenvolupat amb la col·laboració de l'INEFC Catalunya.",
