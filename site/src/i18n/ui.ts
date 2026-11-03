@@ -473,6 +473,8 @@ export const ui = {
       ctaResearch: 'Zu den Veröffentlichungen',
     },
     sponsors: {
+      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
+      funding: 'Die Autoren danken für die Unterstützung durch das Projekt der spanischen Regierung LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, Europäische Union).',
       label: 'Mit Unterstützung von',
       note: 'Open-Source-Lizenz bereitgestellt von ej-technologies.',
     },
@@ -643,6 +645,8 @@ export const ui = {
       ctaResearch: 'Veure les publicacions',
     },
     sponsors: {
+      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
+      funding: "Els autors agraeixen el suport del projecte del Govern d'Espanya LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, Unió Europea).",
       label: 'Amb el suport de',
       note: 'Llicència de codi obert cedida per ej-technologies.',
     },
