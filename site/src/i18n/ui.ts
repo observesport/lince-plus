@@ -150,6 +150,9 @@ export const ui = {
       legacy: 'Legacy Lince 1.4 (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Interface in English, Spanish, Catalan and German',
       research: 'Cite us',
+      fundingLabel: 'Funding',
+      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
+      funding: 'The authors gratefully acknowledge the support of a Spanish government project LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, European Union).',
     },
     changelog: {
       eyebrow: 'Changelog',
@@ -320,6 +323,9 @@ export const ui = {
       legacy: 'Lince 1.4 clásico (Windows)',
       bottom: 'LINCE PLUS Desktop · Alberto Soto Fernández · GPL-3.0 · Interfaz en español, inglés, catalán y alemán',
       research: 'Cítanos',
+      fundingLabel: 'Financiación',
+      fundingLogoAlt: 'Gobierno de España, Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación',
+      funding: 'Los autores agradecen el apoyo del proyecto del Gobierno Español LINCE PLUS: Multimodal platform for data integration, synchronization and analysis in physical activity and sport [PID2024-156051NB-I00] (2025–2027) (Ministerio de Ciencia, Innovación y Universidades, Agencia Estatal de Investigación 10.13039/501100011033, FEDER, Unión Europea).',
     },
     changelog: {
       eyebrow: 'Versiones',

@@ -48,6 +48,20 @@ const year = new Date().getFullYear();
       </ul>
     </div>
   </div>
+  <div class="container funding" data-section="funding">
+    <h4>{t('footer.fundingLabel')}</h4>
+    <a class="funding-logo" href="https://www.aei.gob.es/" rel="noopener" target="_blank" data-ga="footer-funding-aei">
+      <img
+        src={href('/img/funding/miciu-aei.png')}
+        alt={t('footer.fundingLogoAlt')}
+        width="1558"
+        height="700"
+        loading="lazy"
+        decoding="async"
+      />
+    </a>
+    <p>{t('footer.funding')}</p>
+  </div>
   <div class="container bottom">
     <small>&copy; {year} {t('footer.bottom')}</small>
   </div>
@@ -92,6 +106,34 @@ const year = new Date().getFullYear();
   }
   ul a:hover {
     color: var(--fg-1);
+  }
+  .funding {
+    padding-top: 32px;
+    padding-bottom: 32px;
+    border-top: 1px solid var(--border-1);
+  }
+  .funding-logo {
+    display: inline-block;
+    background: #ffffff;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    max-width: 100%;
+  }
+  .funding-logo img {
+    display: block;
+    width: 420px;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 1558 / 700;
+    object-fit: contain;
+  }
+  .funding p {
+    color: var(--fg-2);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    max-width: 90ch;
+    margin-top: 16px;
+    overflow-wrap: break-word;
   }
   .bottom {
     padding-top: 22px;
