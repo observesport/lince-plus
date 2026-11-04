@@ -67,6 +67,21 @@ in `INSTALL4J_LICENSE` locally and in the `cicd` environment secret, `ci.yml` in
 unmigrated 10.x project file; the Debian and Apple Silicon launch checks pass. The project file can be migrated to
 the 13 format by opening and saving it once in the install4j IDE, not required for the build.
 
+**Project migrated to the 13.1.1 format (2026-11-04, saved in the IDE).** What the migration changed, checked
+against the ej-technologies "Migrating to install4j 11/12" posts and a rebuilt Linux installer in Debian:
+- `sys.confirmedUpdateInstallation` renamed to `sys.streamlinedInstallation`; the "Update Alert" form component
+  became a `StreamlinedInstallationChooserComponent` (UPDATE_ONLY) and a `SetInstallationDirectoryAction` (id 901)
+  was added to Startup. This is the install4j 12 redesign of previous-installation detection.
+- The `installation-directory-chooser.suggestAppDir=/opt/lince-plus` override from commit fa1ddade was dropped:
+  install4j 13 does not support it. Linux defaults are now install4j's own: `/usr/local/lince-plus` when run as root
+  (plus a `/usr/local/bin/lince-plus` symlink, removed on uninstall), `~/lince-plus` for a normal user. Accepted:
+  it matches the FHS and what the Mint tester already had under `/usr/local`.
+- `CreateProgramGroupAction` became `CreateDefaultStartMenuEntriesAction`; `workingDirectory="."` and
+  `failureStrategy="continue"` disappeared because they are the defaults the IDE no longer writes out.
+- Widget-style refactoring of the form labels and the macOS architecture attributes are cosmetic.
+- Verified after migration: no bean serialization errors, launcher is `cd "$prg_dir"` (no unexpanded variable),
+  starts from `/tmp` under dash, launcher is 755, uninstall clean.
+
 - We build with install4j **10.0.9** (`ci.yml` downloads the .deb, `install4j.version` 10.0.6 in `src/pom.xml`).
 - The "external executable for Windows code signing" option (`$EXECUTABLE`/`$OUTFILE` hook, runs for the launcher
   and the installer) arrived in **install4j 11.0** (2024-09). "Additional binaries to be signed" arrived in 12.0.

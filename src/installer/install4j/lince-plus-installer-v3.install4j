@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="10.0.9" transformSequenceNumber="10">
+<install4j version="13.1.1" transformSequenceNumber="13">
   <directoryPresets config="./branding" />
   <application name="Lince Plus" applicationId="4785-3010-4021-2113" mediaDir="../" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_${compiler:sys.mediaName}" shortName="lince-plus" publisher="Alberto Soto Fernández" publisherWeb="https://observesport.github.io/lince-plus/" version="3.0.0" allPathsRelative="true" backupOnSave="true" macVolumeId="8d23f0db178522b3" javaMinVersion="17" jdkMode="jdk" jdkName="JDK 17.0">
     <jreBundles jdkProviderId="Liberica" release="17/17.0.13+12">
@@ -26,7 +26,7 @@
   </files>
   <launchers>
     <launcher name="${compiler:sys.shortName}" id="59" useCustomMacosExecutableName="true" customMacosExecutableName="${compiler:sys.fullName}">
-      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory="." singleInstance="true">
+      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" singleInstance="true">
         <versionInfo include="true" fileDescription="${compiler:sys.version}" legalCopyright="Soto-Fernández, A., Camerino, O., Iglesias, X. et al. LINCE PLUS software for systematic observational studies in sports and health. Behav Res 54, 1263–1271 (2022). https://doi.org/10.3758/s13428-021-01642-1" internalName="${compiler:sys.fullName}" />
       </executable>
       <java mainClass="org.springframework.boot.loader.JarLauncher" vmParameters="-Dfile.encoding=UTF-8 -verbose &quot;-Dappdir={installer:sys:installationDir}&quot; --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=javafx.web --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-modules=ALL-MODULE-PATH --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web">
@@ -34,7 +34,7 @@
           <archive location="lince-desktop.jar" />
         </classPath>
       </java>
-      <vmOptionsFile mode="content" overwriteMode="1">
+      <vmOptionsFile mode="content" overwriteMode="always">
         <content>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
 --add-opens=java.base/java.io=ALL-UNNAMED
 --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
@@ -56,7 +56,7 @@
       </iconImageFiles>
     </launcher>
     <launcher name="${compiler:sys.shortName}-macIntel" id="336" useCustomMacosExecutableName="true" customMacosExecutableName="${compiler:sys.fullName}">
-      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" workingDirectory="." singleInstance="true">
+      <executable name="${compiler:sys.shortName}" iconSet="true" executableDir="." executableMode="gui" singleInstance="true">
         <versionInfo include="true" fileDescription="${compiler:sys.version}" legalCopyright="Soto-Fernández, A., Camerino, O., Iglesias, X. et al. LINCE PLUS software for systematic observational studies in sports and health. Behav Res 54, 1263–1271 (2022). https://doi.org/10.3758/s13428-021-01642-1" internalName="${compiler:sys.fullName}" />
       </executable>
       <java mainClass="org.springframework.boot.loader.JarLauncher" vmParameters="-Dfile.encoding=UTF-8 -verbose -Djavafx.platform=mac &quot;-Dappdir={installer:sys:installationDir}&quot; --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-modules=ALL-MODULE-PATH --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web --add-exports=javafx.graphics/com.sun.glass.ui.mac=ALL-UNNAMED">
@@ -64,7 +64,7 @@
           <archive location="lince-desktop.jar" />
         </classPath>
       </java>
-      <vmOptionsFile mode="content" overwriteMode="1">
+      <vmOptionsFile mode="content" overwriteMode="always">
         <content>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
 --add-opens=java.base/java.io=ALL-UNNAMED
 --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
@@ -99,6 +99,7 @@
                   <property name="obtainIfNormalWin" type="boolean" value="true" />
                 </serializedBean>
               </action>
+              <action id="901" beanClass="com.install4j.runtime.beans.actions.control.SetInstallationDirectoryAction" actionElevationType="none" />
             </actions>
           </screen>
         </startup>
@@ -111,7 +112,7 @@
                     <element index="0">sys.installationDir</element>
                   </property>
                 </serializedBean>
-                <condition>context.getBooleanVariable("sys.confirmedUpdateInstallation")</condition>
+                <condition>context.getBooleanVariable("sys.streamlinedInstallation")</condition>
               </action>
             </actions>
             <formComponents>
@@ -132,9 +133,12 @@ return console.askOkCancel(message, true);
                   </property>
                 </serializedBean>
               </formComponent>
-              <formComponent id="5" beanClass="com.install4j.runtime.beans.formcomponents.UpdateAlertComponent" useExternalParametrization="true" externalParametrizationName="Update Alert" externalParametrizationMode="include">
+              <formComponent id="5" beanClass="com.install4j.runtime.beans.formcomponents.StreamlinedInstallationChooserComponent" useExternalParametrization="true" externalParametrizationName="Update Alert" externalParametrizationMode="include">
+                <serializedBean>
+                  <property name="streamlinedInstallationStrategy" type="enum" class="com.install4j.runtime.beans.formcomponents.StreamlinedInstallationStrategy" value="UPDATE_ONLY" />
+                </serializedBean>
                 <externalParametrizationPropertyNames>
-                  <propertyName>updateCheck</propertyName>
+                  <propertyName>streamlinedInstallationStrategy</propertyName>
                 </externalParametrizationPropertyNames>
               </formComponent>
               <formComponent id="6" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetTop="20">
@@ -145,7 +149,7 @@ return console.askOkCancel(message, true);
             </formComponents>
           </screen>
           <screen id="8" beanClass="com.install4j.runtime.beans.screens.InstallationDirectoryScreen" rollbackBarrierExitCode="0">
-            <condition>!context.getBooleanVariable("sys.confirmedUpdateInstallation")</condition>
+            <condition>!context.getBooleanVariable("sys.streamlinedInstallation")</condition>
             <actions>
               <action id="11" beanClass="com.install4j.runtime.beans.actions.misc.LoadResponseFileAction" rollbackBarrierExitCode="0" multiExec="true">
                 <serializedBean>
@@ -220,7 +224,7 @@ return console.askOkCancel(message, true);
           <screen id="15" beanClass="com.install4j.runtime.beans.screens.InstallationScreen" rollbackBarrier="true" rollbackBarrierExitCode="0">
             <actions>
               <action id="17" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="quit" errorMessage="${i18n:FileCorrupted}" />
-              <action id="900" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="continue">
+              <action id="900" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
                   <property name="arguments" type="array" elementType="string" length="2">
                     <element index="0">+x</element>
@@ -239,14 +243,14 @@ return console.askOkCancel(message, true);
                 </serializedBean>
                 <condition>!Util.isWindows()</condition>
               </action>
-              <action id="18" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+              <action id="18" beanClass="com.install4j.runtime.beans.actions.desktop.CreateDefaultStartMenuEntriesAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
-                  <property name="addUninstaller" type="boolean" value="true" />
-                  <property name="uninstallerMenuName" type="string">${i18n:UninstallerMenuEntry(${compiler:sys.fullName})}</property>
+                  <property name="folderName" type="string">${installer:sys.programGroupName}</property>
+                  <property name="linkDirectory" type="string">${installer:sys.symlinkDir}</property>
                 </serializedBean>
                 <condition>!context.getBooleanVariable("sys.programGroupDisabled")</condition>
               </action>
-              <action id="19" beanClass="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="askRetryQuit">
+              <action id="19" beanClass="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction" actionElevationType="elevated" rollbackBarrierExitCode="0" failureStrategy="ask">
                 <serializedBean>
                   <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
                 </serializedBean>
@@ -259,7 +263,7 @@ return console.askOkCancel(message, true);
                       <string>${compiler:sys.shortName}</string>
                     </object>
                   </property>
-                  <property name="programGroupName" type="string">${compiler:sys.fullName}</property>
+                  <property name="folderName" type="string">${compiler:sys.fullName}</property>
                 </serializedBean>
                 <condition>!context.getBooleanVariable("sys.programGroupDisabled")</condition>
               </action>
@@ -426,20 +430,19 @@ return console.askYesNo(message, true);
               <property name="imageEdgeBackgroundColor">
                 <object class="com.install4j.runtime.beans.LightOrDarkColor">
                   <object class="java.awt.Color">
-                    <int>25</int>
+                    <int>27</int>
                     <int>143</int>
                     <int>220</int>
                     <int>255</int>
                   </object>
                   <object class="java.awt.Color">
                     <int>0</int>
-                    <int>74</int>
-                    <int>151</int>
+                    <int>73</int>
+                    <int>150</int>
                     <int>255</int>
                   </object>
                 </object>
               </property>
-              <property name="imageEdgeBorder" type="boolean" value="true" />
               <property name="imageFile">
                 <object class="com.install4j.api.beans.ExternalFile">
                   <string>${compiler:sys.install4jHome}/resource/styles/wizard.png</string>
@@ -457,9 +460,14 @@ return console.askYesNo(message, true);
             <beans>
               <formComponent id="43" beanClass="com.install4j.runtime.beans.styles.ScreenTitleComponent" insetTop="0">
                 <serializedBean>
-                  <property name="labelFontSizePercent" type="int" value="130" />
-                  <property name="labelFontStyle" type="enum" class="com.install4j.runtime.beans.formcomponents.FontStyle" value="BOLD" />
-                  <property name="labelFontType" type="enum" class="com.install4j.runtime.beans.formcomponents.FontType" value="DERIVED" />
+                  <property name="labelWidgetStyle" id="LabelWidgetStyle0">
+                    <property name="fontDescriptor">
+                      <property name="fontSizePercent" type="int" value="130" />
+                      <property name="fontStyle" type="enum" class="com.install4j.runtime.beans.formcomponents.FontStyle" value="BOLD" />
+                      <property name="fontType" type="enum" class="com.install4j.runtime.beans.formcomponents.FontType" value="DERIVED" />
+                    </property>
+                  </property>
+                  <property name="labelWidgetStyleId" type="null" />
                 </serializedBean>
               </formComponent>
               <formComponent id="44" beanClass="com.install4j.runtime.beans.formcomponents.SeparatorComponent" />
@@ -537,8 +545,13 @@ return console.askYesNo(message, true);
                 <beans>
                   <formComponent name="Title" id="50" beanClass="com.install4j.runtime.beans.styles.ScreenTitleComponent">
                     <serializedBean>
-                      <property name="labelFontStyle" type="enum" class="com.install4j.runtime.beans.formcomponents.FontStyle" value="BOLD" />
-                      <property name="labelFontType" type="enum" class="com.install4j.runtime.beans.formcomponents.FontType" value="DERIVED" />
+                      <property name="labelWidgetStyle" id="LabelWidgetStyle0">
+                        <property name="fontDescriptor">
+                          <property name="fontStyle" type="enum" class="com.install4j.runtime.beans.formcomponents.FontStyle" value="BOLD" />
+                          <property name="fontType" type="enum" class="com.install4j.runtime.beans.formcomponents.FontType" value="DERIVED" />
+                        </property>
+                      </property>
+                      <property name="labelWidgetStyleId" type="null" />
                     </serializedBean>
                   </formComponent>
                   <formComponent name="Subtitle" id="51" beanClass="com.install4j.runtime.beans.styles.ScreenTitleComponent" insetLeft="8">
@@ -603,6 +616,9 @@ return console.askYesNo(message, true);
         </beans>
       </group>
     </styles>
+    <widgetStyles defaultWidgetStyleId="107">
+      <widgetStyle name="Standard" id="107" beanClass="com.install4j.runtime.beans.widgets.WidgetStyleCollection" />
+    </widgetStyles>
   </installerGui>
   <mediaSets>
     <windows name="Windows" id="60" architecture="64">
@@ -618,7 +634,7 @@ return console.askYesNo(message, true);
         </modules>
       </jreBundle>
     </windows>
-    <macosFolder name="mac-arm" id="268" architecture="aarch64">
+    <macosFolder name="mac-arm" id="268">
       <excludedLaunchers>
         <launcher id="336" />
       </excludedLaunchers>
@@ -627,7 +643,7 @@ return console.askYesNo(message, true);
       </exclude>
       <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
     </macosFolder>
-    <macosFolder name="mac-x86" id="317">
+    <macosFolder name="mac-x86" id="317" architecture="amd64">
       <excludedLaunchers>
         <launcher id="59" />
       </excludedLaunchers>
@@ -644,9 +660,6 @@ return console.askYesNo(message, true);
         <entry location="lince-launcher.bat" />
       </exclude>
       <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
-      <overriddenProperties>
-        <property name="installation-directory-chooser.suggestAppDir" value="/opt/${compiler:sys.shortName}" />
-      </overriddenProperties>
     </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">
