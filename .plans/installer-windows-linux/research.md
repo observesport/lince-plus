@@ -92,6 +92,14 @@ against the ej-technologies "Migrating to install4j 11/12" posts and a rebuilt L
 
 ### Recommendation
 
+**Update 2026-11-05:** the SignPath Foundation application was rejected, so route A is closed and the policy page
+was taken down again (PR #167). Route B is now in progress: media set 400 ("Windows-msix", `createForStore`, unsigned,
+Store signs on upload) builds next to the exe installer (media 60) and ships as a release asset. The exe stays for
+direct downloads and for Windows before 10 1809. Needed from Partner Center: the Package/Identity/Publisher, set as
+the repository variable `MSIX_STORE_PUBLISHER_ID`; until then the manifest carries a placeholder and the Store
+rejects the upload. Direct downloads remain unsigned until route C or D is funded.
+
+
 1. **Now:** request an install4j 13 open source license from ej-technologies and apply to SignPath Foundation
    (https://signpath.org/apply). Both are free and both take days, not hours. Register the (free) Microsoft Store
    developer account in parallel so the name "Lince PLUS" is reserved.

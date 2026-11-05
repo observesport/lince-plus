@@ -2,6 +2,9 @@
 <install4j version="13.1.1" transformSequenceNumber="13">
   <directoryPresets config="./branding" />
   <application name="Lince Plus" applicationId="4785-3010-4021-2113" mediaDir="../" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_${compiler:sys.mediaName}" shortName="lince-plus" publisher="Alberto Soto Fernández" publisherWeb="https://observesport.github.io/lince-plus/" version="3.0.0" allPathsRelative="true" backupOnSave="true" macVolumeId="8d23f0db178522b3" javaMinVersion="17" jdkMode="jdk" jdkName="JDK 17.0">
+    <variables>
+      <variable name="msixStorePublisherId" value="CN=00000000-0000-0000-0000-000000000000" description="Package/Identity/Publisher assigned by Partner Center for the Store MSIX. Placeholder until the Store listing exists; CI overrides it with -D msixStorePublisherId=..." />
+    </variables>
     <jreBundles jdkProviderId="Liberica" release="17/17.0.13+12">
       <modules>
         <defaultModules set="all" />
@@ -634,6 +637,19 @@ return console.askYesNo(message, true);
         </modules>
       </jreBundle>
     </windows>
+    <msix name="Windows-msix" id="400" architecture="64" createForStore="true" storePublisherId="${compiler:msixStorePublisherId}">
+      <excludedLaunchers>
+        <launcher id="336" />
+      </excludedLaunchers>
+      <exclude>
+        <entry location="lince-launcher.bat" />
+      </exclude>
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
+        <modules>
+          <defaultModules set="all" />
+        </modules>
+      </jreBundle>
+    </msix>
     <macosFolder name="mac-arm" id="268">
       <excludedLaunchers>
         <launcher id="336" />

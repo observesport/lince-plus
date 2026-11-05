@@ -220,10 +220,14 @@ jobs:
         run: |
           cd src
           mvn -B package install --update-snapshots -DskipTests \
-            -DinstallDir="${INSTALL4J_HOME}"
+            -DinstallDir="${INSTALL4J_HOME}" \
+            ${MSIX_STORE_PUBLISHER_ID:+-Dmsix.storePublisherId="${MSIX_STORE_PUBLISHER_ID}"}
         env:
           INSTALL4J_HOME: "/opt/install4j13"
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+          # Package/Identity/Publisher from Partner Center (public, lives in the manifest).
+          # Unset: the install4j project's placeholder is used and the .msix is not Store-valid.
+          MSIX_STORE_PUBLISHER_ID: ${{ vars.MSIX_STORE_PUBLISHER_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Show Install4j output
@@ -235,6 +239,7 @@ jobs:
           MISSING=0
           for FILE in \
             "src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe" \
+            "src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows-msix.msix" \
             "src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg" \
             "src/installer/lince-plus_macos_${FILE_VERSION}_mac-x86.dmg" \
             "src/installer/lince-plus_unix_${FILE_VERSION}_linux-x64.sh" ; do
@@ -261,6 +266,7 @@ jobs:
           retention-days: 14
           path: |
             src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows-msix.msix
             src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
             src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
             src/installer/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
@@ -389,6 +395,7 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             installers/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            installers/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows-msix.msix
             installers/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
             installers/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
             installers/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
