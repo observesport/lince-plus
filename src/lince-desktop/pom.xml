@@ -47,6 +47,10 @@
                                             <value>${project.version}</value>
                                         </property>
                                         <property>
+                                            <name>msixPackageIdentityName</name>
+                                            <value>${msix.packageIdentityName}</value>
+                                        </property>
+                                        <property>
                                             <name>msixStorePublisherId</name>
                                             <value>${msix.storePublisherId}</value>
                                         </property>
