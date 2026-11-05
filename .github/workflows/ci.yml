@@ -221,12 +221,15 @@ jobs:
           cd src
           mvn -B package install --update-snapshots -DskipTests \
             -DinstallDir="${INSTALL4J_HOME}" \
-            ${MSIX_STORE_PUBLISHER_ID:+-Dmsix.storePublisherId="${MSIX_STORE_PUBLISHER_ID}"}
+            ${MSIX_STORE_PUBLISHER_ID:+-Dmsix.storePublisherId="${MSIX_STORE_PUBLISHER_ID}"} \
+            ${MSIX_PACKAGE_IDENTITY_NAME:+-Dmsix.packageIdentityName="${MSIX_PACKAGE_IDENTITY_NAME}"}
         env:
           INSTALL4J_HOME: "/opt/install4j13"
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
-          # Package/Identity/Publisher from Partner Center (public, lives in the manifest).
-          # Unset: the install4j project's placeholder is used and the .msix is not Store-valid.
+          # Package/Identity/Name and /Publisher from Partner Center > Product identity
+          # (public, they live in the manifest). Unset: the install4j project's
+          # placeholders are used and the Store rejects the .msix.
+          MSIX_PACKAGE_IDENTITY_NAME: ${{ vars.MSIX_PACKAGE_IDENTITY_NAME }}
           MSIX_STORE_PUBLISHER_ID: ${{ vars.MSIX_STORE_PUBLISHER_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

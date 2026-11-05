@@ -74,6 +74,7 @@
         <install4j.version>13.1.1</install4j.version>
         <!-- Store MSIX Package/Identity/Publisher; placeholder until Partner Center assigns it. CI passes the real one with -Dmsix.storePublisherId -->
         <msix.storePublisherId>CN=00000000-0000-0000-0000-000000000000</msix.storePublisherId>
+        <msix.packageIdentityName>lince-plus</msix.packageIdentityName>
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
         <jakartaInject.version>2.0.0</jakartaInject.version>
