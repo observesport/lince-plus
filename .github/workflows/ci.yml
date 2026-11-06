@@ -212,18 +212,17 @@ jobs:
 
       - name: Set up Install4j
         run: |
-          wget -q https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_9.deb
-          sudo dpkg -i install4j_linux-x64_10_0_9.deb
-          echo "INSTALL4J_HOME=/opt/install4j10" >> "$GITHUB_ENV"
+          wget -q https://download.ej-technologies.com/install4j/install4j_linux-x64_13_1_1.deb
+          sudo dpkg -i install4j_linux-x64_13_1_1.deb
+          echo "INSTALL4J_HOME=/opt/install4j13" >> "$GITHUB_ENV"
 
       - name: Build installers
         run: |
           cd src
           mvn -B package install --update-snapshots -DskipTests \
-            -DinstallDir="${INSTALL4J_HOME}" \
-            -Dinstall4j.licenseKey="${{ secrets.INSTALL4J_LICENSE_KEY }}"
+            -DinstallDir="${INSTALL4J_HOME}"
         env:
-          INSTALL4J_HOME: "/opt/install4j10"
+          INSTALL4J_HOME: "/opt/install4j13"
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -236,6 +235,7 @@ jobs:
           MISSING=0
           for FILE in \
             "src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows.exe" \
+            "src/installer/lince-plus_windows-x64_${FILE_VERSION}_Windows-msix.msix" \
             "src/installer/lince-plus_macos_${FILE_VERSION}_mac-arm.dmg" \
             "src/installer/lince-plus_macos_${FILE_VERSION}_mac-x86.dmg" \
             "src/installer/lince-plus_unix_${FILE_VERSION}_linux-x64.sh" ; do
@@ -262,6 +262,7 @@ jobs:
           retention-days: 14
           path: |
             src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            src/installer/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows-msix.msix
             src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
             src/installer/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
             src/installer/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
@@ -390,9 +391,32 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             installers/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows.exe
+            installers/lince-plus_windows-x64_${{ env.FILE_VERSION }}_Windows-msix.msix
             installers/lince-plus_macos_${{ env.FILE_VERSION }}_mac-arm.dmg
             installers/lince-plus_macos_${{ env.FILE_VERSION }}_mac-x86.dmg
             installers/lince-plus_unix_${{ env.FILE_VERSION }}_linux-x64.sh
+
+      # Microsoft Store (product 9NRLN685CSPJ): submit the Store MSIX as an
+      # update and commit it for certification. The first submission had to be
+      # made by hand in Partner Center; this step is skipped until the Partner
+      # Center secrets exist (Account settings > User management > Entra apps).
+      - name: Set up MSStore CLI
+        if: env.MS_PARTNER_CENTER_CLIENT_ID != ''
+        uses: microsoft/microsoft-store-apppublisher@v1.4
+        env:
+          MS_PARTNER_CENTER_CLIENT_ID: ${{ secrets.MS_PARTNER_CENTER_CLIENT_ID }}
+
+      - name: Publish to Microsoft Store
+        if: env.MS_PARTNER_CENTER_CLIENT_ID != ''
+        env:
+          MS_PARTNER_CENTER_TENANT_ID: ${{ secrets.MS_PARTNER_CENTER_TENANT_ID }}
+          MS_PARTNER_CENTER_SELLER_ID: ${{ secrets.MS_PARTNER_CENTER_SELLER_ID }}
+          MS_PARTNER_CENTER_CLIENT_ID: ${{ secrets.MS_PARTNER_CENTER_CLIENT_ID }}
+          MS_PARTNER_CENTER_CLIENT_SECRET: ${{ secrets.MS_PARTNER_CENTER_CLIENT_SECRET }}
+        run: |
+          msstore reconfigure --tenantId "$MS_PARTNER_CENTER_TENANT_ID" --sellerId "$MS_PARTNER_CENTER_SELLER_ID" --clientId "$MS_PARTNER_CENTER_CLIENT_ID" --clientSecret "$MS_PARTNER_CENTER_CLIENT_SECRET"
+          msstore publish installers --appId 9NRLN685CSPJ --output-stream stdout \
+            --inputFile "installers/lince-plus_windows-x64_${FILE_VERSION}_Windows-msix.msix"
 
       # The website advertises this version. Publish it now that the
       # installers exist (the Site workflow re-verifies that before deploying).
