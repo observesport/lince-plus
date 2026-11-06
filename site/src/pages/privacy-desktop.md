@@ -53,9 +53,21 @@ We use this data only to operate your account and the features it enables. We do
 | **Account sign-in (optional)** | only when you sign in and while signed in | credentials at sign-in, then your session token and App version | my.lince-plus.com, operated by us |
 | **Local dashboard** | when you open the browser dashboard | the App runs a web server on your computer that serves the dashboard to your own browser, and to other devices **on your local network** if you share the QR code | only devices you share the link with |
 | **Remote sharing (optional)** | only when you enter your own ngrok token and start a tunnel | the dashboard traffic is relayed through ngrok | ngrok, under [ngrok's privacy policy](https://ngrok.com/privacy-policy). Not used unless you configure it |
+| **AI and analysis tools (optional)** | only when you open one of these tools in the browser dashboard | a download request for the model or runtime the tool needs, no identifiers | TensorFlow Hub and Google Cloud Storage for pose models, Hugging Face for other models, jsDelivr for the ONNX and Python runtimes, PyPI for Python packages you install in the notebook. See below |
+| **Online video players (optional)** | only when you choose to load a YouTube or Dailymotion video instead of a local file | the video URL you entered | the video platform, under its own privacy policy |
 | **Google Analytics** | when the browser dashboard loads with an internet connection | standard GA4 page view data (anonymised IP, browser and screen details, pages visited) | Google, under [Google's privacy policy](https://policies.google.com/privacy). No project data, file names or video content is included |
 
 Like any program that accesses a web address, each connection reveals your IP address to the server. We do not store it.
+
+---
+
+## AI and analysis tools run in your browser
+
+The browser dashboard offers optional tools: pose detection and point tracking on your videos, a movement predictor, a Python notebook and an R console. You start them yourself; nothing runs until you do.
+
+- **Inference happens on your computer**, in your browser or in the App. Your video frames, tracking results and notebook data never leave your computer.
+- **Models and runtimes are downloaded on first use** from the public hosts listed in the table above, because they are too large to ship inside the App. The download is a plain fetch of a public file; it carries no information about you or your project. Your browser may cache them so later uses work offline.
+- The Python notebook can install packages from PyPI if you ask it to. That request names the package only.
 
 ---
 
@@ -75,6 +87,7 @@ Like any program that accesses a web address, each connection reveals your IP ad
 - **Account**: sign out in the App to remove the session token; email us to delete the account.
 - **Local network sharing**: nothing is shared unless you open the dashboard link on another device. Close the App to stop the local server.
 - **Remote sharing**: never active unless you configure an ngrok token. Remove the token to disable it.
+- **AI tools**: do not open them, or open them once online so the models are cached, then work offline.
 - **Google Analytics**: use a content blocker in your browser, or work offline. The App itself keeps working.
 - **Delete your local data**: delete your project files, converted videos and uninstall the App. We hold no copy of them and cannot recover or delete anything on your behalf because we never receive them.
 
