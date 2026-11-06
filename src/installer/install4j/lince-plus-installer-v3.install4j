@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="13.1.1" transformSequenceNumber="13">
   <directoryPresets config="./branding" />
-  <application name="Lince Plus" applicationId="4785-3010-4021-2113" mediaDir="../" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_${compiler:sys.mediaName}" shortName="lince-plus" publisher="Alberto Soto Fernández" publisherWeb="https://observesport.github.io/lince-plus/" version="3.0.0" allPathsRelative="true" backupOnSave="true" macVolumeId="8d23f0db178522b3" javaMinVersion="17" jdkMode="jdk" jdkName="JDK 17.0">
+  <application name="Lince Plus" applicationId="4785-3010-4021-2113" mediaDir="../" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_${compiler:sys.mediaName}" shortName="lince-plus" publisher="Alberto Soto Fernandez" publisherWeb="https://observesport.github.io/lince-plus/" version="3.0.0" allPathsRelative="true" backupOnSave="true" macVolumeId="8d23f0db178522b3" javaMinVersion="17" jdkMode="jdk" jdkName="JDK 17.0">
     <variables>
-      <variable name="msixPackageIdentityName" value="lince-plus" description="Package/Identity/Name assigned by Partner Center when the Store name is reserved. CI overrides it with -D msixPackageIdentityName=..." />
-      <variable name="msixStorePublisherId" value="CN=00000000-0000-0000-0000-000000000000" description="Package/Identity/Publisher assigned by Partner Center for the Store MSIX. Placeholder until the Store listing exists; CI overrides it with -D msixStorePublisherId=..." />
+      <variable name="msixPackageIdentityName" value="AlbertoSotoFernandez.LINCEPLUS" description="Package/Identity/Name from Partner Center (Store id 9NRLN685CSPJ)." />
+      <variable name="msixStorePublisherId" value="CN=3BBF5CF2-5FBA-4ED4-86FE-C718F3B06946" description="Package/Identity/Publisher from Partner Center. The project publisher must equal Package/Properties/PublisherDisplayName there (no accent)." />
     </variables>
     <jreBundles jdkProviderId="Liberica" release="17/17.0.13+12">
       <modules>
