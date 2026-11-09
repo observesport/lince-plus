@@ -25,3 +25,4 @@ target
 
 # run-lince skill state (pid, port, log)
 .claude/run/
+/src/installer/install4j/secrets/

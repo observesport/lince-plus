@@ -46,8 +46,24 @@
                                             <name>version</name>
                                             <value>${project.version}</value>
                                         </property>
+                                        <property>
+                                            <name>msixPackageIdentityName</name>
+                                            <value>${msix.packageIdentityName}</value>
+                                        </property>
+                                        <property>
+                                            <name>msixStorePublisherId</name>
+                                            <value>${msix.storePublisherId}</value>
+                                        </property>
+                                        <property>
+                                            <name>macApiKey</name>
+                                            <value>${apple.ascKeyId}</value>
+                                        </property>
+                                        <property>
+                                            <name>macApiIssuer</name>
+                                            <value>${apple.ascIssuerId}</value>
+                                        </property>
                                     </variables>
-                                    <buildIds>60,268,317,337</buildIds>
+                                    <buildIds>60,400,268,317,337</buildIds>
                                 </configuration>
                             </execution>
                         </executions>
