@@ -210,6 +210,16 @@ jobs:
           server-username-env-var: GITHUB_ACTOR
           server-password-env-var: GITHUB_TOKEN
 
+      # install4j downloads one JDK per media file and times out on slow
+      # mirrors; keep its JDK cache between runs so a build only downloads
+      # what the project file changed.
+      - name: Cache Install4j JDKs
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/install4j/v13/cached_jres
+          key: install4j-jres-${{ hashFiles('src/installer/install4j/lince-plus-installer-v3.install4j') }}
+          restore-keys: install4j-jres-
+
       - name: Set up Install4j
         run: |
           wget -q https://download.ej-technologies.com/install4j/install4j_linux-x64_13_1_1.deb
