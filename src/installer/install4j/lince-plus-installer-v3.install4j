@@ -105,6 +105,41 @@
   <installerGui>
     <applications>
       <application id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication">
+        <serializedBean>
+          <property name="customIconImageFiles">
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-16.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-32.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-48.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-128.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-256.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-512.png</string>
+              </object>
+            </add>
+          </property>
+          <property name="useCustomIcon" type="boolean" value="true" />
+        </serializedBean>
         <startup>
           <screen id="1" beanClass="com.install4j.runtime.beans.screens.StartupScreen" rollbackBarrierExitCode="0">
             <actions>
@@ -330,7 +365,40 @@ return console.askOkCancel(message, true);
       </application>
       <application id="uninstaller" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication">
         <serializedBean>
+          <property name="customIconImageFiles">
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-16.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-32.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-48.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-128.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-256.png</string>
+              </object>
+            </add>
+            <add>
+              <object class="com.install4j.api.beans.ExternalFile">
+                <string>./branding/installer-icon-512.png</string>
+              </object>
+            </add>
+          </property>
           <property name="customMacosExecutableName" type="string">${i18n:UninstallerMenuEntry(${compiler:sys.fullName})}</property>
+          <property name="useCustomIcon" type="boolean" value="true" />
           <property name="useCustomMacosExecutableName" type="boolean" value="true" />
         </serializedBean>
         <startup>
@@ -649,7 +717,7 @@ return console.askYesNo(message, true);
         </modules>
       </jreBundle>
     </windows>
-    <msix name="Windows-msix" id="400" architecture="64" createForStore="true" packageIdentityName="${compiler:msixPackageIdentityName}" storePublisherId="${compiler:msixStorePublisherId}">
+    <msix name="Windows-msix" id="400" architecture="64" createForStore="true" customizePackageIcon="true" packageIconImageFile="./branding/installer-icon-620.png" packageIdentityName="${compiler:msixPackageIdentityName}" storePublisherId="${compiler:msixStorePublisherId}">
       <excludedLaunchers>
         <launcher id="336" />
       </excludedLaunchers>
