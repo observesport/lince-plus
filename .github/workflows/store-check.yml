@@ -1,20 +1,38 @@
-# Manual check that the Partner Center credentials in the repository secrets
-# can reach the Microsoft Store: `gh workflow run store-check.yml --ref <branch>`.
+# Manual Microsoft Store access: with no input it only lists the Store apps
+# (credentials check); with `version` it submits that GitHub release's MSIX to
+# the Store, the same thing the CI `store` job does on a release.
+#   gh workflow run store-check.yml --ref <branch> [-f version=4.2.0]
+# Windows runner: the MSStore CLI needs the OS credential store (see ci.yml).
 name: Store check
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Published release to submit to the Store (e.g. 4.2.0); empty = only check the credentials'
+        type: string
+        default: ''
 
 jobs:
   check:
-    runs-on: ubuntu-24.04
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      MS_PARTNER_CENTER_TENANT_ID: ${{ secrets.MS_PARTNER_CENTER_TENANT_ID }}
+      MS_PARTNER_CENTER_SELLER_ID: ${{ secrets.MS_PARTNER_CENTER_SELLER_ID }}
+      MS_PARTNER_CENTER_CLIENT_ID: ${{ secrets.MS_PARTNER_CENTER_CLIENT_ID }}
+      MS_PARTNER_CENTER_CLIENT_SECRET: ${{ secrets.MS_PARTNER_CENTER_CLIENT_SECRET }}
     steps:
       - uses: microsoft/microsoft-store-apppublisher@v1.4
+      - name: Configure MSStore CLI
+        shell: bash
+        run: msstore reconfigure --tenantId "$MS_PARTNER_CENTER_TENANT_ID" --sellerId "$MS_PARTNER_CENTER_SELLER_ID" --clientId "$MS_PARTNER_CENTER_CLIENT_ID" --clientSecret "$MS_PARTNER_CENTER_CLIENT_SECRET"
       - name: List Store apps
-        env:
-          MS_PARTNER_CENTER_TENANT_ID: ${{ secrets.MS_PARTNER_CENTER_TENANT_ID }}
-          MS_PARTNER_CENTER_SELLER_ID: ${{ secrets.MS_PARTNER_CENTER_SELLER_ID }}
-          MS_PARTNER_CENTER_CLIENT_ID: ${{ secrets.MS_PARTNER_CENTER_CLIENT_ID }}
-          MS_PARTNER_CENTER_CLIENT_SECRET: ${{ secrets.MS_PARTNER_CENTER_CLIENT_SECRET }}
+        if: inputs.version == ''
+        shell: bash
+        run: msstore apps list --output-stream stdout
+      - name: Submit release ${{ inputs.version }} to the Store
+        if: inputs.version != ''
+        shell: bash
         run: |
-          msstore reconfigure --tenantId "$MS_PARTNER_CENTER_TENANT_ID" --sellerId "$MS_PARTNER_CENTER_SELLER_ID" --clientId "$MS_PARTNER_CENTER_CLIENT_ID" --clientSecret "$MS_PARTNER_CENTER_CLIENT_SECRET"
-          msstore apps list --output-stream stdout
+          gh release download "v${{ inputs.version }}" --repo "$GITHUB_REPOSITORY" --pattern '*.msix' --dir installers
+          msstore publish installers/*.msix --appId 9NRLN685CSPJ --uploadTimeout 3600 --output-stream stdout
