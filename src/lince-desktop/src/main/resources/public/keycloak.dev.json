@@ -1,6 +1,6 @@
 {
   "realm": "lince-services",
-  "auth-server-url": "http://localhost:8080/",
+  "auth-server-url": "https://dev.auth/",
   "ssl-required": "external",
   "resource": "lince-dashboard",
   "public-client": true,

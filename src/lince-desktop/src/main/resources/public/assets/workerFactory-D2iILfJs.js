@@ -1,0 +1,1 @@
+function e(){return new Worker(new URL("/assets/detector.worker-BA6yK7xw.js",import.meta.url),{type:"module",name:"match-analysis-detector"})}function r(){return new Worker(new URL("/assets/timeline.worker-D1CckgOK.js",import.meta.url),{type:"module",name:"match-analysis-timeline"})}export{e as createDetectorWorker,r as createTimelineWorker};
