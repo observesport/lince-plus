@@ -1,1 +1,0 @@
-import{j as o}from"./index-BBhWCMvE.js";import{I as r}from"./hooks-CIQuYlyr.js";import"./highcharts-DzzBXQTV.js";import"./codemirror-_NMEFjJJ.js";import"./reactplayer-DC1yCZAv.js";import"./jspdf-D6gHRtnR.js";import"./tensorflow-6OrZI9nG.js";import"./index-DkFWLdT-.js";function n({children:t}){return o.jsx(r,{children:t})}export{n as default};
