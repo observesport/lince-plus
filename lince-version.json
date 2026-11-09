@@ -1,9 +1,9 @@
 {
-  "version": "4.1.0",
-  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.1.0",
+  "version": "4.2.0",
+  "link": "https://github.com/observesport/lince-plus/releases/tag/v4.2.0",
   "message": [
-    "Nuevo Explorador de T-Patterns: detecta patrones temporales repetidos y salta al momento exacto del vídeo",
-    "Nuevo asistente predictivo que sugiere los siguientes eventos probables con su nivel de confianza",
-    "Nueva vista cuantitativa que sincroniza datos de sensores (frecuencia cardíaca, acelerómetro, giroscopio) con el vídeo"
+    "LINCE PLUS ya está en la Microsoft Store para Windows 10 y 11, y los instaladores de macOS van firmados y notarizados por Apple",
+    "El instalador de Linux vuelve a funcionar en Ubuntu, Linux Mint y otras distribuciones basadas en Debian",
+    "Importación y exportación de proyectos mediante la API REST integrada, y corrección de los menús Importar y Exportar y del guardado de registros"
   ]
 }
