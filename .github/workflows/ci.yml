@@ -257,7 +257,10 @@ jobs:
 
       - name: Show Install4j output
         if: always()
-        run: cat src/installer/output.txt 2>/dev/null || echo "no src/installer/output.txt"
+        run: |
+          cat src/installer/output.txt 2>/dev/null || echo "no src/installer/output.txt"
+          # Apple's verdict per DMG when notarization was rejected.
+          for f in src/installer/*.notarization.log; do [ -f "$f" ] && { echo "::group::$f"; cat "$f"; echo; echo "::endgroup::"; }; done; true
 
       - name: Verify installers
         run: |

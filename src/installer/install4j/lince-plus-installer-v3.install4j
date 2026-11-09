@@ -10,6 +10,8 @@
       <macAdditionalBinaries>
         <entry>*.dylib</entry>
         <entry>*.jnilib</entry>
+        <entry>ffmpeg</entry>
+        <entry>ffprobe</entry>
       </macAdditionalBinaries>
       <macSearchedJars>
         <entry>*.jar</entry>
