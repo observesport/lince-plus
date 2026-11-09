@@ -283,10 +283,9 @@ jobs:
             exit 1
           fi
 
-      # Release runs only. On develop the installers are built and verified
-      # but not kept: the run proves they can be produced.
+      # Kept on develop and master so a build can be downloaded and tried
+      # before a release (Actions run page, "Artifacts").
       - name: Upload installers
-        if: needs.compile.outputs.release == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: installers-${{ env.FILE_VERSION }}
