@@ -28,7 +28,7 @@ This is a multi-module Maven project with the following modules:
 - **lince-data-fx**: JavaFX-specific data components and adapters (export panels); depends on `lince-legacy`
 - **lince-desktop**: Main JavaFX desktop application (`LinceAppFx` entry point)
 - **lince-ai**: AI and statistical analysis components (includes agreement analysis using DKPro)
-- **lince-math**: Mathematical calculations using Renjin R engine integration
+- **lince-math**: Mathematical calculations (profiles, analysis, stats services)
 - **lince-transcoding**: Video transcoding capabilities using FFmpeg
 
 ### Key Technologies
@@ -37,7 +37,6 @@ This is a multi-module Maven project with the following modules:
 - **Build**: Maven multi-module project
 - **Installer**: Install4J for cross-platform installers
 - **Video Processing**: FFmpeg via JavaCV/ByteDeco
-- **Statistics**: Renjin R engine for statistical computations
 - **Testing**: JUnit 5 with Mockito
 
 ## Application Architecture
@@ -69,7 +68,6 @@ Key external dependencies:
 - Apache Commons (IO, Lang3, Collections4, Math3)
 - Guava for utilities
 - MapStruct for object mapping
-- Renjin for R integration
 - FFmpeg for video processing
 - Install4J for native installers
 
@@ -95,7 +93,6 @@ Two GitHub Actions workflows (see `docs/CI.md`):
 ## Special Notes
 
 - The project requires Install4J license for building installers
-- R package integration is handled through Renjin (Java-based R implementation)
 - Video transcoding uses FFmpeg with multiple adapter options (JavaCV, HumbleVideo)
 - Application supports both local profiles and cloud deployment configurations
 - The application uses a random server port (configured in `application.properties`) to avoid conflicts

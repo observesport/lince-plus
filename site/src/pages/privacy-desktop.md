@@ -82,7 +82,7 @@ Like any program that accesses a web address, each connection reveals your IP ad
 
 ## Third-party components
 
-The App bundles a Java runtime, JavaFX, FFmpeg for video playback and conversion, and the Renjin R engine for statistics. All of them run locally and do not transmit data. The full list of dependencies is in the [source repository](https://github.com/observesport/lince-plus).
+The App bundles a Java runtime, JavaFX, and FFmpeg for video playback and conversion. All of them run locally and do not transmit data. The full list of dependencies is in the [source repository](https://github.com/observesport/lince-plus).
 
 ---
 
