@@ -717,7 +717,7 @@ return console.askYesNo(message, true);
         </modules>
       </jreBundle>
     </windows>
-    <msix name="Windows-msix" id="400" architecture="64" createForStore="true" packageIdentityName="${compiler:msixPackageIdentityName}" storePublisherId="${compiler:msixStorePublisherId}">
+    <msix name="Windows-msix" id="400" architecture="64" createForStore="true" customizePackageIcon="true" packageIconImageFile="./branding/installer-icon-620.png" packageIdentityName="${compiler:msixPackageIdentityName}" storePublisherId="${compiler:msixStorePublisherId}">
       <excludedLaunchers>
         <launcher id="336" />
       </excludedLaunchers>
