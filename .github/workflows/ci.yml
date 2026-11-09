@@ -41,6 +41,10 @@ on:
         description: 'Deploy the SNAPSHOT jars to GitHub Packages (develop only; skips the installer build)'
         type: boolean
         default: false
+      installers:
+        description: 'Keep the installers of this develop build as a run artifact (14 days)'
+        type: boolean
+        default: false
 
 concurrency:
   # Never cancel a run on master or develop (a release must not stop halfway
@@ -283,9 +287,11 @@ jobs:
             exit 1
           fi
 
-      # Kept on develop and master so a build can be downloaded and tried
-      # before a release (Actions run page, "Artifacts").
+      # Releases always; develop only on a manual run with the `installers`
+      # input (`gh workflow run ci.yml --ref develop -f installers=true`), so
+      # a build can be downloaded and tried without cutting a release.
       - name: Upload installers
+        if: needs.compile.outputs.release == 'true' || (github.event_name == 'workflow_dispatch' && inputs.installers)
         uses: actions/upload-artifact@v7
         with:
           name: installers-${{ env.FILE_VERSION }}
