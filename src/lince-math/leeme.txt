@@ -3,11 +3,6 @@ Conceptos a evaluar:
 https://unpocodejava-com.cdn.ampproject.org/c/s/unpocodejava.com/2017/10/02/que-es-jaeger/amp/
 
 
-- Renjin rules. Problema: gráficas
-http://packages.renjin.org/package/org.renjin.cran/trelliscope
-http://packages.renjin.org/package/org.renjin.cran/plotly
-http://packages.renjin.org/package/org.renjin.cran/tkrplot/0.0-23
-
 TOMA JEROMA
 https://hafen.github.io/trelliscopejs/#installation
 ===============================
