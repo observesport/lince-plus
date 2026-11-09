@@ -15,7 +15,7 @@
         <entry>*.jar</entry>
       </macSearchedJars>
     </codeSigning>
-    <jreBundles jdkProviderId="Liberica" release="17/17.0.13+12">
+    <jreBundles jdkProviderId="Zulu" release="17/17.0.21">
       <modules>
         <defaultModules set="all" />
       </modules>
@@ -641,7 +641,7 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.21" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
         <modules>
           <defaultModules set="all" />
         </modules>
@@ -654,7 +654,7 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.21" usePack200="false" overrideJdkRelease="true" manualJreEntry="true">
         <modules>
           <defaultModules set="all" />
         </modules>
@@ -667,7 +667,7 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Zulu" release="17/17.0.13" usePack200="false" overrideJdkRelease="true" includedJre="macos-aarch64-17.0.5" />
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.21" usePack200="false" overrideJdkRelease="true" />
     </macosFolder>
     <macosFolder name="mac-x86" id="317" architecture="amd64">
       <excludedLaunchers>
@@ -676,7 +676,7 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.21" usePack200="false" overrideJdkRelease="true" />
     </macosFolder>
     <unixInstaller name="linux-x64" id="337">
       <excludedLaunchers>
@@ -685,7 +685,7 @@ return console.askYesNo(message, true);
       <exclude>
         <entry location="lince-launcher.bat" />
       </exclude>
-      <jreBundle jdkProviderId="Liberica" release="17/17.0.13+12" usePack200="false" />
+      <jreBundle jdkProviderId="Zulu" release="17/17.0.21" usePack200="false" overrideJdkRelease="true" />
     </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">
