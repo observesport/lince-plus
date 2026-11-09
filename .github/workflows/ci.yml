@@ -485,5 +485,4 @@ jobs:
         shell: bash
         run: |
           msstore reconfigure --tenantId "$MS_PARTNER_CENTER_TENANT_ID" --sellerId "$MS_PARTNER_CENTER_SELLER_ID" --clientId "$MS_PARTNER_CENTER_CLIENT_ID" --clientSecret "$MS_PARTNER_CENTER_CLIENT_SECRET"
-          msstore publish installers --appId 9NRLN685CSPJ --output-stream stdout \
-            --inputFile "installers/lince-plus_windows-x64_${FILE_VERSION}_Windows-msix.msix"
+          msstore publish installers --appId 9NRLN685CSPJ --inputDirectory installers --uploadTimeout 3600 --output-stream stdout
