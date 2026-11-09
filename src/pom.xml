@@ -75,6 +75,12 @@
         <!-- Store MSIX identity from Partner Center (Store id 9NRLN685CSPJ); public values, they live in the package manifest -->
         <msix.storePublisherId>CN=3BBF5CF2-5FBA-4ED4-86FE-C718F3B06946</msix.storePublisherId>
         <msix.packageIdentityName>AlbertoSotoFernandez.LINCEPLUS</msix.packageIdentityName>
+        <!-- macOS signing + notarization is off unless CI has the Developer ID
+             certificate and App Store Connect key (see .github/workflows/ci.yml). -->
+        <install4j.disableSigning>true</install4j.disableSigning>
+        <install4j.disableNotarization>true</install4j.disableNotarization>
+        <apple.ascKeyId />
+        <apple.ascIssuerId />
         <install4j.license>${env.INSTALL4J_LICENSE}</install4j.license>
         <install4j.home>${env.INSTALL4J_HOME}</install4j.home>
         <jakartaInject.version>2.0.0</jakartaInject.version>

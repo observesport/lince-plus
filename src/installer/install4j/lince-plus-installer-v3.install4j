@@ -6,6 +6,15 @@
       <variable name="msixPackageIdentityName" value="AlbertoSotoFernandez.LINCEPLUS" description="Package/Identity/Name from Partner Center (Store id 9NRLN685CSPJ)." />
       <variable name="msixStorePublisherId" value="CN=3BBF5CF2-5FBA-4ED4-86FE-C718F3B06946" description="Package/Identity/Publisher from Partner Center. The project publisher must equal Package/Properties/PublisherDisplayName there (no accent)." />
     </variables>
+    <codeSigning macEnabled="true" macPkcs12File="secrets/developer-id.p12" macNotarize="true" macApiIssuer="${compiler:macApiIssuer}" macApiKey="${compiler:macApiKey}" macApiPrivateKey="secrets/AuthKey.p8">
+      <macAdditionalBinaries>
+        <entry>*.dylib</entry>
+        <entry>*.jnilib</entry>
+      </macAdditionalBinaries>
+      <macSearchedJars>
+        <entry>*.jar</entry>
+      </macSearchedJars>
+    </codeSigning>
     <jreBundles jdkProviderId="Liberica" release="17/17.0.13+12">
       <modules>
         <defaultModules set="all" />

@@ -216,15 +216,34 @@ jobs:
           sudo dpkg -i install4j_linux-x64_13_1_1.deb
           echo "INSTALL4J_HOME=/opt/install4j13" >> "$GITHUB_ENV"
 
+      # macOS: sign and notarize the DMGs with the Developer ID certificate and
+      # the App Store Connect key from the repository secrets. Without the
+      # secrets the DMGs are built unsigned, as before.
+      - name: Prepare macOS signing
+        if: env.APPLE_DEVELOPER_ID_P12 != ''
+        env:
+          APPLE_DEVELOPER_ID_P12: ${{ secrets.APPLE_DEVELOPER_ID_P12 }}
+          APPLE_ASC_KEY_CONTENT: ${{ secrets.APPLE_ASC_KEY_CONTENT }}
+        run: |
+          mkdir -p src/installer/install4j/secrets
+          echo "$APPLE_DEVELOPER_ID_P12" | base64 -d > src/installer/install4j/secrets/developer-id.p12
+          echo "$APPLE_ASC_KEY_CONTENT" | base64 -d > src/installer/install4j/secrets/AuthKey.p8
+          echo "MAC_SIGNING=-Dinstall4j.disableSigning=false -Dinstall4j.disableNotarization=false" >> "$GITHUB_ENV"
+
       - name: Build installers
         run: |
           cd src
           mvn -B package install --update-snapshots -DskipTests \
-            -DinstallDir="${INSTALL4J_HOME}"
+            -DinstallDir="${INSTALL4J_HOME}" $MAC_SIGNING \
+            -Dapple.ascKeyId="$APPLE_ASC_KEY_ID" -Dapple.ascIssuerId="$APPLE_ASC_ISSUER_ID" \
+            -Dinstall4j.macKeystorePassword="$APPLE_DEVELOPER_ID_P12_PASSWORD"
         env:
           INSTALL4J_HOME: "/opt/install4j13"
           INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_ASC_KEY_ID: ${{ secrets.APPLE_ASC_KEY_ID }}
+          APPLE_ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+          APPLE_DEVELOPER_ID_P12_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
 
       - name: Show Install4j output
         if: always()
