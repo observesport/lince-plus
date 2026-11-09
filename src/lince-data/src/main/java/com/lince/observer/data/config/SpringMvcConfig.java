@@ -17,7 +17,7 @@ import java.util.Locale;
  * Class SpringMvcConfig
  * 31/05/2019
  *
- * Adds i18n support on Freemarker in a filter with custom language English
+ * Adds i18n support in a filter with custom language English
  *
  *
  * @author berto (alberto.soto@gmail.com)

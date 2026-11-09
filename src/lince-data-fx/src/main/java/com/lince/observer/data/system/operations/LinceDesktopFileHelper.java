@@ -64,24 +64,6 @@ public class LinceDesktopFileHelper extends LinceFileHelperFx {
     }
 
     /**
-     * Load file dialog
-     *
-     * @param myapp      link al  main app
-     * @param parameters Tuplas de descripcion+filtro "XML files (*.xml)", "*.xml"
-     * @return selected File to select if its null or not
-     */
-    public static File openSingleFileDialog(ILinceApp myapp, List<Pair<String, String>> parameters) {
-        FileChooser chooser = getFileDialog(myapp, parameters);
-        return chooser.showOpenDialog(myapp.getPrimaryStage());
-    }
-
-    public static File openSingleFileDialogBasic(ILinceApp myapp, Pair<String, String> parameters) {
-        List<Pair<String, String>> aux = new ArrayList<>();
-        aux.add(parameters);
-        return openSingleFileDialog(myapp, aux);
-    }
-
-    /**
      * Save to dialog
      *
      * @param myapp      link al  main app
@@ -91,12 +73,6 @@ public class LinceDesktopFileHelper extends LinceFileHelperFx {
     public static File openSaveFileDialog(ILinceApp myapp, List<Pair<String, String>> parameters) {
         FileChooser chooser = getFileDialog(myapp, parameters);
         return chooser.showSaveDialog(myapp.getPrimaryStage());
-    }
-
-    public static File openSaveFileDialogBasic(ILinceApp myapp, Pair<String, String> parameters) {
-        List<Pair<String, String>> aux = new ArrayList<>();
-        aux.add(parameters);
-        return openSaveFileDialog(myapp, aux);
     }
 
     /**

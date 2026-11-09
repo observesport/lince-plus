@@ -39,35 +39,12 @@ public class TimeCalculations {
      * @param ms The time to format, in milliseconds.
      * @return A string representation of the time in the format "HH:MM:SS.mmm".
      */
-    public String formatTimeWithOptionalHours(long ms) {
-        return formatMilliseconds(ms, true);
-    }
-
-    /**
-     * Formats a given time in milliseconds into a string representation that includes all time components.
-     * The resulting format is "HH:MM:SS.mmm" where HH is hours, MM is minutes, SS is seconds, and mmm is milliseconds.
-     * This method always includes the hours component, even if it's zero.
-     *
-     * @param ms The time to format, in milliseconds.
-     * @return A string representation of the time in the format "HH:MM:SS.mmm".
-     */
     public String formatTimeWithAllComponents(long ms) {
-        return formatMilliseconds(ms, false);
-    }
-
-    private String formatMilliseconds(long milis, boolean omitHoursIfZero) {
-        long millisecond = milis % MILLISECONDS_PER_SECOND;
-        String millisecondsValue = String.format("%03d", millisecond);
-        milis /= MILLISECONDS_PER_SECOND;
-        long seconds = milis % 60;
-        milis /= 60;
-        long minutes = milis % 60;
-        long hours = milis / 60;
-
-        if (omitHoursIfZero && hours == 0) {
-            return String.format("%02d:%02d.%s", minutes, seconds, millisecondsValue);
-        } else {
-            return String.format("%02d:%02d:%02d.%s", hours, minutes, seconds, millisecondsValue);
-        }
+        long millisecond = ms % MILLISECONDS_PER_SECOND;
+        long totalSeconds = ms / MILLISECONDS_PER_SECOND;
+        long seconds = totalSeconds % 60;
+        long minutes = totalSeconds / 60 % 60;
+        long hours = totalSeconds / 3600;
+        return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millisecond);
     }
 }

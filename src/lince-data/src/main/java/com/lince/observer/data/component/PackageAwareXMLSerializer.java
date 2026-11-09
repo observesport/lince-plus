@@ -61,6 +61,13 @@ public class PackageAwareXMLSerializer implements AutoCloseable {
         packageMappings.putAll(initialMappings);
     }
 
+    /**
+     * Prepares a Lince 1 document for decoding.
+     *
+     * @param in .rlince / .ilince content; read fully, not closed
+     * @throws LegacyXmlException when the document is not a plain Lince 1 bean graph (see {@link LegacyXmlGuard})
+     * @throws IOException        when the stream cannot be read
+     */
     public PackageAwareXMLSerializer(InputStream in) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         in.transferTo(baos);
@@ -75,9 +82,11 @@ public class PackageAwareXMLSerializer implements AutoCloseable {
                     String.format("class=\"%s\"", newPackage)
             );
         }
-        decoder = new XMLDecoder(new ByteArrayInputStream(
-                xmlContent.getBytes(StandardCharsets.UTF_8)
-        ));
+        byte[] decoderInput = xmlContent.getBytes(StandardCharsets.UTF_8);
+        // LO-349: XMLDecoder runs whatever the document describes; refuse anything but a plain Lince 1 bean graph
+        // before it gets there. Checked on the exact bytes the decoder reads (legacy names already mapped).
+        LegacyXmlGuard.check(decoderInput);
+        decoder = new XMLDecoder(new ByteArrayInputStream(decoderInput));
     }
 
     /**

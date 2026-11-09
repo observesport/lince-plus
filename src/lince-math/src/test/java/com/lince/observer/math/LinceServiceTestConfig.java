@@ -46,9 +46,4 @@ public class LinceServiceTestConfig {
         return new AnalysisServiceImpl(categoryService, profileService, dataHubService);
     }
 
-    @Bean
-    public LegacyConverterService legacyConverterService(AnalysisService analysisService,DataHubService dataHubService,CategoryService categoryService) {
-        return new LegacyConverterService( categoryService, analysisService, dataHubService);
-    }
-
 }

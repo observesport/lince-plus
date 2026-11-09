@@ -19,3 +19,10 @@ target
 /site/node_modules/
 /site/dist/
 /site/.astro/
+
+# Browser source maps are dead weight in the desktop jar (JupyterLite bundle)
+/src/lince-desktop/src/main/resources/public/**/*.map
+
+# run-lince skill state (pid, port, log)
+.claude/run/
+/src/installer/install4j/secrets/

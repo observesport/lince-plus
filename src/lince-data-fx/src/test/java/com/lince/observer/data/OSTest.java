@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class OSTest {
     @Test
+    @Disabled("Manual smoke test: opens http://www.lince-plus.com in the system browser on every run. Enable locally when checking OSUtils.openBrowser.")
     public void testMacBrowser() {
         Runtime runtime = Runtime.getRuntime();
         String[] args2 =  {"osascript","-e","open location www.google.es"};

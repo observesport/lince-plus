@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.lince.observer</groupId>
         <artifactId>lince-plus-root</artifactId>
-        <version>4.1.1-SNAPSHOT</version>
+        <version>4.2.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>lince-desktop</artifactId>
@@ -46,8 +46,24 @@
                                             <name>version</name>
                                             <value>${project.version}</value>
                                         </property>
+                                        <property>
+                                            <name>msixPackageIdentityName</name>
+                                            <value>${msix.packageIdentityName}</value>
+                                        </property>
+                                        <property>
+                                            <name>msixStorePublisherId</name>
+                                            <value>${msix.storePublisherId}</value>
+                                        </property>
+                                        <property>
+                                            <name>macApiKey</name>
+                                            <value>${apple.ascKeyId}</value>
+                                        </property>
+                                        <property>
+                                            <name>macApiIssuer</name>
+                                            <value>${apple.ascIssuerId}</value>
+                                        </property>
                                     </variables>
-                                    <buildIds>60,268,317,337</buildIds>
+                                    <buildIds>60,400,268,317,337</buildIds>
                                 </configuration>
                             </execution>
                         </executions>
@@ -89,6 +105,13 @@
         </dependency>
         <dependency>
             <groupId>com.lince.observer</groupId>
+            <artifactId>lince-legacy</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.lince.observer</groupId>
             <artifactId>lince-ai</artifactId>
         </dependency>
         <dependency>
@@ -123,6 +146,12 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- LO-349: MockMvc + MockMultipartFile for the import/export API abuse tests (headless, no Spring context) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
@@ -268,11 +297,24 @@
                     <execution>
                         <goals>
                             <!--                            <goal>run</goal>-->
+                            <!-- LO-343: META-INF/build-info.properties -> BuildProperties bean for /info -->
+                            <goal>build-info</goal>
                             <goal>repackage</goal>
                             <!-- This starts up the program from mvn:    <goal>start</goal>-->
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <!-- LO-349: the legacy importers/exporters behind /api/import and /api/export must run without a
+                     display, as in lince-data-fx -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.awt.headless>true</java.awt.headless>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -377,7 +419,11 @@
                     <include>**/*.*</include>
                 </includes>
                 <excludes>
-                    <exclude/>
+                    <!-- LO-343: *.properties are already copied (filtered) by the block above;
+                         copying them again unfiltered left a literal @version@ in target/classes -->
+                    <exclude>**/*.properties</exclude>
+                    <!-- Browser source maps: never ship them in the jar even if a frontend drop re-adds them -->
+                    <exclude>**/*.map</exclude>
                 </excludes>
             </resource>
         </resources>

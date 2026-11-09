@@ -15,6 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -105,12 +106,29 @@ public class JavaFXLoader<T extends JavaFXLinceBaseController> {
     private void initController() {
         try {
             T controller = loader.getController();
+            injectSpringBeans(controller, mainLinceApp.getContext());
             controller.setMainLinceApp(mainLinceApp);
             controller.lazyInit();
         } catch (Exception e) {
             log.error("initController", e);
 
         }
+    }
+
+    /**
+     * Populates the {@code @Autowired} fields of a controller that {@link FXMLLoader} instantiated outside Spring
+     * (LO-349). Without this the services the controller declares stay null and every menu handler that uses one
+     * fails with an NPE on the JavaFX thread.
+     *
+     * @param controller controller created by the FXML loader
+     * @param context    Spring context of the running application; null (not started) leaves the controller as is
+     */
+    public static void injectSpringBeans(Object controller, ApplicationContext context) {
+        if (controller == null || context == null) {
+            LoggerFactory.getLogger(JavaFXLoader.class).warn("No Spring context to autowire {}", controller);
+            return;
+        }
+        context.getAutowireCapableBeanFactory().autowireBean(controller);
     }
 
     public void loadFXMLStage() {

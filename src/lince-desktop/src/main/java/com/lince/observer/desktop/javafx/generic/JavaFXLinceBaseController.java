@@ -3,17 +3,10 @@ package com.lince.observer.desktop.javafx.generic;
 import com.lince.observer.data.util.JavaFXLogHelper;
 import com.lince.observer.desktop.LinceApp;
 import com.lince.observer.desktop.javafx.JavaFXLoader;
-import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.layout.StackPane;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
 
 /**
  * lince-scientific-base
@@ -54,25 +47,6 @@ public abstract class JavaFXLinceBaseController {
 
     //para sobreescribir e iniciar posterior a cargas de construccion: RootLayoutController
     public void lazyInit() {
-    }
-
-    /**
-     * Creates an standard dialog to open old swing content into javafx dialog
-     *
-     * @param component
-     */
-    protected void openEmbedded(JComponent component, String title) {
-        final SwingNode swingNode = new SwingNode();
-        swingNode.setContent(component);
-        Dialog dlg = new Dialog();
-        dlg.setHeaderText(StringUtils.defaultIfEmpty(title, "Legacy - Swing component"));
-        StackPane pane1 = new StackPane();
-        pane1.getChildren().add(swingNode);
-        pane1.setMinSize(600, 400);
-        dlg.getDialogPane().setContent(pane1);
-        dlg.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
-        dlg.setResizable(true);
-        dlg.show();
     }
 
 }

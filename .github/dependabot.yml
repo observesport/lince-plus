@@ -1,0 +1,14 @@
+# Keeps the GitHub Actions in .github/workflows current, so runtime
+# deprecations (Node 20 -> 24 and the like) arrive as a PR instead of a
+# warning. Maven dependencies stay on security-only updates.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: [ "*" ]
+    commit-message:
+      prefix: ci

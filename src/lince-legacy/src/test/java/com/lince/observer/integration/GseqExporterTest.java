@@ -1,0 +1,158 @@
+package com.lince.observer.integration;
+
+import com.lince.observer.data.LegacyToolException;
+import com.lince.observer.legacy.Registro;
+import com.lince.observer.legacy.export.*;
+import com.lince.observer.legacy.instrumentoObservacional.Criterio;
+import com.lince.observer.legacy.instrumentoObservacional.InstrumentoObservacional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Unit tests for GSEQ Exporter classes.
+ * <p>
+ * Tests verify that exporters produce valid GSEQ format output and that
+ * Registro methods delegate correctly to the exporter classes.
+ */
+class GseqExporterTest {
+
+    private Registro registro;
+    private List<Criterio> criterios;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        List<LegacyToolException> exceptions = new ArrayList<>();
+
+        // Load test files
+        File linceRegister = new File(getClass().getResource("/lince1/import/Registro_prueba.rlince").getFile());
+        File linceInstrument = new File(getClass().getResource("/lince1/import/Instrumento_prueba.ilince").getFile());
+
+        InstrumentoObservacional.loadInstance(linceInstrument);
+        registro = Registro.cargarRegistro(linceRegister, exceptions);
+
+        assertNotNull(registro, "Registro should be loaded successfully");
+        criterios = List.of(InstrumentoObservacional.getInstance().getCriterios());
+    }
+
+    @Test
+    void testEventExporter_RegistroDelegatesToExporter() {
+        // Registro now delegates to EventExporter, so both should produce identical output
+        String registroOutput = registro.exportToSdisGseqEvento(criterios);
+
+        GseqExporter exporter = GseqExporterFactory.createEventExporter();
+        String exporterOutput = exporter.export(criterios, registro.datosVariables);
+
+        assertEquals(registroOutput, exporterOutput,
+            "Registro.exportToSdisGseqEvento() should delegate to EventExporter");
+    }
+
+    @Test
+    void testMultieventExporter_RegistroDelegatesToExporter() {
+        // Registro now delegates to MultieventExporter
+        String registroOutput = registro.exportToSdisGseqMultievento(criterios);
+
+        GseqExporter exporter = GseqExporterFactory.createMultieventExporter();
+        String exporterOutput = exporter.export(criterios, registro.datosVariables);
+
+        assertEquals(registroOutput, exporterOutput,
+            "Registro.exportToSdisGseqMultievento() should delegate to MultieventExporter");
+    }
+
+    @Test
+    void testTimedExporter_ProducesSameOutputAsRegistro() {
+        // Timed export still uses Registro's own method (not yet delegated)
+        String expectedOutput = registro.exportToSdisGseqEventoConTiempo(criterios);
+
+        GseqExporter exporter = GseqExporterFactory.createTimedExporter();
+        String actualOutput = exporter.export(criterios, registro.datosVariables);
+
+        assertEquals(expectedOutput, actualOutput,
+            "TimedExporter should produce the same output as Registro.exportToSdisGseqEventoConTiempo()");
+    }
+
+    @Test
+    void testStateExporter_ProducesSameOutputAsRegistro() {
+        // State export still uses Registro's own method (not yet delegated)
+        String expectedOutput = registro.exportToSdisGseqEstado(criterios);
+
+        GseqExporter exporter = GseqExporterFactory.createStateExporter();
+        String actualOutput = exporter.export(criterios, registro.datosVariables);
+
+        assertEquals(expectedOutput, actualOutput,
+            "StateExporter should produce the same output as Registro.exportToSdisGseqEstado()");
+    }
+
+    @Test
+    void testIntervalExporter_RegistroDelegatesToExporter() {
+        // Registro now delegates to IntervalExporter
+        String registroOutput = registro.exportToSdisGseqIntervalo(criterios);
+
+        GseqExporter exporter = GseqExporterFactory.createIntervalExporter(registro.datosVariables);
+        String exporterOutput = exporter.export(criterios, registro.datosVariables);
+
+        assertEquals(registroOutput, exporterOutput,
+            "Registro.exportToSdisGseqIntervalo() should delegate to IntervalExporter");
+    }
+
+    @Test
+    void testIntervalExporter_WithSpecificInterval() {
+        IntervalExporter exporter = GseqExporterFactory.createIntervalExporter(15);
+
+        String output = exporter.export(criterios, registro.datosVariables);
+        assertTrue(output.startsWith("Interval=15'"),
+            "Output should start with specified interval duration");
+    }
+
+    @Test
+    void testMultieventExporter_SingleSequenceEndsWithSlash() {
+        // Single sequence: last observation should end with "/" not ";/"
+        GseqExporter exporter = GseqExporterFactory.createMultieventExporter();
+        String output = exporter.export(criterios, registro.datosVariables);
+
+        // The data section should not contain ";/" pattern (that was the old bug)
+        assertFalse(output.contains(";/"),
+            "Multievent single-sequence output should not contain ';/' - last line should end with '/' directly");
+
+        // Should end with "/" somewhere
+        assertTrue(output.contains("/"),
+            "Multievent output should contain sequence terminator (/)");
+    }
+
+    @Test
+    void testAllExporters_ProduceValidGseqFormat() {
+        // Test that all exporters produce valid GSEQ format structure
+        GseqExporter[] exporters = {
+            GseqExporterFactory.createEventExporter(),
+            GseqExporterFactory.createMultieventExporter(),
+            GseqExporterFactory.createTimedExporter(),
+            GseqExporterFactory.createStateExporter(),
+            GseqExporterFactory.createIntervalExporter(registro.datosVariables)
+        };
+
+        for (GseqExporter exporter : exporters) {
+            String output = exporter.export(criterios, registro.datosVariables);
+
+            // All GSEQ formats must contain variable declarations
+            assertTrue(output.contains("($") || output.contains("  "),
+                exporter.getClass().getSimpleName() + " output should contain variable declarations");
+
+            // All GSEQ formats must end with forward slash
+            assertTrue(output.contains("/"),
+                exporter.getClass().getSimpleName() + " output should contain sequence terminator (/)");
+
+            // All GSEQ formats must use Windows line endings
+            assertTrue(output.contains("\r\n"),
+                exporter.getClass().getSimpleName() + " output should use Windows line endings (\\r\\n)");
+
+            // Output should not be empty
+            assertFalse(output.trim().isEmpty(),
+                exporter.getClass().getSimpleName() + " output should not be empty");
+        }
+    }
+}

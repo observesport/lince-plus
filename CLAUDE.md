@@ -24,7 +24,8 @@ Lince PLUS is a software for systematic observation studies of sports and health
 This is a multi-module Maven project with the following modules:
 
 - **lince-data**: Core data models, services, and business logic
-- **lince-data-fx**: JavaFX-specific data components and adapters
+- **lince-legacy**: JavaFX-free legacy Lince 1 model and the legacy import/export types (Theme 5, SAS, SDIS-GSEQ, HOISAN, Lince 1); depends on `lince-data` only, usable headless and by lince-server
+- **lince-data-fx**: JavaFX-specific data components and adapters (export panels); depends on `lince-legacy`
 - **lince-desktop**: Main JavaFX desktop application (`LinceAppFx` entry point)
 - **lince-ai**: AI and statistical analysis components (includes agreement analysis using DKPro)
 - **lince-math**: Mathematical calculations using Renjin R engine integration
@@ -78,6 +79,7 @@ Key external dependencies:
 - Test execution: `mvn test` (from `src/` directory)
 - Tests are skipped in installer build (`-DskipTests`)
 - The `lince-data-fx` module provides a test-jar with test utilities (includes `EmptyLinceApp` for testing)
+- The `lince-legacy` module provides a test-jar with the Lince 1 fixtures (`Lince1Fixtures`, `ExporterFixture`, `lince1/**`, `prj/template.*`)
 
 ## Build Profiles
 
@@ -87,7 +89,7 @@ Key external dependencies:
 ## CI/CD
 
 Two GitHub Actions workflows (see `docs/CI.md`):
-- `ci.yml` (**CI**): `compile` -> `test` / `build` -> `deploy`. Java 17 (Liberica). Installers for Windows, macOS ARM/x86 and Linux on `develop` and `master`; on `master` with a non-SNAPSHOT version it deploys to GitHub Packages, publishes the release and dispatches the Site workflow. Ignores site/docs-only changes.
+- `ci.yml` (**CI**): `compile` -> `test` / `build` -> `snapshot` / `deploy`. Java 17 (Liberica). Installers for Windows, macOS ARM/x86 and Linux on `develop` and `master`; a manual run on `develop` with the `snapshot` input ticked (`gh workflow run ci.yml --ref develop -f snapshot=true`) deploys the library jars (not `lince-desktop`, no installers) to GitHub Packages; on `master` with a non-SNAPSHOT version it deploys to GitHub Packages, publishes the release and dispatches the Site workflow. Ignores site/docs-only changes.
 - `site.yml` (**Site**): `build` -> `check` -> `publish` for the Astro website under `site/`, plus an optional surge.sh `preview`. Publishes to GitHub Pages from `master` on push or manual run, without needing a release.
 
 ## Special Notes

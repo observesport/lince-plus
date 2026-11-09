@@ -19,7 +19,6 @@ import org.springframework.beans.BeanWrapperImpl;
 
 import java.beans.FeatureDescriptor;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 /**
@@ -41,7 +40,7 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         try {
             if (id != null) {
                 RegisterItem selectedRegister = registerList.stream()
-                        .filter(p -> p.getId().equals(id))
+                        .filter(p -> id.equals(p.getId()))
                         .findFirst()
                         .orElse(null);
                 return registerList.remove(selectedRegister);
@@ -72,12 +71,14 @@ public abstract class AnalysisServiceBase implements AnalysisService {
 
     protected boolean pushRegister(List<RegisterItem> registerList, RegisterItem item) {
         try {
+            // stored rows without id get one first, so the replace below always keeps a stored id
+            assignMissingIds(registerList);
             Optional<RegisterItem> registerItem = registerList.stream()
-                    .filter(p -> p.getId().equals(item.getId()) && p.getVideoTime().equals(item.getVideoTime())
-                            || p.getVideoTime().equals(item.getVideoTime())
+                    .filter(p -> Objects.equals(p.getVideoTime(), item.getVideoTime())
                             || (p.getSaveDate() != null && p.getSaveDate().equals(item.getSaveDate())))
                     .findFirst();
             if (registerItem.isPresent()) {
+                // null properties (an incoming item without id) are not copied: the stored id is kept
                 BeanUtils.copyProperties(item, registerItem.get(), getNullPropertyNames(item));
             } else {
                 item.setId(generateID());
@@ -246,22 +247,41 @@ public abstract class AnalysisServiceBase implements AnalysisService {
         return scene;
     }
 
+    /**
+     * Next free observation id: the highest stored id + 1. Rows without id are repaired first (see
+     * {@link #assignMissingIds(List)}), so the returned id never collides with them.
+     */
     protected Integer generateID() {
-        AtomicInteger idGenerator = new AtomicInteger();
+        int maxId = 0;
         try {
-            for (RegisterItem value : getAllObservations()) {
-                int currentGroupID = value.getId() == null ? -1 : value.getId();
-                if (value.getId() == null) {
-                    value.setId(generateID()); //corregimos posible error de ids al recorrer
-                }
-                if (currentGroupID > idGenerator.get()) {
-                    idGenerator.set(currentGroupID);
-                }
-            }
+            maxId = assignMissingIds(getAllObservations());
         } catch (Exception e) {
             log.error("generateId", e);
         }
-        return idGenerator.incrementAndGet();
+        return maxId + 1;
+    }
+
+    /**
+     * Gives every row without id the next free id, in list order, so repeated reads of the same register agree.
+     * Never recurses: the highest stored id is computed once, before assigning anything.
+     *
+     * @param registerList register to repair in place
+     * @return the highest id in the register after the repair (0 when there is none)
+     */
+    protected int assignMissingIds(List<RegisterItem> registerList) {
+        int maxId = registerList.stream()
+                .map(RegisterItem::getId)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(0);
+        maxId = Math.max(maxId, 0);
+        for (RegisterItem item : registerList) {
+            if (item.getId() == null) {
+                item.setId(++maxId);
+            }
+        }
+        return maxId;
     }
 
     public boolean saveObservation(SceneWrapper sceneWrapper) {

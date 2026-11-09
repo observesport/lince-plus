@@ -1,0 +1,75 @@
+/*
+ *  LINCE PLUS - Automatizacion de datos observacionales. Inherited from legacy Lince 1.2.
+ *  Copyright (C) 2011  Brais Gabin Moreira
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.lince.observer.data.legacy.datos;
+
+import com.lince.observer.data.component.PackageAwareXMLSerializer;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+/**
+ *
+ * @author Alberto Soto-Fernandez
+ */
+public class ControladorArchivos {
+
+    private static ControladorArchivos instance = null;
+
+    public static synchronized ControladorArchivos getInstance() {
+        if (instance == null) {
+            instance = new ControladorArchivos();
+        }
+        return instance;
+    }
+
+    private ControladorArchivos() {
+    }
+
+    /**
+     * The bytes the Lince 1 {@code guardar(File, Object)} wrote to a file (LO-349).
+     *
+     * @param datos object to encode
+     * @return UTF-8 XML
+     */
+    public byte[] serializar(Object datos) {
+        return PackageAwareXMLSerializer.encodeToXml(datos).getBytes(StandardCharsets.UTF_8);
+    }
+
+    public Object cargar(File path) throws IOException {
+        if (path == null || !path.exists()) {
+            throw new FileNotFoundException("File does not exist: " + (path != null ? path.getAbsolutePath() : "null"));
+        }
+
+        if (!path.isFile()) {
+            throw new IOException("Path is not a file: " + path.getAbsolutePath());
+        }
+        try (PackageAwareXMLSerializer decoder = new PackageAwareXMLSerializer(new BufferedInputStream(new FileInputStream(path)))) {
+            Object result = decoder.readObject();
+            if (result == null) {
+                throw new IOException("Failed to read object from file: " + path.getAbsolutePath());
+            }
+            return result;
+        } catch (FileNotFoundException e) {
+            throw new IOException("File not found or cannot be read: " + path.getAbsolutePath(), e);
+        } catch (IOException e) {
+            throw new IOException("Error reading from file: " + path.getAbsolutePath(), e);
+        } catch (Exception e) {
+            throw new IOException("Unexpected error while reading file: " + path.getAbsolutePath(), e);
+        }
+    }
+}

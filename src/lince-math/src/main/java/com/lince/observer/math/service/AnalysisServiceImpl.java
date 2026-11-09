@@ -55,14 +55,18 @@ public class AnalysisServiceImpl extends AnalysisServiceBase implements Analysis
     @Override
     public List<RegisterItem> getAllObservations() {
         ensureDataRegisterConsistency();
-        return dataHubService.getCurrentDataRegister();
+        List<RegisterItem> register = dataHubService.getCurrentDataRegister();
+        assignMissingIds(register);
+        return register;
     }
 
     @Override
     public List<RegisterItem> getObservationById(UUID uuid) {
         try {
             ensureDataRegisterConsistency();
-            return dataHubService.getRegisterById(uuid).getRegisterData();
+            List<RegisterItem> register = dataHubService.getRegisterById(uuid).getRegisterData();
+            assignMissingIds(register);
+            return register;
         } catch (Exception e) {
             return null;
         }

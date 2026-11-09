@@ -1,5 +1,6 @@
 package com.lince.observer.data.util;
 
+import com.lince.observer.data.ILinceProject;
 import com.lince.observer.data.bean.categories.Category;
 import com.lince.observer.data.bean.categories.Criteria;
 import com.lince.observer.data.bean.user.ResearchProfile;
@@ -12,8 +13,13 @@ import jakarta.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
@@ -46,8 +52,24 @@ public class LinceFileHelper {
         return null;
     }
 
+    /**
+     * Built once: a {@link JAXBContext} is thread safe and expensive to create, and the REST import/export reads and
+     * writes projects on every request.
+     */
+    private static volatile JAXBContext xmlContext;
+
     protected JAXBContext getXMLContext() throws JAXBException {
-        return JAXBContext.newInstance(LinceFileProjectWrapper.class, Criteria.class, Category.class);
+        JAXBContext context = xmlContext;
+        if (context == null) {
+            synchronized (LinceFileHelper.class) {
+                context = xmlContext;
+                if (context == null) {
+                    context = JAXBContext.newInstance(LinceFileProjectWrapper.class, Criteria.class, Category.class);
+                    xmlContext = context;
+                }
+            }
+        }
+        return context;
     }
 
     /**
@@ -60,13 +82,13 @@ public class LinceFileHelper {
      */
     public LinceFileProjectWrapper readProjectFile(File file, Consumer<LinceFileProjectWrapper> f)
             throws JAXBException {
-        JAXBContext context = getXMLContext();
-        Unmarshaller um = context.createUnmarshaller();
-        // Reading XML from the file and unmarshalling.
         LinceFileProjectWrapper data = new LinceFileProjectWrapper();
         if (file.exists() && !file.isDirectory()) {
-            //Por defecto va a la carpeta de usuarios
-            data = (LinceFileProjectWrapper) um.unmarshal(file);
+            try (InputStream in = Files.newInputStream(file.toPath())) {
+                data = readProject(in);
+            } catch (IOException e) {
+                throw new JAXBException("Could not read " + file.getPath(), e);
+            }
         }
         f.accept(data);
         return data;
@@ -108,20 +130,78 @@ public class LinceFileHelper {
     }
     public void writeProjectFile(File file, LinceFileProjectWrapper linceProject) {
         try {
-            JAXBContext context = getXMLContext();
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            LinceFileProjectWrapper wrapper = new LinceFileProjectWrapper();
-            wrapper.setProfiles(linceProject.getProfiles());
-            wrapper.setObservationTool(linceProject.getObservationTool());
-            wrapper.setYoutubeVideoPlayList(linceProject.getYoutubeVideoPlayList());
-            wrapper.setRegister(linceProject.getRegister());
             // Marshalling and saving XML to the file.
-            m.marshal(wrapper, file);
+            createProjectMarshaller().marshal(toWritableWrapper(linceProject), file);
         } catch (Exception e) {
             log.error("Error writing project file", e);
             throw new RuntimeException("Failed to write project file", e);
         }
+    }
+
+    /**
+     * Stream variant of {@link #writeProjectFile(File, LinceFileProjectWrapper)}: same JAXB settings and the same
+     * content (profiles, instrument, youtube playlist, registers; local videos are not written). The stream is
+     * not closed.
+     *
+     * @param out          target stream
+     * @param linceProject project to serialise
+     * @throws JAXBException when marshalling fails
+     */
+    public void writeProject(OutputStream out, ILinceProject linceProject) throws JAXBException {
+        createProjectMarshaller().marshal(toWritableWrapper(linceProject), out);
+    }
+
+    /**
+     * Stream variant of {@link #readProjectFile(File, Consumer)}. External entities and DTDs are disabled because
+     * the content may come from an upload. The stream is not closed.
+     *
+     * @param in project XML
+     * @return unmarshalled project
+     * @throws JAXBException when the content is not a Lince PLUS project
+     */
+    public LinceFileProjectWrapper readProject(InputStream in) throws JAXBException {
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        XMLStreamReader reader = null;
+        try {
+            reader = factory.createXMLStreamReader(in);
+            Unmarshaller um = getXMLContext().createUnmarshaller();
+            Object data = um.unmarshal(reader);
+            if (data instanceof LinceFileProjectWrapper project) {
+                return project;
+            }
+            throw new JAXBException("Not a Lince PLUS project: " + (data == null ? null : data.getClass().getSimpleName()));
+        } catch (XMLStreamException e) {
+            throw new JAXBException("Unreadable project XML", e);
+        } finally {
+            closeQuietly(reader);
+        }
+    }
+
+    private void closeQuietly(XMLStreamReader reader) {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (XMLStreamException e) {
+                log.debug("closing xml reader", e);
+            }
+        }
+    }
+
+    private Marshaller createProjectMarshaller() throws JAXBException {
+        Marshaller m = getXMLContext().createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        return m;
+    }
+
+    private LinceFileProjectWrapper toWritableWrapper(ILinceProject linceProject) {
+        LinceFileProjectWrapper wrapper = new LinceFileProjectWrapper();
+        wrapper.setProfiles(linceProject.getProfiles());
+        wrapper.setObservationTool(linceProject.getObservationTool());
+        wrapper.setYoutubeVideoPlayList(linceProject.getYoutubeVideoPlayList());
+        wrapper.setRegister(linceProject.getRegister());
+        return wrapper;
     }
 
 }

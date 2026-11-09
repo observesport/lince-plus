@@ -20,6 +20,15 @@ public class CategoryInformation extends Category {
         return parentId * LinceDataConstants.CATEGORY_INFO_ID_MULTIPLIER;
     }
 
+    /**
+     * For deserializers (Spring Data MongoDB, Jackson), which fill the fields afterwards.
+     * Without it, Spring Data binds the stored fields to the constructor below and passes the
+     * Integer parent id as the Criteria, so a stored register can never be read back (LO-345).
+     */
+    public CategoryInformation() {
+        super();
+    }
+
     public CategoryInformation(Criteria parent, String value) {
         super();
         this.id = generateId(parent.id);
