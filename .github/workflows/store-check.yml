@@ -35,4 +35,4 @@ jobs:
         shell: bash
         run: |
           gh release download "v${{ inputs.version }}" --repo "$GITHUB_REPOSITORY" --pattern '*.msix' --dir installers
-          msstore publish installers --appId 9NRLN685CSPJ --inputDirectory installers --uploadTimeout 3600 --output-stream stdout
+          msstore publish installers/*.msix --appId 9NRLN685CSPJ --uploadTimeout 3600 --output-stream stdout
