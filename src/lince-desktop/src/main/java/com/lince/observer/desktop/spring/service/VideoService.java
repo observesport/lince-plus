@@ -53,7 +53,7 @@ public class VideoService {
     @Qualifier("webApplicationContext")
     @Autowired
     ResourceLoader resourceLoader;
-    public static final String DEFAULT_VIDEO_EXAMPLE = "public/media/crono.mp4";
+    public static final String DEFAULT_VIDEO_EXAMPLE = "public/media/lince-chrono-1h.mp4";
 
     @DesktopQualifier
     @Autowired
